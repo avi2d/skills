@@ -57,9 +57,8 @@ const pastHeld = Bun.spawnSync(["git", "cat-file", "-e", `${past.commit}^{commit
 
 test.skipIf(!pastHeld)(
   skipReason(
-    "it reads the Rule out of a past commit, so it runs only in a clone holding that history; the ci workflow fetches the whole history, a shallow clone has none",
+    "it reads the Rule out of a past commit, so it runs only where that commit exists",
     "the test-first arm injects prove-it-works as it read with the failing test first, which the current arm does not",
-    "local",
   ),
   async () => {
     const then = await valueOf(carriageAt(REPO, past.of, past.commit));
