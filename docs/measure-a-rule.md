@@ -62,7 +62,7 @@ To read the result:
 1. Open `evals/sweeps/<time>-<run-id>.json`, which a sweep that records a run writes.
    It holds the model, the thinking level, the repeats and the commit the sweep ran on.
    It holds a sha256 of each Rule and reachable Reference file in the plan, and whether any of those files differed from that commit.
-   A past Rule's text is fixed by its commit, so no file of it is hashed.
+   A past Rule's text is read from its fixture file, which is hashed like any other injected file.
    It holds every run's verdict with its judge and evidence, its spend and turns, and whether it wrote a test.
 1. Open `evals/sweeps/README.md`, which `bun run docs` writes from the records.
    It marks each sweep whose Rule or Reference files differed from its commit as uncommitted, and tabulates each Rule or Reference by sweep and by case, with each arm's pass rate, the difference and Fisher's exact p.

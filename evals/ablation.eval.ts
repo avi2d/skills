@@ -45,7 +45,8 @@ const injectedRules = carriedAs("rule");
 const carriedReferences = carriedAs("reference");
 const referenceNames = [...new Set(planned.flatMap((c) => delivered(c, "injected").references))];
 const dirsOf = (kind: Kind, names: readonly string[]) => runtime.runPromise(Effect.forEach(names, (name) => bodyDir(repo, kind, name)));
-const prose = proseOf(repo, [...(await dirsOf("rule", injectedRules)), ...(await dirsOf("reference", [...new Set([...carriedReferences, ...referenceNames])]))]);
+const fixtureDirs = [...new Set([...pastRules.values()].map((delivery) => delivery.fixture.slice(0, delivery.fixture.lastIndexOf("/"))))];
+const prose = proseOf(repo, [...(await dirsOf("rule", injectedRules)), ...(await dirsOf("reference", [...new Set([...carriedReferences, ...referenceNames])])), ...fixtureDirs]);
 const carry = (kind: "rule" | "reference", names: readonly string[]) =>
   Promise.all(names.map(async (name) => [name, await runtime.runPromise(carriageOf(repo, kind, name))] as const));
 const carriages = new Map([
