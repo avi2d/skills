@@ -26,7 +26,7 @@ To run the checks before a push:
 `.github/workflows/ci.yml` runs the same steps on every pull request and every push to main, on a clone, with the full `bun run test` in place of `bun run test:fast`.
 It installs `claude` and a pinned `sqlite3` before `bun run test`.
 It runs `bun run test` with `TMPDIR` set to an empty directory under the runner's per-job temp, then `scripts/check-tmp-clean.sh`, which fails the job naming anything the suite left there.
-Every job runs on `ubuntu-latest` unless the repository variable `CI_RUNS_ON` names another runner label, except the night run mutation job, which always runs on `ubuntu-latest` and never reads `CI_RUNS_ON`.
+Every job runs on `ubuntu-latest`.
 Each workflow in `.github/workflows/` is owned by this repository, and `checks-ci-wiring` fails naming a required command the pull request workflows no longer run.
 It also fails an `oven-sh/setup-bun` step whose Bun is not the kit's fleet version, so `.bun-version` moves only with a kit release that moves the fleet.
 `ci.yml` also lints a pull request's title as a conventional commit, because a squash merge makes the title the commit subject.

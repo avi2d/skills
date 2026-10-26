@@ -12,7 +12,7 @@ permissions:
   pull-requests: read
 jobs:
   checks:
-    runs-on: ${{ vars.CI_RUNS_ON || 'ubuntu-latest' }}
+    runs-on: ubuntu-latest
     steps:
       - run: echo "TMPDIR=$RUNNER_TEMP" >> "$GITHUB_ENV"
       # The head, not GitHub's merge ref, so the tree the gates read is the commit the range ends at.
