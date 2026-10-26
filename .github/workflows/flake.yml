@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   flake:
-    runs-on: ${{ vars.CI_RUNS_ON || 'ubuntu-latest' }}
+    runs-on: ubuntu-latest
     timeout-minutes: 180
     steps:
       - run: echo "TMPDIR=$RUNNER_TEMP" >> "$GITHUB_ENV"
