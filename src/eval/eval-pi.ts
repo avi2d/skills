@@ -7,7 +7,7 @@ import { verdictOf, wroteTest, type AgentRun, type ProgramJudge } from "./eval-j
 import { changesIn, commitsIn, generatedBy, seeded, verifiedBy, type Env, type Generator, type Verifier } from "./eval-sandbox";
 import { transcriptOf, type RequestUsage, type Transcript } from "./eval-transcript";
 import { FileFailure, MalformedBody, UncomposableBodies } from "../platform/failures";
-import { attempt, outputOf } from "../platform/files";
+import { attempt } from "../platform/files";
 
 const carriageFrom = Effect.fnUntraced(function* (rule: string, dir: string, path: string, file: string): Effect.fn.Return<string, MalformedBody | UncomposableBodies> {
   const text = yield* proseIn(dir, file);
@@ -26,19 +26,13 @@ export const carriageOf = Effect.fnUntraced(function* (
   return yield* carriageFrom(rule, dir, path, yield* attempt(path, (fs) => fs.readFileString(path)));
 });
 
-// The Rule sat at the commit where it sits now.
-export const carriageAt = Effect.fnUntraced(function* (
+export const carriageOfFixture = Effect.fnUntraced(function* (
   repo: string,
   rule: string,
-  commit: string,
-): Effect.fn.Return<string, FileFailure | MalformedBody | UncomposableBodies, FileSystem.FileSystem | ChildProcessSpawner.ChildProcessSpawner> {
-  const dir = yield* bodyDir(repo, "rule", rule);
-  const path = `${commit}:${dir}/${SKILL_FILE}`;
-  const shown = yield* outputOf(ChildProcess.make("git", ["show", path], { cwd: repo, stdin: "ignore" })).pipe(
-    Effect.mapError((error) => new FileFailure({ path, message: `git show ${path}: ${error.message}` })),
-  );
-  if (shown.code !== 0) return yield* new FileFailure({ path, message: `git show ${path} exited ${shown.code}: ${shown.stderr.trim()}` });
-  return yield* carriageFrom(rule, dir, path, shown.stdout);
+  fixture: string,
+): Effect.fn.Return<string, FileFailure | MalformedBody | UncomposableBodies, FileSystem.FileSystem> {
+  const path = `${repo}${fixture}`;
+  return yield* carriageFrom(rule, fixture, path, yield* attempt(path, (fs) => fs.readFileString(path)));
 });
 
 export const referenceOf = Effect.fnUntraced(function* (

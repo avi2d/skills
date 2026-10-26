@@ -5,7 +5,7 @@ import { inject } from "vitest";
 import { createHarness, createJudge, describeEval, type TranscriptEvent } from "vitest-evals";
 import { bodyDir, type Kind } from "../src/bodies/bodies";
 import { sweepOf, type Cell, type Spend, type Verdict } from "../src/eval/ablation";
-import { armRun, carriageAt, carriageOf, referenceOf, type Agent, type ArmRun } from "../src/eval/eval-pi";
+import { armRun, carriageOf, carriageOfFixture, referenceOf, type Agent, type ArmRun } from "../src/eval/eval-pi";
 import { stalest, sweepRecords } from "../src/eval/eval-sweeps";
 import type { Transcript } from "../src/eval/eval-transcript";
 import { platform } from "../src/platform/platform";
@@ -45,13 +45,14 @@ const injectedRules = carriedAs("rule");
 const carriedReferences = carriedAs("reference");
 const referenceNames = [...new Set(planned.flatMap((c) => delivered(c, "injected").references))];
 const dirsOf = (kind: Kind, names: readonly string[]) => runtime.runPromise(Effect.forEach(names, (name) => bodyDir(repo, kind, name)));
-const prose = proseOf(repo, [...(await dirsOf("rule", injectedRules)), ...(await dirsOf("reference", [...new Set([...carriedReferences, ...referenceNames])]))]);
+const fixtureDirs = [...new Set([...pastRules.values()].map((delivery) => delivery.fixture.slice(0, delivery.fixture.lastIndexOf("/"))))];
+const prose = proseOf(repo, [...(await dirsOf("rule", injectedRules)), ...(await dirsOf("reference", [...new Set([...carriedReferences, ...referenceNames])])), ...fixtureDirs]);
 const carry = (kind: "rule" | "reference", names: readonly string[]) =>
   Promise.all(names.map(async (name) => [name, await runtime.runPromise(carriageOf(repo, kind, name))] as const));
 const carriages = new Map([
   ...(await carry("rule", injectedRules)),
   ...(await carry("reference", carriedReferences)),
-  ...(await Promise.all([...pastRules].map(async ([name, { of, commit }]) => [name, await runtime.runPromise(carriageAt(repo, of, commit))] as const))),
+  ...(await Promise.all([...pastRules].map(async ([name, { of, fixture }]) => [name, await runtime.runPromise(carriageOfFixture(repo, of, fixture))] as const))),
 ]);
 const references = new Map(await Promise.all(referenceNames.map(async (name) => [name, await runtime.runPromise(referenceOf(repo, name))] as const)));
 

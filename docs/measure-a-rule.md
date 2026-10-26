@@ -62,7 +62,7 @@ To read the result:
 1. Open `evals/sweeps/<time>-<run-id>.json`, which a sweep that records a run writes.
    It holds the model, the thinking level, the repeats and the commit the sweep ran on.
    It holds a sha256 of each Rule and reachable Reference file in the plan, and whether any of those files differed from that commit.
-   A past Rule's text is fixed by its commit, so no file of it is hashed.
+   A past Rule's text is read from its fixture file, which is hashed like any other injected file.
    It holds every run's verdict with its judge and evidence, its spend and turns, and whether it wrote a test.
 1. Open `evals/sweeps/README.md`, which `bun run docs` writes from the records.
    It marks each sweep whose Rule or Reference files differed from its commit as uncommitted, and tabulates each Rule or Reference by sweep and by case, with each arm's pass rate, the difference and Fisher's exact p.
@@ -87,7 +87,7 @@ To add a case:
    It also holds a hand fix the tests pass and a plausible wrong fix they fail.
    `tests/e2e/eval-verifier.test.ts` checks that every verifier fails its unfixed seed and its wrong fix, and passes its hand fix.
 1. To measure a Rule's text at a past commit, file the case under its own name with a `rule-as-of` delivery.
-   The delivery names the Rule and the commit.
+   The delivery names the Rule and the fixture that holds its text as it read at that commit.
 1. Add the file's cases to `CASES` in `evals/cases/index.ts`.
 1. If no judge fits, write one as a program over the run's transcript, its changed files, its commits and what the case's generator produces from them, with a test that watches it fail and pass.
    A judge that parses TypeScript goes in `evals/typescript-judges.ts`, because `src/` may not import the parser, a devDependency.

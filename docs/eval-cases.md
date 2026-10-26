@@ -83,7 +83,7 @@ Its cases compare that text injected against the Rule withheld.
 
 | Past Rule | Cases | Injects | A run passes when |
 | --- | --- | --- | --- |
-| `prove-it-works-test-first` | `npm-caret`, `exact-cents` | `prove-it-works` at `ca24440`, which ordered a delivery as the failing test first and the fix on top | its hidden verifier passes |
+| `prove-it-works-test-first` | `npm-caret`, `exact-cents` | `prove-it-works` as it read at `ca24440`, kept under `evals/past-rules/`, which ordered a delivery as the failing test first and the fix on top | its hidden verifier passes |
 
 `copy-edit-overview` and `copy-edit-puff` offer `technical-writing`, `plain-sentences`, `plain-words` and `punctuation` alongside `unslop`, because they hold the principles their judges read.
 

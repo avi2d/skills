@@ -1,10 +1,9 @@
 import { expect, test } from "bun:test";
 import { Effect, FileSystem } from "effect";
-import { skipReason } from "@avi2dg/checks/scripts/test-skips.ts";
 import { CASES } from "../../evals/cases";
 import type { EvalCase } from "../../evals/cases/fixture";
 import { passedHiddenVerifier, verdictOf } from "../../src/eval/eval-judges";
-import { carriageAt, carriageOf } from "../../src/eval/eval-pi";
+import { carriageOf, carriageOfFixture } from "../../src/eval/eval-pi";
 import { seeded, verifiedBy } from "../../src/eval/eval-sandbox";
 import { REPO } from "../../src/generate/link";
 import { run } from "../lib/eval-run";
@@ -53,15 +52,11 @@ for (const c of verified) {
 }
 
 const past = CASES.flatMap((c) => (c.delivery?.kind === "rule-as-of" ? [c.delivery] : []))[0] ?? expect.unreachable("no case delivers a past Rule");
-const pastHeld = Bun.spawnSync(["git", "cat-file", "-e", `${past.commit}^{commit}`], { cwd: REPO }).exitCode === 0;
 
-test.skipIf(!pastHeld)(
-  skipReason(
-    "it reads the Rule out of a past commit, so it runs only where that commit exists",
-    "the test-first arm injects prove-it-works as it read with the failing test first, which the current arm does not",
-  ),
+test(
+  "it reads the Rule as it read at a past commit from the fixture the tree holds, which the current arm does not match",
   async () => {
-    const then = await valueOf(carriageAt(REPO, past.of, past.commit));
+    const then = await valueOf(carriageOfFixture(REPO, past.of, past.fixture));
     expect(then).toContain("the failing test first and the fix on top");
     expect(then).not.toBe(await valueOf(carriageOf(REPO, "rule", past.of)));
   },
