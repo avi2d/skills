@@ -6,7 +6,7 @@ type Delivery =
   | { kind: "rule"; references: readonly string[] }
   | { kind: "reference"; alongside?: readonly string[] }
   | { kind: "carried" }
-  | { kind: "rule-as-of"; of: string; commit: string };
+  | { kind: "rule-as-of"; of: string; fixture: string };
 
 type HiddenVerifier = Verifier & { handFix: Readonly<Record<string, string>>; wrongFix: Readonly<Record<string, string>> };
 

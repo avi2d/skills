@@ -88,7 +88,7 @@ test("a Reference case ablates the Reference and the References it names alongsi
   const split = { rule: "unslop", delivery: { kind: "reference", alongside: ["punctuation"] } } as const;
   expect(delivered(split, "injected")).toEqual({ carried: undefined, references: ["unslop", "punctuation"] });
   expect(delivered(split, "withheld")).toEqual({ carried: undefined, references: [] });
-  const past = { rule: "prove-it-works-test-first", delivery: { kind: "rule-as-of", of: "prove-it-works", commit: "ca24440" } } as const;
+  const past = { rule: "prove-it-works-test-first", delivery: { kind: "rule-as-of", of: "prove-it-works", fixture: "evals/past-rules/prove-it-works-ca24440/SKILL.md" } } as const;
   expect(delivered(past, "injected")).toEqual({ carried: "rule", references: [] });
   expect(delivered(past, "withheld")).toEqual({ carried: undefined, references: [] });
 });

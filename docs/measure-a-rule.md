@@ -87,7 +87,7 @@ To add a case:
    It also holds a hand fix the tests pass and a plausible wrong fix they fail.
    `tests/e2e/eval-verifier.test.ts` checks that every verifier fails its unfixed seed and its wrong fix, and passes its hand fix.
 1. To measure a Rule's text at a past commit, file the case under its own name with a `rule-as-of` delivery.
-   The delivery names the Rule and the commit.
+   The delivery names the Rule and the fixture that holds its text as it read at that commit.
 1. Add the file's cases to `CASES` in `evals/cases/index.ts`.
 1. If no judge fits, write one as a program over the run's transcript, its changed files, its commits and what the case's generator produces from them, with a test that watches it fail and pass.
    A judge that parses TypeScript goes in `evals/typescript-judges.ts`, because `src/` may not import the parser, a devDependency.

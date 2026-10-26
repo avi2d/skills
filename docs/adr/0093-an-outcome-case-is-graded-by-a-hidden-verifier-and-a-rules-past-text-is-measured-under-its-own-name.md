@@ -22,12 +22,12 @@ A case can carry a hidden verifier: behavioural tests written from the task stat
 The tests reach the sandbox only after the run's changes are read, and the run passes only when the command exits 0.
 Whether the run wrote a test, and how many turns it took, are recorded with the run and never judged.
 
-A case can deliver a Rule as it read at a past commit, read with `git show`, and is then filed under a name of its own.
+A case can deliver a Rule as it read at a past commit, from a fixture taken with `git show`, and is then filed under a name of its own.
 That name gets its own two-arm comparison against the Rule withheld, so the plan, the tally and the sweep page stay as they were.
-`prove-it-works-test-first` is `prove-it-works` at `ca24440`, the commit before 0091.
+`prove-it-works-test-first` is `prove-it-works` as it read at `ca24440`, the commit before 0091, held as a fixture in `evals/past-rules/`.
 
 ## Consequences
 
 Each comparison of a past text against the current one needs two sweeps, each with its own withheld arm, so the no-rule arm is run twice and can be pooled.
-A Rule moved since the commit is not found, because the past text is looked up at the Rule's current path.
+A Rule moved since the commit does not change the past text, because the text is a fixture in the tree.
 A verifier that cannot fail is caught before it is trusted, because a test runs every verifier on its unfixed seed and on its hand fix.

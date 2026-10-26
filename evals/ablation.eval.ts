@@ -5,7 +5,7 @@ import { inject } from "vitest";
 import { createHarness, createJudge, describeEval, type TranscriptEvent } from "vitest-evals";
 import { bodyDir, type Kind } from "../src/bodies/bodies";
 import { sweepOf, type Cell, type Spend, type Verdict } from "../src/eval/ablation";
-import { armRun, carriageAt, carriageOf, referenceOf, type Agent, type ArmRun } from "../src/eval/eval-pi";
+import { armRun, carriageOf, carriageOfFixture, referenceOf, type Agent, type ArmRun } from "../src/eval/eval-pi";
 import { stalest, sweepRecords } from "../src/eval/eval-sweeps";
 import type { Transcript } from "../src/eval/eval-transcript";
 import { platform } from "../src/platform/platform";
@@ -51,7 +51,7 @@ const carry = (kind: "rule" | "reference", names: readonly string[]) =>
 const carriages = new Map([
   ...(await carry("rule", injectedRules)),
   ...(await carry("reference", carriedReferences)),
-  ...(await Promise.all([...pastRules].map(async ([name, { of, commit }]) => [name, await runtime.runPromise(carriageAt(repo, of, commit))] as const))),
+  ...(await Promise.all([...pastRules].map(async ([name, { of, fixture }]) => [name, await runtime.runPromise(carriageOfFixture(repo, of, fixture))] as const))),
 ]);
 const references = new Map(await Promise.all(referenceNames.map(async (name) => [name, await runtime.runPromise(referenceOf(repo, name))] as const)));
 
