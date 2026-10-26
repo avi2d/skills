@@ -35,7 +35,7 @@ For a Rule case with References, both arms can load the named References as pi s
 For an offered Reference case, the injected arm can load that Reference without the Rule, while the withheld arm cannot.
 For a carried Reference case, the injected arm carries the Reference's text as it would a Rule's.
 Its withheld arm carries nothing, and neither arm can load a skill.
-For a past Rule, the injected arm carries the Rule as it read at the case's commit.
+For a past Rule, the injected arm carries the Rule as its fixture holds it.
 A case's hidden verifier never reaches the agent, because its files land in the sandbox only after the run's changes are read.
 
 ## Related topics
