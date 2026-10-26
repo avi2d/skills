@@ -1,0 +1,418 @@
+{
+  "startedAt": "2026-09-25T15:47:02Z",
+  "runId": "356bc030-6e1a-453b-a4f1-3f3dc8b4361f",
+  "commit": "69695df71ee80ba4bc8bca4d32af689e2b59dcf8",
+  "prose": {
+    "files": {
+      "rules/prove-it-works/SKILL.md": "cc064664daaf91c72fa984645c6b57ae0270f9515a910786b5fa0d296738a1e3"
+    },
+    "uncommitted": false
+  },
+  "model": "openai-codex/gpt-6-luna",
+  "thinking": "xhigh",
+  "repeats": 5,
+  "planned": 20,
+  "missing": [],
+  "runs": [
+    {
+      "rule": "prove-it-works",
+      "case": "verify-the-fix",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "checked-after-last-write",
+        "kind": "program",
+        "evidence": [
+          "`bun test` ran at step 9, after the last write at step 8"
+        ]
+      },
+      "spend": {
+        "seconds": 34,
+        "input": 7271,
+        "output": 909,
+        "cost": 0.0013198399999999999
+      }
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "verify-the-fix",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "checked-after-last-write",
+        "kind": "program",
+        "evidence": [
+          "no command matching /\\bbun\\s+(?:run\\s+)?test\\b/ ran after the last write, to src/cart.ts at step 1"
+        ]
+      },
+      "spend": {
+        "seconds": 14,
+        "input": 3835,
+        "output": 167,
+        "cost": 0.000467
+      }
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "reproduce-first",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "reproduced-before-fix",
+        "kind": "program",
+        "evidence": [
+          "`bun -e 'import { parseDuration } from \"./src/duration.ts\"; console.log(parseDuration(\"2m\"))' && bun test` showed /\\b2000\\b/ at step 5 on 2m in its invocation, before the first fix at step 8"
+        ]
+      },
+      "spend": {
+        "seconds": 38,
+        "input": 7457,
+        "output": 835,
+        "cost": 0.00130144
+      }
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "reproduce-first",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "reproduced-before-fix",
+        "kind": "program",
+        "evidence": [
+          "no command matching /\\b(?:bun|node|bunx|npx)\\b/ showed /\\b2000\\b/ on 2m before the first write to src/duration.ts at step 5"
+        ]
+      },
+      "spend": {
+        "seconds": 23,
+        "input": 7135,
+        "output": 479,
+        "cost": 0.0009837200000000002
+      }
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "verify-the-fix",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "checked-after-last-write",
+        "kind": "program",
+        "evidence": [
+          "no command matching /\\bbun\\s+(?:run\\s+)?test\\b/ ran after the last write, to src/cart.ts at step 7"
+        ]
+      },
+      "spend": {
+        "seconds": 24,
+        "input": 8175,
+        "output": 538,
+        "cost": 0.00117866
+      }
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "verify-the-fix",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "checked-after-last-write",
+        "kind": "program",
+        "evidence": [
+          "`bun test` ran at step 4, after the last write at step 2"
+        ]
+      },
+      "spend": {
+        "seconds": 23,
+        "input": 8283,
+        "output": 249,
+        "cost": 0.0009528000000000001
+      }
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "reproduce-first",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "reproduced-before-fix",
+        "kind": "program",
+        "evidence": [
+          "`bun -e 'import { parseDuration } from \"./src/duration.ts\"; console.log(parseDuration(\"2m\"))' && bun test` showed /\\b2000\\b/ at step 5 on 2m in its invocation, before the first fix at step 8"
+        ]
+      },
+      "spend": {
+        "seconds": 35,
+        "input": 7580,
+        "output": 792,
+        "cost": 0.00129224
+      }
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "reproduce-first",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "reproduced-before-fix",
+        "kind": "program",
+        "evidence": [
+          "no command matching /\\b(?:bun|node|bunx|npx)\\b/ showed /\\b2000\\b/ on 2m before the first write to src/duration.ts at step 5"
+        ]
+      },
+      "spend": {
+        "seconds": 20,
+        "input": 5982,
+        "output": 469,
+        "cost": 0.00086342
+      }
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "verify-the-fix",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "checked-after-last-write",
+        "kind": "program",
+        "evidence": [
+          "`bun test` ran at step 9, after the last write at step 8"
+        ]
+      },
+      "spend": {
+        "seconds": 38,
+        "input": 10217,
+        "output": 857,
+        "cost": 0.0016089199999999998
+      }
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "verify-the-fix",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "checked-after-last-write",
+        "kind": "program",
+        "evidence": [
+          "no command matching /\\bbun\\s+(?:run\\s+)?test\\b/ ran after the last write, to src/cart.ts at step 1"
+        ]
+      },
+      "spend": {
+        "seconds": 13,
+        "input": 3829,
+        "output": 161,
+        "cost": 0.0004634000000000001
+      }
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "reproduce-first",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "reproduced-before-fix",
+        "kind": "program",
+        "evidence": [
+          "`bun -e 'import { parseDuration } from \"./src/duration.ts\"; console.log(`parseDuration(\"2m\") = ${parseDuration(\"2m\")} ms`)'; bun test` showed /\\b2000\\b/ at step 5 on 2m in its invocation, before the first fix at step 8"
+        ]
+      },
+      "spend": {
+        "seconds": 38,
+        "input": 7748,
+        "output": 899,
+        "cost": 0.0013625400000000002
+      }
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "reproduce-first",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "reproduced-before-fix",
+        "kind": "program",
+        "evidence": [
+          "no command matching /\\b(?:bun|node|bunx|npx)\\b/ showed /\\b2000\\b/ on 2m before the first write to src/duration.ts at step 4"
+        ]
+      },
+      "spend": {
+        "seconds": 28,
+        "input": 9655,
+        "output": 466,
+        "cost": 0.0012292199999999998
+      }
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "verify-the-fix",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "checked-after-last-write",
+        "kind": "program",
+        "evidence": [
+          "`bun test && git diff --check && git diff -- src/cart.ts tests/cart.test.ts` ran at step 8, after the last write at step 7"
+        ]
+      },
+      "spend": {
+        "seconds": 25,
+        "input": 8247,
+        "output": 569,
+        "cost": 0.00120648
+      }
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "verify-the-fix",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "checked-after-last-write",
+        "kind": "program",
+        "evidence": [
+          "no command matching /\\bbun\\s+(?:run\\s+)?test\\b/ ran after the last write, to src/cart.ts at step 1"
+        ]
+      },
+      "spend": {
+        "seconds": 12,
+        "input": 3827,
+        "output": 148,
+        "cost": 0.00045670000000000004
+      }
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "reproduce-first",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "reproduced-before-fix",
+        "kind": "program",
+        "evidence": [
+          "`bun -e 'import { parseDuration } from \"./src/duration.ts\"; console.log(`parseDuration(\"2m\") = ${parseDuration(\"2m\")} ms`)' && bun test` showed /\\b2000\\b/ at step 5 on 2m in its invocation, before the first fix at step 8"
+        ]
+      },
+      "spend": {
+        "seconds": 31,
+        "input": 7600,
+        "output": 814,
+        "cost": 0.00130524
+      }
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "reproduce-first",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "reproduced-before-fix",
+        "kind": "program",
+        "evidence": [
+          "no command matching /\\b(?:bun|node|bunx|npx)\\b/ showed /\\b2000\\b/ on 2m before the first write to src/duration.ts at step 3"
+        ]
+      },
+      "spend": {
+        "seconds": 24,
+        "input": 9446,
+        "output": 371,
+        "cost": 0.00114546
+      }
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "verify-the-fix",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "checked-after-last-write",
+        "kind": "program",
+        "evidence": [
+          "`bun test` ran at step 8, after the last write at step 7"
+        ]
+      },
+      "spend": {
+        "seconds": 32,
+        "input": 10300,
+        "output": 725,
+        "cost": 0.0015461000000000001
+      }
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "verify-the-fix",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "checked-after-last-write",
+        "kind": "program",
+        "evidence": [
+          "no command matching /\\bbun\\s+(?:run\\s+)?test\\b/ ran after the last write, to src/cart.ts at step 1"
+        ]
+      },
+      "spend": {
+        "seconds": 12,
+        "input": 3832,
+        "output": 158,
+        "cost": 0.00046219999999999996
+      }
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "reproduce-first",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "reproduced-before-fix",
+        "kind": "program",
+        "evidence": [
+          "`bun -e 'import { parseDuration } from \"./src/duration.ts\"; console.log(parseDuration(\"2m\"))'` showed /\\b2000\\b/ at step 5 on 2m in its invocation, before the first fix at step 8"
+        ]
+      },
+      "spend": {
+        "seconds": 39,
+        "input": 7793,
+        "output": 784,
+        "cost": 0.00133514
+      }
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "reproduce-first",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "reproduced-before-fix",
+        "kind": "program",
+        "evidence": [
+          "no command matching /\\b(?:bun|node|bunx|npx)\\b/ showed /\\b2000\\b/ on 2m before the first write to src/duration.ts at step 5"
+        ]
+      },
+      "spend": {
+        "seconds": 21,
+        "input": 6566,
+        "output": 505,
+        "cost": 0.00095518
+      }
+    }
+  ]
+}

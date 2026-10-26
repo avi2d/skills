@@ -1,0 +1,1107 @@
+{
+  "startedAt": "2026-10-11T12:23:05Z",
+  "runId": "aa66eea2-5792-4249-afff-c11f1584de75",
+  "commit": "3d96c44050c8639c52dddafa7a9cad82ccf77302",
+  "prose": {
+    "files": {
+      "library/writing/references/technical-writing/SKILL.md": "061d6b937b4a2d40a7b242bd3736aff5780797970407bdbe7344ae80e4b9dfb6"
+    },
+    "uncommitted": false
+  },
+  "model": "opencode-go/muse-spark-1.3-contributor",
+  "thinking": "high",
+  "repeats": 5,
+  "planned": 40,
+  "missing": [],
+  "runs": [
+    {
+      "rule": "technical-writing",
+      "case": "en-readme",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the technical-writing asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 25,
+        "turns": 5,
+        "input": 6080,
+        "output": 2928,
+        "cacheRead": 18372,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.001230344,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "technical-writing",
+      "case": "en-readme",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "a heading names a thing rather than the task: ## Installing Ledger",
+          "a heading names a thing rather than the task: ## Verifying the Checkout",
+          "a heading in title case: ## Verifying the Checkout"
+        ]
+      },
+      "spend": {
+        "seconds": 7,
+        "turns": 3,
+        "input": 2198,
+        "output": 613,
+        "cacheRead": 4322,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.00035104400000000006,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "technical-writing",
+      "case": "ru-readme",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the technical-writing asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 25,
+        "turns": 6,
+        "input": 5255,
+        "output": 2878,
+        "cacheRead": 22325,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.00114575,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "technical-writing",
+      "case": "ru-readme",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "a heading names a thing rather than the task: ## Установка",
+          "a heading names a thing rather than the task: ## Проверка рабочей копии"
+        ]
+      },
+      "spend": {
+        "seconds": 8,
+        "turns": 3,
+        "input": 2334,
+        "output": 725,
+        "cacheRead": 4322,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.000387044,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "technical-writing",
+      "case": "en-docs",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the technical-writing asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 152,
+        "turns": 22,
+        "input": 39596,
+        "output": 16811,
+        "cacheRead": 577093,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.008475986000000001,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "technical-writing",
+      "case": "en-docs",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "the page names no Diátaxis mode in kind front matter",
+          "a heading names a thing rather than the task: # Importing your bank's CSV export",
+          "talks about the page rather than the subject: This page shows you how to import a CSV export from your bank into Ledger.",
+          "a line holds 2 sentences: Download the CSV export from your bank's website first. Save it somewhere you can find it, such as your Code folder.",
+          "a line holds 2 sentences: Ledger adds each new transaction to Code and skips the ones it has imported before. You can safely re-run the import on the same file — duplicates won't be added twice.",
+          "a line holds 2 sentences: A file over 10 MB is refused. If your export is too large, split it by month and import each part separately:",
+          "a line holds 2 sentences: If Ledger says columns are missing, your bank's export uses different column names than Ledger expects. Add a column mapping for your bank's export in Code, then run the import again."
+        ]
+      },
+      "spend": {
+        "seconds": 16,
+        "turns": 8,
+        "input": 4277,
+        "output": 1391,
+        "cacheRead": 18455,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.00074281,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "technical-writing",
+      "case": "ru-docs",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the technical-writing asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 128,
+        "turns": 18,
+        "input": 39735,
+        "output": 13905,
+        "cacheRead": 316545,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.00738759,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "technical-writing",
+      "case": "ru-docs",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "the page names no Diátaxis mode in kind front matter",
+          "a heading names a thing rather than the task: # Импорт CSV-выгрузки банка",
+          "talks about the page rather than the subject: Эта страница объясняет, как импортировать операции из банка в Ledger."
+        ]
+      },
+      "spend": {
+        "seconds": 12,
+        "turns": 4,
+        "input": 2899,
+        "output": 1050,
+        "cacheRead": 6739,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0005133780000000001,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "technical-writing",
+      "case": "en-readme",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the technical-writing asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 19,
+        "turns": 6,
+        "input": 7436,
+        "output": 2799,
+        "cacheRead": 24102,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0013516040000000002,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "technical-writing",
+      "case": "en-readme",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "a heading names a thing rather than the task: ## Installing Ledger",
+          "a heading names a thing rather than the task: ## Verifying the Checkout",
+          "a heading in title case: ## Verifying the Checkout"
+        ]
+      },
+      "spend": {
+        "seconds": 6,
+        "turns": 3,
+        "input": 2605,
+        "output": 496,
+        "cacheRead": 3810,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.00036732000000000003,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "technical-writing",
+      "case": "ru-readme",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the technical-writing asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 127,
+        "turns": 20,
+        "input": 43834,
+        "output": 16218,
+        "cacheRead": 503139,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.008633278000000001,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "technical-writing",
+      "case": "ru-readme",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "a heading names a thing rather than the task: ## Установка",
+          "a heading names a thing rather than the task: ## Проверка рабочей копии"
+        ]
+      },
+      "spend": {
+        "seconds": 11,
+        "turns": 5,
+        "input": 3618,
+        "output": 775,
+        "cacheRead": 8644,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0005340880000000002,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "technical-writing",
+      "case": "en-docs",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the technical-writing asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 154,
+        "turns": 18,
+        "input": 35603,
+        "output": 13728,
+        "cacheRead": 281217,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.006868334,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "technical-writing",
+      "case": "en-docs",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "the page names no Diátaxis mode in kind front matter",
+          "a heading names a thing rather than the task: # Importing a bank CSV export",
+          "talks about the page rather than the subject: This page explains how to import your bank's CSV export into Ledger.",
+          "a line holds 2 sentences: Download the CSV export from your bank's website first. Save it somewhere you can find it, such as your Downloads folder.",
+          "a line holds 2 sentences: Ledger adds each new transaction to Code and skips the ones it has imported before. You can safely re-import the same file — duplicates will not be added twice.",
+          "a line holds 2 sentences: A file over 10 MB is refused. Split it by month and import each part separately.",
+          "a line holds 2 sentences: The bank's export needs a column mapping in Code. Add a mapping for your bank's columns, then run the import again."
+        ]
+      },
+      "spend": {
+        "seconds": 11,
+        "turns": 5,
+        "input": 2934,
+        "output": 1077,
+        "cacheRead": 10180,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0005291600000000001,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "technical-writing",
+      "case": "ru-docs",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the technical-writing asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 127,
+        "turns": 23,
+        "input": 39826,
+        "output": 16903,
+        "cacheRead": 515510,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.008394219999999999,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "technical-writing",
+      "case": "ru-docs",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "the page names no Diátaxis mode in kind front matter",
+          "a heading names a thing rather than the task: # Импорт CSV-выгрузки банка",
+          "talks about the page rather than the subject: Эта страница объясняет, как импортировать CSV-выгрузку банка в Ledger.",
+          "a line holds 2 sentences: Файл больше 10 МБ не принимается. Такой файл надо разбить по месяцам и импортировать по частям."
+        ]
+      },
+      "spend": {
+        "seconds": 6,
+        "turns": 4,
+        "input": 3221,
+        "output": 1061,
+        "cacheRead": 6340,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0005469800000000001,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "technical-writing",
+      "case": "en-readme",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the technical-writing asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 36,
+        "turns": 11,
+        "input": 15325,
+        "output": 4796,
+        "cacheRead": 94314,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.002680328,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "technical-writing",
+      "case": "en-readme",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "a heading names a thing rather than the task: ## Installing Ledger",
+          "a heading names a thing rather than the task: ## Verifying the checkout"
+        ]
+      },
+      "spend": {
+        "seconds": 6,
+        "turns": 3,
+        "input": 2499,
+        "output": 456,
+        "cacheRead": 3810,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.00034872000000000006,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "technical-writing",
+      "case": "ru-readme",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the technical-writing asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 148,
+        "turns": 12,
+        "input": 23906,
+        "output": 9043,
+        "cacheRead": 122060,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.00444332,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "technical-writing",
+      "case": "ru-readme",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "a heading names a thing rather than the task: ## Установка",
+          "a heading names a thing rather than the task: ## Проверка рабочей копии",
+          "a line holds 2 sentences: Для установки зависимостей нужен Bun 1.2 или новее. Выполните:"
+        ]
+      },
+      "spend": {
+        "seconds": 6,
+        "turns": 3,
+        "input": 2214,
+        "output": 602,
+        "cacheRead": 4322,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0003504440000000001,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "technical-writing",
+      "case": "en-docs",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the technical-writing asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 110,
+        "turns": 16,
+        "input": 18679,
+        "output": 9154,
+        "cacheRead": 225695,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.00415009,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "technical-writing",
+      "case": "en-docs",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "the page names no Diátaxis mode in kind front matter",
+          "a heading names a thing rather than the task: # Importing your bank's CSV export",
+          "a line holds 2 sentences: A file over 10 MB is refused. Split it by month and import each part separately."
+        ]
+      },
+      "spend": {
+        "seconds": 8,
+        "turns": 4,
+        "input": 3026,
+        "output": 955,
+        "cacheRead": 7251,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0005081020000000001,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "technical-writing",
+      "case": "ru-docs",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the technical-writing asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 73,
+        "turns": 18,
+        "input": 45408,
+        "output": 15138,
+        "cacheRead": 340082,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.008248564,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "technical-writing",
+      "case": "ru-docs",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "the page names no Diátaxis mode in kind front matter",
+          "a heading names a thing rather than the task: # Импорт банковской выгрузки",
+          "a line holds 2 sentences: Файл больше 10 МБ не принимается. Разбейте его по месяцам и импортируйте по частям."
+        ]
+      },
+      "spend": {
+        "seconds": 8,
+        "turns": 4,
+        "input": 2990,
+        "output": 1011,
+        "cacheRead": 7251,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.000515702,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "technical-writing",
+      "case": "en-readme",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the technical-writing asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 25,
+        "turns": 5,
+        "input": 5702,
+        "output": 2943,
+        "cacheRead": 19396,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0011975920000000001,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "technical-writing",
+      "case": "en-readme",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "a heading names a thing rather than the task: ## Installing Ledger",
+          "a heading names a thing rather than the task: ## Verifying the checkout"
+        ]
+      },
+      "spend": {
+        "seconds": 8,
+        "turns": 4,
+        "input": 2215,
+        "output": 600,
+        "cacheRead": 6739,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.00035497800000000004,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "technical-writing",
+      "case": "ru-readme",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the technical-writing asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 68,
+        "turns": 14,
+        "input": 19401,
+        "output": 8781,
+        "cacheRead": 140477,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.003977254000000001,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "technical-writing",
+      "case": "ru-readme",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "a heading names a thing rather than the task: ## Установка",
+          "a heading names a thing rather than the task: ## Проверка рабочей копии"
+        ]
+      },
+      "spend": {
+        "seconds": 7,
+        "turns": 3,
+        "input": 2273,
+        "output": 657,
+        "cacheRead": 4322,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.000367344,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "technical-writing",
+      "case": "en-docs",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the technical-writing asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 99,
+        "turns": 21,
+        "input": 32207,
+        "output": 12146,
+        "cacheRead": 317140,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.006284180000000001,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "technical-writing",
+      "case": "en-docs",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "the page names no Diátaxis mode in kind front matter",
+          "a heading names a thing rather than the task: # Importing your bank's CSV export",
+          "talks about the page rather than the subject: This guide shows you how to import a CSV export from your bank into Ledger.",
+          "a line holds 2 sentences: **File too large:** A file over 10 MB is refused. Split it by month and import each part."
+        ]
+      },
+      "spend": {
+        "seconds": 7,
+        "turns": 4,
+        "input": 3113,
+        "output": 914,
+        "cacheRead": 6084,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.000506268,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "technical-writing",
+      "case": "ru-docs",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the technical-writing asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 155,
+        "turns": 19,
+        "input": 52009,
+        "output": 12982,
+        "cacheRead": 457059,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.008711418000000002,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "technical-writing",
+      "case": "ru-docs",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "the page names no Diátaxis mode in kind front matter",
+          "a heading names a thing rather than the task: # Импорт CSV-выгрузки банка в Ledger",
+          "talks about the page rather than the subject: Эта страница объясняет, как загрузить операции из банка в Ledger из CSV-файла.",
+          "a line holds 2 sentences: Скачайте CSV-выгрузку операций на сайте банка. Обычно это раздел «Выписка» или «История операций» с кнопкой «Скачать в CSV».",
+          "a line holds 2 sentences: Ledger добавляет каждую новую операцию в Code и пропускает те операции, которые уже были импортированы раньше. Поэтому повторный запуск импорта с тем же файлом безопасен: дубликаты не появятся."
+        ]
+      },
+      "spend": {
+        "seconds": 11,
+        "turns": 4,
+        "input": 3298,
+        "output": 1421,
+        "cacheRead": 6739,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0006274780000000001,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "technical-writing",
+      "case": "en-readme",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the technical-writing asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 23,
+        "turns": 5,
+        "input": 6088,
+        "output": 3188,
+        "cacheRead": 18884,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.001284168,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "technical-writing",
+      "case": "en-readme",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "a heading names a thing rather than the task: ## Installing Ledger",
+          "a heading names a thing rather than the task: ## Verifying the checkout"
+        ]
+      },
+      "spend": {
+        "seconds": 6,
+        "turns": 4,
+        "input": 2877,
+        "output": 591,
+        "cacheRead": 6739,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0004193780000000001,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "technical-writing",
+      "case": "ru-readme",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the technical-writing asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 74,
+        "turns": 11,
+        "input": 20905,
+        "output": 6760,
+        "cacheRead": 111722,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0036659440000000004,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "technical-writing",
+      "case": "ru-readme",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "a heading names a thing rather than the task: ## Установка",
+          "a heading names a thing rather than the task: ## Проверка рабочей копии",
+          "a line holds 2 sentences: Для установки зависимостей выполните Code. Требуется Bun 1.2 или новее.",
+          "a line holds 2 sentences: Для проверки рабочей копии выполните Code. Все тесты должны пройти."
+        ]
+      },
+      "spend": {
+        "seconds": 4,
+        "turns": 3,
+        "input": 912,
+        "output": 549,
+        "cacheRead": 5587,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.00021217400000000003,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "technical-writing",
+      "case": "en-docs",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the technical-writing asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 124,
+        "turns": 21,
+        "input": 36058,
+        "output": 16042,
+        "cacheRead": 506068,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.007826336000000001,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "technical-writing",
+      "case": "en-docs",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "the page names no Diátaxis mode in kind front matter",
+          "a heading names a thing rather than the task: # Importing a Bank CSV Export",
+          "a heading in title case: # Importing a Bank CSV Export",
+          "talks about the page rather than the subject: This guide shows how to import your bank's CSV export into Ledger.",
+          "a line holds 2 sentences: **File too large:** A file over 10 MB is refused. Split it by month and import each part separately."
+        ]
+      },
+      "spend": {
+        "seconds": 9,
+        "turns": 6,
+        "input": 3336,
+        "output": 940,
+        "cacheRead": 11573,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0005447459999999999,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "technical-writing",
+      "case": "ru-docs",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the technical-writing asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 74,
+        "turns": 15,
+        "input": 29895,
+        "output": 15010,
+        "cacheRead": 170015,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.006331529999999999,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "technical-writing",
+      "case": "ru-docs",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "the page names no Diátaxis mode in kind front matter",
+          "a heading names a thing rather than the task: # Импорт банковской выгрузки в Ledger",
+          "talks about the page rather than the subject: Эта страница объясняет, как импортировать CSV-выгрузку банка в Ledger."
+        ]
+      },
+      "spend": {
+        "seconds": 7,
+        "turns": 4,
+        "input": 2678,
+        "output": 856,
+        "cacheRead": 6739,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0004524780000000001,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    }
+  ]
+}

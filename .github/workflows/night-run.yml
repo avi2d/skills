@@ -1,0 +1,118 @@
+name: night-run
+
+on:
+  schedule:
+    - cron: "17 2 * * 2,4,6"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: night-run
+  cancel-in-progress: false
+
+jobs:
+  mutation:
+    timeout-minutes: 180
+    runs-on: ubuntu-latest
+    outputs:
+      ran: ${{ steps.window.outputs.ran }}
+    steps:
+      - run: echo "TMPDIR=$RUNNER_TEMP" >> "$GITHUB_ENV"
+      - uses: actions/checkout@v5
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: .bun-version
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .node-version
+      - run: bun install --frozen-lockfile
+      - run: bun run generate
+      # Recorded full runs take about 115 minutes.
+      - id: window
+        run: scripts/night-window.sh 115 mutation
+      - if: steps.window.outputs.ran == 'true'
+        timeout-minutes: ${{ fromJSON(steps.window.outputs.minutes || '150') }}
+        run: time bunx stryker run
+      - if: steps.window.outputs.ran == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: night-run-mutation
+          path: reports/mutation/mutation.json
+          retention-days: 1
+
+  tests:
+    runs-on: ${{ vars.CI_RUNS_ON || 'ubuntu-latest' }}
+    timeout-minutes: 180
+    outputs:
+      ran: ${{ steps.window.outputs.ran }}
+    steps:
+      - run: echo "TMPDIR=$RUNNER_TEMP" >> "$GITHUB_ENV"
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .node-version
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: .bun-version
+      - run: bun install --frozen-lockfile
+      - run: npm install -g @anthropic-ai/claude-code@2.1.280
+      - run: scripts/ci-sqlite3.sh
+      - run: scripts/ci-no-mistakes.sh
+      - id: window
+        run: scripts/night-window.sh 60 "the test tiers"
+      - if: steps.window.outputs.ran == 'true'
+        continue-on-error: true
+        run: bunx checks-test --tier=unit --junit=reports/night-run-tests/unit.xml
+      - if: steps.window.outputs.ran == 'true'
+        continue-on-error: true
+        run: bunx checks-test --tier=e2e --junit=reports/night-run-tests/e2e.xml
+      - if: steps.window.outputs.ran == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: night-run-tests
+          path: reports/night-run-tests/
+          retention-days: 1
+
+  report:
+    needs: [mutation, tests]
+    # Requiring ran would skip the report exactly when the run did nothing.
+    if: ${{ !cancelled() }}
+    runs-on: ${{ vars.CI_RUNS_ON || 'ubuntu-latest' }}
+    permissions:
+      contents: read
+      actions: read
+      issues: write
+    steps:
+      - uses: actions/checkout@v5
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: .bun-version
+      - run: bun install --frozen-lockfile
+      - if: needs.mutation.result == 'success' && needs.mutation.outputs.ran == 'true'
+        uses: actions/download-artifact@v4
+        with:
+          name: night-run-mutation
+          path: reports/mutation
+      - if: needs.tests.result == 'success' && needs.tests.outputs.ran == 'true'
+        uses: actions/download-artifact@v4
+        with:
+          name: night-run-tests
+          path: reports/night-run-tests
+      - if: needs.mutation.result == 'success' && needs.mutation.outputs.ran == 'true' || needs.tests.result == 'success' && needs.tests.outputs.ran == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bunx checks-night-run ${{ needs.mutation.result == 'success' && needs.mutation.outputs.ran == 'true' && '--mutation reports/mutation/mutation.json' || '' }} ${{ needs.tests.result == 'success' && needs.tests.outputs.ran == 'true' && '--tests reports/night-run-tests/unit.xml --tests reports/night-run-tests/e2e.xml' || '' }}
+      - if: needs.mutation.result == 'success' && needs.tests.result == 'success' && needs.mutation.outputs.ran != 'true' && needs.tests.outputs.ran != 'true'
+        run: echo "::notice::night window missed, so neither mutation nor the test tiers ran and there is nothing to file"
+      - if: "!(needs.mutation.result == 'success' && needs.mutation.outputs.ran == 'true' || needs.tests.result == 'success' && needs.tests.outputs.ran == 'true') && (needs.mutation.result != 'success' || needs.tests.result != 'success')"
+        run: echo "::notice::no reports available, so there is nothing to file"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: night-run
+          path: reports/night-run.json
+          if-no-files-found: ignore
+          retention-days: 90

@@ -1,0 +1,31 @@
+# Fix duplicate detection in `importRows` to normalize payee and amount
+
+## Summary
+Fixes duplicate-row detection in `importRows` (`src/import.ts`) so rows that are semantically identical but differ in formatting are correctly skipped as duplicates.
+
+Previously the dedup key was `row.raw`, so the same transaction imported twice with trivial formatting differences (e.g. `"Coffee Shop"` vs `" coffee shop "`, or `12.5` vs `12.50`) was treated as a new row and imported again.
+
+## Problem
+- Dedup key used the unnormalized raw row string (`row.raw`).
+- Re-imports / overlapping CSVs with inconsistent whitespace, payee casing, or amount formatting (`12.5` vs `12.50`) bypassed the `seen` check and created duplicates.
+
+## Changes
+- `src/import.ts` — `importRows()`:
+  - Changed dedup key from `row.raw` to a normalized key:
+    ```ts
+    [row.date, row.amount.toFixed(2), row.payee.trim().toLowerCase()].join("|")
+    ```
+  - This normalizes:
+    - `amount` to 2 decimal places via `toFixed(2)`
+    - `payee` via `trim().toLowerCase()`
+    - while keeping `date` as-is, joined with `|` to avoid collisions.
+- `test/import.test.ts`:
+  - Added test `"skips a row that differs only in spacing or case of the payee"` verifying `("2026-09-01", 12.5, "Coffee Shop")` and `("2026-09-01", 12.50, " coffee shop ")` dedup to a single kept row across calls sharing the same `seen` set.
+
+## Testing
+- New regression test covers the reported case: same date/amount with payee differing only in leading/trailing spacing and case is skipped on second import (`expect(again).toHaveLength(0)`).
+- Existing test `"skips a row seen before"` continues to pass (exact duplicates still skipped).
+
+## Notes / Follow-ups
+- No change to `seen` API (still `Set<string>`); note that keys stored in existing `seen` sets from before this change (based on `row.raw`) will not match new normalized keys.
+- Does not normalize `date` formatting or internal payee whitespace — could be added later if needed.

@@ -1,0 +1,986 @@
+{
+  "startedAt": "2026-10-10T07:22:27Z",
+  "runId": "3fcdb440-91eb-47c8-89b7-7206ea459935",
+  "commit": "510ebb8a6dda84895f9d3e6a1cbe2eaa7c7d2bbe",
+  "prose": {
+    "files": {
+      "library/writing/references/plain-sentences/SKILL.md": "7578e3a33c7048a2d2b99b6e9cf08432e3bebcf500018624d232d5fac88afdae"
+    },
+    "uncommitted": false
+  },
+  "model": "claude-bridge/claude-opus-5-5",
+  "thinking": "high",
+  "repeats": 5,
+  "planned": 40,
+  "missing": [],
+  "runs": [
+    {
+      "rule": "plain-sentences",
+      "case": "en-pr",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "plain-sentences",
+        "kind": "program",
+        "evidence": [
+          "two sentences in a row open with \"the key\": The key uses Code as it is."
+        ]
+      },
+      "spend": {
+        "seconds": 29,
+        "input": 10,
+        "output": 2156,
+        "cacheRead": 25247,
+        "cacheWrite": 2993,
+        "cacheWrite1h": 0,
+        "cost": 0.0631744,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-sentences",
+      "case": "en-pr",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "plain-sentences",
+        "kind": "program",
+        "evidence": [
+          "a sentence of 33 words, over the 25 the reference allows: Two different transactions on the same date, for the same amount, at the same payee (for example, two identical coffees in one day) now count as duplicates, and the second one is dropped.",
+          "an instruction that says please: Please confirm this trade-off is acceptable for the data we import."
+        ]
+      },
+      "spend": {
+        "seconds": 25,
+        "input": 8,
+        "output": 1678,
+        "cacheRead": 14326,
+        "cacheWrite": 2351,
+        "cacheWrite1h": 0,
+        "cost": 0.048212200000000004,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-sentences",
+      "case": "en-site",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-sentences",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-sentences asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 24,
+        "input": 6,
+        "output": 2036,
+        "cacheRead": 12662,
+        "cacheWrite": 2273,
+        "cacheWrite1h": 0,
+        "cost": 0.0546414,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-sentences",
+      "case": "en-site",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "plain-sentences",
+        "kind": "program",
+        "evidence": [
+          "a sentence of 33 words, over the 25 the reference allows: It works with exports from Sberbank, Tinkoff and Revolut as they are, and if you bank somewhere else you can still use it by setting up a column mapping for your bank's file."
+        ]
+      },
+      "spend": {
+        "seconds": 20,
+        "input": 8,
+        "output": 1246,
+        "cacheRead": 13986,
+        "cacheWrite": 1549,
+        "cacheWrite1h": 0,
+        "cost": 0.035494200000000004,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-sentences",
+      "case": "ru-pr",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-sentences",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-sentences asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 44,
+        "input": 10,
+        "output": 2559,
+        "cacheRead": 26634,
+        "cacheWrite": 3886,
+        "cacheWrite1h": 0,
+        "cost": 0.0759768,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-sentences",
+      "case": "ru-pr",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "plain-sentences",
+        "kind": "program",
+        "evidence": [
+          "a sentence of 26 words, over the 25 the reference allows: Две покупки в один день у одного получателя на одну и ту же сумму (например, два кофе по 12.50) дадут один ключ, и вторая будет отброшена."
+        ]
+      },
+      "spend": {
+        "seconds": 26,
+        "input": 8,
+        "output": 1928,
+        "cacheRead": 14885,
+        "cacheWrite": 2693,
+        "cacheWrite1h": 0,
+        "cost": 0.055034000000000007,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-sentences",
+      "case": "ru-site",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-sentences",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-sentences asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 31,
+        "input": 8,
+        "output": 2607,
+        "cacheRead": 19141,
+        "cacheWrite": 2832,
+        "cacheWrite1h": 0,
+        "cost": 0.0701602,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-sentences",
+      "case": "ru-site",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "plain-sentences",
+        "kind": "program",
+        "evidence": [
+          "a sentence of 29 words, over the 25 the reference allows: Ledger берёт выписку, которую вы скачиваете из интернет-банка в формате CSV, и сам переносит каждую операцию в файл учёта на вашем компьютере, так что перепечатывать их вручную не нужно."
+        ]
+      },
+      "spend": {
+        "seconds": 21,
+        "input": 8,
+        "output": 1631,
+        "cacheRead": 14430,
+        "cacheWrite": 2165,
+        "cacheWrite1h": 0,
+        "cost": 0.046363,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-sentences",
+      "case": "en-pr",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-sentences",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-sentences asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 21,
+        "input": 8,
+        "output": 1333,
+        "cacheRead": 18694,
+        "cacheWrite": 2234,
+        "cacheWrite1h": 0,
+        "cost": 0.04160080000000001,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-sentences",
+      "case": "en-pr",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "plain-sentences",
+        "kind": "program",
+        "evidence": [
+          "a sentence of 39 words, over the 25 the reference allows: Two separate purchases with the same date, amount and payee (for example two coffees on the same day) used to be kept if anything else on the raw line differed, such as a memo, reference number or running balance.",
+          "a passive sentence whose actor could lead it: Amounts with more than two decimal places are rounded by Code and can end up sharing a key."
+        ]
+      },
+      "spend": {
+        "seconds": 26,
+        "input": 8,
+        "output": 1944,
+        "cacheRead": 15151,
+        "cacheWrite": 2823,
+        "cacheWrite1h": 0,
+        "cost": 0.05605720000000001,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-sentences",
+      "case": "en-site",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-sentences",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-sentences asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 28,
+        "input": 6,
+        "output": 2519,
+        "cacheRead": 12728,
+        "cacheWrite": 2794,
+        "cacheWrite1h": 0,
+        "cost": 0.06691960000000001,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-sentences",
+      "case": "en-site",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-sentences",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-sentences asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 19,
+        "input": 10,
+        "output": 1068,
+        "cacheRead": 17843,
+        "cacheWrite": 1465,
+        "cacheWrite1h": 0,
+        "cost": 0.032293600000000006,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-sentences",
+      "case": "ru-pr",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-sentences",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-sentences asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 32,
+        "input": 8,
+        "output": 2792,
+        "cacheRead": 18523,
+        "cacheWrite": 3498,
+        "cacheWrite1h": 0,
+        "cost": 0.07706660000000001,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-sentences",
+      "case": "ru-pr",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "plain-sentences",
+        "kind": "program",
+        "evidence": [
+          "a sentence of 26 words, over the 25 the reference allows: Из-за этого одна и та же операция, которая пришла повторно с другими пробелами или в другом регистре в имени получателя (например, Code и Code), импортировалась дважды.",
+          "a sentence of 28 words, over the 25 the reference allows: Если Code где-то сохраняется между импортами, старые ключи (сырые строки) не совпадут с новыми, и при первом импорте после выкатки уже загруженные операции могут попасть в данные повторно.",
+          "a sentence of 26 words, over the 25 the reference allows: В тесте суммы Code и Code — это одно и то же число в JS, так что нормализацию суммы через Code тест на самом деле не проверяет."
+        ]
+      },
+      "spend": {
+        "seconds": 27,
+        "input": 8,
+        "output": 2058,
+        "cacheRead": 15098,
+        "cacheWrite": 2840,
+        "cacheWrite1h": 0,
+        "cost": 0.0584116,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-sentences",
+      "case": "ru-site",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-sentences",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-sentences asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 24,
+        "input": 6,
+        "output": 1779,
+        "cacheRead": 12788,
+        "cacheWrite": 1990,
+        "cacheWrite1h": 0,
+        "cost": 0.048111600000000004,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-sentences",
+      "case": "ru-site",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-sentences",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-sentences asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 15,
+        "input": 6,
+        "output": 1098,
+        "cacheRead": 10230,
+        "cacheWrite": 1530,
+        "cacheWrite1h": 0,
+        "cost": 0.03168,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-sentences",
+      "case": "en-pr",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "plain-sentences",
+        "kind": "program",
+        "evidence": [
+          "two sentences in a row open with \"the test\": The test expects Code to keep the first row and to skip the second row."
+        ]
+      },
+      "spend": {
+        "seconds": 27,
+        "input": 10,
+        "output": 1905,
+        "cacheRead": 25056,
+        "cacheWrite": 2839,
+        "cacheWrite1h": 0,
+        "cost": 0.05734620000000001,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-sentences",
+      "case": "en-pr",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "plain-sentences",
+        "kind": "program",
+        "evidence": [
+          "a sentence of 26 words, over the 25 the reference allows: If the same transaction came back with different formatting, like extra spaces or a change in capitalisation in the payee, it got imported a second time."
+        ]
+      },
+      "spend": {
+        "seconds": 25,
+        "input": 8,
+        "output": 1640,
+        "cacheRead": 14185,
+        "cacheWrite": 2295,
+        "cacheWrite1h": 0,
+        "cost": 0.04714400000000001,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-sentences",
+      "case": "en-site",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-sentences",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-sentences asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 24,
+        "input": 6,
+        "output": 2225,
+        "cacheRead": 12737,
+        "cacheWrite": 2498,
+        "cacheWrite1h": 0,
+        "cost": 0.05956140000000001,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-sentences",
+      "case": "en-site",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-sentences",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-sentences asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 20,
+        "input": 8,
+        "output": 1446,
+        "cacheRead": 13698,
+        "cacheWrite": 1779,
+        "cacheWrite1h": 0,
+        "cost": 0.0405866,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-sentences",
+      "case": "ru-pr",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-sentences",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-sentences asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 21,
+        "input": 6,
+        "output": 1307,
+        "cacheRead": 13239,
+        "cacheWrite": 2058,
+        "cacheWrite1h": 0,
+        "cost": 0.039101800000000006,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-sentences",
+      "case": "ru-pr",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "plain-sentences",
+        "kind": "program",
+        "evidence": [
+          "a sentence of 27 words, over the 25 the reference allows: Две разные покупки в один день у одного получателя на одну и ту же сумму (например, два кофе по 12.50) дадут одинаковый ключ, и вторая будет отброшена.",
+          "a sentence of 28 words, over the 25 the reference allows: Если Code где-то сохраняется между запусками, старые ключи (сырые строки) не совпадут с новыми, и при первом импорте после обновления уже загруженные строки могут попасть в журнал повторно."
+        ]
+      },
+      "spend": {
+        "seconds": 26,
+        "input": 8,
+        "output": 1869,
+        "cacheRead": 14931,
+        "cacheWrite": 2607,
+        "cacheWrite1h": 0,
+        "cost": 0.05343320000000001,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-sentences",
+      "case": "ru-site",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-sentences",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-sentences asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 21,
+        "input": 6,
+        "output": 1885,
+        "cacheRead": 12796,
+        "cacheWrite": 2141,
+        "cacheWrite1h": 0,
+        "cost": 0.050988200000000004,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-sentences",
+      "case": "ru-site",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-sentences",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-sentences asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 21,
+        "input": 10,
+        "output": 1315,
+        "cacheRead": 19136,
+        "cacheWrite": 2510,
+        "cacheWrite1h": 0,
+        "cost": 0.042717200000000004,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-sentences",
+      "case": "en-pr",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-sentences",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-sentences asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 31,
+        "input": 10,
+        "output": 1824,
+        "cacheRead": 25085,
+        "cacheWrite": 2766,
+        "cacheWrite1h": 0,
+        "cost": 0.055367,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-sentences",
+      "case": "en-pr",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "plain-sentences",
+        "kind": "program",
+        "evidence": [
+          "a sentence of 29 words, over the 25 the reference allows: If the same transaction showed up with small formatting differences, such as extra spaces around the payee, a change in case, or Code vs Code, it was imported twice.",
+          "a sentence of 30 words, over the 25 the reference allows: Two separate transactions on the same date with the same amount and payee (for example, two coffees on one day) produce the same key, so only the first is kept."
+        ]
+      },
+      "spend": {
+        "seconds": 26,
+        "input": 8,
+        "output": 1947,
+        "cacheRead": 14505,
+        "cacheWrite": 2703,
+        "cacheWrite1h": 0,
+        "cost": 0.05538800000000001,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-sentences",
+      "case": "en-site",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-sentences",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-sentences asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 26,
+        "input": 6,
+        "output": 2300,
+        "cacheRead": 12715,
+        "cacheWrite": 2632,
+        "cacheWrite1h": 0,
+        "cost": 0.061727000000000004,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-sentences",
+      "case": "en-site",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "plain-sentences",
+        "kind": "program",
+        "evidence": [
+          "a sentence of 37 words, over the 25 the reference allows: Ledger takes the CSV file your bank already lets you export and adds each transaction to a ledger file on your own computer, so your books stay up to date without you copying figures in by hand.",
+          "a sentence of 27 words, over the 25 the reference allows: It works with exports from Sberbank, Tinkoff and Revolut as they come; for other banks, you add a column mapping that tells Ledger which column is which.",
+          "a sentence of 31 words, over the 25 the reference allows: There's no account to create, nothing is uploaded anywhere, and there's no subscription: Ledger is free and open source under the MIT licence, and your financial data never leaves your machine."
+        ]
+      },
+      "spend": {
+        "seconds": 24,
+        "input": 10,
+        "output": 1334,
+        "cacheRead": 18013,
+        "cacheWrite": 1672,
+        "cacheWrite1h": 0,
+        "cost": 0.038682600000000004,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-sentences",
+      "case": "ru-pr",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-sentences",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-sentences asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 24,
+        "input": 6,
+        "output": 2121,
+        "cacheRead": 13241,
+        "cacheWrite": 2840,
+        "cacheWrite1h": 0,
+        "cost": 0.0592922,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-sentences",
+      "case": "ru-pr",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-sentences",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-sentences asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 26,
+        "input": 8,
+        "output": 1536,
+        "cacheRead": 14957,
+        "cacheWrite": 2345,
+        "cacheWrite1h": 0,
+        "cost": 0.045468400000000006,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-sentences",
+      "case": "ru-site",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-sentences",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-sentences asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 25,
+        "input": 6,
+        "output": 2123,
+        "cacheRead": 12790,
+        "cacheWrite": 2377,
+        "cacheWrite1h": 0,
+        "cost": 0.056927000000000005,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-sentences",
+      "case": "ru-site",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-sentences",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-sentences asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 17,
+        "input": 6,
+        "output": 1428,
+        "cacheRead": 10218,
+        "cacheWrite": 1962,
+        "cacheWrite1h": 0,
+        "cost": 0.040437600000000004,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-sentences",
+      "case": "en-pr",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-sentences",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-sentences asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 33,
+        "input": 8,
+        "output": 2166,
+        "cacheRead": 18722,
+        "cacheWrite": 3036,
+        "cacheWrite1h": 0,
+        "cost": 0.06227640000000001,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-sentences",
+      "case": "en-pr",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "plain-sentences",
+        "kind": "program",
+        "evidence": [
+          "a sentence of 27 words, over the 25 the reference allows: Two separate purchases on the same day, for the same amount, at the same payee (two coffees, say) now produce one key, so the second is skipped."
+        ]
+      },
+      "spend": {
+        "seconds": 26,
+        "input": 8,
+        "output": 1608,
+        "cacheRead": 14925,
+        "cacheWrite": 2502,
+        "cacheWrite1h": 0,
+        "cost": 0.047687,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-sentences",
+      "case": "en-site",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-sentences",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-sentences asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 23,
+        "input": 6,
+        "output": 2089,
+        "cacheRead": 12693,
+        "cacheWrite": 2371,
+        "cacheWrite1h": 0,
+        "cost": 0.056197600000000014,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-sentences",
+      "case": "en-site",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "plain-sentences",
+        "kind": "program",
+        "evidence": [
+          "a sentence of 29 words, over the 25 the reference allows: It works with exports from Sberbank, Tinkoff and Revolut as they are; for other banks, you set up a column mapping that tells Ledger which column holds which detail."
+        ]
+      },
+      "spend": {
+        "seconds": 19,
+        "input": 10,
+        "output": 1260,
+        "cacheRead": 18748,
+        "cacheWrite": 1941,
+        "cacheWrite1h": 0,
+        "cost": 0.0386946,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-sentences",
+      "case": "ru-pr",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-sentences",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-sentences asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 92,
+        "input": 8,
+        "output": 1753,
+        "cacheRead": 18682,
+        "cacheWrite": 2352,
+        "cacheWrite1h": 0,
+        "cost": 0.050588400000000006,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-sentences",
+      "case": "ru-pr",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-sentences",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-sentences asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 42,
+        "input": 8,
+        "output": 1799,
+        "cacheRead": 14934,
+        "cacheWrite": 2650,
+        "cacheWrite1h": 0,
+        "cost": 0.05224880000000001,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-sentences",
+      "case": "ru-site",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-sentences",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-sentences asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 19,
+        "input": 6,
+        "output": 1521,
+        "cacheRead": 12772,
+        "cacheWrite": 1772,
+        "cacheWrite1h": 0,
+        "cost": 0.041858400000000004,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-sentences",
+      "case": "ru-site",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "plain-sentences",
+        "kind": "program",
+        "evidence": [
+          "a sentence of 27 words, over the 25 the reference allows: Ledger берёт выписку, которую вы скачиваете из банка в формате CSV, и переносит каждую операцию в ваш файл учёта, так что вручную их переписывать больше не нужно."
+        ]
+      },
+      "spend": {
+        "seconds": 20,
+        "input": 10,
+        "output": 1407,
+        "cacheRead": 18947,
+        "cacheWrite": 2284,
+        "cacheWrite1h": 0,
+        "cost": 0.04338940000000001,
+        "costEstimated": true
+      }
+    }
+  ]
+}

@@ -1,0 +1,236 @@
+{
+  "startedAt": "2026-09-25T16:56:28Z",
+  "runId": "c7d8501f-f0c8-4ec3-b590-8554cdaea850",
+  "commit": "ec5f88e923b4bfae9667274c22b7454a953618d2",
+  "prose": {
+    "files": {
+      "references/writing-for-agents/SKILL.md": "944b2341d763b95355df1af004c59fb0195b9ef7110d3990ded1bedfda61c08c"
+    },
+    "uncommitted": false
+  },
+  "model": "openai-codex/gpt-6-luna",
+  "thinking": "xhigh",
+  "repeats": 5,
+  "planned": 10,
+  "missing": [],
+  "runs": [
+    {
+      "rule": "writing-for-agents",
+      "case": "writing-for-agents-reference",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "bounded-review",
+        "kind": "program",
+        "evidence": [
+          "the step names an observable end to resolving test failures",
+          "## Test review",
+          "Before finishing any change, run the test suite using the repository's package scripts and resolve all failures."
+        ]
+      },
+      "spend": {
+        "seconds": 31,
+        "input": 8199,
+        "output": 635,
+        "cost": 0.0012807600000000001
+      }
+    },
+    {
+      "rule": "writing-for-agents",
+      "case": "writing-for-agents-reference",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "bounded-review",
+        "kind": "program",
+        "evidence": [
+          "the step has no observable completion criterion for test failures",
+          "## Test review",
+          "Before finishing a change, run the test suite and resolve any failures."
+        ]
+      },
+      "spend": {
+        "seconds": 18,
+        "input": 5775,
+        "output": 260,
+        "cost": 0.0007075
+      }
+    },
+    {
+      "rule": "writing-for-agents",
+      "case": "writing-for-agents-reference",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "bounded-review",
+        "kind": "program",
+        "evidence": [
+          "the step names an observable end to resolving test failures",
+          "## Test review",
+          "Before finishing a change, run the repository's test suite with its package script (`bun run test`). Resolve all failures and rerun the suite; finish only when it passes."
+        ]
+      },
+      "spend": {
+        "seconds": 30,
+        "input": 9078,
+        "output": 876,
+        "cost": 0.0014994000000000001
+      }
+    },
+    {
+      "rule": "writing-for-agents",
+      "case": "writing-for-agents-reference",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "bounded-review",
+        "kind": "program",
+        "evidence": [
+          "the step has no observable completion criterion for test failures",
+          "Use the repository's package scripts for checks. Before finishing a change, run the test suite and resolve any failures."
+        ]
+      },
+      "spend": {
+        "seconds": 12,
+        "input": 3794,
+        "output": 184,
+        "cost": 0.00047139999999999997
+      }
+    },
+    {
+      "rule": "writing-for-agents",
+      "case": "writing-for-agents-reference",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "bounded-review",
+        "kind": "program",
+        "evidence": [
+          "the step names an observable end to resolving test failures",
+          "## Test review",
+          "Before finishing any change, run the full test suite. Resolve all test failures, then rerun the suite and finish only when it passes."
+        ]
+      },
+      "spend": {
+        "seconds": 23,
+        "input": 6251,
+        "output": 691,
+        "cost": 0.00100644
+      }
+    },
+    {
+      "rule": "writing-for-agents",
+      "case": "writing-for-agents-reference",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "bounded-review",
+        "kind": "program",
+        "evidence": [
+          "the step names an observable end to resolving test failures",
+          "## Test review",
+          "Run the test suite before finishing any change, and resolve all test failures before considering the change complete."
+        ]
+      },
+      "spend": {
+        "seconds": 14,
+        "input": 3797,
+        "output": 178,
+        "cost": 0.00046870000000000006
+      }
+    },
+    {
+      "rule": "writing-for-agents",
+      "case": "writing-for-agents-reference",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "bounded-review",
+        "kind": "program",
+        "evidence": [
+          "the step names an observable end to resolving test failures",
+          "## Test review",
+          "Before finishing a change, run the test suite with `bun run test` and resolve any failures. Finish only when the suite passes."
+        ]
+      },
+      "spend": {
+        "seconds": 53,
+        "input": 7162,
+        "output": 509,
+        "cost": 0.00104238
+      }
+    },
+    {
+      "rule": "writing-for-agents",
+      "case": "writing-for-agents-reference",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "bounded-review",
+        "kind": "program",
+        "evidence": [
+          "the step has no observable completion criterion for test failures",
+          "## Test review",
+          "Before finishing a change, run the test suite (`bun test`) and resolve any failures. Do not finish while tests are failing."
+        ]
+      },
+      "spend": {
+        "seconds": 18,
+        "input": 7631,
+        "output": 397,
+        "cost": 0.0009616000000000001
+      }
+    },
+    {
+      "rule": "writing-for-agents",
+      "case": "writing-for-agents-reference",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "bounded-review",
+        "kind": "program",
+        "evidence": [
+          "the step names an observable end to resolving test failures",
+          "Use the repository's package scripts for checks. Before finishing a change, run the test suite and resolve all failures."
+        ]
+      },
+      "spend": {
+        "seconds": 27,
+        "input": 8331,
+        "output": 717,
+        "cost": 0.00129912
+      }
+    },
+    {
+      "rule": "writing-for-agents",
+      "case": "writing-for-agents-reference",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "bounded-review",
+        "kind": "program",
+        "evidence": [
+          "the step has no observable completion criterion for test failures",
+          "## Test review",
+          "Before finishing a change, run the test suite using the repository's package scripts and resolve any failures."
+        ]
+      },
+      "spend": {
+        "seconds": 18,
+        "input": 7427,
+        "output": 274,
+        "cost": 0.0008797000000000001
+      }
+    }
+  ]
+}

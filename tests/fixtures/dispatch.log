@@ -1,0 +1,24 @@
+2026-09-10T08:00:00.000Z 2026-09-10T08-00-00-000Z_01a0aaaa-0000-7000-8000-000000000000.jsonl inject unslop
+2026-09-10T08:00:00.000Z straddling-0000-4000-8000-000000000000 inject comment-discipline: repo-contains matched src/a.ts
+2026-09-18T10:00:00.000Z straddling-0000-4000-8000-000000000000 trim none: the session's model now comes from anthropic, which no Profile claims, keeping every rule and the tools it opened holding [read, bash]
+2026-09-18T10:00:00.000Z 2026-09-18T10-00-00-000Z_01a0bbbb-0000-7000-8000-000000000000.jsonl build 0123456789ab
+2026-09-18T10:00:01.000Z 2026-09-18T10-00-00-000Z_01a0bbbb-0000-7000-8000-000000000000.jsonl inject prove-it-works: always
+2026-09-18T10:00:01.000Z 2026-09-18T10-00-00-000Z_01a0bbbb-0000-7000-8000-000000000000.jsonl inject comment-discipline: repo-contains matched src/a.ts
+2026-09-18T11:00:00.000Z 2026-09-18T10-00-00-000Z_01a0bbbb-0000-7000-8000-000000000000.jsonl queue prove-it-works: compaction dropped it
+2026-09-18T11:00:00.000Z 2026-09-18T10-00-00-000Z_01a0bbbb-0000-7000-8000-000000000000.jsonl queue comment-discipline: compaction dropped it
+2026-09-18T11:05:00.000Z 2026-09-18T10-00-00-000Z_01a0bbbb-0000-7000-8000-000000000000.jsonl inject prove-it-works: compaction dropped it
+2026-09-19T09:00:00.000Z 11111111-2222-4333-8444-555555555555 broken dispatcher: /Users/someone is not a git repository, so repo-contains was not asked
+2026-09-19T09:00:00.000Z 11111111-2222-4333-8444-555555555555 inject prove-it-works: always
+2026-09-19T09:05:00.000Z 11111111-2222-4333-8444-555555555555 broken dispatcher: /Users/someone is not a git repository, so repo-contains was not asked
+2026-09-19T09:30:00.000Z 11111111-2222-4333-8444-555555555555 queue prove-it-works: compaction dropped it
+2026-09-19T09:31:00.000Z 11111111-2222-4333-8444-555555555555 dropped prove-it-works: the session ended before a prompt it could inject at
+2026-09-20T12:00:00.000Z unnamed-5ddf5c91 this context reached a prompt with no session start, so pi is running it as an in-process sub-agent
+2026-09-20T12:00:00.000Z unnamed-5ddf5c91 broken dispatcher: git ls-files failed in /Users/someone, and the fallback walk hit its cap of 20000 entries before every glob matched, so repo-contains answered from a partial tree
+2026-09-20T12:00:00.000Z unnamed-5ddf5c91 inject prove-it-works: always
+2026-09-20T12:05:00.000Z unnamed-5ddf5c91 deliver comment-discipline: file-matches matched notes/a.ts
+2026-09-20T13:00:00.000Z unnamed-5ddf5c91 broken dispatcher: this session's state could not be written down: EACCES: permission denied
+2026-09-21T08:00:00.000Z 2026-09-21T08-00-00-000Z_01a0cccc-0000-7000-8000-000000000000.jsonl inject unslop: always
+2026-09-21T08:00:00.000Z 2026-09-21T08-00-00-000Z_01a0cccc-0000-7000-8000-000000000000.jsonl invoke grill-with-docs at 1/2: grilling schedule(fn,
+date: Date) runs fn at date
+2026-09-22T08:00:00.000Z 2026-09-22T08-00-00-000Z_01a0dddd-0000-7000-8000-000000000000.jsonl broken git-hygiene: trigger names argument `command`, and bash was called with cmd
+2026-09-25T08:00:00.000Z after-the-window-0000-4000-8000-000000000000 inject prove-it-works: always

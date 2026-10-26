@@ -1,0 +1,418 @@
+{
+  "startedAt": "2026-09-25T17:51:20Z",
+  "runId": "3cf7ee4b-a3c6-41a5-a6bc-87593a0d4685",
+  "commit": "1950b2bb12b65360f3807c25c3187df80e2b37ae",
+  "prose": {
+    "files": {
+      "rules/right-size-the-work/SKILL.md": "18e1820522dbe0090c3633649afaa185a810a8257a1b69cefbdb002df2c4401d"
+    },
+    "uncommitted": false
+  },
+  "model": "openai-codex/gpt-6-sol",
+  "thinking": "high",
+  "repeats": 5,
+  "planned": 20,
+  "missing": [],
+  "runs": [
+    {
+      "rule": "right-size-the-work",
+      "case": "csv-migration",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-machinery-left",
+        "kind": "program",
+        "evidence": [
+          "the run did the task and left no new script, in a file or in package.json"
+        ]
+      },
+      "spend": {
+        "seconds": 21,
+        "input": 6446,
+        "output": 534,
+        "cost": 0.0193584
+      }
+    },
+    {
+      "rule": "right-size-the-work",
+      "case": "csv-migration",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-machinery-left",
+        "kind": "program",
+        "evidence": [
+          "the run did the task and left no new script, in a file or in package.json"
+        ]
+      },
+      "spend": {
+        "seconds": 44,
+        "input": 5242,
+        "output": 1516,
+        "cost": 0.027410399999999998
+      }
+    },
+    {
+      "rule": "right-size-the-work",
+      "case": "fixture-rename",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-machinery-left",
+        "kind": "program",
+        "evidence": [
+          "the run did the task and left no new script, in a file or in package.json"
+        ]
+      },
+      "spend": {
+        "seconds": 34,
+        "input": 3952,
+        "output": 960,
+        "cost": 0.0195008
+      }
+    },
+    {
+      "rule": "right-size-the-work",
+      "case": "fixture-rename",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-machinery-left",
+        "kind": "program",
+        "evidence": [
+          "the run did the task and left no new script, in a file or in package.json"
+        ]
+      },
+      "spend": {
+        "seconds": 30,
+        "input": 5413,
+        "output": 709,
+        "cost": 0.0192216
+      }
+    },
+    {
+      "rule": "right-size-the-work",
+      "case": "csv-migration",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-machinery-left",
+        "kind": "program",
+        "evidence": [
+          "the run did the task and left no new script, in a file or in package.json"
+        ]
+      },
+      "spend": {
+        "seconds": 20,
+        "input": 4766,
+        "output": 568,
+        "cost": 0.01598
+      }
+    },
+    {
+      "rule": "right-size-the-work",
+      "case": "csv-migration",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-machinery-left",
+        "kind": "program",
+        "evidence": [
+          "the run did the task and left no new script, in a file or in package.json"
+        ]
+      },
+      "spend": {
+        "seconds": 26,
+        "input": 2293,
+        "output": 933,
+        "cost": 0.015170399999999999
+      }
+    },
+    {
+      "rule": "right-size-the-work",
+      "case": "fixture-rename",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-machinery-left",
+        "kind": "program",
+        "evidence": [
+          "the run did the task and left no new script, in a file or in package.json"
+        ]
+      },
+      "spend": {
+        "seconds": 14,
+        "input": 4243,
+        "output": 214,
+        "cost": 0.0109076
+      }
+    },
+    {
+      "rule": "right-size-the-work",
+      "case": "fixture-rename",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-machinery-left",
+        "kind": "program",
+        "evidence": [
+          "the run did the task and left no new script, in a file or in package.json"
+        ]
+      },
+      "spend": {
+        "seconds": 29,
+        "input": 4277,
+        "output": 806,
+        "cost": 0.017970800000000002
+      }
+    },
+    {
+      "rule": "right-size-the-work",
+      "case": "csv-migration",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-machinery-left",
+        "kind": "program",
+        "evidence": [
+          "the run did the task and left no new script, in a file or in package.json"
+        ]
+      },
+      "spend": {
+        "seconds": 24,
+        "input": 4528,
+        "output": 449,
+        "cost": 0.0142628
+      }
+    },
+    {
+      "rule": "right-size-the-work",
+      "case": "csv-migration",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-machinery-left",
+        "kind": "program",
+        "evidence": [
+          "the run did the task and left no new script, in a file or in package.json"
+        ]
+      },
+      "spend": {
+        "seconds": 37,
+        "input": 3476,
+        "output": 1156,
+        "cost": 0.021225599999999997
+      }
+    },
+    {
+      "rule": "right-size-the-work",
+      "case": "fixture-rename",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-machinery-left",
+        "kind": "program",
+        "evidence": [
+          "the run did the task and left no new script, in a file or in package.json"
+        ]
+      },
+      "spend": {
+        "seconds": 26,
+        "input": 6300,
+        "output": 784,
+        "cost": 0.0214896
+      }
+    },
+    {
+      "rule": "right-size-the-work",
+      "case": "fixture-rename",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-machinery-left",
+        "kind": "program",
+        "evidence": [
+          "the run did the task and left no new script, in a file or in package.json"
+        ]
+      },
+      "spend": {
+        "seconds": 30,
+        "input": 5736,
+        "output": 785,
+        "cost": 0.020218
+      }
+    },
+    {
+      "rule": "right-size-the-work",
+      "case": "csv-migration",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-machinery-left",
+        "kind": "program",
+        "evidence": [
+          "the run did the task and left no new script, in a file or in package.json"
+        ]
+      },
+      "spend": {
+        "seconds": 22,
+        "input": 3957,
+        "output": 586,
+        "cost": 0.014772400000000002
+      }
+    },
+    {
+      "rule": "right-size-the-work",
+      "case": "csv-migration",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-machinery-left",
+        "kind": "program",
+        "evidence": [
+          "the run did the task and left no new script, in a file or in package.json"
+        ]
+      },
+      "spend": {
+        "seconds": 43,
+        "input": 4702,
+        "output": 1070,
+        "cost": 0.0214864
+      }
+    },
+    {
+      "rule": "right-size-the-work",
+      "case": "fixture-rename",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-machinery-left",
+        "kind": "program",
+        "evidence": [
+          "the run did the task and left no new script, in a file or in package.json"
+        ]
+      },
+      "spend": {
+        "seconds": 30,
+        "input": 4478,
+        "output": 883,
+        "cost": 0.019347600000000003
+      }
+    },
+    {
+      "rule": "right-size-the-work",
+      "case": "fixture-rename",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-machinery-left",
+        "kind": "program",
+        "evidence": [
+          "the run did the task and left no new script, in a file or in package.json"
+        ]
+      },
+      "spend": {
+        "seconds": 28,
+        "input": 4565,
+        "output": 811,
+        "cost": 0.0185456
+      }
+    },
+    {
+      "rule": "right-size-the-work",
+      "case": "csv-migration",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-machinery-left",
+        "kind": "program",
+        "evidence": [
+          "the run did the task and left no new script, in a file or in package.json"
+        ]
+      },
+      "spend": {
+        "seconds": 19,
+        "input": 3574,
+        "output": 404,
+        "cost": 0.0120584
+      }
+    },
+    {
+      "rule": "right-size-the-work",
+      "case": "csv-migration",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-machinery-left",
+        "kind": "program",
+        "evidence": [
+          "the run did the task and left no new script, in a file or in package.json"
+        ]
+      },
+      "spend": {
+        "seconds": 21,
+        "input": 3658,
+        "output": 567,
+        "cost": 0.013549199999999999
+      }
+    },
+    {
+      "rule": "right-size-the-work",
+      "case": "fixture-rename",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-machinery-left",
+        "kind": "program",
+        "evidence": [
+          "the run did the task and left no new script, in a file or in package.json"
+        ]
+      },
+      "spend": {
+        "seconds": 31,
+        "input": 5192,
+        "output": 808,
+        "cost": 0.019872
+      }
+    },
+    {
+      "rule": "right-size-the-work",
+      "case": "fixture-rename",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-machinery-left",
+        "kind": "program",
+        "evidence": [
+          "the run did the task and left no new script, in a file or in package.json"
+        ]
+      },
+      "spend": {
+        "seconds": 43,
+        "input": 4667,
+        "output": 1213,
+        "cost": 0.0239216
+      }
+    }
+  ]
+}

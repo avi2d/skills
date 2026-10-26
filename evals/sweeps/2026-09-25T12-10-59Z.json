@@ -1,0 +1,418 @@
+{
+  "startedAt": "2026-09-25T12:10:59Z",
+  "commit": "3c9c393d867516a11762807a4b5448d477c91415",
+  "prose": {
+    "files": {
+      "rules/typescript-best-practices/SKILL.md": "ae9f33018e717c849edfdf75a6c94ee03aaed61f10a6f81416f6676c53c0cb0d"
+    },
+    "uncommitted": false
+  },
+  "model": "opencode-go/muse-spark-1.3-contributor",
+  "thinking": "high",
+  "repeats": 5,
+  "planned": 20,
+  "missing": [],
+  "runs": [
+    {
+      "rule": "typescript-best-practices",
+      "case": "json-config",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-unchecked-claim",
+        "kind": "program",
+        "evidence": [
+          "2 changed TypeScript file(s) add no assertion, non-null claim or any: src/config.ts, tests/config.test.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 149,
+        "input": 16402,
+        "output": 10491,
+        "cost": 0.0039057500000000004
+      }
+    },
+    {
+      "rule": "typescript-best-practices",
+      "case": "json-config",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "no-unchecked-claim",
+        "kind": "program",
+        "evidence": [
+          "src/config.ts:9 makes an `as` assertion"
+        ]
+      },
+      "spend": {
+        "seconds": 25,
+        "input": 4707,
+        "output": 1761,
+        "cost": 0.000863876
+      }
+    },
+    {
+      "rule": "typescript-best-practices",
+      "case": "error-message",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-unchecked-claim",
+        "kind": "program",
+        "evidence": [
+          "2 changed TypeScript file(s) add no assertion, non-null claim or any: src/ledger-file.ts, tests/ledger-file.test.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 73,
+        "input": 8391,
+        "output": 4844,
+        "cost": 0.0018995040000000002
+      }
+    },
+    {
+      "rule": "typescript-best-practices",
+      "case": "error-message",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "no-unchecked-claim",
+        "kind": "program",
+        "evidence": [
+          "tests/ledger-file.test.ts:28 makes an `as` assertion",
+          "tests/ledger-file.test.ts:36 makes an `as` assertion"
+        ]
+      },
+      "spend": {
+        "seconds": 55,
+        "input": 7037,
+        "output": 4074,
+        "cost": 0.0015988100000000002
+      }
+    },
+    {
+      "rule": "typescript-best-practices",
+      "case": "json-config",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-unchecked-claim",
+        "kind": "program",
+        "evidence": [
+          "2 changed TypeScript file(s) add no assertion, non-null claim or any: src/config.ts, tests/config.test.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 69,
+        "input": 8971,
+        "output": 5016,
+        "cost": 0.0019901420000000003
+      }
+    },
+    {
+      "rule": "typescript-best-practices",
+      "case": "json-config",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "no-unchecked-claim",
+        "kind": "program",
+        "evidence": [
+          "src/config.ts:9 makes an `as` assertion"
+        ]
+      },
+      "spend": {
+        "seconds": 35,
+        "input": 4423,
+        "output": 1687,
+        "cost": 0.0008122580000000001
+      }
+    },
+    {
+      "rule": "typescript-best-practices",
+      "case": "error-message",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-unchecked-claim",
+        "kind": "program",
+        "evidence": [
+          "2 changed TypeScript file(s) add no assertion, non-null claim or any: src/ledger-file.ts, tests/ledger-file.test.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 111,
+        "input": 9913,
+        "output": 6296,
+        "cost": 0.0023344539999999997
+      }
+    },
+    {
+      "rule": "typescript-best-practices",
+      "case": "error-message",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "no-unchecked-claim",
+        "kind": "program",
+        "evidence": [
+          "tests/ledger-file.test.ts:28 makes an `as` assertion"
+        ]
+      },
+      "spend": {
+        "seconds": 41,
+        "input": 5354,
+        "output": 2460,
+        "cost": 0.0010783300000000002
+      }
+    },
+    {
+      "rule": "typescript-best-practices",
+      "case": "json-config",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-unchecked-claim",
+        "kind": "program",
+        "evidence": [
+          "2 changed TypeScript file(s) add no assertion, non-null claim or any: src/config.ts, tests/config.test.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 70,
+        "input": 12079,
+        "output": 5120,
+        "cost": 0.002340882
+      }
+    },
+    {
+      "rule": "typescript-best-practices",
+      "case": "json-config",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "no-unchecked-claim",
+        "kind": "program",
+        "evidence": [
+          "src/config.ts:9 makes an `as` assertion"
+        ]
+      },
+      "spend": {
+        "seconds": 59,
+        "input": 4122,
+        "output": 1544,
+        "cost": 0.0007525340000000001
+      }
+    },
+    {
+      "rule": "typescript-best-practices",
+      "case": "error-message",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-unchecked-claim",
+        "kind": "program",
+        "evidence": [
+          "2 changed TypeScript file(s) add no assertion, non-null claim or any: src/ledger-file.ts, tests/ledger-file.test.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 76,
+        "input": 7797,
+        "output": 4660,
+        "cost": 0.001786182
+      }
+    },
+    {
+      "rule": "typescript-best-practices",
+      "case": "error-message",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "no-unchecked-claim",
+        "kind": "program",
+        "evidence": [
+          "tests/ledger-file.test.ts:28 makes an `as` assertion"
+        ]
+      },
+      "spend": {
+        "seconds": 62,
+        "input": 6393,
+        "output": 3251,
+        "cost": 0.0013613920000000001
+      }
+    },
+    {
+      "rule": "typescript-best-practices",
+      "case": "json-config",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-unchecked-claim",
+        "kind": "program",
+        "evidence": [
+          "2 changed TypeScript file(s) add no assertion, non-null claim or any: src/config.ts, tests/config.test.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 143,
+        "input": 12267,
+        "output": 9055,
+        "cost": 0.0031774320000000004
+      }
+    },
+    {
+      "rule": "typescript-best-practices",
+      "case": "json-config",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "no-unchecked-claim",
+        "kind": "program",
+        "evidence": [
+          "src/config.ts:9 makes an `as` assertion"
+        ]
+      },
+      "spend": {
+        "seconds": 22,
+        "input": 4354,
+        "output": 1557,
+        "cost": 0.0007788460000000002
+      }
+    },
+    {
+      "rule": "typescript-best-practices",
+      "case": "error-message",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-unchecked-claim",
+        "kind": "program",
+        "evidence": [
+          "2 changed TypeScript file(s) add no assertion, non-null claim or any: src/ledger-file.ts, tests/ledger-file.test.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 121,
+        "input": 13036,
+        "output": 7233,
+        "cost": 0.002997754
+      }
+    },
+    {
+      "rule": "typescript-best-practices",
+      "case": "error-message",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "no-unchecked-claim",
+        "kind": "program",
+        "evidence": [
+          "tests/ledger-file.test.ts:28 makes an `as` assertion"
+        ]
+      },
+      "spend": {
+        "seconds": 34,
+        "input": 5408,
+        "output": 2556,
+        "cost": 0.0011039540000000003
+      }
+    },
+    {
+      "rule": "typescript-best-practices",
+      "case": "json-config",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-unchecked-claim",
+        "kind": "program",
+        "evidence": [
+          "2 changed TypeScript file(s) add no assertion, non-null claim or any: src/config.ts, tests/config.test.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 289,
+        "input": 23644,
+        "output": 19064,
+        "cost": 0.006409634000000001
+      }
+    },
+    {
+      "rule": "typescript-best-practices",
+      "case": "json-config",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "no-unchecked-claim",
+        "kind": "program",
+        "evidence": [
+          "src/config.ts:9 makes an `as` assertion"
+        ]
+      },
+      "spend": {
+        "seconds": 33,
+        "input": 5015,
+        "output": 1833,
+        "cost": 0.0009345560000000001
+      }
+    },
+    {
+      "rule": "typescript-best-practices",
+      "case": "error-message",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-unchecked-claim",
+        "kind": "program",
+        "evidence": [
+          "2 changed TypeScript file(s) add no assertion, non-null claim or any: src/ledger-file.ts, tests/ledger-file.test.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 154,
+        "input": 14613,
+        "output": 9302,
+        "cost": 0.0035107500000000004
+      }
+    },
+    {
+      "rule": "typescript-best-practices",
+      "case": "error-message",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "no-unchecked-claim",
+        "kind": "program",
+        "evidence": [
+          "tests/ledger-file.test.ts:28 makes an `as` assertion"
+        ]
+      },
+      "spend": {
+        "seconds": 33,
+        "input": 8556,
+        "output": 2453,
+        "cost": 0.0013818000000000003
+      }
+    }
+  ]
+}

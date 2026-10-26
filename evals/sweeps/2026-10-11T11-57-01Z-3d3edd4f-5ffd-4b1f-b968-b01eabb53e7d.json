@@ -1,0 +1,438 @@
+{
+  "startedAt": "2026-10-11T11:57:01Z",
+  "runId": "3d3edd4f-5ffd-4b1f-b968-b01eabb53e7d",
+  "commit": "14f323e0dfea0e69e14a3190022ad1c9531cde35",
+  "prose": {
+    "files": {
+      "library/writing/references/unslop/SKILL.md": "9f4aaec146e6adc292e1c72131a2fa29df9e66f15215e78716c36f67c480ddd6",
+      "library/writing/references/technical-writing/SKILL.md": "40cd3cd13fdf99dc11cce650ee27173bf5eca64372a5dc4acb6a1986eef93208",
+      "library/writing/references/plain-sentences/SKILL.md": "7578e3a33c7048a2d2b99b6e9cf08432e3bebcf500018624d232d5fac88afdae",
+      "library/writing/references/plain-words/SKILL.md": "54dafbac68e1bbe118e50c5aaa51d1a702aa1de60f75d34831d86b58ad01f918",
+      "library/writing/references/punctuation/SKILL.md": "08c581ef47c6bfaa5b19c278efc9bf2d2b8823a27d207c91afeba0b3316e3128"
+    },
+    "uncommitted": false
+  },
+  "model": "claude-bridge/claude-opus-5-5",
+  "thinking": "high",
+  "repeats": 2,
+  "planned": 16,
+  "missing": [],
+  "runs": [
+    {
+      "rule": "unslop",
+      "case": "copy-edit-overview",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-overview",
+        "kind": "program",
+        "evidence": [
+          "the import facts remain and the overview keeps none of the planted tells"
+        ]
+      },
+      "spend": {
+        "seconds": 35,
+        "turns": 5,
+        "input": 10,
+        "output": 2146,
+        "cacheRead": 37396,
+        "cacheWrite": 11447,
+        "cacheWrite1h": 0,
+        "cost": 0.1076742,
+        "costEstimated": true
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "unslop",
+      "case": "copy-edit-overview",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "plain-overview",
+        "kind": "program",
+        "evidence": [
+          "a heading in title case: # Importing Ledger Entries"
+        ]
+      },
+      "spend": {
+        "seconds": 18,
+        "turns": 4,
+        "input": 8,
+        "output": 704,
+        "cacheRead": 12282,
+        "cacheWrite": 1131,
+        "cacheWrite1h": 0,
+        "cost": 0.022223400000000004,
+        "costEstimated": true
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "unslop",
+      "case": "copy-edit-puff",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-puffed-overview",
+        "kind": "program",
+        "evidence": [
+          "the import facts remain and the overview keeps none of the planted tells"
+        ]
+      },
+      "spend": {
+        "seconds": 37,
+        "turns": 5,
+        "input": 10,
+        "output": 2383,
+        "cacheRead": 36885,
+        "cacheWrite": 11423,
+        "cacheWrite1h": 0,
+        "cost": 0.11219200000000001,
+        "costEstimated": true
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "unslop",
+      "case": "copy-edit-puff",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-puffed-overview",
+        "kind": "program",
+        "evidence": [
+          "the import facts remain and the overview keeps none of the planted tells"
+        ]
+      },
+      "spend": {
+        "seconds": 21,
+        "turns": 4,
+        "input": 8,
+        "output": 1220,
+        "cacheRead": 12379,
+        "cacheWrite": 1544,
+        "cacheWrite1h": 0,
+        "cost": 0.0346278,
+        "costEstimated": true
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "unslop",
+      "case": "ru-pr",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "unslop",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the unslop asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 34,
+        "turns": 5,
+        "input": 10,
+        "output": 2182,
+        "cacheRead": 21680,
+        "cacheWrite": 3740,
+        "cacheWrite1h": 0,
+        "cost": 0.066716,
+        "costEstimated": true
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "unslop",
+      "case": "ru-pr",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "unslop",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the unslop asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 27,
+        "turns": 4,
+        "input": 8,
+        "output": 1818,
+        "cacheRead": 12951,
+        "cacheWrite": 2301,
+        "cacheWrite1h": 0,
+        "cost": 0.0504872,
+        "costEstimated": true
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "unslop",
+      "case": "en-site-index",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "unslop",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the unslop asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 18,
+        "turns": 4,
+        "input": 8,
+        "output": 950,
+        "cacheRead": 16002,
+        "cacheWrite": 1697,
+        "cacheWrite1h": 0,
+        "cost": 0.030717400000000002,
+        "costEstimated": true
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "unslop",
+      "case": "en-site-index",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "unslop",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the unslop asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 17,
+        "turns": 3,
+        "input": 6,
+        "output": 995,
+        "cacheRead": 8798,
+        "cacheWrite": 1292,
+        "cacheWrite1h": 0,
+        "cost": 0.0281436,
+        "costEstimated": true
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "unslop",
+      "case": "copy-edit-overview",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-overview",
+        "kind": "program",
+        "evidence": [
+          "the import facts remain and the overview keeps none of the planted tells"
+        ]
+      },
+      "spend": {
+        "seconds": 41,
+        "turns": 6,
+        "input": 12,
+        "output": 2659,
+        "cacheRead": 48938,
+        "cacheWrite": 11595,
+        "cacheWrite1h": 0,
+        "cost": 0.1209906,
+        "costEstimated": true
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "unslop",
+      "case": "copy-edit-overview",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "plain-overview",
+        "kind": "program",
+        "evidence": [
+          "a heading in title case: # Importing Ledger Entries"
+        ]
+      },
+      "spend": {
+        "seconds": 17,
+        "turns": 4,
+        "input": 8,
+        "output": 733,
+        "cacheRead": 12780,
+        "cacheWrite": 1417,
+        "cacheWrite1h": 0,
+        "cost": 0.024333,
+        "costEstimated": true
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "unslop",
+      "case": "copy-edit-puff",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-puffed-overview",
+        "kind": "program",
+        "evidence": [
+          "the import facts remain and the overview keeps none of the planted tells"
+        ]
+      },
+      "spend": {
+        "seconds": 36,
+        "turns": 6,
+        "input": 12,
+        "output": 2261,
+        "cacheRead": 49480,
+        "cacheWrite": 11528,
+        "cacheWrite1h": 0,
+        "cost": 0.112804,
+        "costEstimated": true
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "unslop",
+      "case": "copy-edit-puff",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-puffed-overview",
+        "kind": "program",
+        "evidence": [
+          "the import facts remain and the overview keeps none of the planted tells"
+        ]
+      },
+      "spend": {
+        "seconds": 23,
+        "turns": 4,
+        "input": 8,
+        "output": 1278,
+        "cacheRead": 12402,
+        "cacheWrite": 1686,
+        "cacheWrite1h": 0,
+        "cost": 0.036502400000000004,
+        "costEstimated": true
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "unslop",
+      "case": "ru-pr",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "unslop",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the unslop asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 25,
+        "turns": 4,
+        "input": 8,
+        "output": 1555,
+        "cacheRead": 16176,
+        "cacheWrite": 2171,
+        "cacheWrite1h": 0,
+        "cost": 0.045222200000000004,
+        "costEstimated": true
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "unslop",
+      "case": "ru-pr",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "unslop",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the unslop asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 25,
+        "turns": 4,
+        "input": 8,
+        "output": 1707,
+        "cacheRead": 12883,
+        "cacheWrite": 2351,
+        "cacheWrite1h": 0,
+        "cost": 0.04850360000000001,
+        "costEstimated": true
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "unslop",
+      "case": "en-site-index",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "unslop",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the unslop asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 16,
+        "turns": 3,
+        "input": 6,
+        "output": 862,
+        "cacheRead": 11299,
+        "cacheWrite": 1325,
+        "cacheWrite1h": 0,
+        "cost": 0.0261488,
+        "costEstimated": true
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "unslop",
+      "case": "en-site-index",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "unslop",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the unslop asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 21,
+        "turns": 5,
+        "input": 10,
+        "output": 1071,
+        "cacheRead": 16955,
+        "cacheWrite": 1803,
+        "cacheWrite1h": 0,
+        "cost": 0.03386600000000001,
+        "costEstimated": true
+      },
+      "wroteTest": false
+    }
+  ]
+}

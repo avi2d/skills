@@ -1,0 +1,1064 @@
+{
+  "startedAt": "2026-10-11T11:52:12Z",
+  "runId": "34ed3a56-ad49-48e8-a1bf-01922c727513",
+  "commit": "14f323e0dfea0e69e14a3190022ad1c9531cde35",
+  "prose": {
+    "files": {
+      "library/writing/references/unslop/SKILL.md": "9f4aaec146e6adc292e1c72131a2fa29df9e66f15215e78716c36f67c480ddd6",
+      "library/writing/references/technical-writing/SKILL.md": "40cd3cd13fdf99dc11cce650ee27173bf5eca64372a5dc4acb6a1986eef93208",
+      "library/writing/references/plain-sentences/SKILL.md": "7578e3a33c7048a2d2b99b6e9cf08432e3bebcf500018624d232d5fac88afdae",
+      "library/writing/references/plain-words/SKILL.md": "54dafbac68e1bbe118e50c5aaa51d1a702aa1de60f75d34831d86b58ad01f918",
+      "library/writing/references/punctuation/SKILL.md": "08c581ef47c6bfaa5b19c278efc9bf2d2b8823a27d207c91afeba0b3316e3128"
+    },
+    "uncommitted": false
+  },
+  "model": "opencode-go/muse-spark-1.3-contributor",
+  "thinking": "high",
+  "repeats": 5,
+  "planned": 40,
+  "missing": [],
+  "runs": [
+    {
+      "rule": "unslop",
+      "case": "copy-edit-overview",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-overview",
+        "kind": "program",
+        "evidence": [
+          "the import facts remain and the overview keeps none of the planted tells"
+        ]
+      },
+      "spend": {
+        "seconds": 21,
+        "turns": 4,
+        "input": 8161,
+        "output": 2620,
+        "cacheRead": 14931,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.001369962,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "unslop",
+      "case": "copy-edit-overview",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "plain-overview",
+        "kind": "program",
+        "evidence": [
+          "a heading in title case: # Importing Ledger Entries",
+          "a dash, a parenthesis or a semicolon: Run  to load ledger.csv (the export from your bank)."
+        ]
+      },
+      "spend": {
+        "seconds": 11,
+        "turns": 6,
+        "input": 3163,
+        "output": 1348,
+        "cacheRead": 12597,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0006110940000000001,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "unslop",
+      "case": "copy-edit-puff",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-puffed-overview",
+        "kind": "program",
+        "evidence": [
+          "the import facts remain and the overview keeps none of the planted tells"
+        ]
+      },
+      "spend": {
+        "seconds": 19,
+        "turns": 5,
+        "input": 8463,
+        "output": 2631,
+        "cacheRead": 24004,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.001420508,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "unslop",
+      "case": "copy-edit-puff",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "plain-puffed-overview",
+        "kind": "program",
+        "evidence": [
+          "a heading in title case: # Ledger Overview",
+          "a passive sentence whose actor could lead it: Each transaction from ledger.csv is imported by running , and duplicates are skipped."
+        ]
+      },
+      "spend": {
+        "seconds": 17,
+        "turns": 7,
+        "input": 3112,
+        "output": 2059,
+        "cacheRead": 16550,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0007561,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "unslop",
+      "case": "ru-pr",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "unslop",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the unslop asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 10,
+        "turns": 4,
+        "input": 3236,
+        "output": 1041,
+        "cacheRead": 9299,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0005503980000000001,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "unslop",
+      "case": "ru-pr",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "unslop",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the unslop asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 7,
+        "turns": 4,
+        "input": 2719,
+        "output": 717,
+        "cacheRead": 6739,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.00042877800000000005,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "unslop",
+      "case": "en-site-index",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "unslop",
+        "kind": "program",
+        "evidence": [
+          "does not open on the mechanism: If you freelance, Ledger takes the CSV export from your bank and adds each transaction to a ledger file on your own computer, skipping anything already imported so re-importing the same export does not create duplicates."
+        ]
+      },
+      "spend": {
+        "seconds": 11,
+        "turns": 5,
+        "input": 3734,
+        "output": 1342,
+        "cacheRead": 11204,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0006642080000000001,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "unslop",
+      "case": "en-site-index",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "unslop",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the unslop asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 8,
+        "turns": 4,
+        "input": 2798,
+        "output": 960,
+        "cacheRead": 6739,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.00048527800000000007,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "unslop",
+      "case": "copy-edit-overview",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-overview",
+        "kind": "program",
+        "evidence": [
+          "the import facts remain and the overview keeps none of the planted tells"
+        ]
+      },
+      "spend": {
+        "seconds": 16,
+        "turns": 5,
+        "input": 8666,
+        "output": 2244,
+        "cacheRead": 23492,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0013623840000000001,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "unslop",
+      "case": "copy-edit-overview",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "plain-overview",
+        "kind": "program",
+        "evidence": [
+          "a heading in title case: # Importing Ledger Entries"
+        ]
+      },
+      "spend": {
+        "seconds": 13,
+        "turns": 6,
+        "input": 3112,
+        "output": 1089,
+        "cacheRead": 11573,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.000552146,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "unslop",
+      "case": "copy-edit-puff",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-puffed-overview",
+        "kind": "program",
+        "evidence": [
+          "the import facts remain and the overview keeps none of the planted tells"
+        ]
+      },
+      "spend": {
+        "seconds": 22,
+        "turns": 7,
+        "input": 8683,
+        "output": 3078,
+        "cacheRead": 47782,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.001579464,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "unslop",
+      "case": "copy-edit-puff",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "plain-puffed-overview",
+        "kind": "program",
+        "evidence": [
+          "a heading in title case: # Why Ledger Stands Out",
+          "an inline-header label: **Why it matters:** Clean books are the foundation for growth.",
+          "a dash, a parenthesis or a semicolon: Run  to import transactions from ledger.csv; duplicates are skipped."
+        ]
+      },
+      "spend": {
+        "seconds": 11,
+        "turns": 6,
+        "input": 4102,
+        "output": 1759,
+        "cacheRead": 12454,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0007869080000000001,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "unslop",
+      "case": "ru-pr",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "unslop",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the unslop asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 8,
+        "turns": 3,
+        "input": 3365,
+        "output": 854,
+        "cacheRead": 5346,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0005179920000000001,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "unslop",
+      "case": "ru-pr",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "unslop",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the unslop asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 7,
+        "turns": 3,
+        "input": 2658,
+        "output": 639,
+        "cacheRead": 4322,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.000402244,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "unslop",
+      "case": "en-site-index",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "unslop",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the unslop asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 13,
+        "turns": 4,
+        "input": 3213,
+        "output": 1468,
+        "cacheRead": 8787,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0006324740000000001,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "unslop",
+      "case": "en-site-index",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "unslop",
+        "kind": "program",
+        "evidence": [
+          "does not open on the mechanism: As a freelancer, Ledger takes the CSV file your bank exports and adds each transaction to a local ledger file on your own computer, so there is no account, upload, or subscription to deal with."
+        ]
+      },
+      "spend": {
+        "seconds": 13,
+        "turns": 5,
+        "input": 3503,
+        "output": 1185,
+        "cacheRead": 9156,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0006056120000000001,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "unslop",
+      "case": "copy-edit-overview",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-overview",
+        "kind": "program",
+        "evidence": [
+          "the import facts remain and the overview keeps none of the planted tells"
+        ]
+      },
+      "spend": {
+        "seconds": 25,
+        "turns": 5,
+        "input": 8663,
+        "output": 3670,
+        "cacheRead": 24516,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.001649332,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "unslop",
+      "case": "copy-edit-overview",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "plain-overview",
+        "kind": "program",
+        "evidence": [
+          "a heading in title case: # Importing Ledger Entries"
+        ]
+      },
+      "spend": {
+        "seconds": 7,
+        "turns": 5,
+        "input": 2615,
+        "output": 698,
+        "cacheRead": 8644,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.00041838800000000006,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "unslop",
+      "case": "copy-edit-puff",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-puffed-overview",
+        "kind": "program",
+        "evidence": [
+          "the import facts remain and the overview keeps none of the planted tells"
+        ]
+      },
+      "spend": {
+        "seconds": 23,
+        "turns": 5,
+        "input": 8472,
+        "output": 2950,
+        "cacheRead": 25028,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0014872560000000002,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "unslop",
+      "case": "copy-edit-puff",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "plain-puffed-overview",
+        "kind": "program",
+        "evidence": [
+          "a heading in title case: # Ledger Overview",
+          "a passive sentence whose actor could lead it: Each transaction from ledger.csv is imported by running , and duplicates are skipped."
+        ]
+      },
+      "spend": {
+        "seconds": 12,
+        "turns": 6,
+        "input": 3706,
+        "output": 1362,
+        "cacheRead": 11573,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0006661460000000002,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "unslop",
+      "case": "ru-pr",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "unslop",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the unslop asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 24,
+        "turns": 6,
+        "input": 4364,
+        "output": 2765,
+        "cacheRead": 20789,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.001030978,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "unslop",
+      "case": "ru-pr",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "unslop",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the unslop asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 6,
+        "turns": 3,
+        "input": 3187,
+        "output": 766,
+        "cacheRead": 4307,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.00048051400000000003,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "unslop",
+      "case": "en-site-index",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "unslop",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the unslop asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 18,
+        "turns": 5,
+        "input": 3962,
+        "output": 2184,
+        "cacheRead": 12228,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0008574560000000001,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "unslop",
+      "case": "en-site-index",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "unslop",
+        "kind": "program",
+        "evidence": [
+          "does not open on the mechanism: Ledger helps freelancers keep track of their money by reading the CSV file your bank exports and adding each transaction to a local ledger file, skipping any transaction it has already imported so the same export can be imported twice without duplicates."
+        ]
+      },
+      "spend": {
+        "seconds": 7,
+        "turns": 5,
+        "input": 3505,
+        "output": 1063,
+        "cacheRead": 8885,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0005808700000000001,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "unslop",
+      "case": "copy-edit-overview",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-overview",
+        "kind": "program",
+        "evidence": [
+          "the import facts remain and the overview keeps none of the planted tells"
+        ]
+      },
+      "spend": {
+        "seconds": 21,
+        "turns": 6,
+        "input": 8627,
+        "output": 2935,
+        "cacheRead": 35125,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.00151995,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "unslop",
+      "case": "copy-edit-overview",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "plain-overview",
+        "kind": "program",
+        "evidence": [
+          "a heading in title case: # Importing Ledger Entries"
+        ]
+      },
+      "spend": {
+        "seconds": 11,
+        "turns": 6,
+        "input": 3099,
+        "output": 1076,
+        "cacheRead": 11573,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0005482460000000001,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "unslop",
+      "case": "copy-edit-puff",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-puffed-overview",
+        "kind": "program",
+        "evidence": [
+          "the import facts remain and the overview keeps none of the planted tells"
+        ]
+      },
+      "spend": {
+        "seconds": 35,
+        "turns": 5,
+        "input": 8574,
+        "output": 1933,
+        "cacheRead": 22980,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0012899600000000002,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "unslop",
+      "case": "copy-edit-puff",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "unjudged",
+        "why": "the rewritten overview dropped the import command or file"
+      },
+      "spend": {
+        "seconds": 14,
+        "turns": 6,
+        "input": 3030,
+        "output": 1531,
+        "cacheRead": 13109,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.000635418,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "unslop",
+      "case": "ru-pr",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "unslop",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the unslop asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 15,
+        "turns": 3,
+        "input": 3030,
+        "output": 1009,
+        "cacheRead": 5858,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0005165160000000001,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "unslop",
+      "case": "ru-pr",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "unslop",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the unslop asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 7,
+        "turns": 3,
+        "input": 2699,
+        "output": 723,
+        "cacheRead": 4322,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0004231440000000001,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "unslop",
+      "case": "en-site-index",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "unslop",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the unslop asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 12,
+        "turns": 5,
+        "input": 4087,
+        "output": 1378,
+        "cacheRead": 11204,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0007067080000000001,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "unslop",
+      "case": "en-site-index",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "unslop",
+        "kind": "program",
+        "evidence": [
+          "does not open on the mechanism: Ledger helps freelancers keep track of client income and expenses by reading the CSV file your bank exports and adding each transaction to a local ledger file on your own computer, with no account, no upload, and no subscription; it skips any transaction it has already imported so the same export can be imported twice, works with exports from Sberbank, Tinkoff and Revolut while other banks need a column mapping, and is free and open source under the MIT licence."
+        ]
+      },
+      "spend": {
+        "seconds": 9,
+        "turns": 5,
+        "input": 3612,
+        "output": 1186,
+        "cacheRead": 9013,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0006164260000000001,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "unslop",
+      "case": "copy-edit-overview",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-overview",
+        "kind": "program",
+        "evidence": [
+          "the import facts remain and the overview keeps none of the planted tells"
+        ]
+      },
+      "spend": {
+        "seconds": 26,
+        "turns": 6,
+        "input": 8407,
+        "output": 3487,
+        "cacheRead": 33077,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0016042540000000003,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "unslop",
+      "case": "copy-edit-overview",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "plain-overview",
+        "kind": "program",
+        "evidence": [
+          "a heading in title case: # Importing Ledger Entries",
+          "a dash, a parenthesis or a semicolon: The  command loads  (the export from your bank)."
+        ]
+      },
+      "spend": {
+        "seconds": 8,
+        "turns": 6,
+        "input": 3258,
+        "output": 930,
+        "cacheRead": 10918,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0005336360000000001,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "unslop",
+      "case": "copy-edit-puff",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-puffed-overview",
+        "kind": "program",
+        "evidence": [
+          "the import facts remain and the overview keeps none of the planted tells"
+        ]
+      },
+      "spend": {
+        "seconds": 19,
+        "turns": 6,
+        "input": 9069,
+        "output": 2819,
+        "cacheRead": 33077,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0015368540000000003,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "unslop",
+      "case": "copy-edit-puff",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "plain-puffed-overview",
+        "kind": "program",
+        "evidence": [
+          "a heading in title case: # Why Ledger Stands Out"
+        ]
+      },
+      "spend": {
+        "seconds": 15,
+        "turns": 6,
+        "input": 2926,
+        "output": 1971,
+        "cacheRead": 14133,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0007150660000000001,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "unslop",
+      "case": "ru-pr",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "unslop",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the unslop asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 8,
+        "turns": 3,
+        "input": 3504,
+        "output": 920,
+        "cacheRead": 6370,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.00054714,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "unslop",
+      "case": "ru-pr",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "unslop",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the unslop asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 9,
+        "turns": 6,
+        "input": 4243,
+        "output": 1101,
+        "cacheRead": 15014,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.000674528,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "unslop",
+      "case": "en-site-index",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "unslop",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the unslop asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 11,
+        "turns": 5,
+        "input": 4070,
+        "output": 1438,
+        "cacheRead": 11204,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.000717008,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "unslop",
+      "case": "en-site-index",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "unslop",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the unslop asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 11,
+        "turns": 5,
+        "input": 3273,
+        "output": 1057,
+        "cacheRead": 9156,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0005570120000000001,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    }
+  ]
+}

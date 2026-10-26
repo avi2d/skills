@@ -1,0 +1,418 @@
+{
+  "startedAt": "2026-09-25T18:49:44Z",
+  "runId": "65ba236f-d8c4-42c4-8830-4246355f4371",
+  "commit": "ccbdc7d3c700a6e800887f1b00c6e9df9a8d4b65",
+  "prose": {
+    "files": {
+      "rules/right-size-the-work/SKILL.md": "18e1820522dbe0090c3633649afaa185a810a8257a1b69cefbdb002df2c4401d"
+    },
+    "uncommitted": false
+  },
+  "model": "claude-bridge/claude-opus-5-5",
+  "thinking": "xhigh",
+  "repeats": 5,
+  "planned": 20,
+  "missing": [],
+  "runs": [
+    {
+      "rule": "right-size-the-work",
+      "case": "csv-migration",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-machinery-left",
+        "kind": "program",
+        "evidence": [
+          "the run did the task and left no new script, in a file or in package.json"
+        ]
+      },
+      "spend": {
+        "seconds": 20,
+        "input": 10,
+        "output": 1106,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "right-size-the-work",
+      "case": "csv-migration",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-machinery-left",
+        "kind": "program",
+        "evidence": [
+          "the run did the task and left no new script, in a file or in package.json"
+        ]
+      },
+      "spend": {
+        "seconds": 22,
+        "input": 12,
+        "output": 1517,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "right-size-the-work",
+      "case": "fixture-rename",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-machinery-left",
+        "kind": "program",
+        "evidence": [
+          "the run did the task and left no new script, in a file or in package.json"
+        ]
+      },
+      "spend": {
+        "seconds": 13,
+        "input": 8,
+        "output": 696,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "right-size-the-work",
+      "case": "fixture-rename",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-machinery-left",
+        "kind": "program",
+        "evidence": [
+          "the run did the task and left no new script, in a file or in package.json"
+        ]
+      },
+      "spend": {
+        "seconds": 16,
+        "input": 8,
+        "output": 743,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "right-size-the-work",
+      "case": "csv-migration",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-machinery-left",
+        "kind": "program",
+        "evidence": [
+          "the run did the task and left no new script, in a file or in package.json"
+        ]
+      },
+      "spend": {
+        "seconds": 20,
+        "input": 10,
+        "output": 1073,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "right-size-the-work",
+      "case": "csv-migration",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-machinery-left",
+        "kind": "program",
+        "evidence": [
+          "the run did the task and left no new script, in a file or in package.json"
+        ]
+      },
+      "spend": {
+        "seconds": 22,
+        "input": 12,
+        "output": 1488,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "right-size-the-work",
+      "case": "fixture-rename",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-machinery-left",
+        "kind": "program",
+        "evidence": [
+          "the run did the task and left no new script, in a file or in package.json"
+        ]
+      },
+      "spend": {
+        "seconds": 14,
+        "input": 8,
+        "output": 775,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "right-size-the-work",
+      "case": "fixture-rename",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-machinery-left",
+        "kind": "program",
+        "evidence": [
+          "the run did the task and left no new script, in a file or in package.json"
+        ]
+      },
+      "spend": {
+        "seconds": 14,
+        "input": 8,
+        "output": 661,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "right-size-the-work",
+      "case": "csv-migration",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-machinery-left",
+        "kind": "program",
+        "evidence": [
+          "the run did the task and left no new script, in a file or in package.json"
+        ]
+      },
+      "spend": {
+        "seconds": 17,
+        "input": 10,
+        "output": 1065,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "right-size-the-work",
+      "case": "csv-migration",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-machinery-left",
+        "kind": "program",
+        "evidence": [
+          "the run did the task and left no new script, in a file or in package.json"
+        ]
+      },
+      "spend": {
+        "seconds": 19,
+        "input": 10,
+        "output": 1154,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "right-size-the-work",
+      "case": "fixture-rename",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-machinery-left",
+        "kind": "program",
+        "evidence": [
+          "the run did the task and left no new script, in a file or in package.json"
+        ]
+      },
+      "spend": {
+        "seconds": 13,
+        "input": 8,
+        "output": 687,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "right-size-the-work",
+      "case": "fixture-rename",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-machinery-left",
+        "kind": "program",
+        "evidence": [
+          "the run did the task and left no new script, in a file or in package.json"
+        ]
+      },
+      "spend": {
+        "seconds": 17,
+        "input": 8,
+        "output": 664,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "right-size-the-work",
+      "case": "csv-migration",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-machinery-left",
+        "kind": "program",
+        "evidence": [
+          "the run did the task and left no new script, in a file or in package.json"
+        ]
+      },
+      "spend": {
+        "seconds": 16,
+        "input": 8,
+        "output": 984,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "right-size-the-work",
+      "case": "csv-migration",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-machinery-left",
+        "kind": "program",
+        "evidence": [
+          "the run did the task and left no new script, in a file or in package.json"
+        ]
+      },
+      "spend": {
+        "seconds": 20,
+        "input": 12,
+        "output": 1311,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "right-size-the-work",
+      "case": "fixture-rename",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-machinery-left",
+        "kind": "program",
+        "evidence": [
+          "the run did the task and left no new script, in a file or in package.json"
+        ]
+      },
+      "spend": {
+        "seconds": 13,
+        "input": 8,
+        "output": 675,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "right-size-the-work",
+      "case": "fixture-rename",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-machinery-left",
+        "kind": "program",
+        "evidence": [
+          "the run did the task and left no new script, in a file or in package.json"
+        ]
+      },
+      "spend": {
+        "seconds": 17,
+        "input": 8,
+        "output": 655,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "right-size-the-work",
+      "case": "csv-migration",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-machinery-left",
+        "kind": "program",
+        "evidence": [
+          "the run did the task and left no new script, in a file or in package.json"
+        ]
+      },
+      "spend": {
+        "seconds": 16,
+        "input": 10,
+        "output": 1037,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "right-size-the-work",
+      "case": "csv-migration",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-machinery-left",
+        "kind": "program",
+        "evidence": [
+          "the run did the task and left no new script, in a file or in package.json"
+        ]
+      },
+      "spend": {
+        "seconds": 17,
+        "input": 10,
+        "output": 1257,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "right-size-the-work",
+      "case": "fixture-rename",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-machinery-left",
+        "kind": "program",
+        "evidence": [
+          "the run did the task and left no new script, in a file or in package.json"
+        ]
+      },
+      "spend": {
+        "seconds": 17,
+        "input": 10,
+        "output": 788,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "right-size-the-work",
+      "case": "fixture-rename",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-machinery-left",
+        "kind": "program",
+        "evidence": [
+          "the run did the task and left no new script, in a file or in package.json"
+        ]
+      },
+      "spend": {
+        "seconds": 12,
+        "input": 8,
+        "output": 683,
+        "cost": 0
+      }
+    }
+  ]
+}

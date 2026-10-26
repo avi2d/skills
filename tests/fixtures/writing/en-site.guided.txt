@@ -1,0 +1,7 @@
+You export transactions from your bank as a CSV file.
+Ledger adds each transaction to a ledger file on your computer.
+If you import the same CSV file twice, Ledger skips transactions it has already added.
+Your data stays on your computer, with no account, no upload, and no subscription.
+Ledger is free and open source under the MIT licence.
+Ledger works with exports from Sberbank, Tinkoff, and Revolut.
+Exports from other banks need a column mapping.

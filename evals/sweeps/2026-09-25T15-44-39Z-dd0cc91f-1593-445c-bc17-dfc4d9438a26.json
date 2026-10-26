@@ -1,0 +1,220 @@
+{
+  "startedAt": "2026-09-25T15:44:39Z",
+  "runId": "dd0cc91f-1593-445c-bc17-dfc4d9438a26",
+  "commit": "a91c3407e2f3bb9e79e028e3e080dedc0065902e",
+  "prose": {
+    "files": {
+      "references/unslop/SKILL.md": "d28555bab5bf222fa1a07dbbb2ab10be373ba179ab077a78eb267d1efbc85aec"
+    },
+    "uncommitted": false
+  },
+  "model": "opencode-go/muse-spark-1.3-contributor",
+  "thinking": "high",
+  "repeats": 5,
+  "planned": 10,
+  "missing": [],
+  "runs": [
+    {
+      "rule": "unslop",
+      "case": "copy-edit-overview",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-overview",
+        "kind": "program",
+        "evidence": [
+          "the import facts remain and the overview keeps none of the planted tells"
+        ]
+      },
+      "spend": {
+        "seconds": 14,
+        "input": 5011,
+        "output": 1132,
+        "cost": 0.0007537180000000001
+      }
+    },
+    {
+      "rule": "unslop",
+      "case": "copy-edit-overview",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "plain-overview",
+        "kind": "program",
+        "evidence": [
+          "a heading in title case: # Importing Ledger Entries"
+        ]
+      },
+      "spend": {
+        "seconds": 19,
+        "input": 3760,
+        "output": 1246,
+        "cost": 0.0006495960000000001
+      }
+    },
+    {
+      "rule": "unslop",
+      "case": "copy-edit-overview",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-overview",
+        "kind": "program",
+        "evidence": [
+          "the import facts remain and the overview keeps none of the planted tells"
+        ]
+      },
+      "spend": {
+        "seconds": 15,
+        "input": 4666,
+        "output": 914,
+        "cost": 0.0006661760000000001
+      }
+    },
+    {
+      "rule": "unslop",
+      "case": "copy-edit-overview",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "plain-overview",
+        "kind": "program",
+        "evidence": [
+          "a heading in title case: # Importing Ledger Entries",
+          "a dash, a parenthesis or a semicolon: Run  to load  (the export from your bank). Each row is validated, and duplicates are skipped. Any duplicate rows are listed at the end of the run."
+        ]
+      },
+      "spend": {
+        "seconds": 17,
+        "input": 4101,
+        "output": 1228,
+        "cost": 0.0006808640000000001
+      }
+    },
+    {
+      "rule": "unslop",
+      "case": "copy-edit-overview",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-overview",
+        "kind": "program",
+        "evidence": [
+          "the import facts remain and the overview keeps none of the planted tells"
+        ]
+      },
+      "spend": {
+        "seconds": 26,
+        "input": 6719,
+        "output": 955,
+        "cost": 0.00087558
+      }
+    },
+    {
+      "rule": "unslop",
+      "case": "copy-edit-overview",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "plain-overview",
+        "kind": "program",
+        "evidence": [
+          "a heading in title case: # Importing Ledger Entries",
+          "a dash, a parenthesis or a semicolon: Run  to load ledger.csv — the export from your bank."
+        ]
+      },
+      "spend": {
+        "seconds": 34,
+        "input": 3947,
+        "output": 1605,
+        "cost": 0.000739072
+      }
+    },
+    {
+      "rule": "unslop",
+      "case": "copy-edit-overview",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-overview",
+        "kind": "program",
+        "evidence": [
+          "the import facts remain and the overview keeps none of the planted tells"
+        ]
+      },
+      "spend": {
+        "seconds": 26,
+        "input": 7775,
+        "output": 1523,
+        "cost": 0.001105502
+      }
+    },
+    {
+      "rule": "unslop",
+      "case": "copy-edit-overview",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "plain-overview",
+        "kind": "program",
+        "evidence": [
+          "a heading in title case: # Importing Ledger Entries"
+        ]
+      },
+      "spend": {
+        "seconds": 14,
+        "input": 3824,
+        "output": 993,
+        "cost": 0.0006056519999999999
+      }
+    },
+    {
+      "rule": "unslop",
+      "case": "copy-edit-overview",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-overview",
+        "kind": "program",
+        "evidence": [
+          "the import facts remain and the overview keeps none of the planted tells"
+        ]
+      },
+      "spend": {
+        "seconds": 18,
+        "input": 9468,
+        "output": 1311,
+        "cost": 0.001232372
+      }
+    },
+    {
+      "rule": "unslop",
+      "case": "copy-edit-overview",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "plain-overview",
+        "kind": "program",
+        "evidence": [
+          "a heading in title case: # Importing Ledger Entries"
+        ]
+      },
+      "spend": {
+        "seconds": 18,
+        "input": 2036,
+        "output": 1114,
+        "cost": 0.000453356
+      }
+    }
+  ]
+}

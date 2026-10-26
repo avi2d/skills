@@ -1,0 +1,1138 @@
+{
+  "startedAt": "2026-10-10T07:33:58Z",
+  "runId": "bed1e15a-8204-4d84-877f-793a4e69614d",
+  "commit": "f9980fd235189e8f9617469f90a804803d78c80a",
+  "prose": {
+    "files": {
+      "library/engineering/rules/prove-it-works/SKILL.md": "ce65caa1d1e4b5c29e827eae37d2e012359f85bcc45d3df1c0181da08304d01e"
+    },
+    "uncommitted": false
+  },
+  "model": "claude-bridge/claude-opus-5-5",
+  "thinking": "high",
+  "repeats": 10,
+  "planned": 40,
+  "missing": [],
+  "runs": [
+    {
+      "rule": "prove-it-works",
+      "case": "npm-caret",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "47 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 116,
+        "turns": 12,
+        "input": 24,
+        "output": 9224,
+        "cacheRead": 106821,
+        "cacheWrite": 13923,
+        "cacheWrite1h": 0,
+        "cost": 0.2755552,
+        "costEstimated": true
+      },
+      "wroteTest": true
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "npm-caret",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "47 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 60,
+        "turns": 6,
+        "input": 12,
+        "output": 5348,
+        "cacheRead": 27572,
+        "cacheWrite": 6115,
+        "cacheWrite1h": 0,
+        "cost": 0.1430974,
+        "costEstimated": true
+      },
+      "wroteTest": true
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "exact-cents",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "4 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 81,
+        "turns": 8,
+        "input": 16,
+        "output": 7285,
+        "cacheRead": 52697,
+        "cacheWrite": 9756,
+        "cacheWrite1h": 0,
+        "cost": 0.20508340000000003,
+        "costEstimated": true
+      },
+      "wroteTest": true
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "exact-cents",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "4 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 65,
+        "turns": 6,
+        "input": 12,
+        "output": 5336,
+        "cacheRead": 29713,
+        "cacheWrite": 6702,
+        "cacheWrite1h": 0,
+        "cost": 0.1462206,
+        "costEstimated": true
+      },
+      "wroteTest": true
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "npm-caret",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "47 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 122,
+        "turns": 12,
+        "input": 24,
+        "output": 12304,
+        "cacheRead": 135210,
+        "cacheWrite": 20255,
+        "cacheWrite1h": 0,
+        "cost": 0.374493,
+        "costEstimated": true
+      },
+      "wroteTest": true
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "npm-caret",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "47 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 71,
+        "turns": 6,
+        "input": 12,
+        "output": 6246,
+        "cacheRead": 29891,
+        "cacheWrite": 7108,
+        "cacheWrite1h": 0,
+        "cost": 0.16648620000000003,
+        "costEstimated": true
+      },
+      "wroteTest": true
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "exact-cents",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "4 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 87,
+        "turns": 9,
+        "input": 18,
+        "output": 7306,
+        "cacheRead": 63432,
+        "cacheWrite": 8413,
+        "cacheWrite1h": 0,
+        "cost": 0.20094340000000002,
+        "costEstimated": true
+      },
+      "wroteTest": true
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "exact-cents",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "4 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 53,
+        "turns": 6,
+        "input": 12,
+        "output": 4857,
+        "cacheRead": 26852,
+        "cacheWrite": 5856,
+        "cacheWrite1h": 0,
+        "cost": 0.13183840000000002,
+        "costEstimated": true
+      },
+      "wroteTest": true
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "npm-caret",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "47 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 243,
+        "turns": 15,
+        "input": 30,
+        "output": 11639,
+        "cacheRead": 157742,
+        "cacheWrite": 16917,
+        "cacheWrite1h": 0,
+        "cost": 0.3490334000000001,
+        "costEstimated": true
+      },
+      "wroteTest": true
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "npm-caret",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "47 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 208,
+        "turns": 10,
+        "input": 20,
+        "output": 6219,
+        "cacheRead": 66027,
+        "cacheWrite": 8473,
+        "cacheWrite1h": 0,
+        "cost": 0.18003040000000006,
+        "costEstimated": true
+      },
+      "wroteTest": true
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "exact-cents",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "4 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 90,
+        "turns": 9,
+        "input": 18,
+        "output": 8162,
+        "cacheRead": 66370,
+        "cacheWrite": 9524,
+        "cacheWrite1h": 0,
+        "cost": 0.22420600000000004,
+        "costEstimated": true
+      },
+      "wroteTest": true
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "exact-cents",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "4 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 46,
+        "turns": 6,
+        "input": 12,
+        "output": 4011,
+        "cacheRead": 24793,
+        "cacheWrite": 4608,
+        "cacheWrite1h": 0,
+        "cost": 0.10826659999999999,
+        "costEstimated": true
+      },
+      "wroteTest": true
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "npm-caret",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "47 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 244,
+        "turns": 18,
+        "input": 36,
+        "output": 10632,
+        "cacheRead": 209752,
+        "cacheWrite": 17184,
+        "cacheWrite1h": 0,
+        "cost": 0.34065439999999997,
+        "costEstimated": true
+      },
+      "wroteTest": true
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "npm-caret",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "47 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 75,
+        "turns": 7,
+        "input": 14,
+        "output": 5765,
+        "cacheRead": 35969,
+        "cacheWrite": 6674,
+        "cacheWrite1h": 0,
+        "cost": 0.1559198,
+        "costEstimated": true
+      },
+      "wroteTest": true
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "exact-cents",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "4 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 86,
+        "turns": 8,
+        "input": 16,
+        "output": 6879,
+        "cacheRead": 53985,
+        "cacheWrite": 8280,
+        "cacheWrite1h": 0,
+        "cost": 0.189841,
+        "costEstimated": true
+      },
+      "wroteTest": true
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "exact-cents",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "4 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 85,
+        "turns": 6,
+        "input": 12,
+        "output": 7018,
+        "cacheRead": 32099,
+        "cacheWrite": 8415,
+        "cacheWrite1h": 0,
+        "cost": 0.18890279999999998,
+        "costEstimated": true
+      },
+      "wroteTest": true
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "npm-caret",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "47 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 249,
+        "turns": 18,
+        "input": 36,
+        "output": 11707,
+        "cacheRead": 211176,
+        "cacheWrite": 17879,
+        "cacheWrite1h": 0,
+        "cost": 0.36591419999999997,
+        "costEstimated": true
+      },
+      "wroteTest": true
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "npm-caret",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "47 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 72,
+        "turns": 10,
+        "input": 20,
+        "output": 5570,
+        "cacheRead": 62587,
+        "cacheWrite": 8859,
+        "cacheWrite1h": 0,
+        "cost": 0.1682924,
+        "costEstimated": true
+      },
+      "wroteTest": true
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "exact-cents",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "4 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 158,
+        "turns": 9,
+        "input": 18,
+        "output": 8480,
+        "cacheRead": 66757,
+        "cacheWrite": 9928,
+        "cacheWrite1h": 0,
+        "cost": 0.23266340000000002,
+        "costEstimated": true
+      },
+      "wroteTest": true
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "exact-cents",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "4 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 47,
+        "turns": 6,
+        "input": 12,
+        "output": 4138,
+        "cacheRead": 26268,
+        "cacheWrite": 5597,
+        "cacheWrite1h": 0,
+        "cost": 0.11604660000000003,
+        "costEstimated": true
+      },
+      "wroteTest": true
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "npm-caret",
+      "arm": "injected",
+      "repeat": 6,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "47 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 123,
+        "turns": 13,
+        "input": 26,
+        "output": 10473,
+        "cacheRead": 138098,
+        "cacheWrite": 16371,
+        "cacheWrite1h": 0,
+        "cost": 0.31903859999999995,
+        "costEstimated": true
+      },
+      "wroteTest": true
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "npm-caret",
+      "arm": "withheld",
+      "repeat": 6,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "47 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 67,
+        "turns": 8,
+        "input": 16,
+        "output": 5470,
+        "cacheRead": 44645,
+        "cacheWrite": 6429,
+        "cacheWrite1h": 0,
+        "cost": 0.150538,
+        "costEstimated": true
+      },
+      "wroteTest": true
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "exact-cents",
+      "arm": "injected",
+      "repeat": 6,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "4 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 101,
+        "turns": 12,
+        "input": 24,
+        "output": 8678,
+        "cacheRead": 104115,
+        "cacheWrite": 10241,
+        "cacheWrite1h": 0,
+        "cost": 0.245684,
+        "costEstimated": true
+      },
+      "wroteTest": true
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "exact-cents",
+      "arm": "withheld",
+      "repeat": 6,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "4 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 49,
+        "turns": 5,
+        "input": 10,
+        "output": 4585,
+        "cacheRead": 20121,
+        "cacheWrite": 5334,
+        "cacheWrite1h": 0,
+        "cost": 0.12243420000000002,
+        "costEstimated": true
+      },
+      "wroteTest": true
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "npm-caret",
+      "arm": "injected",
+      "repeat": 7,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "47 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 178,
+        "turns": 14,
+        "input": 28,
+        "output": 10904,
+        "cacheRead": 137489,
+        "cacheWrite": 15679,
+        "cacheWrite1h": 0,
+        "cost": 0.32408479999999995,
+        "costEstimated": true
+      },
+      "wroteTest": true
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "npm-caret",
+      "arm": "withheld",
+      "repeat": 7,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "47 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 65,
+        "turns": 6,
+        "input": 12,
+        "output": 5663,
+        "cacheRead": 29591,
+        "cacheWrite": 6449,
+        "cacheWrite1h": 0,
+        "cost": 0.15147120000000003,
+        "costEstimated": true
+      },
+      "wroteTest": true
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "exact-cents",
+      "arm": "injected",
+      "repeat": 7,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "4 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 79,
+        "turns": 8,
+        "input": 16,
+        "output": 7283,
+        "cacheRead": 54831,
+        "cacheWrite": 8495,
+        "cacheWrite1h": 0,
+        "cost": 0.19916520000000001,
+        "costEstimated": true
+      },
+      "wroteTest": true
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "exact-cents",
+      "arm": "withheld",
+      "repeat": 7,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "4 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 51,
+        "turns": 5,
+        "input": 10,
+        "output": 4561,
+        "cacheRead": 19395,
+        "cacheWrite": 4994,
+        "cacheWrite1h": 0,
+        "cost": 0.12010900000000002,
+        "costEstimated": true
+      },
+      "wroteTest": true
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "npm-caret",
+      "arm": "injected",
+      "repeat": 8,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "47 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 229,
+        "turns": 13,
+        "input": 26,
+        "output": 10361,
+        "cacheRead": 138795,
+        "cacheWrite": 16560,
+        "cacheWrite1h": 0,
+        "cost": 0.317883,
+        "costEstimated": true
+      },
+      "wroteTest": true
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "npm-caret",
+      "arm": "withheld",
+      "repeat": 8,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "47 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 86,
+        "turns": 6,
+        "input": 12,
+        "output": 6819,
+        "cacheRead": 31606,
+        "cacheWrite": 7536,
+        "cacheWrite1h": 0,
+        "cost": 0.1804292,
+        "costEstimated": true
+      },
+      "wroteTest": true
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "exact-cents",
+      "arm": "injected",
+      "repeat": 8,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "4 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 78,
+        "turns": 8,
+        "input": 16,
+        "output": 7483,
+        "cacheRead": 53365,
+        "cacheWrite": 8521,
+        "cacheWrite1h": 0,
+        "cost": 0.20300200000000002,
+        "costEstimated": true
+      },
+      "wroteTest": true
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "exact-cents",
+      "arm": "withheld",
+      "repeat": 8,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "4 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 85,
+        "turns": 6,
+        "input": 12,
+        "output": 6106,
+        "cacheRead": 29177,
+        "cacheWrite": 7054,
+        "cacheWrite1h": 0,
+        "cost": 0.1632734,
+        "costEstimated": true
+      },
+      "wroteTest": true
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "npm-caret",
+      "arm": "injected",
+      "repeat": 9,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "47 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 264,
+        "turns": 15,
+        "input": 30,
+        "output": 12212,
+        "cacheRead": 169370,
+        "cacheWrite": 18228,
+        "cacheWrite1h": 0,
+        "cost": 0.36937400000000004,
+        "costEstimated": true
+      },
+      "wroteTest": true
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "npm-caret",
+      "arm": "withheld",
+      "repeat": 9,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "47 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 191,
+        "turns": 7,
+        "input": 14,
+        "output": 5737,
+        "cacheRead": 36100,
+        "cacheWrite": 6675,
+        "cacheWrite1h": 0,
+        "cost": 0.15539100000000003,
+        "costEstimated": true
+      },
+      "wroteTest": true
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "exact-cents",
+      "arm": "injected",
+      "repeat": 9,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "4 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 75,
+        "turns": 7,
+        "input": 14,
+        "output": 6457,
+        "cacheRead": 40611,
+        "cacheWrite": 7474,
+        "cacheWrite1h": 0,
+        "cost": 0.17468820000000002,
+        "costEstimated": true
+      },
+      "wroteTest": true
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "exact-cents",
+      "arm": "withheld",
+      "repeat": 9,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "4 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 48,
+        "turns": 6,
+        "input": 12,
+        "output": 3984,
+        "cacheRead": 26441,
+        "cacheWrite": 4778,
+        "cacheWrite1h": 0,
+        "cost": 0.10890620000000001,
+        "costEstimated": true
+      },
+      "wroteTest": true
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "npm-caret",
+      "arm": "injected",
+      "repeat": 10,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "47 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 106,
+        "turns": 13,
+        "input": 26,
+        "output": 9981,
+        "cacheRead": 135678,
+        "cacheWrite": 16639,
+        "cacheWrite1h": 0,
+        "cost": 0.31005460000000007,
+        "costEstimated": true
+      },
+      "wroteTest": true
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "npm-caret",
+      "arm": "withheld",
+      "repeat": 10,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "47 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 94,
+        "turns": 8,
+        "input": 16,
+        "output": 5797,
+        "cacheRead": 50206,
+        "cacheWrite": 8026,
+        "cacheWrite1h": 0,
+        "cost": 0.1661752,
+        "costEstimated": true
+      },
+      "wroteTest": true
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "exact-cents",
+      "arm": "injected",
+      "repeat": 10,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "4 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 124,
+        "turns": 12,
+        "input": 24,
+        "output": 9209,
+        "cacheRead": 106388,
+        "cacheWrite": 11952,
+        "cacheWrite1h": 0,
+        "cost": 0.26531360000000004,
+        "costEstimated": true
+      },
+      "wroteTest": true
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "exact-cents",
+      "arm": "withheld",
+      "repeat": 10,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "4 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 48,
+        "turns": 6,
+        "input": 12,
+        "output": 4068,
+        "cacheRead": 26850,
+        "cacheWrite": 5151,
+        "cacheWrite1h": 0,
+        "cost": 0.112533,
+        "costEstimated": true
+      },
+      "wroteTest": true
+    }
+  ]
+}

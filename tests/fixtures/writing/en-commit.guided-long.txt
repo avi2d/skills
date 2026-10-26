@@ -1,0 +1,13 @@
+Key imported rows on date, amount and normalized payee
+
+importRows keyed each row on its raw export line.
+A bank export that listed one payment with the payee "Coffee Shop" and again
+with " coffee shop " produced two keys, so the payment was imported twice.
+
+The key is now the row's date, its amount formatted with toFixed(2) and its
+payee trimmed and lowercased.
+Rows that differ only in payee case, spaces around the payee or float noise
+past the second decimal now count as one payment.
+
+New tests cover the payee case, the amount rounding and rows that differ in
+date, amount or payee.

@@ -1,0 +1,418 @@
+{
+  "startedAt": "2026-09-25T16:46:31Z",
+  "runId": "c11b42e9-6fc9-4f5a-9a47-6f006dc5c8e0",
+  "commit": "ba657ce30804574583216730888e7d00c71c3404",
+  "prose": {
+    "files": {
+      "rules/guard-the-context-window/SKILL.md": "6f827e6dae85354b55803bf3ad56e294c80a67803a9f18ad7efa09cdef8994d8"
+    },
+    "uncommitted": false
+  },
+  "model": "openai-codex/gpt-6-luna",
+  "thinking": "xhigh",
+  "repeats": 5,
+  "planned": 20,
+  "missing": [],
+  "runs": [
+    {
+      "rule": "guard-the-context-window",
+      "case": "build-log",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "answered-within-budget",
+        "kind": "program",
+        "evidence": [
+          "915 bytes of tool output entered the context, against a budget of 16384"
+        ]
+      },
+      "spend": {
+        "seconds": 9,
+        "input": 3242,
+        "output": 105,
+        "cost": 0.00037670000000000005
+      }
+    },
+    {
+      "rule": "guard-the-context-window",
+      "case": "build-log",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "answered-within-budget",
+        "kind": "program",
+        "evidence": [
+          "1387 bytes of tool output entered the context, against a budget of 16384"
+        ]
+      },
+      "spend": {
+        "seconds": 8,
+        "input": 3023,
+        "output": 86,
+        "cost": 0.00034530000000000004
+      }
+    },
+    {
+      "rule": "guard-the-context-window",
+      "case": "lockfile",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "answered-within-budget",
+        "kind": "program",
+        "evidence": [
+          "368 bytes of tool output entered the context, against a budget of 16384"
+        ]
+      },
+      "spend": {
+        "seconds": 12,
+        "input": 2981,
+        "output": 54,
+        "cost": 0.00032510000000000004
+      }
+    },
+    {
+      "rule": "guard-the-context-window",
+      "case": "lockfile",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "answered-within-budget",
+        "kind": "program",
+        "evidence": [
+          "154 bytes of tool output entered the context, against a budget of 16384"
+        ]
+      },
+      "spend": {
+        "seconds": 9,
+        "input": 3721,
+        "output": 92,
+        "cost": 0.0004181
+      }
+    },
+    {
+      "rule": "guard-the-context-window",
+      "case": "build-log",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "answered-within-budget",
+        "kind": "program",
+        "evidence": [
+          "915 bytes of tool output entered the context, against a budget of 16384"
+        ]
+      },
+      "spend": {
+        "seconds": 10,
+        "input": 3250,
+        "output": 112,
+        "cost": 0.00038100000000000005
+      }
+    },
+    {
+      "rule": "guard-the-context-window",
+      "case": "build-log",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "answered-within-budget",
+        "kind": "program",
+        "evidence": [
+          "4026 bytes of tool output entered the context, against a budget of 16384"
+        ]
+      },
+      "spend": {
+        "seconds": 12,
+        "input": 5502,
+        "output": 126,
+        "cost": 0.0006132
+      }
+    },
+    {
+      "rule": "guard-the-context-window",
+      "case": "lockfile",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "answered-within-budget",
+        "kind": "program",
+        "evidence": [
+          "574 bytes of tool output entered the context, against a budget of 16384"
+        ]
+      },
+      "spend": {
+        "seconds": 9,
+        "input": 4506,
+        "output": 75,
+        "cost": 0.0004881
+      }
+    },
+    {
+      "rule": "guard-the-context-window",
+      "case": "lockfile",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "answered-within-budget",
+        "kind": "program",
+        "evidence": [
+          "1735 bytes of tool output entered the context, against a budget of 16384"
+        ]
+      },
+      "spend": {
+        "seconds": 25,
+        "input": 3434,
+        "output": 106,
+        "cost": 0.00041176000000000006
+      }
+    },
+    {
+      "rule": "guard-the-context-window",
+      "case": "build-log",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "answered-within-budget",
+        "kind": "program",
+        "evidence": [
+          "915 bytes of tool output entered the context, against a budget of 16384"
+        ]
+      },
+      "spend": {
+        "seconds": 8,
+        "input": 3241,
+        "output": 100,
+        "cost": 0.00037410000000000004
+      }
+    },
+    {
+      "rule": "guard-the-context-window",
+      "case": "build-log",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "answered-within-budget",
+        "kind": "program",
+        "evidence": [
+          "3663 bytes of tool output entered the context, against a budget of 16384"
+        ]
+      },
+      "spend": {
+        "seconds": 9,
+        "input": 5551,
+        "output": 114,
+        "cost": 0.0006121
+      }
+    },
+    {
+      "rule": "guard-the-context-window",
+      "case": "lockfile",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "answered-within-budget",
+        "kind": "program",
+        "evidence": [
+          "368 bytes of tool output entered the context, against a budget of 16384"
+        ]
+      },
+      "spend": {
+        "seconds": 8,
+        "input": 2985,
+        "output": 60,
+        "cost": 0.0003285
+      }
+    },
+    {
+      "rule": "guard-the-context-window",
+      "case": "lockfile",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "answered-within-budget",
+        "kind": "program",
+        "evidence": [
+          "753 bytes of tool output entered the context, against a budget of 16384"
+        ]
+      },
+      "spend": {
+        "seconds": 10,
+        "input": 3988,
+        "output": 82,
+        "cost": 0.00043979999999999996
+      }
+    },
+    {
+      "rule": "guard-the-context-window",
+      "case": "build-log",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "answered-within-budget",
+        "kind": "program",
+        "evidence": [
+          "690 bytes of tool output entered the context, against a budget of 16384"
+        ]
+      },
+      "spend": {
+        "seconds": 9,
+        "input": 3149,
+        "output": 109,
+        "cost": 0.00036940000000000003
+      }
+    },
+    {
+      "rule": "guard-the-context-window",
+      "case": "build-log",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "answered-within-budget",
+        "kind": "program",
+        "evidence": [
+          "1579 bytes of tool output entered the context, against a budget of 16384"
+        ]
+      },
+      "spend": {
+        "seconds": 11,
+        "input": 4475,
+        "output": 144,
+        "cost": 0.0005195
+      }
+    },
+    {
+      "rule": "guard-the-context-window",
+      "case": "lockfile",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "answered-within-budget",
+        "kind": "program",
+        "evidence": [
+          "246 bytes of tool output entered the context, against a budget of 16384"
+        ]
+      },
+      "spend": {
+        "seconds": 7,
+        "input": 2913,
+        "output": 52,
+        "cost": 0.00031730000000000007
+      }
+    },
+    {
+      "rule": "guard-the-context-window",
+      "case": "lockfile",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "answered-within-budget",
+        "kind": "program",
+        "evidence": [
+          "154 bytes of tool output entered the context, against a budget of 16384"
+        ]
+      },
+      "spend": {
+        "seconds": 12,
+        "input": 3720,
+        "output": 88,
+        "cost": 0.00041600000000000003
+      }
+    },
+    {
+      "rule": "guard-the-context-window",
+      "case": "build-log",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "answered-within-budget",
+        "kind": "program",
+        "evidence": [
+          "192 bytes of tool output entered the context, against a budget of 16384"
+        ]
+      },
+      "spend": {
+        "seconds": 9,
+        "input": 2920,
+        "output": 100,
+        "cost": 0.000342
+      }
+    },
+    {
+      "rule": "guard-the-context-window",
+      "case": "build-log",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "answered-within-budget",
+        "kind": "program",
+        "evidence": [
+          "51431 bytes of tool output entered the context, against a budget of 16384"
+        ]
+      },
+      "spend": {
+        "seconds": 14,
+        "input": 26473,
+        "output": 155,
+        "cost": 0.0029552000000000003
+      }
+    },
+    {
+      "rule": "guard-the-context-window",
+      "case": "lockfile",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "answered-within-budget",
+        "kind": "program",
+        "evidence": [
+          "246 bytes of tool output entered the context, against a budget of 16384"
+        ]
+      },
+      "spend": {
+        "seconds": 8,
+        "input": 2920,
+        "output": 57,
+        "cost": 0.00032050000000000004
+      }
+    },
+    {
+      "rule": "guard-the-context-window",
+      "case": "lockfile",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "answered-within-budget",
+        "kind": "program",
+        "evidence": [
+          "412 bytes of tool output entered the context, against a budget of 16384"
+        ]
+      },
+      "spend": {
+        "seconds": 8,
+        "input": 2603,
+        "output": 70,
+        "cost": 0.0002953
+      }
+    }
+  ]
+}

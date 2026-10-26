@@ -1,0 +1,9 @@
+Key imported rows by date, amount, and normalized payee
+
+importRows keyed each row by its raw line, so a bank export that lists
+one payment with the payee "Coffee Shop" and again with " coffee shop "
+imported the payment twice. The key is now the date, the amount to two
+decimal places, and the payee trimmed and lowercased.
+
+Rounding the amount also makes 0.1 + 0.2 and 0.3 the same key. Two new
+tests cover the payee and the amount cases.

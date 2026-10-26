@@ -1,0 +1,13 @@
+# Agent notes
+
+## Run the tests
+
+Run `bun test` before you commit. Every test passes on a good change.
+
+## Before you open a pull request
+
+Open the pull request only once all three hold:
+
+- The tests pass, as in "Run the tests" above.
+- The lint is clean.
+- `CHANGELOG.md` has an entry for this change.

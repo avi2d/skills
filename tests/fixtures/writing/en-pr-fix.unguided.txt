@@ -1,0 +1,25 @@
+# Key imported rows by date, amount, and normalized payee
+
+## What changed
+
+`importRows` in `src/import.ts` used the row's `raw` line as its key in `seen`.
+A bank export that lists one payment with the payee `Coffee Shop` and again with ` coffee shop ` has two different raw lines, so `importRows` imported the payment twice.
+
+The key is now built from three fields:
+
+- the date, as given in `row.date`
+- the amount to two decimal places, from `row.amount.toFixed(2)`
+- the payee with surrounding spaces trimmed and lowercased
+
+A row whose payee differs from an earlier row's only in case or surrounding spaces is now skipped.
+
+## Tests
+
+`test/import.test.ts` has a new test that imports a row with the payee `Coffee Shop`, then a row with ` coffee shop ` on the same date and amount, and expects the second import to return no rows.
+The test fails on `main` and passes with this change.
+`bun test` passes both tests.
+
+## Review notes
+
+- A row is now a duplicate when its date, amount, and payee match, even if other columns in `raw` differ, such as a bank reference number.
+- The keys in `seen` have a new format. If a caller stores `seen` between imports, the stored raw-line keys no longer match, and rows from earlier imports are imported again the next time they appear. No caller in this repository stores `seen`.

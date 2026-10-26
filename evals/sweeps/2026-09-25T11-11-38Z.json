@@ -1,0 +1,417 @@
+{
+  "startedAt": "2026-09-25T11:11:38Z",
+  "commit": "3e1fe4db128b39c0f14d04ddcafc8b0ef2e39568",
+  "prose": {
+    "files": {
+      "rules/prove-it-works/SKILL.md": "cc064664daaf91c72fa984645c6b57ae0270f9515a910786b5fa0d296738a1e3"
+    },
+    "uncommitted": false
+  },
+  "model": "opencode-go/muse-spark-1.3-contributor",
+  "thinking": "high",
+  "repeats": 5,
+  "planned": 20,
+  "missing": [],
+  "runs": [
+    {
+      "rule": "prove-it-works",
+      "case": "verify-the-fix",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "checked-after-last-write",
+        "kind": "program",
+        "evidence": [
+          "`bun repro.ts; echo \"exit=$?\"; bun test 2>&1; echo \"test_exit=$?\"` ran at step 7, after the last write at step 6"
+        ]
+      },
+      "spend": {
+        "seconds": 29,
+        "input": 4966,
+        "output": 1680,
+        "cost": 0.000890156
+      }
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "verify-the-fix",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "checked-after-last-write",
+        "kind": "program",
+        "evidence": [
+          "no command matching /\\bbun\\s+(?:run\\s+)?test\\b/ ran after the last write, to src/cart.ts at step 1"
+        ]
+      },
+      "spend": {
+        "seconds": 5,
+        "input": 2184,
+        "output": 254,
+        "cost": 0.00027679000000000007
+      }
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "reproduce-first",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "reproduced-before-fix",
+        "kind": "program",
+        "evidence": [
+          "no command matching /\\b(?:bun|node|bunx|npx)\\b/ failed on 2m before the first write to src/duration.ts at step 5"
+        ]
+      },
+      "spend": {
+        "seconds": 17,
+        "input": 4246,
+        "output": 1160,
+        "cost": 0.000691974
+      }
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "reproduce-first",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "reproduced-before-fix",
+        "kind": "program",
+        "evidence": [
+          "no command matching /\\b(?:bun|node|bunx|npx)\\b/ failed on 2m before the first write to src/duration.ts at step 4"
+        ]
+      },
+      "spend": {
+        "seconds": 10,
+        "input": 3046,
+        "output": 692,
+        "cost": 0.000461026
+      }
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "verify-the-fix",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "checked-after-last-write",
+        "kind": "program",
+        "evidence": [
+          "`bun -e 'import {total} from \"./src/cart.ts\"; const got = total([{price:3, quantity:2}]); console.log(`got=${got} expected=6`); if (got!==6) { console.log(\"FAIL\"); process.exit(1); } else { console.log(\"PASS: fix verified\"); }'\nbun test\nbun -e 'import {total} from \"./src/cart.ts\"; const cases=[[JSON.stringify([]), total([]), 0],[JSON.stringify([{price:3,quantity:2}]), total([{price:3,quantity:2}]), 6],[JSON.stringify([{price:2,quantity:1},{price:3,quantity:1}]), total([{price:2,quantity:1},{price:3,quantity:1}]), 5],[JSON.stringify([{price:2,quantity:3},{price:3,quantity:2}]), total([{price:2,quantity:3},{price:3,quantity:2}]), 12]]; let ok=true; for (const [inp,got,exp] of cases){ const pass=got===exp; console.log(`${pass?\"PASS\":\"FAIL\"} total(${inp}) = ${got} (expected ${exp})`); if(!pass) ok=false; } process.exit(ok?0:1);'` ran at step 6, after the last write at step 5"
+        ]
+      },
+      "spend": {
+        "seconds": 23,
+        "input": 7273,
+        "output": 1386,
+        "cost": 0.001041124
+      }
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "verify-the-fix",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "checked-after-last-write",
+        "kind": "program",
+        "evidence": [
+          "no command matching /\\bbun\\s+(?:run\\s+)?test\\b/ ran after the last write, to src/cart.ts at step 1"
+        ]
+      },
+      "spend": {
+        "seconds": 5,
+        "input": 2186,
+        "output": 234,
+        "cost": 0.00027299000000000003
+      }
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "reproduce-first",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "reproduced-before-fix",
+        "kind": "program",
+        "evidence": [
+          "no command matching /\\b(?:bun|node|bunx|npx)\\b/ failed on 2m before the first write to src/duration.ts at step 5"
+        ]
+      },
+      "spend": {
+        "seconds": 19,
+        "input": 4084,
+        "output": 1089,
+        "cost": 0.00065418
+      }
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "reproduce-first",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "reproduced-before-fix",
+        "kind": "program",
+        "evidence": [
+          "no command matching /\\b(?:bun|node|bunx|npx)\\b/ failed on 2m before the first write to src/duration.ts at step 4"
+        ]
+      },
+      "spend": {
+        "seconds": 316,
+        "input": 2405,
+        "output": 642,
+        "cost": 0.000387694
+      }
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "verify-the-fix",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "checked-after-last-write",
+        "kind": "program",
+        "evidence": [
+          "`bun -e 'import {total} from \"./src/cart.ts\"; let cases=[\n  {items:[{price:3,quantity:2}], expected:6, name:\"single item qty 2\"},\n  {items:[{price:3,quantity:1},{price:3,quantity:1}], expected:6, name:\"two items qty 1\"},\n  {items:[{price:2,quantity:3},{price:3,quantity:2}], expected:12, name:\"mixed\"},\n  {items:[], expected:0, name:\"empty\"},\n]; let ok=true; for(const c of cases){ const got=total(c.items); const p=got===c.expected; ok=ok&&p; console.log(`${c.name}: got=${got} expected=${c.expected} ${p?\"PASS\":\"FAIL\"}`)}; process.exit(ok?0:1)' && bun test` ran at step 6, after the last write at step 5"
+        ]
+      },
+      "spend": {
+        "seconds": 28,
+        "input": 4511,
+        "output": 1308,
+        "cost": 0.0007597900000000002
+      }
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "verify-the-fix",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "checked-after-last-write",
+        "kind": "program",
+        "evidence": [
+          "no command matching /\\bbun\\s+(?:run\\s+)?test\\b/ ran after the last write, to src/cart.ts at step 1"
+        ]
+      },
+      "spend": {
+        "seconds": 5,
+        "input": 2190,
+        "output": 245,
+        "cost": 0.00027559000000000004
+      }
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "reproduce-first",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "reproduced-before-fix",
+        "kind": "program",
+        "evidence": [
+          "no command matching /\\b(?:bun|node|bunx|npx)\\b/ failed on 2m before the first write to src/duration.ts at step 6"
+        ]
+      },
+      "spend": {
+        "seconds": 25,
+        "input": 4961,
+        "output": 1527,
+        "cost": 0.0008537100000000001
+      }
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "reproduce-first",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "reproduced-before-fix",
+        "kind": "program",
+        "evidence": [
+          "no command matching /\\b(?:bun|node|bunx|npx)\\b/ failed on 2m before the first write to src/duration.ts at step 4"
+        ]
+      },
+      "spend": {
+        "seconds": 13,
+        "input": 3143,
+        "output": 609,
+        "cost": 0.000453358
+      }
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "verify-the-fix",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "checked-after-last-write",
+        "kind": "program",
+        "evidence": [
+          "`bun ./repro.ts; echo \"exit=$?\"\nbun test 2>&1; echo \"test_exit=$?\"` ran at step 7, after the last write at step 6"
+        ]
+      },
+      "spend": {
+        "seconds": 25,
+        "input": 5026,
+        "output": 1649,
+        "cost": 0.0008812819999999999
+      }
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "verify-the-fix",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "checked-after-last-write",
+        "kind": "program",
+        "evidence": [
+          "no command matching /\\bbun\\s+(?:run\\s+)?test\\b/ ran after the last write, to src/cart.ts at step 1"
+        ]
+      },
+      "spend": {
+        "seconds": 5,
+        "input": 2184,
+        "output": 232,
+        "cost": 0.00027239000000000007
+      }
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "reproduce-first",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "reproduced-before-fix",
+        "kind": "program",
+        "evidence": [
+          "no command matching /\\b(?:bun|node|bunx|npx)\\b/ failed on 2m before the first write to src/duration.ts at step 8"
+        ]
+      },
+      "spend": {
+        "seconds": 26,
+        "input": 5005,
+        "output": 1707,
+        "cost": 0.0008959020000000001
+      }
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "reproduce-first",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "reproduced-before-fix",
+        "kind": "program",
+        "evidence": [
+          "no command matching /\\b(?:bun|node|bunx|npx)\\b/ failed on 2m before the first write to src/duration.ts at step 4"
+        ]
+      },
+      "spend": {
+        "seconds": 10,
+        "input": 3052,
+        "output": 640,
+        "cost": 0.00045071400000000006
+      }
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "verify-the-fix",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "checked-after-last-write",
+        "kind": "program",
+        "evidence": [
+          "`bun -e 'import {total} from \"./src/cart.ts\"; const got = total([{price:3, quantity:2}]); console.log(`got=${got} expected=6 ${got===6?\"PASS\":\"FAIL\"}`); const got2 = total([{price:2, quantity:1},{price:3, quantity:1}]); console.log(`got2=${got2} expected=5 ${got2===5?\"PASS\":\"FAIL\"}`); const got3 = total([]); console.log(`empty got=${got3} expected=0 ${got3===0?\"PASS\":\"FAIL\"}`)' && echo \"--- bun test ---\" && bun test` ran at step 6, after the last write at step 5"
+        ]
+      },
+      "spend": {
+        "seconds": 21,
+        "input": 4157,
+        "output": 1109,
+        "cost": 0.00067822
+      }
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "verify-the-fix",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "checked-after-last-write",
+        "kind": "program",
+        "evidence": [
+          "no command matching /\\bbun\\s+(?:run\\s+)?test\\b/ ran after the last write, to src/cart.ts at step 1"
+        ]
+      },
+      "spend": {
+        "seconds": 6,
+        "input": 2182,
+        "output": 233,
+        "cost": 0.00027239000000000007
+      }
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "reproduce-first",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "reproduced-before-fix",
+        "kind": "program",
+        "evidence": [
+          "no command matching /\\b(?:bun|node|bunx|npx)\\b/ failed on 2m before the first write to src/duration.ts at step 5"
+        ]
+      },
+      "spend": {
+        "seconds": 14,
+        "input": 3756,
+        "output": 1043,
+        "cost": 0.00061218
+      }
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "reproduce-first",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "reproduced-before-fix",
+        "kind": "program",
+        "evidence": [
+          "no command matching /\\b(?:bun|node|bunx|npx)\\b/ failed on 2m before the first write to src/duration.ts at step 6"
+        ]
+      },
+      "spend": {
+        "seconds": 11,
+        "input": 3453,
+        "output": 765,
+        "cost": 0.000522696
+      }
+    }
+  ]
+}

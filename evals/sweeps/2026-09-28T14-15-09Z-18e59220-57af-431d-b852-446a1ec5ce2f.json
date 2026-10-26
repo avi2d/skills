@@ -1,0 +1,474 @@
+{
+  "startedAt": "2026-09-28T14:15:09Z",
+  "runId": "18e59220-57af-431d-b852-446a1ec5ce2f",
+  "commit": "9e90f4ebcfbde4955b4786b544f99f4c4fe35b55",
+  "prose": {
+    "files": {
+      "rules/force-determinism/SKILL.md": "095d1d35e8425b4b5d4a7b942c1e6c220c69ead2b1c17aa907a1f3b8d9d33f0d"
+    },
+    "uncommitted": false
+  },
+  "model": "claude-bridge/claude-opus-5-5",
+  "thinking": "xhigh",
+  "repeats": 10,
+  "planned": 20,
+  "missing": [],
+  "runs": [
+    {
+      "rule": "force-determinism",
+      "case": "watched-red",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "seen-failing",
+        "kind": "program",
+        "evidence": [
+          "`cp src/money.ts /tmp/money.ts.bak\nprintf '\\nexport const debug = (cents: number) => {\\n  console.log(formatCents(cents));\\n};\\n' >> src/money.ts\nmkdir -p src/nested && printf 'export const trace = () => console\\n  .log(\"hi\");\\n' > src/nested/trace.ts\nbun test tests/no-console-log.test.ts 2>&1 | tail -25; echo \"exit=$?\"` failed under tests/no-console-log.test.ts at step 6, and `cp /tmp/money.ts.bak src/money.ts && rm -r src/nested && git status --short\nbun test tests/no-console-log.test.ts > /tmp/out.txt 2>&1; echo \"exit=$?\"; tail -6 /tmp/out.txt` passed at step 7"
+        ]
+      },
+      "spend": {
+        "seconds": 103,
+        "input": 20,
+        "output": 5046,
+        "cacheRead": 60664,
+        "cacheWrite": 7317,
+        "cacheWrite1h": 0,
+        "cost": 0.1497178,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "watched-red",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "seen-failing",
+        "kind": "program",
+        "evidence": [
+          "`bun test 2>&1 | tail -8\necho \"=== with violations\"\nmkdir -p src/tmpcheck\nprintf 'export const a = 1;\\nconsole.log(\"x\");\\n' > src/tmpcheck/nested.ts\nprintf 'export const b = () =>\\n  console\\n    .log(\"y\");\\n' > src/tmpviolation.ts\nbun test tests/no-console-log.test.ts 2>&1 | tail -25\nrm -r src/tmpcheck src/tmpviolation.ts\necho \"=== after cleanup\"; git status --short; bun test 2>&1 | tail -4` failed under tests/no-console-log.test.ts at step 6, and the tests passed later in the same command"
+        ]
+      },
+      "spend": {
+        "seconds": 70,
+        "input": 10,
+        "output": 2696,
+        "cacheRead": 18050,
+        "cacheWrite": 3786,
+        "cacheWrite1h": 0,
+        "cost": 0.07650000000000001,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "watched-red",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "seen-failing",
+        "kind": "program",
+        "evidence": [
+          "`cp src/money.ts /tmp/money.ts.bak\nprintf '\\nconsole.log(\"debug\");\\n' >> src/money.ts\nmkdir -p src/util && printf 'export const trace = (x: unknown) => console.log(x);\\n' > src/util/debug.ts\nprintf 'console[\"log\"](\"hi\");\\n' > src/util/legacy.js\nbun test tests/no-console-log.test.ts; echo \"EXIT=$?\"` failed under tests/no-console-log.test.ts at step 5, and `cp /tmp/money.ts.bak src/money.ts && rm -r src/util && git status --short && git diff --stat src/\nbun test tests/no-console-log.test.ts; echo \"EXIT=$?\"` passed at step 7"
+        ]
+      },
+      "spend": {
+        "seconds": 89,
+        "input": 16,
+        "output": 4178,
+        "cacheRead": 43789,
+        "cacheWrite": 7329,
+        "cacheWrite1h": 0,
+        "cost": 0.12902680000000002,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "watched-red",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "seen-failing",
+        "kind": "program",
+        "evidence": [
+          "`bun test 2>&1; echo \"exit=$?\"; echo ======\nmkdir -p src/nested && printf 'export const f = () => {\\n  console\\n    .log(\"hi\");\\n  console?.log(\"x\");\\n};\\n' > src/nested/tmp-probe.ts\nbun test 2>&1; echo \"exit=$?\"\nrm -r src/nested; git status --short` failed under tests/no-console-log.test.ts at step 4, and that check never passed after it without being rewritten"
+        ]
+      },
+      "spend": {
+        "seconds": 74,
+        "input": 10,
+        "output": 3185,
+        "cacheRead": 17829,
+        "cacheWrite": 4212,
+        "cacheWrite1h": 0,
+        "cost": 0.0883658,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "watched-red",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "seen-failing",
+        "kind": "program",
+        "evidence": [
+          "`printf 'console.log(\"debug\");\\n' >> src/money.ts && cat src/money.ts && bun test tests/no-console-log.test.ts 2>&1 | tail -25` failed under tests/no-console-log.test.ts at step 5, and `git checkout -- src/money.ts && git status --short && bun test tests/no-console-log.test.ts 2>&1 | tail -6` passed at step 7"
+        ]
+      },
+      "spend": {
+        "seconds": 83,
+        "input": 22,
+        "output": 5067,
+        "cacheRead": 67739,
+        "cacheWrite": 7018,
+        "cacheWrite1h": 0,
+        "cost": 0.1500658,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "watched-red",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "unjudged",
+        "why": "the output of `bun test 2>&1 | tail -8; echo \"=== with violations ===\"; mkdir -p src/nested && printf 'export const x = 1;\\nconsole.log(\"hi\");\\n' > src/nested/tmp.ts && printf '\\n[1].forEach(console.log);\\n' >> src/money.ts; bun test 2>&1 | tail -25; echo \"=== cleanup ===\"; rm -r src/nested && git checkout src/money.ts && git status --short && bun test 2>&1 | tail -3` at step 4 shows test results without the check's own header, so whether the check went red or green there cannot be seen"
+      },
+      "spend": {
+        "seconds": 34,
+        "input": 10,
+        "output": 2334,
+        "cacheRead": 16834,
+        "cacheWrite": 3191,
+        "cacheWrite1h": 0,
+        "cost": 0.06604180000000001,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "watched-red",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "seen-failing",
+        "kind": "program",
+        "evidence": [
+          "`cp src/money.ts /tmp/money.ts.bak\nprintf '\\nexport const debugCents = (cents: number): void => {\\n  console.log(formatCents(cents));\\n};\\n' >> src/money.ts\ncat src/money.ts; echo \"--- RUN (expect red)\"; bun test tests/no-console-log.test.ts 2>&1; echo \"exit=$?\"` failed under tests/no-console-log.test.ts at step 5, and `cp /tmp/money.ts.bak src/money.ts && rm /tmp/money.ts.bak && git diff --stat -- src; echo \"--- RUN (expect green)\"; bun test tests/no-console-log.test.ts 2>&1; echo \"exit=$?\"` passed at step 7"
+        ]
+      },
+      "spend": {
+        "seconds": 84,
+        "input": 20,
+        "output": 5787,
+        "cacheRead": 62581,
+        "cacheWrite": 8690,
+        "cacheWrite1h": 0,
+        "cost": 0.17178620000000003,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "watched-red",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "unjudged",
+        "why": "the output of `cd /private/var/folders/87/xct3_xnj7jv7kn7vfbtzhty00000gn/T/skills-eval-pEnVnA/repo && echo \"### clean\" && bun test 2>&1 | tail -5\necho \"### with violations\"\ncp src/money.ts /tmp/money.bak\nprintf '%s\\n' 'export const formatCents = (cents: number): string => { console.log(cents); return `$${(cents / 100).toFixed(2)}`; };' > src/money.ts\nmkdir -p src/nested && echo 'export const x = () => console?.log(\"hi\");' > src/nested/deep.ts\necho '// console.log(\"old debug\")' > src/commented.ts\nbun test tests/no-console-log.test.ts 2>&1 | tail -20\ncp /tmp/money.bak src/money.ts; rm -rf src/nested src/commented.ts /tmp/money.bak\necho \"### restored\"; git status --short; bun test 2>&1 | tail -3` at step 5 shows test results without the check's own header, so whether the check went red or green there cannot be seen"
+      },
+      "spend": {
+        "seconds": 60,
+        "input": 12,
+        "output": 3881,
+        "cacheRead": 25613,
+        "cacheWrite": 5153,
+        "cacheWrite1h": 0,
+        "cost": 0.1085556,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "watched-red",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "seen-failing",
+        "kind": "program",
+        "evidence": [
+          "`cd /private/var/folders/87/xct3_xnj7jv7kn7vfbtzhty00000gn/T/skills-eval-y2hsUk/repo && cp src/ledger.ts /tmp/ledger.ts.bak && echo 'console.log(\"debug\");' >> src/ledger.ts && bun test tests/no-console-log.test.ts; echo \"exit=$?\"` failed under tests/no-console-log.test.ts at step 4, and `cd /private/var/folders/87/xct3_xnj7jv7kn7vfbtzhty00000gn/T/skills-eval-y2hsUk/repo && find src tests -type f && git status --short && git diff && ls /tmp/empty-src 2>&1; echo; bun test; echo \"exit=$?\"` passed at step 8"
+        ]
+      },
+      "spend": {
+        "seconds": 74,
+        "input": 16,
+        "output": 4032,
+        "cacheRead": 42077,
+        "cacheWrite": 6359,
+        "cacheWrite1h": 0,
+        "cost": 0.1209144,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "watched-red",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "seen-failing",
+        "kind": "program",
+        "evidence": [
+          "`mkdir -p src/tmpcheck && printf 'export const f = () => {\\n  console.log(\"hi\");\\n};\\n' > src/tmpcheck/probe.ts && bun test 2>&1 | tail -20; rm -r src/tmpcheck; git status --short` failed under tests/no-console-log.test.ts at step 5, and that check never passed after it without being rewritten"
+        ]
+      },
+      "spend": {
+        "seconds": 38,
+        "input": 10,
+        "output": 2424,
+        "cacheRead": 17282,
+        "cacheWrite": 3319,
+        "cacheWrite1h": 0,
+        "cost": 0.0685714,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "watched-red",
+      "arm": "injected",
+      "repeat": 6,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "seen-failing",
+        "kind": "program",
+        "evidence": [
+          "`cp src/money.ts /tmp/money.ts.bak\nprintf 'export const formatCents = (cents: number): string => {\\n  console.log(\"formatting\", cents);\\n  return `$${(cents / 100).toFixed(2)}`;\\n};\\n' > src/money.ts\nmkdir -p src/debug && printf 'export const trace = (msg: string) => console[\"log\"](msg);\\n' > src/debug/trace.ts\ngit status --short; bun test; echo \"EXIT=$?\"` failed under tests/no-console-log.test.ts at step 4, and `cp /tmp/money.ts.bak src/money.ts && rm -r src/debug\ngit status --short; git diff --stat; bun test; echo \"EXIT=$?\"` passed at step 6"
+        ]
+      },
+      "spend": {
+        "seconds": 44,
+        "input": 14,
+        "output": 3173,
+        "cacheRead": 31938,
+        "cacheWrite": 5378,
+        "cacheWrite1h": 0,
+        "cost": 0.09679360000000001,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "watched-red",
+      "arm": "withheld",
+      "repeat": 6,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "seen-failing",
+        "kind": "program",
+        "evidence": [
+          "`cd /private/var/folders/87/xct3_xnj7jv7kn7vfbtzhty00000gn/T/skills-eval-BadAKf/repo && bun test 2>&1; echo \"exit=$?\"\necho '--- injecting violations ---'\ncp src/money.ts /tmp/money.bak\necho 'console.log(\"debug\");' >> src/money.ts\nmkdir -p src/nested && echo 'export const f = () => console[\"log\"](\"x\");' > src/nested/util.ts\nbun test tests/no-console-log.test.ts 2>&1; echo \"exit=$?\"\ncp /tmp/money.bak src/money.ts && rm -rf src/nested\necho '--- restored ---'\nbun test 2>&1; echo \"exit=$?\"; git status --short` failed under tests/no-console-log.test.ts at step 4, and the tests passed later in the same command"
+        ]
+      },
+      "spend": {
+        "seconds": 36,
+        "input": 10,
+        "output": 2041,
+        "cacheRead": 16588,
+        "cacheWrite": 3199,
+        "cacheWrite1h": 0,
+        "cost": 0.06017260000000001,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "watched-red",
+      "arm": "injected",
+      "repeat": 7,
+      "verdict": {
+        "outcome": "unjudged",
+        "why": "the output of `cd /private/var/folders/87/xct3_xnj7jv7kn7vfbtzhty00000gn/T/skills-eval-eGFdZ9/repo && git checkout -- src/money.ts && rm src/nested/trace.ts && rmdir src/nested && git status --short && git diff --stat src; echo \"--- GREEN RUN\"; bun test 2>&1 | tail -10; echo \"exit=${PIPESTATUS[0]}\"` at step 8 shows test results without the check's own header, so whether the check went red or green there cannot be seen"
+      },
+      "spend": {
+        "seconds": 77,
+        "input": 18,
+        "output": 5557,
+        "cacheRead": 51797,
+        "cacheWrite": 8189,
+        "cacheWrite1h": 0,
+        "cost": 0.1625164,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "watched-red",
+      "arm": "withheld",
+      "repeat": 7,
+      "verdict": {
+        "outcome": "unjudged",
+        "why": "the output of `cd /private/var/folders/87/xct3_xnj7jv7kn7vfbtzhty00000gn/T/skills-eval-DnClmw/repo && bun test 2>&1; echo \"exit=$?\"\nmkdir -p src/nested\nprintf 'export const f = () => {\\n  console.log(\"hi\");\\n};\\n' > src/nested/tmp-probe.ts\nprintf 'export const g = () =>\\n  console\\n    .log(\"split\");\\n' > src/tmp-probe2.js\necho \"--- with violations:\"; bun test 2>&1; echo \"exit=$?\"\nrm src/nested/tmp-probe.ts src/tmp-probe2.js && rmdir src/nested\necho \"--- after cleanup:\"; git status --short; bun test 2>&1 | tail -3` at step 6 shows test results without the check's own header, so whether the check went red or green there cannot be seen"
+      },
+      "spend": {
+        "seconds": 47,
+        "input": 10,
+        "output": 3260,
+        "cacheRead": 19101,
+        "cacheWrite": 4768,
+        "cacheWrite1h": 0,
+        "cost": 0.0929002,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "watched-red",
+      "arm": "injected",
+      "repeat": 8,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "seen-failing",
+        "kind": "program",
+        "evidence": [
+          "`cd /private/var/folders/87/xct3_xnj7jv7kn7vfbtzhty00000gn/T/skills-eval-4S5wYh/repo && cp src/money.ts /tmp/money.ts.bak && printf 'export const formatCents = (cents: number): string => {\\n  console.log(\"formatting\", cents);\\n  return `$${(cents / 100).toFixed(2)}`;\\n};\\n' > src/money.ts && mkdir -p src/debug && printf 'export const trace = (msg: string) => console[\"log\"](msg);\\n' > src/debug/trace.ts && bun test; echo \"exit=$?\"` failed under tests/no-console-log.test.ts at step 4, and `cd /private/var/folders/87/xct3_xnj7jv7kn7vfbtzhty00000gn/T/skills-eval-4S5wYh/repo && cp /tmp/money.ts.bak src/money.ts && rm -r src/debug && git status --short && bun test; echo \"exit=$?\"` passed at step 6"
+        ]
+      },
+      "spend": {
+        "seconds": 58,
+        "input": 16,
+        "output": 3909,
+        "cacheRead": 41938,
+        "cacheWrite": 6095,
+        "cacheWrite1h": 0,
+        "cost": 0.1171066,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "watched-red",
+      "arm": "withheld",
+      "repeat": 8,
+      "verdict": {
+        "outcome": "unjudged",
+        "why": "the output of `cd /private/var/folders/87/xct3_xnj7jv7kn7vfbtzhty00000gn/T/skills-eval-ckIJ5k/repo && cp src/money.ts /tmp/money.bak && mkdir -p src/nested && echo 'export const f = () => console.log(\"hi\");' > src/nested/x.ts && printf '\\nconsole .log(1);\\n' >> src/money.ts && bun test tests/no-console-log.test.ts 2>&1 | tail -20; rm -rf src/nested && cp /tmp/money.bak src/money.ts && git status --short && bun test 2>&1 | tail -4` at step 5 shows test results without the check's own header, so whether the check went red or green there cannot be seen"
+      },
+      "spend": {
+        "seconds": 34,
+        "input": 10,
+        "output": 2065,
+        "cacheRead": 18143,
+        "cacheWrite": 3482,
+        "cacheWrite1h": 0,
+        "cost": 0.062378600000000006,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "watched-red",
+      "arm": "injected",
+      "repeat": 9,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "seen-failing",
+        "kind": "program",
+        "evidence": [
+          "`cp src/money.ts /tmp/money.ts.orig\ncat >> src/money.ts <<'EOF'\nexport const debugCents = (cents: number): void => console.log(cents);\nEOF\ncat src/money.ts; echo \"--- RED run:\"; bun test tests/no-console-log.test.ts; echo \"exit=$?\"` failed under tests/no-console-log.test.ts at step 5, and `git checkout -- src/money.ts && git status --short && echo \"--- GREEN run:\" && bun test tests/no-console-log.test.ts; echo \"exit=$?\"` passed at step 11"
+        ]
+      },
+      "spend": {
+        "seconds": 67,
+        "input": 20,
+        "output": 4008,
+        "cacheRead": 57927,
+        "cacheWrite": 6574,
+        "cacheWrite1h": 0,
+        "cost": 0.12469540000000001,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "watched-red",
+      "arm": "withheld",
+      "repeat": 9,
+      "verdict": {
+        "outcome": "unjudged",
+        "why": "the output of `bun test 2>&1 | tail -4` at step 7 shows test results without the check's own header, so whether the check went red or green there cannot be seen"
+      },
+      "spend": {
+        "seconds": 39,
+        "input": 14,
+        "output": 2470,
+        "cacheRead": 28085,
+        "cacheWrite": 3463,
+        "cacheWrite1h": 0,
+        "cost": 0.07238800000000001,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "watched-red",
+      "arm": "injected",
+      "repeat": 10,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "seen-failing",
+        "kind": "program",
+        "evidence": [
+          "`cat >> src/money.ts <<'EOF'\nconsole.log(\"debug\", formatCents(1));\nEOF\ngit diff src/; bun test tests/no-console-log.test.ts; echo \"exit=$?\"` failed under tests/no-console-log.test.ts at step 4, and `git checkout -- src/money.ts; git status --short; bun test tests/no-console-log.test.ts; echo \"exit=$?\"` passed at step 6"
+        ]
+      },
+      "spend": {
+        "seconds": 57,
+        "input": 16,
+        "output": 3797,
+        "cacheRead": 40198,
+        "cacheWrite": 5783,
+        "cacheWrite1h": 0,
+        "cost": 0.1129586,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "watched-red",
+      "arm": "withheld",
+      "repeat": 10,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "seen-failing",
+        "kind": "program",
+        "evidence": [
+          "`bun test 2>&1; echo \"exit=$?\"` failed under tests/no-console-log.test.ts at step 6, and `git status --short; git diff --stat; bun test 2>&1; echo \"exit=$?\"` passed at step 8"
+        ]
+      },
+      "spend": {
+        "seconds": 37,
+        "input": 12,
+        "output": 2327,
+        "cacheRead": 22565,
+        "cacheWrite": 3916,
+        "cacheWrite1h": 0,
+        "cost": 0.07068100000000001,
+        "costEstimated": true
+      }
+    }
+  ]
+}

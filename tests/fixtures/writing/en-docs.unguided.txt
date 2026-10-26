@@ -1,0 +1,38 @@
+# Importing your bank's CSV export
+
+Ledger can read the CSV file your bank lets you download and add its transactions to your ledger.
+
+## 1. Download the export from your bank
+
+Sign in to your bank's website and download your statement or transaction history as a CSV file. Note where it was saved, for example `~/Downloads/statement.csv`.
+
+## 2. Run the import
+
+From your Ledger folder, run `bun run import` with the path to the file:
+
+```sh
+bun run import ~/Downloads/statement.csv
+```
+
+Ledger adds each new transaction to `ledger.csv`.
+
+## Importing the same file again
+
+You can safely import a file more than once, or import exports with overlapping dates. Ledger skips transactions it has already imported, so they won't be added twice.
+
+## Troubleshooting
+
+### The file is too large
+
+Ledger refuses files over 10 MB. Split the export by month, then import each part:
+
+```sh
+bun run import ~/Downloads/statement-2026-08.csv
+bun run import ~/Downloads/statement-2026-09.csv
+```
+
+Many banks let you choose a date range when you download the export, so you can download one month at a time.
+
+### Ledger says columns are missing
+
+Banks name their CSV columns differently. If Ledger reports missing columns, it doesn't recognize your bank's column names, so you need to add a column mapping for your bank's export in `ledger.config.json`. Then run the import again.

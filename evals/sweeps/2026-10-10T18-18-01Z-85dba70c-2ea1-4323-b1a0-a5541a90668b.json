@@ -1,0 +1,235 @@
+{
+  "startedAt": "2026-10-10T18:18:01Z",
+  "runId": "85dba70c-2ea1-4323-b1a0-a5541a90668b",
+  "commit": "4709e4de9211cdf0f4b40611b9f29a621b879b00",
+  "prose": {
+    "files": {
+      "library/engineering/rules/prove-it-works/SKILL.md": "ce65caa1d1e4b5c29e827eae37d2e012359f85bcc45d3df1c0181da08304d01e"
+    },
+    "uncommitted": false
+  },
+  "model": "claude-bridge/claude-opus-5-5",
+  "thinking": "high",
+  "repeats": 2,
+  "planned": 8,
+  "missing": [],
+  "runs": [
+    {
+      "rule": "prove-it-works",
+      "case": "git-ignored",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "96 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 497,
+        "turns": 17,
+        "input": 34,
+        "output": 38812,
+        "cacheRead": 488044,
+        "cacheWrite": 46854,
+        "cacheWrite1h": 0,
+        "cost": 1.1082548,
+        "costEstimated": true
+      },
+      "wroteTest": true
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "git-ignored",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "96 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 333,
+        "turns": 10,
+        "input": 20,
+        "output": 34773,
+        "cacheRead": 207137,
+        "cacheWrite": 38201,
+        "cacheWrite1h": 0,
+        "cost": 0.9279723999999999,
+        "costEstimated": true
+      },
+      "wroteTest": true
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "cron-next",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "29 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 364,
+        "turns": 21,
+        "input": 42,
+        "output": 22220,
+        "cacheRead": 345898,
+        "cacheWrite": 33356,
+        "cacheWrite1h": 0,
+        "cost": 0.6805276000000001,
+        "costEstimated": true
+      },
+      "wroteTest": true
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "cron-next",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "29 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 70,
+        "turns": 5,
+        "input": 10,
+        "output": 6461,
+        "cacheRead": 22474,
+        "cacheWrite": 7780,
+        "cacheWrite1h": 0,
+        "cost": 0.17265480000000002,
+        "costEstimated": true
+      },
+      "wroteTest": true
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "git-ignored",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "96 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 365,
+        "turns": 18,
+        "input": 36,
+        "output": 36140,
+        "cacheRead": 466100,
+        "cacheWrite": 40665,
+        "cacheWrite1h": 0,
+        "cost": 1.019489,
+        "costEstimated": true
+      },
+      "wroteTest": true
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "git-ignored",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "96 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 378,
+        "turns": 14,
+        "input": 28,
+        "output": 36954,
+        "cacheRead": 354620,
+        "cacheWrite": 41881,
+        "cacheWrite1h": 0,
+        "cost": 1.0195210000000001,
+        "costEstimated": true
+      },
+      "wroteTest": true
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "cron-next",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "unjudged",
+        "why": "pi ran past 15m and was stopped"
+      },
+      "spend": {
+        "seconds": 900,
+        "turns": 11,
+        "input": 22,
+        "output": 17958,
+        "cacheRead": 138524,
+        "cacheWrite": 22049,
+        "cacheWrite1h": 0,
+        "cost": 0.4971978,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "cron-next",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "29 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 101,
+        "turns": 7,
+        "input": 14,
+        "output": 8591,
+        "cacheRead": 48285,
+        "cacheWrite": 9923,
+        "cacheWrite1h": 0,
+        "cost": 0.231148,
+        "costEstimated": true
+      },
+      "wroteTest": true
+    }
+  ]
+}

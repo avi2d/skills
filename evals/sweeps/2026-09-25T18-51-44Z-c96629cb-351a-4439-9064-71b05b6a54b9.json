@@ -1,0 +1,220 @@
+{
+  "startedAt": "2026-09-25T18:51:44Z",
+  "runId": "c96629cb-351a-4439-9064-71b05b6a54b9",
+  "commit": "583e19bc1626330d9e70628af50a4b0d6e61c89e",
+  "prose": {
+    "files": {
+      "rules/writing-for-people/SKILL.md": "4739b3809d6fa89a3e1a1de15a740eb3b19d7d69d389ed1b44e16046b6826ec2",
+      "references/technical-writing/SKILL.md": "0dea8fd0bf08736d9df69d30e2b25b03bb9b936ea30db397c098a72d544628a8",
+      "references/unslop/SKILL.md": "d28555bab5bf222fa1a07dbbb2ab10be373ba179ab077a78eb267d1efbc85aec"
+    },
+    "uncommitted": false
+  },
+  "model": "claude-bridge/claude-opus-5-5",
+  "thinking": "xhigh",
+  "repeats": 5,
+  "planned": 10,
+  "missing": [],
+  "runs": [
+    {
+      "rule": "writing-for-people",
+      "case": "readme-sections",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "task-sections",
+        "kind": "program",
+        "evidence": [
+          "the install and verify sections are titled by their task, and the new prose uses no dash, parenthesis or semicolon"
+        ]
+      },
+      "spend": {
+        "seconds": 82,
+        "input": 16,
+        "output": 7031,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "readme-sections",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "task-sections",
+        "kind": "program",
+        "evidence": [
+          "the install and verify sections are titled by their task, and the new prose uses no dash, parenthesis or semicolon"
+        ]
+      },
+      "spend": {
+        "seconds": 50,
+        "input": 14,
+        "output": 3979,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "readme-sections",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "task-sections",
+        "kind": "program",
+        "evidence": [
+          "the install and verify sections are titled by their task, and the new prose uses no dash, parenthesis or semicolon"
+        ]
+      },
+      "spend": {
+        "seconds": 110,
+        "input": 18,
+        "output": 8861,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "readme-sections",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "task-sections",
+        "kind": "program",
+        "evidence": [
+          "the install and verify sections are titled by their task, and the new prose uses no dash, parenthesis or semicolon"
+        ]
+      },
+      "spend": {
+        "seconds": 69,
+        "input": 16,
+        "output": 5780,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "readme-sections",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "task-sections",
+        "kind": "program",
+        "evidence": [
+          "the install and verify sections are titled by their task, and the new prose uses no dash, parenthesis or semicolon"
+        ]
+      },
+      "spend": {
+        "seconds": 70,
+        "input": 14,
+        "output": 5793,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "readme-sections",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "task-sections",
+        "kind": "program",
+        "evidence": [
+          "the install and verify sections are titled by their task, and the new prose uses no dash, parenthesis or semicolon"
+        ]
+      },
+      "spend": {
+        "seconds": 59,
+        "input": 14,
+        "output": 4765,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "readme-sections",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "task-sections",
+        "kind": "program",
+        "evidence": [
+          "the install and verify sections are titled by their task, and the new prose uses no dash, parenthesis or semicolon"
+        ]
+      },
+      "spend": {
+        "seconds": 66,
+        "input": 12,
+        "output": 5727,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "readme-sections",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "task-sections",
+        "kind": "program",
+        "evidence": [
+          "the install and verify sections are titled by their task, and the new prose uses no dash, parenthesis or semicolon"
+        ]
+      },
+      "spend": {
+        "seconds": 71,
+        "input": 16,
+        "output": 4882,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "readme-sections",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "task-sections",
+        "kind": "program",
+        "evidence": [
+          "the install and verify sections are titled by their task, and the new prose uses no dash, parenthesis or semicolon"
+        ]
+      },
+      "spend": {
+        "seconds": 84,
+        "input": 18,
+        "output": 7582,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "readme-sections",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "task-sections",
+        "kind": "program",
+        "evidence": [
+          "the install and verify sections are titled by their task, and the new prose uses no dash, parenthesis or semicolon"
+        ]
+      },
+      "spend": {
+        "seconds": 55,
+        "input": 14,
+        "output": 4082,
+        "cost": 0
+      }
+    }
+  ]
+}

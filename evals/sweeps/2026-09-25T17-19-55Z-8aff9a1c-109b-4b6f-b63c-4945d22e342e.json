@@ -1,0 +1,418 @@
+{
+  "startedAt": "2026-09-25T17:19:55Z",
+  "runId": "8aff9a1c-109b-4b6f-b63c-4945d22e342e",
+  "commit": "edb7ba7b0ceb79a3360b677b00ffff5f52c896c1",
+  "prose": {
+    "files": {
+      "rules/effect-error-channel/SKILL.md": "61cb5618b35d405d54f815a77ee41c48b33cd533a5e0aa04cbbcbf1246876cd1"
+    },
+    "uncommitted": false
+  },
+  "model": "openai-codex/gpt-6-sol",
+  "thinking": "high",
+  "repeats": 5,
+  "planned": 20,
+  "missing": [],
+  "runs": [
+    {
+      "rule": "effect-error-channel",
+      "case": "scheduled-job",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "keeps-the-error-channel",
+        "kind": "program",
+        "evidence": [
+          "1 changed TypeScript file(s) erase no error unseen: src/main.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 72,
+        "input": 14142,
+        "output": 1539,
+        "cost": 0.062618
+      }
+    },
+    {
+      "rule": "effect-error-channel",
+      "case": "scheduled-job",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "keeps-the-error-channel",
+        "kind": "program",
+        "evidence": [
+          "1 changed TypeScript file(s) erase no error unseen: src/main.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 62,
+        "input": 18019,
+        "output": 1060,
+        "cost": 0.0517068
+      }
+    },
+    {
+      "rule": "effect-error-channel",
+      "case": "invoice-route",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "keeps-the-error-channel",
+        "kind": "program",
+        "evidence": [
+          "1 changed TypeScript file(s) erase no error unseen: src/server.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 72,
+        "input": 15147,
+        "output": 2090,
+        "cost": 0.0686532
+      }
+    },
+    {
+      "rule": "effect-error-channel",
+      "case": "invoice-route",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "keeps-the-error-channel",
+        "kind": "program",
+        "evidence": [
+          "1 changed TypeScript file(s) erase no error unseen: src/server.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 76,
+        "input": 7436,
+        "output": 2431,
+        "cost": 0.046836400000000014
+      }
+    },
+    {
+      "rule": "effect-error-channel",
+      "case": "scheduled-job",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "keeps-the-error-channel",
+        "kind": "program",
+        "evidence": [
+          "1 changed TypeScript file(s) erase no error unseen: src/main.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 66,
+        "input": 21818,
+        "output": 1622,
+        "cost": 0.07176
+      }
+    },
+    {
+      "rule": "effect-error-channel",
+      "case": "scheduled-job",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "keeps-the-error-channel",
+        "kind": "program",
+        "evidence": [
+          "1 changed TypeScript file(s) erase no error unseen: src/main.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 66,
+        "input": 11891,
+        "output": 984,
+        "cost": 0.0387932
+      }
+    },
+    {
+      "rule": "effect-error-channel",
+      "case": "invoice-route",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "keeps-the-error-channel",
+        "kind": "program",
+        "evidence": [
+          "2 changed TypeScript file(s) erase no error unseen: src/server.test.ts, src/server.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 116,
+        "input": 24782,
+        "output": 3214,
+        "cost": 0.0963216
+      }
+    },
+    {
+      "rule": "effect-error-channel",
+      "case": "invoice-route",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "keeps-the-error-channel",
+        "kind": "program",
+        "evidence": [
+          "1 changed TypeScript file(s) erase no error unseen: src/server.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 60,
+        "input": 10837,
+        "output": 1858,
+        "cost": 0.0450924
+      }
+    },
+    {
+      "rule": "effect-error-channel",
+      "case": "scheduled-job",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "keeps-the-error-channel",
+        "kind": "program",
+        "evidence": [
+          "1 changed TypeScript file(s) erase no error unseen: src/main.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 53,
+        "input": 18426,
+        "output": 1366,
+        "cost": 0.05988160000000001
+      }
+    },
+    {
+      "rule": "effect-error-channel",
+      "case": "scheduled-job",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "keeps-the-error-channel",
+        "kind": "program",
+        "evidence": [
+          "1 changed TypeScript file(s) erase no error unseen: src/main.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 51,
+        "input": 8599,
+        "output": 1258,
+        "cost": 0.0339764
+      }
+    },
+    {
+      "rule": "effect-error-channel",
+      "case": "invoice-route",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "keeps-the-error-channel",
+        "kind": "program",
+        "evidence": [
+          "2 changed TypeScript file(s) erase no error unseen: src/server.test.ts, src/server.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 85,
+        "input": 24275,
+        "output": 2583,
+        "cost": 0.08961200000000002
+      }
+    },
+    {
+      "rule": "effect-error-channel",
+      "case": "invoice-route",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "keeps-the-error-channel",
+        "kind": "program",
+        "evidence": [
+          "1 changed TypeScript file(s) erase no error unseen: src/server.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 73,
+        "input": 7292,
+        "output": 2438,
+        "cost": 0.049101599999999995
+      }
+    },
+    {
+      "rule": "effect-error-channel",
+      "case": "scheduled-job",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "keeps-the-error-channel",
+        "kind": "program",
+        "evidence": [
+          "1 changed TypeScript file(s) erase no error unseen: src/main.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 68,
+        "input": 16004,
+        "output": 1757,
+        "cost": 0.06992999999999999
+      }
+    },
+    {
+      "rule": "effect-error-channel",
+      "case": "scheduled-job",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "keeps-the-error-channel",
+        "kind": "program",
+        "evidence": [
+          "1 changed TypeScript file(s) erase no error unseen: src/main.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 76,
+        "input": 13564,
+        "output": 1680,
+        "cost": 0.053809600000000006
+      }
+    },
+    {
+      "rule": "effect-error-channel",
+      "case": "invoice-route",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "keeps-the-error-channel",
+        "kind": "program",
+        "evidence": [
+          "2 changed TypeScript file(s) erase no error unseen: src/server.test.ts, src/server.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 98,
+        "input": 13841,
+        "output": 2122,
+        "cost": 0.0639036
+      }
+    },
+    {
+      "rule": "effect-error-channel",
+      "case": "invoice-route",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "keeps-the-error-channel",
+        "kind": "program",
+        "evidence": [
+          "1 changed TypeScript file(s) erase no error unseen: src/server.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 50,
+        "input": 4466,
+        "output": 1516,
+        "cost": 0.0267032
+      }
+    },
+    {
+      "rule": "effect-error-channel",
+      "case": "scheduled-job",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "keeps-the-error-channel",
+        "kind": "program",
+        "evidence": [
+          "1 changed TypeScript file(s) erase no error unseen: src/main.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 83,
+        "input": 27626,
+        "output": 1543,
+        "cost": 0.0813572
+      }
+    },
+    {
+      "rule": "effect-error-channel",
+      "case": "scheduled-job",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "keeps-the-error-channel",
+        "kind": "program",
+        "evidence": [
+          "1 changed TypeScript file(s) erase no error unseen: src/main.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 51,
+        "input": 8654,
+        "output": 1019,
+        "cost": 0.0328484
+      }
+    },
+    {
+      "rule": "effect-error-channel",
+      "case": "invoice-route",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "keeps-the-error-channel",
+        "kind": "program",
+        "evidence": [
+          "1 changed TypeScript file(s) erase no error unseen: src/server.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 55,
+        "input": 11532,
+        "output": 1473,
+        "cost": 0.048059599999999994
+      }
+    },
+    {
+      "rule": "effect-error-channel",
+      "case": "invoice-route",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "keeps-the-error-channel",
+        "kind": "program",
+        "evidence": [
+          "1 changed TypeScript file(s) erase no error unseen: src/server.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 47,
+        "input": 4657,
+        "output": 1363,
+        "cost": 0.025504
+      }
+    }
+  ]
+}

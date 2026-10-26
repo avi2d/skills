@@ -1,0 +1,1060 @@
+{
+  "startedAt": "2026-10-11T14:20:54Z",
+  "runId": "5812370d-bd9e-4b49-82bb-0da5ceb79f99",
+  "commit": "b601b88e4a18cf93e050ec4a361e98b962308787",
+  "prose": {
+    "files": {
+      "library/writing/rules/writing-for-people/SKILL.md": "f49658c9f2832cdcaf27a843c58d4a10350bb67ec9eea439348f48b8324f5df0",
+      "library/writing/references/technical-writing/SKILL.md": "40cd3cd13fdf99dc11cce650ee27173bf5eca64372a5dc4acb6a1986eef93208",
+      "library/writing/references/unslop/SKILL.md": "9f4aaec146e6adc292e1c72131a2fa29df9e66f15215e78716c36f67c480ddd6"
+    },
+    "uncommitted": false
+  },
+  "model": "opencode-go/muse-spark-1.3-contributor",
+  "thinking": "high",
+  "repeats": 5,
+  "planned": 40,
+  "missing": [],
+  "runs": [
+    {
+      "rule": "writing-for-people",
+      "case": "en-readme",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "task-sections",
+        "kind": "program",
+        "evidence": [
+          "the install and verify sections are titled by their task, and the new prose uses no dash, parenthesis or semicolon"
+        ]
+      },
+      "spend": {
+        "seconds": 20,
+        "turns": 4,
+        "input": 8512,
+        "output": 4771,
+        "cacheRead": 15684,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0018367680000000001,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "en-readme",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "task-sections",
+        "kind": "program",
+        "evidence": [
+          "the install and verify sections are titled by their task, and the new prose uses no dash, parenthesis or semicolon"
+        ]
+      },
+      "spend": {
+        "seconds": 130,
+        "turns": 11,
+        "input": 10552,
+        "output": 3425,
+        "cacheRead": 64618,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.001869436,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "ru-readme",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "task-sections",
+        "kind": "program",
+        "evidence": [
+          "the install and verify sections are titled by their task, and the new prose uses no dash, parenthesis or semicolon"
+        ]
+      },
+      "spend": {
+        "seconds": 170,
+        "turns": 7,
+        "input": 11589,
+        "output": 7586,
+        "cacheRead": 51366,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.002778832,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "ru-readme",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "task-sections",
+        "kind": "program",
+        "evidence": [
+          "the install and verify sections are titled by their task, and the new prose uses no dash, parenthesis or semicolon"
+        ]
+      },
+      "spend": {
+        "seconds": 14,
+        "turns": 6,
+        "input": 7317,
+        "output": 2173,
+        "cacheRead": 25382,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0012170640000000003,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "en-site",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-prose",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-prose asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 26,
+        "turns": 7,
+        "input": 6791,
+        "output": 3657,
+        "cacheRead": 30886,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.001472272,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "en-site",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-prose",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-prose asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 10,
+        "turns": 6,
+        "input": 7262,
+        "output": 2119,
+        "cacheRead": 19110,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.00118822,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "ru-site",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-prose",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-prose asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 18,
+        "turns": 4,
+        "input": 9013,
+        "output": 4560,
+        "cacheRead": 15044,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.001843388,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "ru-site",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-prose",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-prose asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 124,
+        "turns": 7,
+        "input": 7552,
+        "output": 1909,
+        "cacheRead": 26790,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0011905800000000001,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "en-readme",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "task-sections",
+        "kind": "program",
+        "evidence": [
+          "the install and verify sections are titled by their task, and the new prose uses no dash, parenthesis or semicolon"
+        ]
+      },
+      "spend": {
+        "seconds": 493,
+        "turns": 6,
+        "input": 9951,
+        "output": 4399,
+        "cacheRead": 31142,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.001937184,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "en-readme",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "task-sections",
+        "kind": "program",
+        "evidence": [
+          "the install and verify sections are titled by their task, and the new prose uses no dash, parenthesis or semicolon"
+        ]
+      },
+      "spend": {
+        "seconds": 16,
+        "turns": 8,
+        "input": 8183,
+        "output": 2507,
+        "cacheRead": 35848,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0013913960000000003,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "ru-readme",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "task-sections",
+        "kind": "program",
+        "evidence": [
+          "the install and verify sections are titled by their task, and the new prose uses no dash, parenthesis or semicolon"
+        ]
+      },
+      "spend": {
+        "seconds": 22,
+        "turns": 6,
+        "input": 11275,
+        "output": 4872,
+        "cacheRead": 31270,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.00216444,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "ru-readme",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "task-sections",
+        "kind": "program",
+        "evidence": [
+          "the install and verify sections are titled by their task, and the new prose uses no dash, parenthesis or semicolon"
+        ]
+      },
+      "spend": {
+        "seconds": 35,
+        "turns": 10,
+        "input": 13917,
+        "output": 3365,
+        "cacheRead": 80121,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0022249419999999997,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "en-site",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-prose",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-prose asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 27,
+        "turns": 5,
+        "input": 9191,
+        "output": 5479,
+        "cacheRead": 18741,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.002052382,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "en-site",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-prose",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-prose asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 13,
+        "turns": 7,
+        "input": 7871,
+        "output": 2644,
+        "cacheRead": 21783,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0013594660000000004,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "ru-site",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-prose",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-prose asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 61,
+        "turns": 5,
+        "input": 6293,
+        "output": 6771,
+        "cacheRead": 23492,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.002030484,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "ru-site",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-prose",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-prose asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 16,
+        "turns": 6,
+        "input": 10062,
+        "output": 1957,
+        "cacheRead": 23349,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0014442980000000003,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "en-readme",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "task-sections",
+        "kind": "program",
+        "evidence": [
+          "the install and verify sections are titled by their task, and the new prose uses no dash, parenthesis or semicolon"
+        ]
+      },
+      "spend": {
+        "seconds": 13,
+        "turns": 3,
+        "input": 7329,
+        "output": 3215,
+        "cacheRead": 7507,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0013909140000000003,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "en-readme",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "task-sections",
+        "kind": "program",
+        "evidence": [
+          "the install and verify sections are titled by their task, and the new prose uses no dash, parenthesis or semicolon"
+        ]
+      },
+      "spend": {
+        "seconds": 39,
+        "turns": 12,
+        "input": 14008,
+        "output": 3778,
+        "cacheRead": 91611,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.002339622,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "ru-readme",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "task-sections",
+        "kind": "program",
+        "evidence": [
+          "the install and verify sections are titled by their task, and the new prose uses no dash, parenthesis or semicolon"
+        ]
+      },
+      "spend": {
+        "seconds": 53,
+        "turns": 6,
+        "input": 6375,
+        "output": 5620,
+        "cacheRead": 37173,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.001835846,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "ru-readme",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "task-sections",
+        "kind": "program",
+        "evidence": [
+          "the install and verify sections are titled by their task, and the new prose uses no dash, parenthesis or semicolon"
+        ]
+      },
+      "spend": {
+        "seconds": 105,
+        "turns": 9,
+        "input": 8575,
+        "output": 3597,
+        "cacheRead": 46472,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0016698440000000002,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "en-site",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-prose",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-prose asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 40,
+        "turns": 4,
+        "input": 5482,
+        "output": 4700,
+        "cacheRead": 17491,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0015231820000000003,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "en-site",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-prose",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-prose asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 39,
+        "turns": 7,
+        "input": 6796,
+        "output": 2200,
+        "cacheRead": 26790,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0011731800000000002,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "ru-site",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-prose",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-prose asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 36,
+        "turns": 6,
+        "input": 7198,
+        "output": 5338,
+        "cacheRead": 27957,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0018433140000000002,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "ru-site",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-prose",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-prose asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 12,
+        "turns": 6,
+        "input": 7486,
+        "output": 2172,
+        "cacheRead": 18598,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.001220196,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "en-readme",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "task-sections",
+        "kind": "program",
+        "evidence": [
+          "the install and verify sections are titled by their task, and the new prose uses no dash, parenthesis or semicolon"
+        ]
+      },
+      "spend": {
+        "seconds": 26,
+        "turns": 6,
+        "input": 9720,
+        "output": 5242,
+        "cacheRead": 34598,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0020895960000000004,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "en-readme",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "task-sections",
+        "kind": "program",
+        "evidence": [
+          "the install and verify sections are titled by their task, and the new prose uses no dash, parenthesis or semicolon"
+        ]
+      },
+      "spend": {
+        "seconds": 430,
+        "turns": 7,
+        "input": 13117,
+        "output": 2510,
+        "cacheRead": 23575,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.00186085,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "ru-readme",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "task-sections",
+        "kind": "program",
+        "evidence": [
+          "the install and verify sections are titled by their task, and the new prose uses no dash, parenthesis or semicolon"
+        ]
+      },
+      "spend": {
+        "seconds": 71,
+        "turns": 10,
+        "input": 10313,
+        "output": 8815,
+        "cacheRead": 73465,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.002941230000000001,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "ru-readme",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "task-sections",
+        "kind": "program",
+        "evidence": [
+          "the install and verify sections are titled by their task, and the new prose uses no dash, parenthesis or semicolon"
+        ]
+      },
+      "spend": {
+        "seconds": 422,
+        "turns": 8,
+        "input": 7741,
+        "output": 2539,
+        "cacheRead": 35863,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0013536260000000001,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "en-site",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-prose",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-prose asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 33,
+        "turns": 5,
+        "input": 6124,
+        "output": 4310,
+        "cacheRead": 23492,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0015213840000000002,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "en-site",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-prose",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-prose asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 21,
+        "turns": 6,
+        "input": 7913,
+        "output": 2668,
+        "cacheRead": 21813,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0013685260000000001,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "ru-site",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-prose",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-prose asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 67,
+        "turns": 10,
+        "input": 14189,
+        "output": 9514,
+        "cacheRead": 102137,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0035259740000000007,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "ru-site",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-prose",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-prose asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 131,
+        "turns": 7,
+        "input": 7410,
+        "output": 2253,
+        "cacheRead": 22182,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.001235964,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "en-readme",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "task-sections",
+        "kind": "program",
+        "evidence": [
+          "the install and verify sections are titled by their task, and the new prose uses no dash, parenthesis or semicolon"
+        ]
+      },
+      "spend": {
+        "seconds": 25,
+        "turns": 6,
+        "input": 5899,
+        "output": 3253,
+        "cacheRead": 32053,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0013046059999999998,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "en-readme",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "task-sections",
+        "kind": "program",
+        "evidence": [
+          "the install and verify sections are titled by their task, and the new prose uses no dash, parenthesis or semicolon"
+        ]
+      },
+      "spend": {
+        "seconds": 14,
+        "turns": 9,
+        "input": 7624,
+        "output": 1943,
+        "cacheRead": 40569,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.001232138,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "ru-readme",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "task-sections",
+        "kind": "program",
+        "evidence": [
+          "the install and verify sections are titled by their task, and the new prose uses no dash, parenthesis or semicolon"
+        ]
+      },
+      "spend": {
+        "seconds": 28,
+        "turns": 5,
+        "input": 10968,
+        "output": 6514,
+        "cacheRead": 25653,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.002450906,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "ru-readme",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "task-sections",
+        "kind": "program",
+        "evidence": [
+          "the install and verify sections are titled by their task, and the new prose uses no dash, parenthesis or semicolon"
+        ]
+      },
+      "spend": {
+        "seconds": 17,
+        "turns": 7,
+        "input": 6551,
+        "output": 2375,
+        "cacheRead": 33446,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.001196992,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "en-site",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-prose",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-prose asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 97,
+        "turns": 6,
+        "input": 6612,
+        "output": 5017,
+        "cacheRead": 31029,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0017266580000000003,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "en-site",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-prose",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-prose asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 12,
+        "turns": 4,
+        "input": 7272,
+        "output": 2519,
+        "cacheRead": 12740,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0012564800000000001,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "ru-site",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-prose",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-prose asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 64,
+        "turns": 5,
+        "input": 6974,
+        "output": 5916,
+        "cacheRead": 24516,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0019296320000000001,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "ru-site",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-prose",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-prose asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 20,
+        "turns": 8,
+        "input": 7135,
+        "output": 2180,
+        "cacheRead": 31767,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0012130340000000002,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    }
+  ]
+}

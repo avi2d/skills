@@ -1,0 +1,82 @@
+name: ci
+on:
+  push:
+    branches: [main]
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+  workflow_dispatch:
+permissions:
+  contents: read
+  statuses: write
+  # A dispatched run carries no pull request, so the title lookup needs read access.
+  pull-requests: read
+jobs:
+  checks:
+    runs-on: ${{ vars.CI_RUNS_ON || 'ubuntu-latest' }}
+    steps:
+      - run: echo "TMPDIR=$RUNNER_TEMP" >> "$GITHUB_ENV"
+      # The head, not GitHub's merge ref, so the tree the gates read is the commit the range ends at.
+      # The whole history, since the range starts where the head branched from the base branch.
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .node-version
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: .bun-version
+      - run: bun install --frozen-lockfile
+      - id: title
+        name: lint the title
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          GH_TOKEN: ${{ github.token }}
+        run: bunx checks-commit-title
+      - name: report the title as commitlint
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          OUTCOME: ${{ steps.title.outcome }}
+        run: |
+          state=failure
+          if [ "$OUTCOME" = success ]; then state=success; fi
+          gh api "repos/$GITHUB_REPOSITORY/statuses/${HEAD_SHA:-$GITHUB_SHA}" -f state="$state" -f context=commitlint -f target_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" --silent
+      - id: filter
+        name: tell a docs-only change
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: bunx checks-docs-only ${BASE_SHA:+"$BASE_SHA" HEAD} >> "$GITHUB_OUTPUT"
+      - run: bun run generate
+      - run: bun run build
+      - run: git diff --exit-code
+      - run: bun run lint
+      - if: steps.filter.outputs.docs-only != 'true'
+        run: bun run typecheck
+      - if: steps.filter.outputs.docs-only != 'true'
+        run: npm install -g @anthropic-ai/claude-code@2.1.280
+      - if: steps.filter.outputs.docs-only != 'true'
+        run: scripts/ci-sqlite3.sh
+      - if: steps.filter.outputs.docs-only != 'true'
+        run: scripts/ci-no-mistakes.sh
+      - if: steps.filter.outputs.docs-only != 'true'
+        run: mkdir -p "$TMPDIR"
+        env:
+          TMPDIR: ${{ runner.temp }}/suite-tmp
+      - if: steps.filter.outputs.docs-only != 'true'
+        run: bun run test
+        env:
+          TMPDIR: ${{ runner.temp }}/suite-tmp
+      - if: steps.filter.outputs.docs-only != 'true'
+        run: scripts/check-tmp-clean.sh
+        env:
+          TMPDIR: ${{ runner.temp }}/suite-tmp
+      # GitHub keeps a dispatched run's check off the pull request, so the job reports its result there as a commit status.
+      - name: report the result on the head commit
+        if: always() && github.event_name == 'workflow_dispatch'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          STATE: ${{ job.status == 'success' && 'success' || 'failure' }}
+        run: gh api "repos/$GITHUB_REPOSITORY/statuses/$GITHUB_SHA" -f state="$STATE" -f context="$GITHUB_JOB" -f target_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" --silent

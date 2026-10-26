@@ -1,0 +1,5 @@
+Fix duplicate detection to normalize payee and amount.
+
+`importRows` no longer uses `row.raw` as the duplicate key. Payee case or spaces produced a second row under the old duplicate key. The duplicate key now contains `row.date`, `row.amount.toFixed(2)`, and normalized `row.payee`. The function trims spaces from `row.payee`. After the trim, the function lowercases `row.payee`.
+
+An added test imports `Coffee Shop` and then ` coffee shop ` with the same date and amount. The test confirms that the function keeps the first row and skips the second row.

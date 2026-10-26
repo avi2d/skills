@@ -1,0 +1,6 @@
+Normalize `importRows` keys to stop duplicate payments
+
+Bank export lists one payment as "Coffee Shop" and again as " coffee shop ".
+The old key kept both rows.
+`importRows` in `src/import.ts` now builds the key from date, amount to two decimal places, and payee trimmed and lowercased.
+Test with the two payee spellings shows `importRows` keeps one row.

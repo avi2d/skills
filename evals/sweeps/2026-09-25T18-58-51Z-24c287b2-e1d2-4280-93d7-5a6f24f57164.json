@@ -1,0 +1,249 @@
+{
+  "startedAt": "2026-09-25T18:58:51Z",
+  "runId": "24c287b2-e1d2-4280-93d7-5a6f24f57164",
+  "commit": "59e3f2f3b30b9452384d070be2b31bfc665678bb",
+  "prose": {
+    "files": {
+      "references/writing-for-agents/SKILL.md": "944b2341d763b95355df1af004c59fb0195b9ef7110d3990ded1bedfda61c08c"
+    },
+    "uncommitted": false
+  },
+  "model": "claude-bridge/claude-opus-5-5",
+  "thinking": "xhigh",
+  "repeats": 5,
+  "planned": 10,
+  "missing": [],
+  "runs": [
+    {
+      "rule": "writing-for-agents",
+      "case": "writing-for-agents-reference",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "bounded-review",
+        "kind": "program",
+        "evidence": [
+          "the step names an observable end to resolving test failures",
+          "## Finishing a change",
+          "1. Run the `test` script.",
+          "2. Fix the cause of each failure, then rerun the full suite. The change is done when the suite is green."
+        ]
+      },
+      "spend": {
+        "seconds": 24,
+        "input": 10,
+        "output": 1832,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "writing-for-agents",
+      "case": "writing-for-agents-reference",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "bounded-review",
+        "kind": "program",
+        "evidence": [
+          "the step names an observable end to resolving test failures",
+          "## Test review",
+          "Before finishing a change, run the test suite with `bun run test`. If any tests fail, fix them and run the suite again. Repeat until everything passes. Don't mark a change as done while tests are failing."
+        ]
+      },
+      "spend": {
+        "seconds": 13,
+        "input": 10,
+        "output": 776,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "writing-for-agents",
+      "case": "writing-for-agents-reference",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "bounded-review",
+        "kind": "program",
+        "evidence": [
+          "the step names an observable end to resolving test failures",
+          "## Finishing a change",
+          "Run the `test` script and fix the cause of every failure, then run it again. The change is finished only when the full suite runs green."
+        ]
+      },
+      "spend": {
+        "seconds": 36,
+        "input": 12,
+        "output": 2337,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "writing-for-agents",
+      "case": "writing-for-agents-reference",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "bounded-review",
+        "kind": "program",
+        "evidence": [
+          "the step has no observable completion criterion for test failures",
+          "## Test review",
+          "Before finishing a change, run the test suite with `bun run test` and resolve",
+          "every failure. Do not skip, delete, or weaken tests to get a passing run; fix",
+          "the code, or fix the test if it is wrong and explain why. If a failure can't be",
+          "resolved, say so and include the failing output rather than reporting the",
+          "change as done."
+        ]
+      },
+      "spend": {
+        "seconds": 15,
+        "input": 10,
+        "output": 935,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "writing-for-agents",
+      "case": "writing-for-agents-reference",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "bounded-review",
+        "kind": "program",
+        "evidence": [
+          "the step names an observable end to resolving test failures",
+          "## Finishing a change",
+          "Run the `test` script before you finish. The change is done when the full suite is green: fix each failure at its cause, and update a test only when your change deliberately alters the behaviour it checks."
+        ]
+      },
+      "spend": {
+        "seconds": 30,
+        "input": 12,
+        "output": 2182,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "writing-for-agents",
+      "case": "writing-for-agents-reference",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "bounded-review",
+        "kind": "program",
+        "evidence": [
+          "the step names an observable end to resolving test failures",
+          "## Test review",
+          "Before finishing any change, run the test suite with `bun run test` and fix every failure. Don't skip, delete, or weaken tests to make the suite pass. A change isn't done until the suite passes."
+        ]
+      },
+      "spend": {
+        "seconds": 19,
+        "input": 10,
+        "output": 1439,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "writing-for-agents",
+      "case": "writing-for-agents-reference",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "bounded-review",
+        "kind": "program",
+        "evidence": [
+          "the step names an observable end to resolving test failures",
+          "## Finishing a change",
+          "Run the `test` script before you finish a change. The change is done only when the suite is green: every test runs and passes. Resolve each failure by fixing its cause, then rerun the full suite."
+        ]
+      },
+      "spend": {
+        "seconds": 24,
+        "input": 10,
+        "output": 1801,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "writing-for-agents",
+      "case": "writing-for-agents-reference",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "bounded-review",
+        "kind": "program",
+        "evidence": [
+          "the step names an observable end to resolving test failures",
+          "## Test review",
+          "Before finishing a change, run the test suite with `bun run test` and make sure it passes.",
+          "- If tests fail, fix the cause before you finish. Don't skip, delete, or weaken tests to get a pass.",
+          "- If a test fails for reasons unrelated to your change, or you can't fix it, say so in your summary and include the failing output. Don't report the change as done."
+        ]
+      },
+      "spend": {
+        "seconds": 22,
+        "input": 12,
+        "output": 1249,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "writing-for-agents",
+      "case": "writing-for-agents-reference",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "bounded-review",
+        "kind": "program",
+        "evidence": [
+          "the step names an observable end to resolving test failures",
+          "## Finishing a change",
+          "Run the `test` script and fix each failure at its cause. The change is finished when the full suite is green."
+        ]
+      },
+      "spend": {
+        "seconds": 20,
+        "input": 8,
+        "output": 1513,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "writing-for-agents",
+      "case": "writing-for-agents-reference",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "bounded-review",
+        "kind": "program",
+        "evidence": [
+          "the step names an observable end to resolving test failures",
+          "## Test review",
+          "Before finishing a change, run the test suite with `bun run test` (runs `bun test`).",
+          "- If any test fails, fix it and run the suite again. Repeat until every test passes.",
+          "- Fix the code under test, not the test. Only change a test when the change you're making is meant to alter the behavior it checks.",
+          "- Don't skip, delete, or loosen tests to get the suite to pass.",
+          "- If you can't resolve a failure, don't report the change as done. Say which tests fail and include their output."
+        ]
+      },
+      "spend": {
+        "seconds": 15,
+        "input": 10,
+        "output": 978,
+        "cost": 0
+      }
+    }
+  ]
+}

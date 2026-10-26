@@ -1,0 +1,1007 @@
+{
+  "startedAt": "2026-10-10T07:30:58Z",
+  "runId": "88d8e800-eac9-4167-8b71-dd4378515b90",
+  "commit": "510ebb8a6dda84895f9d3e6a1cbe2eaa7c7d2bbe",
+  "prose": {
+    "files": {
+      "library/writing/references/punctuation/SKILL.md": "08c581ef47c6bfaa5b19c278efc9bf2d2b8823a27d207c91afeba0b3316e3128"
+    },
+    "uncommitted": false
+  },
+  "model": "claude-bridge/claude-opus-5-5",
+  "thinking": "high",
+  "repeats": 5,
+  "planned": 40,
+  "missing": [],
+  "runs": [
+    {
+      "rule": "punctuation",
+      "case": "en-pr",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "punctuation",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the punctuation asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 22,
+        "input": 8,
+        "output": 1268,
+        "cacheRead": 17576,
+        "cacheWrite": 2226,
+        "cacheWrite1h": 0,
+        "cost": 0.0400372,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "punctuation",
+      "case": "en-pr",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "punctuation",
+        "kind": "program",
+        "evidence": [
+          "a dash, a parenthesis or a semicolon: **Real repeat transactions now collapse into one.** Two purchases at the same payee for the same amount on the same day will be treated as duplicates, and the second one will be dropped. Before, they stayed separate as long as their raw lines differed in any way (for example, a reference number or memo column). If our sources can contain repeats like this, the key needs one more distinguishing field."
+        ]
+      },
+      "spend": {
+        "seconds": 27,
+        "input": 8,
+        "output": 1717,
+        "cacheRead": 15003,
+        "cacheWrite": 2626,
+        "cacheWrite1h": 0,
+        "cost": 0.05050260000000001,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "punctuation",
+      "case": "en-site",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "punctuation",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the punctuation asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 23,
+        "input": 6,
+        "output": 1022,
+        "cacheRead": 11893,
+        "cacheWrite": 1397,
+        "cacheWrite1h": 0,
+        "cost": 0.029827600000000003,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "punctuation",
+      "case": "en-site",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "punctuation",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the punctuation asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 24,
+        "input": 10,
+        "output": 1267,
+        "cacheRead": 18008,
+        "cacheWrite": 1640,
+        "cacheWrite1h": 0,
+        "cost": 0.0371816,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "punctuation",
+      "case": "ru-pr",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "punctuation",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the punctuation asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 24,
+        "input": 8,
+        "output": 1673,
+        "cacheRead": 17771,
+        "cacheWrite": 2516,
+        "cacheWrite1h": 0,
+        "cost": 0.0496262,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "punctuation",
+      "case": "ru-pr",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "punctuation",
+        "kind": "program",
+        "evidence": [
+          "a dash, a parenthesis or a semicolon: Code пропускал строку как дубликат, только если её исходный текст (Code) полностью совпадал с уже виденной строкой. Если в повторной выгрузке у получателя менялись регистр или пробелы по краям (Code и Code) или сумма была записана иначе (Code и Code), такая строка считалась новой и импортировалась второй раз.",
+          "a dash, a parenthesis or a semicolon: Code;",
+          "a dash, a parenthesis or a semicolon: Code, то есть сумма с двумя знаками после запятой;",
+          "a dash, a parenthesis or a semicolon: **Разные операции с одинаковыми данными теперь склеиваются.** Если в один день есть две настоящие операции с одной суммой и одним получателем (например, две покупки кофе по 12.50), вторая будет отброшена как дубликат. Раньше их могло различить что-то ещё в исходной строке, например номер операции. Нужно решить, допустимо ли это для наших источников данных.",
+          "a dash, a parenthesis or a semicolon: **Старые ключи несовместимы с новыми.** Если набор Code где-то сохраняется между запусками, в нём лежат ключи старого формата (Code). После обновления они ни с чем не совпадут, и уже импортированные строки могут импортироваться повторно. Если Code хранится, понадобится миграция или пересборка набора."
+        ]
+      },
+      "spend": {
+        "seconds": 25,
+        "input": 8,
+        "output": 1797,
+        "cacheRead": 14986,
+        "cacheWrite": 2620,
+        "cacheWrite1h": 0,
+        "cost": 0.05206920000000001,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "punctuation",
+      "case": "ru-errors",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "punctuation",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the punctuation asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 27,
+        "input": 8,
+        "output": 1500,
+        "cacheRead": 16703,
+        "cacheWrite": 2033,
+        "cacheWrite1h": 0,
+        "cost": 0.04353760000000001,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "punctuation",
+      "case": "ru-errors",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "punctuation",
+        "kind": "program",
+        "evidence": [
+          "a dash, a parenthesis or a semicolon: Файл больше 10 МБ — это предельный размер. Разделите его на несколько частей и импортируйте их по очереди."
+        ]
+      },
+      "spend": {
+        "seconds": 23,
+        "input": 10,
+        "output": 1771,
+        "cacheRead": 19406,
+        "cacheWrite": 2303,
+        "cacheWrite1h": 0,
+        "cost": 0.050856200000000004,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "punctuation",
+      "case": "en-pr",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "punctuation",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the punctuation asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 20,
+        "input": 8,
+        "output": 1384,
+        "cacheRead": 16916,
+        "cacheWrite": 2091,
+        "cacheWrite1h": 0,
+        "cost": 0.0415502,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "punctuation",
+      "case": "en-pr",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "punctuation",
+        "kind": "program",
+        "evidence": [
+          "a dash, a parenthesis or a semicolon: Two rows with the same date, the same amount to the cent, and the same payee (ignoring case and surrounding spaces) are now treated as one transaction.",
+          "a dash, a parenthesis or a semicolon: **Real repeat transactions now merge.** Two separate purchases from the same payee, for the same amount, on the same day (two $4.50 coffees, for example) used to be kept as long as their raw lines differed at all. Now the second one is dropped. That's the cost of matching on fields. If it isn't acceptable, the key needs another field that tells the rows apart, such as a bank reference or transaction ID, if the source has one.",
+          "a dash, a parenthesis or a semicolon: **Only the payee is normalized.** The date is compared exactly as given. The same day written in two formats (Code vs Code) still counts as two different rows. Spacing inside the payee name (Code vs Code) also still counts as different."
+        ]
+      },
+      "spend": {
+        "seconds": 30,
+        "input": 8,
+        "output": 2069,
+        "cacheRead": 14334,
+        "cacheWrite": 2647,
+        "cacheWrite1h": 0,
+        "cost": 0.057513800000000004,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "punctuation",
+      "case": "en-site",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "punctuation",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the punctuation asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 19,
+        "input": 8,
+        "output": 1149,
+        "cacheRead": 16509,
+        "cacheWrite": 1614,
+        "cacheWrite1h": 0,
+        "cost": 0.0343838,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "punctuation",
+      "case": "en-site",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "punctuation",
+        "kind": "program",
+        "evidence": [
+          "a dash, a parenthesis or a semicolon: Ledger turns your bank statements into bookkeeping records without the retyping. Export a CSV file from your bank, give it to Ledger, and every transaction is added to a ledger file on your computer. If you import the same export twice, or two exports that overlap, Ledger skips the transactions it already has, so nothing gets counted twice. It works with exports from Sberbank, Tinkoff and Revolut as they are; for other banks, you set up a column mapping to tell Ledger which column holds what. Everything runs on your own computer: there's no account to create, nothing is uploaded, and there's no subscription. Ledger is free and open source under the MIT licence."
+        ]
+      },
+      "spend": {
+        "seconds": 20,
+        "input": 10,
+        "output": 1184,
+        "cacheRead": 17871,
+        "cacheWrite": 1542,
+        "cacheWrite1h": 0,
+        "cost": 0.035004200000000006,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "punctuation",
+      "case": "ru-pr",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "punctuation",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the punctuation asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 34,
+        "input": 8,
+        "output": 2465,
+        "cacheRead": 16997,
+        "cacheWrite": 3068,
+        "cacheWrite1h": 0,
+        "cost": 0.06807139999999999,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "punctuation",
+      "case": "ru-pr",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "punctuation",
+        "kind": "program",
+        "evidence": [
+          "a dash, a parenthesis or a semicolon: В Code (Code) поменялся ключ, по которому строка считается уже импортированной. Раньше ключом была сырая строка (Code). Теперь ключ собирается из трёх полей:",
+          "a dash, a parenthesis or a semicolon: Code;",
+          "a dash, a parenthesis or a semicolon: Code, то есть сумма с двумя знаками после запятой;",
+          "a dash, a parenthesis or a semicolon: **Настоящие повторы теперь склеиваются.** Если в один день к одному получателю ушли два платежа на одну сумму (например, два кофе по 12.50), вторая строка будет пропущена как дубликат. Со старым ключом её спасало только какое-нибудь различие в сырой строке, а теперь она отбрасывается всегда. Стоит решить, приемлемо ли это, или в ключ нужно добавить что-то ещё (номер операции из выписки, если он есть).",
+          "a dash, a parenthesis or a semicolon: **Сохранённые ключи станут несовместимы.** Если набор Code где-то сохраняется между запусками, в нём лежат старые ключи (сырые строки). После этого изменения они ни с чем не совпадут, и при следующем импорте ранее загруженные строки зайдут повторно. Из диффа не видно, хранится ли Code между запусками. Если хранится, нужна миграция или однократный пересчёт ключей."
+        ]
+      },
+      "spend": {
+        "seconds": 28,
+        "input": 8,
+        "output": 1801,
+        "cacheRead": 14986,
+        "cacheWrite": 2651,
+        "cacheWrite1h": 0,
+        "cost": 0.05230420000000001,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "punctuation",
+      "case": "ru-errors",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "punctuation",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the punctuation asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 21,
+        "input": 8,
+        "output": 1451,
+        "cacheRead": 17421,
+        "cacheWrite": 2499,
+        "cacheWrite1h": 0,
+        "cost": 0.04503120000000001,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "punctuation",
+      "case": "ru-errors",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "punctuation",
+        "kind": "program",
+        "evidence": [
+          "a dash, a parenthesis or a semicolon: В файле не хватает колонок: {columns}. Нужны колонки date, amount и payee — добавьте недостающие и попробуйте ещё раз."
+        ]
+      },
+      "spend": {
+        "seconds": 21,
+        "input": 10,
+        "output": 1433,
+        "cacheRead": 19209,
+        "cacheWrite": 1904,
+        "cacheWrite1h": 0,
+        "cost": 0.0420618,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "punctuation",
+      "case": "en-pr",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "punctuation",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the punctuation asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 20,
+        "input": 8,
+        "output": 1244,
+        "cacheRead": 17552,
+        "cacheWrite": 2175,
+        "cacheWrite1h": 0,
+        "cost": 0.0392974,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "punctuation",
+      "case": "en-pr",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "punctuation",
+        "kind": "program",
+        "evidence": [
+          "a dash, a parenthesis or a semicolon: Code used to treat two rows as duplicates only if their raw source text matched exactly. If the same transaction showed up again with different payee spacing or case (for example Code and Code), or with the amount written differently (Code and Code), it was imported twice.",
+          "a dash, a parenthesis or a semicolon: **Real repeat transactions now merge.** Two separate purchases with the same date, amount and payee (say, two coffees on the same day) produce the same key, so the second one is dropped. With the old raw-line key they stayed separate whenever their lines differed. If source files can contain real same-day repeats, this change will lose data.",
+          "a dash, a parenthesis or a semicolon: **Date is not normalized.** The key uses Code exactly as given. Rows with the same date in different formats (Code and Code) still count as different.",
+          "a dash, a parenthesis or a semicolon: I haven't run the suite (Code) for this description."
+        ]
+      },
+      "spend": {
+        "seconds": 23,
+        "input": 8,
+        "output": 1438,
+        "cacheRead": 14877,
+        "cacheWrite": 2411,
+        "cacheWrite1h": 0,
+        "cost": 0.0438224,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "punctuation",
+      "case": "en-site",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "punctuation",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the punctuation asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 15,
+        "input": 6,
+        "output": 1067,
+        "cacheRead": 11883,
+        "cacheWrite": 1392,
+        "cacheWrite1h": 0,
+        "cost": 0.0307006,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "punctuation",
+      "case": "en-site",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "punctuation",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the punctuation asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 22,
+        "input": 10,
+        "output": 1265,
+        "cacheRead": 18841,
+        "cacheWrite": 1898,
+        "cacheWrite1h": 0,
+        "cost": 0.0385982,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "punctuation",
+      "case": "ru-pr",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "punctuation",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the punctuation asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 23,
+        "input": 8,
+        "output": 1614,
+        "cacheRead": 17579,
+        "cacheWrite": 2356,
+        "cacheWrite1h": 0,
+        "cost": 0.047607800000000006,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "punctuation",
+      "case": "ru-pr",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "punctuation",
+        "kind": "program",
+        "evidence": [
+          "a dash, a parenthesis or a semicolon: Раньше Code считала строку дубликатом, только если её исходный текст (Code) совпадал посимвольно. Поэтому одна и та же операция, выгруженная повторно с другими пробелами или регистром в имени получателя, импортировалась второй раз.",
+          "a dash, a parenthesis or a semicolon: **Остальные поля строки больше не участвуют в сравнении.** Две разные операции с одинаковыми датой, суммой и получателем (скажем, два кофе в одном магазине за день) теперь считаются одной, и вторая будет отброшена. Так происходит и внутри одного вызова, и между вызовами с общим Code. Раньше такие строки проходили, если их исходный текст чем-то отличался, например номером операции или комментарием. Нужно решить, приемлемо ли это.",
+          "a dash, a parenthesis or a semicolon: Нормализация намеренно минимальная. Пробелы внутри имени получателя не схлопываются (Code ≠ Code). Дата берётся как есть, поэтому предполагается, что Code уже приведена к единому формату."
+        ]
+      },
+      "spend": {
+        "seconds": 33,
+        "input": 8,
+        "output": 2576,
+        "cacheRead": 15023,
+        "cacheWrite": 3375,
+        "cacheWrite1h": 0,
+        "cost": 0.0714316,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "punctuation",
+      "case": "ru-errors",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "punctuation",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the punctuation asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 24,
+        "input": 8,
+        "output": 1598,
+        "cacheRead": 17209,
+        "cacheWrite": 2176,
+        "cacheWrite1h": 0,
+        "cost": 0.0463138,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "punctuation",
+      "case": "ru-errors",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "punctuation",
+        "kind": "program",
+        "evidence": [
+          "a dash, a parenthesis or a semicolon: Файл слишком большой. Можно загрузить файл размером до 10 МБ — разделите его на части и импортируйте по очереди."
+        ]
+      },
+      "spend": {
+        "seconds": 22,
+        "input": 10,
+        "output": 1551,
+        "cacheRead": 19470,
+        "cacheWrite": 2144,
+        "cacheWrite1h": 0,
+        "cost": 0.045674,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "punctuation",
+      "case": "en-pr",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "punctuation",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the punctuation asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 23,
+        "input": 8,
+        "output": 1351,
+        "cacheRead": 16846,
+        "cacheWrite": 2105,
+        "cacheWrite1h": 0,
+        "cost": 0.0409462,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "punctuation",
+      "case": "en-pr",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "punctuation",
+        "kind": "program",
+        "evidence": [
+          "a dash, a parenthesis or a semicolon: **Dates are compared exactly as given.** Code goes into the key unchanged, so the same date in two formats (Code vs Code) still counts as two rows.",
+          "a dash, a parenthesis or a semicolon: **Only leading and trailing whitespace is trimmed.** Internal whitespace isn't collapsed, so Code (two spaces) and Code are still different payees."
+        ]
+      },
+      "spend": {
+        "seconds": 27,
+        "input": 8,
+        "output": 1906,
+        "cacheRead": 14980,
+        "cacheWrite": 2692,
+        "cacheWrite1h": 0,
+        "cost": 0.054608000000000004,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "punctuation",
+      "case": "en-site",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "punctuation",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the punctuation asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 15,
+        "input": 6,
+        "output": 1036,
+        "cacheRead": 11893,
+        "cacheWrite": 1382,
+        "cacheWrite1h": 0,
+        "cost": 0.030032600000000003,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "punctuation",
+      "case": "en-site",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "punctuation",
+        "kind": "program",
+        "evidence": [
+          "a dash, a parenthesis or a semicolon: Ledger turns the CSV file your bank already lets you export into a running record of your business's transactions, so you don't have to type them up yourself. Download the export, point Ledger at it, and it adds each transaction to a ledger file on your computer. If you import the same export twice, or two exports that overlap, Ledger skips any transaction it has already added, so nothing gets counted twice. Everything stays on your own machine: there's no account to create, nothing is uploaded, and there's no subscription to pay. Ledger is free and open source under the MIT licence. It reads exports from Sberbank, Tinkoff and Revolut as they are; for any other bank, you need to give it a column mapping that says which column holds which detail."
+        ]
+      },
+      "spend": {
+        "seconds": 39,
+        "input": 10,
+        "output": 1341,
+        "cacheRead": 17937,
+        "cacheWrite": 1686,
+        "cacheWrite1h": 0,
+        "cost": 0.038877400000000006,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "punctuation",
+      "case": "ru-pr",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "punctuation",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the punctuation asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 27,
+        "input": 8,
+        "output": 1906,
+        "cacheRead": 17626,
+        "cacheWrite": 2627,
+        "cacheWrite1h": 0,
+        "cost": 0.054812200000000005,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "punctuation",
+      "case": "ru-pr",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "punctuation",
+        "kind": "program",
+        "evidence": [
+          "a dash, a parenthesis or a semicolon: Code (Code) больше не использует Code как ключ для поиска дубликатов. Теперь ключ собирается из трёх полей:",
+          "a dash, a parenthesis or a semicolon: Раньше строка считалась уже импортированной, только если её исходный текст совпадал символ в символ. Одна и та же операция, которая пришла повторно с другим форматированием — Code вместо Code, Code вместо Code, — проходила как новая и попадала в журнал дважды.",
+          "a dash, a parenthesis or a semicolon: **Настоящие операции могут склеиться.** Две разные операции с одинаковыми датой, суммой и получателем (например, два кофе в одном месте за день) теперь считаются дубликатом, и вторая будет пропущена. Раньше их могли различать другие поля исходной строки (время, ID операции), а теперь эти поля в ключ не входят. Если в источнике есть стабильный ID операции, может быть лучше дедуплицировать по нему.",
+          "a dash, a parenthesis or a semicolon: **Старые ключи не совпадут с новыми.** Если Code где-то сохраняется между запусками, в нём лежат ключи в старом формате (Code). С новыми ключами они не совпадут, и при первом импорте после выкатки уже загруженные строки могут импортироваться заново. Нужно проверить, сохраняется ли Code, и если да, то перестроить его или мигрировать.",
+          "a dash, a parenthesis or a semicolon: В Code добавлен тест: строка, которая отличается только пробелами и регистром получателя и записью суммы (Code и Code), при повторном импорте пропускается."
+        ]
+      },
+      "spend": {
+        "seconds": 28,
+        "input": 8,
+        "output": 2047,
+        "cacheRead": 14913,
+        "cacheWrite": 2878,
+        "cacheWrite1h": 0,
+        "cost": 0.05834460000000001,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "punctuation",
+      "case": "ru-errors",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "punctuation",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the punctuation asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 23,
+        "input": 8,
+        "output": 1547,
+        "cacheRead": 17131,
+        "cacheWrite": 1934,
+        "cacheWrite1h": 0,
+        "cost": 0.0440682,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "punctuation",
+      "case": "ru-errors",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "punctuation",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the punctuation asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 31,
+        "input": 16,
+        "output": 1834,
+        "cacheRead": 36890,
+        "cacheWrite": 4119,
+        "cacheWrite1h": 0,
+        "cost": 0.064717,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "punctuation",
+      "case": "en-pr",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "punctuation",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the punctuation asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 21,
+        "input": 8,
+        "output": 1477,
+        "cacheRead": 17413,
+        "cacheWrite": 2327,
+        "cacheWrite1h": 0,
+        "cost": 0.04468960000000001,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "punctuation",
+      "case": "en-pr",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "punctuation",
+        "kind": "program",
+        "evidence": [
+          "a dash, a parenthesis or a semicolon: Code used to treat a row as a duplicate only when its Code text matched exactly. If you re-imported the same transaction and the payee had different spacing or capitalisation (Code vs Code), or the amount was written differently (Code vs Code), it got imported a second time.",
+          "a dash, a parenthesis or a semicolon: **Real repeat transactions are now dropped.** Two genuine transactions on the same day, for the same amount, at the same payee (two identical coffees, for example) now share a key, and the second one is skipped. Before this change they were only collapsed if their raw lines were identical. If that happens often enough in real imports, we need another field in the key (an id, a running balance, or the row's position in the file).",
+          "a dash, a parenthesis or a semicolon: New test in Code: a row is imported once, then a second import of the same row with different payee spacing/case and amount formatting (Code vs Code) is skipped.",
+          "a slash for and or or: New test in Code: a row is imported once, then a second import of the same row with different payee spacing/case and amount formatting (Code vs Code) is skipped."
+        ]
+      },
+      "spend": {
+        "seconds": 25,
+        "input": 8,
+        "output": 1637,
+        "cacheRead": 14849,
+        "cacheWrite": 2540,
+        "cacheWrite1h": 0,
+        "cost": 0.04844180000000001,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "punctuation",
+      "case": "en-site",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "punctuation",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the punctuation asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 15,
+        "input": 6,
+        "output": 953,
+        "cacheRead": 11880,
+        "cacheWrite": 1310,
+        "cacheWrite1h": 0,
+        "cost": 0.02801,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "punctuation",
+      "case": "en-site",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "punctuation",
+        "kind": "program",
+        "evidence": [
+          "a dash, a parenthesis or a semicolon: Ledger turns your bank's transaction export into your books. Download the CSV file from your bank, give it to Ledger, and it adds each transaction to a ledger file on your computer. You don't have to keep track of what you've already imported: Ledger skips any transaction it has seen before, so importing the same export twice won't create duplicates. Everything runs on your own machine, with no account to create, nothing uploaded and no subscription to pay. Ledger is free and open source under the MIT licence. It reads exports from Sberbank, Tinkoff and Revolut as they are; for other banks, you first set up a column mapping that tells Ledger which column in the file holds which detail."
+        ]
+      },
+      "spend": {
+        "seconds": 17,
+        "input": 8,
+        "output": 1145,
+        "cacheRead": 13645,
+        "cacheWrite": 1392,
+        "cacheWrite1h": 0,
+        "cost": 0.032621,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "punctuation",
+      "case": "ru-pr",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "punctuation",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the punctuation asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 25,
+        "input": 8,
+        "output": 1993,
+        "cacheRead": 18209,
+        "cacheWrite": 2853,
+        "cacheWrite1h": 0,
+        "cost": 0.0577988,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "punctuation",
+      "case": "ru-pr",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "punctuation",
+        "kind": "program",
+        "evidence": [
+          "a dash, a parenthesis or a semicolon: Раньше Code считала строку дублем только тогда, когда её исходный текст (Code) совпадал посимвольно. Поэтому одна и та же операция из повторной выгрузки импортировалась второй раз, если в ней отличался хотя бы пробел или регистр в имени получателя. Например, Code и Code.",
+          "a dash, a parenthesis or a semicolon: Code — как есть;",
+          "a dash, a parenthesis or a semicolon: Code — через Code, поэтому Code и Code дают один ключ;",
+          "a dash, a parenthesis or a semicolon: Code — без пробелов по краям (Code) и в нижнем регистре.",
+          "a dash, a parenthesis or a semicolon: **Разные операции с одинаковыми полями теперь склеиваются.** Если в один день два раза заплатить одному получателю одну и ту же сумму (скажем, два кофе по 12.50), вторая операция будет пропущена как дубль. Со старым ключом она бы прошла, если Code у строк различался (например, по времени или ID транзакции). Нужно решить, допустимо ли это для наших данных, или в ключ стоит добавить ещё одно поле.",
+          "a dash, a parenthesis or a semicolon: **Нормализуются только пробелы по краям.** Внутренние пробелы Code не трогает, поэтому Code (два пробела) и Code по-прежнему дают разные ключи. Название нового теста («differs only in spacing») немного шире того, что реально проверяется.",
+          "a dash, a parenthesis or a semicolon: Тесты (Code) локально не запускались: в этой рабочей копии нет Code и Code, есть только сам дифф."
+        ]
+      },
+      "spend": {
+        "seconds": 29,
+        "input": 8,
+        "output": 2032,
+        "cacheRead": 15043,
+        "cacheWrite": 2842,
+        "cacheWrite1h": 0,
+        "cost": 0.0578906,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "punctuation",
+      "case": "ru-errors",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "punctuation",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the punctuation asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 25,
+        "input": 10,
+        "output": 1748,
+        "cacheRead": 23545,
+        "cacheWrite": 2346,
+        "cacheWrite1h": 0,
+        "cost": 0.051439,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "punctuation",
+      "case": "ru-errors",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "punctuation",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the punctuation asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 23,
+        "input": 10,
+        "output": 1410,
+        "cacheRead": 19190,
+        "cacheWrite": 2112,
+        "cacheWrite1h": 0,
+        "cost": 0.042638,
+        "costEstimated": true
+      }
+    }
+  ]
+}

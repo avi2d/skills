@@ -1,0 +1,1038 @@
+{
+  "startedAt": "2026-10-10T07:56:28Z",
+  "runId": "b3650e82-d085-4d90-8c7f-168932204bcf",
+  "commit": "510ebb8a6dda84895f9d3e6a1cbe2eaa7c7d2bbe",
+  "prose": {
+    "files": {
+      "library/writing/references/writing-for-agents/SKILL.md": "a8f02493dd121fa3c4fa57eaa1244b16b1277a9aeb732de918baae4385cdaed5"
+    },
+    "uncommitted": false
+  },
+  "model": "claude-bridge/claude-opus-5-5",
+  "thinking": "high",
+  "repeats": 5,
+  "planned": 40,
+  "missing": [],
+  "runs": [
+    {
+      "rule": "writing-for-agents",
+      "case": "writing-for-agents-reference",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "bounded-review",
+        "kind": "program",
+        "evidence": [
+          "the step names an observable end to resolving test failures",
+          "## Before finishing a change",
+          "Run the `test` script and resolve every failure at its cause, fixing the code or, when the test is what's wrong, the test.",
+          "The change is finished when a full run of the suite passes green on the final state of the code."
+        ]
+      },
+      "spend": {
+        "seconds": 17,
+        "input": 8,
+        "output": 1128,
+        "cacheRead": 20509,
+        "cacheWrite": 5962,
+        "cacheWrite1h": 0,
+        "cost": 0.0565038,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "writing-for-agents",
+      "case": "writing-for-agents-reference",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "bounded-review",
+        "kind": "program",
+        "evidence": [
+          "the step names an observable end to resolving test failures",
+          "## Test review",
+          "Before finishing any change:",
+          "1. Run the test suite with `bun run test`.",
+          "2. If any tests fail, fix them and run the suite again. Repeat until every test passes.",
+          "3. Don't skip, delete, or weaken tests to make them pass. If a test is wrong, fix it and explain why.",
+          "4. If a failure can't be resolved, don't call the change done. Report the failing tests and the output."
+        ]
+      },
+      "spend": {
+        "seconds": 12,
+        "input": 8,
+        "output": 678,
+        "cacheRead": 13769,
+        "cacheWrite": 1431,
+        "cacheWrite1h": 0,
+        "cost": 0.023500800000000002,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "writing-for-agents",
+      "case": "positive-target",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "positive-target",
+        "kind": "program",
+        "evidence": [
+          "the instruction states the target alone: Export every module member by name (`export function`, `export const`, `export class`), and import it by that same name."
+        ]
+      },
+      "spend": {
+        "seconds": 14,
+        "input": 6,
+        "output": 770,
+        "cacheRead": 18791,
+        "cacheWrite": 979,
+        "cacheWrite1h": 0,
+        "cost": 0.0240772,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "writing-for-agents",
+      "case": "positive-target",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "positive-target",
+        "kind": "program",
+        "evidence": [
+          "the instruction speaks the behaviour it bans: Use named exports only (`export function foo`, `export const bar`); never write `export default`, and convert any default export you touch to a named one."
+        ]
+      },
+      "spend": {
+        "seconds": 16,
+        "input": 8,
+        "output": 702,
+        "cacheRead": 13365,
+        "cacheWrite": 969,
+        "cacheWrite1h": 0,
+        "cost": 0.021590000000000005,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "writing-for-agents",
+      "case": "lookup-left",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "lookup-left-to-the-environment",
+        "kind": "program",
+        "evidence": [
+          "AGENTS.md keeps the gotcha and restates 0 of the 4 scripts"
+        ]
+      },
+      "spend": {
+        "seconds": 16,
+        "input": 8,
+        "output": 1107,
+        "cacheRead": 26284,
+        "cacheWrite": 1741,
+        "cacheWrite1h": 0,
+        "cost": 0.0361338,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "writing-for-agents",
+      "case": "lookup-left",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "lookup-left-to-the-environment",
+        "kind": "program",
+        "evidence": [
+          "AGENTS.md restates the lint script, oxlint, which package.json holds",
+          "AGENTS.md restates the typecheck script, tsc --noEmit, which package.json holds",
+          "AGENTS.md restates the build script, bun build src/index.ts --outdir dist, which package.json holds"
+        ]
+      },
+      "spend": {
+        "seconds": 20,
+        "input": 8,
+        "output": 861,
+        "cacheRead": 14177,
+        "cacheWrite": 1633,
+        "cacheWrite1h": 0,
+        "cost": 0.028252400000000004,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "writing-for-agents",
+      "case": "one-source",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "one-source",
+        "kind": "program",
+        "evidence": [
+          "the test command is stated once: Run `bun test` before you commit. Every test passes on a good change."
+        ]
+      },
+      "spend": {
+        "seconds": 23,
+        "input": 8,
+        "output": 1767,
+        "cacheRead": 25794,
+        "cacheWrite": 1933,
+        "cacheWrite1h": 0,
+        "cost": 0.050195800000000006,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "writing-for-agents",
+      "case": "one-source",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "one-source",
+        "kind": "program",
+        "evidence": [
+          "the test command is stated on 2 lines",
+          "Run `bun test` before you commit. Every test passes on a good change.",
+          "1. The tests pass. Run `bun test` and confirm every test passes."
+        ]
+      },
+      "spend": {
+        "seconds": 16,
+        "input": 8,
+        "output": 896,
+        "cacheRead": 13676,
+        "cacheWrite": 1429,
+        "cacheWrite1h": 0,
+        "cost": 0.027832200000000005,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "writing-for-agents",
+      "case": "writing-for-agents-reference",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "bounded-review",
+        "kind": "program",
+        "evidence": [
+          "the step names an observable end to resolving test failures",
+          "## Test review",
+          "Before finishing a change, run the `test` script and fix the cause of each failure.",
+          "The change is done when a full run of the suite passes with every test green."
+        ]
+      },
+      "spend": {
+        "seconds": 16,
+        "input": 8,
+        "output": 979,
+        "cacheRead": 20512,
+        "cacheWrite": 5868,
+        "cacheWrite1h": 0,
+        "cost": 0.0530544,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "writing-for-agents",
+      "case": "writing-for-agents-reference",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "bounded-review",
+        "kind": "program",
+        "evidence": [
+          "the step names an observable end to resolving test failures",
+          "## Test review",
+          "Before finishing any change:",
+          "1. Run the full test suite with `bun run test`.",
+          "2. If any tests fail, fix the cause and run the suite again. Repeat until every test passes.",
+          "3. Don't skip, disable, or delete tests to get a passing run. Only change a test when the change you're making means its expected behavior should change.",
+          "4. A change isn't finished until the suite passes. If a failure can't be resolved, say so plainly and include the failing output."
+        ]
+      },
+      "spend": {
+        "seconds": 11,
+        "input": 8,
+        "output": 684,
+        "cacheRead": 13384,
+        "cacheWrite": 1089,
+        "cacheWrite1h": 0,
+        "cost": 0.0218338,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "writing-for-agents",
+      "case": "positive-target",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "positive-target",
+        "kind": "program",
+        "evidence": [
+          "the instruction states the target alone: Export every module member by name (`export function parse`, `export const ledger`), and import it by that same name."
+        ]
+      },
+      "spend": {
+        "seconds": 14,
+        "input": 6,
+        "output": 715,
+        "cacheRead": 18777,
+        "cacheWrite": 967,
+        "cacheWrite1h": 0,
+        "cost": 0.0229144,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "writing-for-agents",
+      "case": "positive-target",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "positive-target",
+        "kind": "program",
+        "evidence": [
+          "the instruction speaks the behaviour it bans: Use named exports only. Never write `export default`, and convert any default export you touch to a named export, so every symbol is imported under one consistent, greppable name."
+        ]
+      },
+      "spend": {
+        "seconds": 17,
+        "input": 8,
+        "output": 803,
+        "cacheRead": 13556,
+        "cacheWrite": 1174,
+        "cacheWrite1h": 0,
+        "cost": 0.024673200000000003,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "writing-for-agents",
+      "case": "lookup-left",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "lookup-left-to-the-environment",
+        "kind": "program",
+        "evidence": [
+          "AGENTS.md keeps the gotcha and restates 0 of the 4 scripts"
+        ]
+      },
+      "spend": {
+        "seconds": 15,
+        "input": 8,
+        "output": 936,
+        "cacheRead": 26148,
+        "cacheWrite": 1527,
+        "cacheWrite1h": 0,
+        "cost": 0.0316166,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "writing-for-agents",
+      "case": "lookup-left",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "lookup-left-to-the-environment",
+        "kind": "program",
+        "evidence": [
+          "AGENTS.md restates the lint script, oxlint, which package.json holds",
+          "AGENTS.md restates the typecheck script, tsc --noEmit, which package.json holds",
+          "AGENTS.md restates the build script, bun build src/index.ts --outdir dist, which package.json holds"
+        ]
+      },
+      "spend": {
+        "seconds": 14,
+        "input": 8,
+        "output": 1005,
+        "cacheRead": 14178,
+        "cacheWrite": 1645,
+        "cacheWrite1h": 0,
+        "cost": 0.0311926,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "writing-for-agents",
+      "case": "one-source",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "one-source",
+        "kind": "program",
+        "evidence": [
+          "the test command is stated once: Run `bun test` before you commit. Every test passes on a good change."
+        ]
+      },
+      "spend": {
+        "seconds": 23,
+        "input": 8,
+        "output": 1748,
+        "cacheRead": 25998,
+        "cacheWrite": 2025,
+        "cacheWrite1h": 0,
+        "cost": 0.0503166,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "writing-for-agents",
+      "case": "one-source",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "one-source",
+        "kind": "program",
+        "evidence": [
+          "the test command is stated on 2 lines",
+          "Run `bun test` before you commit. Every test passes on a good change.",
+          "- The tests pass. Run `bun test`; every test passes."
+        ]
+      },
+      "spend": {
+        "seconds": 15,
+        "input": 8,
+        "output": 941,
+        "cacheRead": 13744,
+        "cacheWrite": 1409,
+        "cacheWrite1h": 0,
+        "cost": 0.028645800000000003,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "writing-for-agents",
+      "case": "writing-for-agents-reference",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "bounded-review",
+        "kind": "program",
+        "evidence": [
+          "the step names an observable end to resolving test failures",
+          "## Test review",
+          "Before finishing a change, run the full test suite with the `test` script.",
+          "The change is finished when the suite is green: every test passes on the final state of your change.",
+          "Fix each failure at its cause in the code; edit a test only when the test itself is wrong, and name every such edit in your summary."
+        ]
+      },
+      "spend": {
+        "seconds": 18,
+        "input": 8,
+        "output": 1330,
+        "cacheRead": 20528,
+        "cacheWrite": 6113,
+        "cacheWrite1h": 0,
+        "cost": 0.0613026,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "writing-for-agents",
+      "case": "writing-for-agents-reference",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "bounded-review",
+        "kind": "program",
+        "evidence": [
+          "the step names an observable end to resolving test failures",
+          "## Test review",
+          "Before finishing a change:",
+          "1. Run the test suite with `bun run test`.",
+          "2. If any tests fail, fix the cause and run the suite again. Repeat until every test passes.",
+          "3. Don't skip, delete, or weaken tests to get the suite passing. If a test's expectation is actually wrong, change it and explain why."
+        ]
+      },
+      "spend": {
+        "seconds": 13,
+        "input": 8,
+        "output": 734,
+        "cacheRead": 13394,
+        "cacheWrite": 1053,
+        "cacheWrite1h": 0,
+        "cost": 0.022655800000000004,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "writing-for-agents",
+      "case": "positive-target",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "positive-target",
+        "kind": "program",
+        "evidence": [
+          "the instruction states the target alone: Use named exports only (`export function parse`, `export const ledger`), so every import uses the same name everywhere."
+        ]
+      },
+      "spend": {
+        "seconds": 17,
+        "input": 8,
+        "output": 880,
+        "cacheRead": 25624,
+        "cacheWrite": 1253,
+        "cacheWrite1h": 0,
+        "cost": 0.0290218,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "writing-for-agents",
+      "case": "positive-target",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "positive-target",
+        "kind": "program",
+        "evidence": [
+          "the instruction speaks the behaviour it bans: Use named exports only; never write `export default`, so names stay the same at every import site."
+        ]
+      },
+      "spend": {
+        "seconds": 15,
+        "input": 8,
+        "output": 727,
+        "cacheRead": 13554,
+        "cacheWrite": 1144,
+        "cacheWrite1h": 0,
+        "cost": 0.023002800000000004,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "writing-for-agents",
+      "case": "lookup-left",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "lookup-left-to-the-environment",
+        "kind": "program",
+        "evidence": [
+          "AGENTS.md keeps the gotcha and restates 0 of the 4 scripts"
+        ]
+      },
+      "spend": {
+        "seconds": 16,
+        "input": 8,
+        "output": 1048,
+        "cacheRead": 26202,
+        "cacheWrite": 1745,
+        "cacheWrite1h": 0,
+        "cost": 0.034957400000000007,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "writing-for-agents",
+      "case": "lookup-left",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "lookup-left-to-the-environment",
+        "kind": "program",
+        "evidence": [
+          "AGENTS.md restates the lint script, oxlint, which package.json holds",
+          "AGENTS.md restates the typecheck script, tsc --noEmit, which package.json holds",
+          "AGENTS.md restates the build script, bun build src/index.ts --outdir dist, which package.json holds"
+        ]
+      },
+      "spend": {
+        "seconds": 16,
+        "input": 8,
+        "output": 982,
+        "cacheRead": 14199,
+        "cacheWrite": 1732,
+        "cacheWrite1h": 0,
+        "cost": 0.031171800000000006,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "writing-for-agents",
+      "case": "one-source",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "one-source",
+        "kind": "program",
+        "evidence": [
+          "the test command is stated once: Run `bun test` before you commit. Every test passes on a good change."
+        ]
+      },
+      "spend": {
+        "seconds": 20,
+        "input": 8,
+        "output": 1268,
+        "cacheRead": 25712,
+        "cacheWrite": 1594,
+        "cacheWrite1h": 0,
+        "cost": 0.0385044,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "writing-for-agents",
+      "case": "one-source",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "one-source",
+        "kind": "program",
+        "evidence": [
+          "the test command is stated on 2 lines",
+          "Run `bun test` before you commit. Every test passes on a good change.",
+          "- The tests pass. Run `bun test`."
+        ]
+      },
+      "spend": {
+        "seconds": 15,
+        "input": 8,
+        "output": 866,
+        "cacheRead": 13725,
+        "cacheWrite": 1329,
+        "cacheWrite1h": 0,
+        "cost": 0.026742000000000002,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "writing-for-agents",
+      "case": "writing-for-agents-reference",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "bounded-review",
+        "kind": "program",
+        "evidence": [
+          "the step names an observable end to resolving test failures",
+          "## Test review",
+          "Before finishing a change, run the `test` script and fix every failure it reports.",
+          "The change is done when the full suite runs green."
+        ]
+      },
+      "spend": {
+        "seconds": 29,
+        "input": 8,
+        "output": 922,
+        "cacheRead": 20512,
+        "cacheWrite": 5884,
+        "cacheWrite1h": 0,
+        "cost": 0.0519944,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "writing-for-agents",
+      "case": "writing-for-agents-reference",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "bounded-review",
+        "kind": "program",
+        "evidence": [
+          "the step has no observable completion criterion for test failures",
+          "## Test review",
+          "Before finishing a change, run the test suite with `bun run test` and resolve any failures. Do not report a change as done while tests are failing."
+        ]
+      },
+      "spend": {
+        "seconds": 9,
+        "input": 6,
+        "output": 506,
+        "cacheRead": 9778,
+        "cacheWrite": 861,
+        "cacheWrite1h": 0,
+        "cost": 0.016404600000000002,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "writing-for-agents",
+      "case": "positive-target",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "positive-target",
+        "kind": "program",
+        "evidence": [
+          "the instruction states the target alone: Use named exports only: `export function foo`, `export const bar`."
+        ]
+      },
+      "spend": {
+        "seconds": 15,
+        "input": 6,
+        "output": 727,
+        "cacheRead": 18803,
+        "cacheWrite": 1065,
+        "cacheWrite1h": 0,
+        "cost": 0.0236496,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "writing-for-agents",
+      "case": "positive-target",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "positive-target",
+        "kind": "program",
+        "evidence": [
+          "the instruction speaks the behaviour it bans: Use named exports only (`export function foo`, `export const bar`); never write `export default`, and don't add one when you edit a file."
+        ]
+      },
+      "spend": {
+        "seconds": 16,
+        "input": 8,
+        "output": 660,
+        "cacheRead": 13391,
+        "cacheWrite": 1039,
+        "cacheWrite1h": 0,
+        "cost": 0.0211052,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "writing-for-agents",
+      "case": "lookup-left",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "lookup-left-to-the-environment",
+        "kind": "program",
+        "evidence": [
+          "AGENTS.md keeps the gotcha and restates 0 of the 4 scripts"
+        ]
+      },
+      "spend": {
+        "seconds": 16,
+        "input": 8,
+        "output": 888,
+        "cacheRead": 26141,
+        "cacheWrite": 1620,
+        "cacheWrite1h": 0,
+        "cost": 0.0311202,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "writing-for-agents",
+      "case": "lookup-left",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "lookup-left-to-the-environment",
+        "kind": "program",
+        "evidence": [
+          "AGENTS.md restates the lint script, oxlint, which package.json holds",
+          "AGENTS.md restates the typecheck script, tsc --noEmit, which package.json holds",
+          "AGENTS.md restates the build script, bun build src/index.ts --outdir dist, which package.json holds"
+        ]
+      },
+      "spend": {
+        "seconds": 17,
+        "input": 8,
+        "output": 1126,
+        "cacheRead": 14177,
+        "cacheWrite": 1851,
+        "cacheWrite1h": 0,
+        "cost": 0.0346424,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "writing-for-agents",
+      "case": "one-source",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "one-source",
+        "kind": "program",
+        "evidence": [
+          "the test command is stated once: Run `bun test` before you commit. Every test passes on a good change."
+        ]
+      },
+      "spend": {
+        "seconds": 22,
+        "input": 8,
+        "output": 1516,
+        "cacheRead": 25813,
+        "cacheWrite": 1721,
+        "cacheWrite1h": 0,
+        "cost": 0.0441196,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "writing-for-agents",
+      "case": "one-source",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "one-source",
+        "kind": "program",
+        "evidence": [
+          "the test command is stated on 2 lines",
+          "Run `bun test` before you commit. Every test passes on a good change.",
+          "- The tests pass: `bun test` exits cleanly."
+        ]
+      },
+      "spend": {
+        "seconds": 18,
+        "input": 8,
+        "output": 883,
+        "cacheRead": 13700,
+        "cacheWrite": 1247,
+        "cacheWrite1h": 0,
+        "cost": 0.026667000000000003,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "writing-for-agents",
+      "case": "writing-for-agents-reference",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "bounded-review",
+        "kind": "program",
+        "evidence": [
+          "the step names an observable end to resolving test failures",
+          "## Test review",
+          "Before finishing a change, run the full test suite with the `test` script and resolve every failure.",
+          "The change is done when the suite is green: every test passes, and any test you edited now describes the behaviour the change intends."
+        ]
+      },
+      "spend": {
+        "seconds": 16,
+        "input": 8,
+        "output": 1088,
+        "cacheRead": 20534,
+        "cacheWrite": 5956,
+        "cacheWrite1h": 0,
+        "cost": 0.0556788,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "writing-for-agents",
+      "case": "writing-for-agents-reference",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "bounded-review",
+        "kind": "program",
+        "evidence": [
+          "the step names an observable end to resolving test failures",
+          "## Test review",
+          "Before finishing any change, run the test suite with `bun run test` and make sure it passes.",
+          "- If tests fail, fix the cause before finishing. Don't skip, delete, or weaken tests to make them pass.",
+          "- If a failure is unrelated to your change and you can't resolve it, say so explicitly in your summary and include the failing output.",
+          "- Don't report a change as complete until you've seen the suite pass."
+        ]
+      },
+      "spend": {
+        "seconds": 12,
+        "input": 8,
+        "output": 746,
+        "cacheRead": 13468,
+        "cacheWrite": 1187,
+        "cacheWrite1h": 0,
+        "cost": 0.0235806,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "writing-for-agents",
+      "case": "positive-target",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "positive-target",
+        "kind": "program",
+        "evidence": [
+          "the instruction states the target alone: Use named exports only (`export function post() {}`, imported as `import { post } from \"./ledger\"`)."
+        ]
+      },
+      "spend": {
+        "seconds": 24,
+        "input": 8,
+        "output": 1221,
+        "cacheRead": 25802,
+        "cacheWrite": 1448,
+        "cacheWrite1h": 0,
+        "cost": 0.03685240000000001,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "writing-for-agents",
+      "case": "positive-target",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "positive-target",
+        "kind": "program",
+        "evidence": [
+          "the instruction speaks the behaviour it bans: Use named exports only. Never write `export default`; write `export function foo` or `export const foo` instead, and import with `import { foo } from \"./foo\"`."
+        ]
+      },
+      "spend": {
+        "seconds": 18,
+        "input": 8,
+        "output": 745,
+        "cacheRead": 13558,
+        "cacheWrite": 1143,
+        "cacheWrite1h": 0,
+        "cost": 0.023358600000000004,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "writing-for-agents",
+      "case": "lookup-left",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "lookup-left-to-the-environment",
+        "kind": "program",
+        "evidence": [
+          "AGENTS.md keeps the gotcha and restates 0 of the 4 scripts"
+        ]
+      },
+      "spend": {
+        "seconds": 20,
+        "input": 8,
+        "output": 1013,
+        "cacheRead": 26233,
+        "cacheWrite": 1648,
+        "cacheWrite1h": 0,
+        "cost": 0.0337786,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "writing-for-agents",
+      "case": "lookup-left",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "lookup-left-to-the-environment",
+        "kind": "program",
+        "evidence": [
+          "AGENTS.md restates the lint script, oxlint, which package.json holds",
+          "AGENTS.md restates the typecheck script, tsc --noEmit, which package.json holds",
+          "AGENTS.md restates the build script, bun build src/index.ts --outdir dist, which package.json holds"
+        ]
+      },
+      "spend": {
+        "seconds": 14,
+        "input": 8,
+        "output": 875,
+        "cacheRead": 14203,
+        "cacheWrite": 1656,
+        "cacheWrite1h": 0,
+        "cost": 0.028652600000000004,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "writing-for-agents",
+      "case": "one-source",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "one-source",
+        "kind": "program",
+        "evidence": [
+          "the test command is stated once: Run `bun test` before you commit. Every test passes on a good change."
+        ]
+      },
+      "spend": {
+        "seconds": 18,
+        "input": 8,
+        "output": 1130,
+        "cacheRead": 25722,
+        "cacheWrite": 1572,
+        "cacheWrite1h": 0,
+        "cost": 0.0356364,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "writing-for-agents",
+      "case": "one-source",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "one-source",
+        "kind": "program",
+        "evidence": [
+          "the test command is stated on 2 lines",
+          "Run `bun test` before you commit. Every test passes on a good change.",
+          "- The tests pass: `bun test`."
+        ]
+      },
+      "spend": {
+        "seconds": 14,
+        "input": 8,
+        "output": 715,
+        "cacheRead": 13640,
+        "cacheWrite": 1167,
+        "cacheWrite1h": 0,
+        "cost": 0.022895000000000002,
+        "costEstimated": true
+      }
+    }
+  ]
+}

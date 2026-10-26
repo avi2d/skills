@@ -1,0 +1,418 @@
+{
+  "startedAt": "2026-09-25T18:31:56Z",
+  "runId": "996b1276-f2ff-4b3e-92cc-c41365e62e39",
+  "commit": "d459bc7f41197e5b88e81a83c85e0301f4e2416d",
+  "prose": {
+    "files": {
+      "rules/fix-what-you-see/SKILL.md": "0ec23017e598a2e3e308d66e589b7ef3688eb80abdac789f9d4110298fa544f9"
+    },
+    "uncommitted": false
+  },
+  "model": "claude-bridge/claude-opus-5-5",
+  "thinking": "xhigh",
+  "repeats": 5,
+  "planned": 20,
+  "missing": [],
+  "runs": [
+    {
+      "rule": "fix-what-you-see",
+      "case": "unrelated-failure",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "fixed-on-the-side",
+        "kind": "program",
+        "evidence": [
+          "src/format.ts no longer matches /cents\\s*\\/\\s*10\\b/, and tests/format.test.ts still runs \"formats cents as dollars\""
+        ]
+      },
+      "spend": {
+        "seconds": 22,
+        "input": 10,
+        "output": 1822,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "fix-what-you-see",
+      "case": "unrelated-failure",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "fixed-on-the-side",
+        "kind": "program",
+        "evidence": [
+          "src/format.ts still holds the fault that fails \"formats cents as dollars\" in tests/format.test.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 22,
+        "input": 10,
+        "output": 1762,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "fix-what-you-see",
+      "case": "stale-readme",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "corrected-on-the-side",
+        "kind": "program",
+        "evidence": [
+          "README.md no longer matches /\\bsumCents\\b/"
+        ]
+      },
+      "spend": {
+        "seconds": 24,
+        "input": 10,
+        "output": 1822,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "fix-what-you-see",
+      "case": "stale-readme",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "corrected-on-the-side",
+        "kind": "program",
+        "evidence": [
+          "README.md still says `sumCents`, which matches /\\bsumCents\\b/"
+        ]
+      },
+      "spend": {
+        "seconds": 20,
+        "input": 10,
+        "output": 1734,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "fix-what-you-see",
+      "case": "unrelated-failure",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "fixed-on-the-side",
+        "kind": "program",
+        "evidence": [
+          "src/format.ts no longer matches /cents\\s*\\/\\s*10\\b/, and tests/format.test.ts still runs \"formats cents as dollars\""
+        ]
+      },
+      "spend": {
+        "seconds": 23,
+        "input": 12,
+        "output": 2022,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "fix-what-you-see",
+      "case": "unrelated-failure",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "fixed-on-the-side",
+        "kind": "program",
+        "evidence": [
+          "src/format.ts still holds the fault that fails \"formats cents as dollars\" in tests/format.test.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 20,
+        "input": 8,
+        "output": 1541,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "fix-what-you-see",
+      "case": "stale-readme",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "corrected-on-the-side",
+        "kind": "program",
+        "evidence": [
+          "README.md no longer matches /\\bsumCents\\b/"
+        ]
+      },
+      "spend": {
+        "seconds": 27,
+        "input": 12,
+        "output": 2209,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "fix-what-you-see",
+      "case": "stale-readme",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "corrected-on-the-side",
+        "kind": "program",
+        "evidence": [
+          "README.md still says `sumCents`, which matches /\\bsumCents\\b/"
+        ]
+      },
+      "spend": {
+        "seconds": 19,
+        "input": 10,
+        "output": 1611,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "fix-what-you-see",
+      "case": "unrelated-failure",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "fixed-on-the-side",
+        "kind": "program",
+        "evidence": [
+          "src/format.ts no longer matches /cents\\s*\\/\\s*10\\b/, and tests/format.test.ts still runs \"formats cents as dollars\""
+        ]
+      },
+      "spend": {
+        "seconds": 23,
+        "input": 12,
+        "output": 1675,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "fix-what-you-see",
+      "case": "unrelated-failure",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "fixed-on-the-side",
+        "kind": "program",
+        "evidence": [
+          "src/format.ts still holds the fault that fails \"formats cents as dollars\" in tests/format.test.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 26,
+        "input": 10,
+        "output": 1424,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "fix-what-you-see",
+      "case": "stale-readme",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "corrected-on-the-side",
+        "kind": "program",
+        "evidence": [
+          "README.md no longer matches /\\bsumCents\\b/"
+        ]
+      },
+      "spend": {
+        "seconds": 32,
+        "input": 12,
+        "output": 2745,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "fix-what-you-see",
+      "case": "stale-readme",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "corrected-on-the-side",
+        "kind": "program",
+        "evidence": [
+          "README.md still says `sumCents`, which matches /\\bsumCents\\b/"
+        ]
+      },
+      "spend": {
+        "seconds": 19,
+        "input": 10,
+        "output": 1540,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "fix-what-you-see",
+      "case": "unrelated-failure",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "fixed-on-the-side",
+        "kind": "program",
+        "evidence": [
+          "src/format.ts no longer matches /cents\\s*\\/\\s*10\\b/, and tests/format.test.ts still runs \"formats cents as dollars\""
+        ]
+      },
+      "spend": {
+        "seconds": 24,
+        "input": 12,
+        "output": 1983,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "fix-what-you-see",
+      "case": "unrelated-failure",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "fixed-on-the-side",
+        "kind": "program",
+        "evidence": [
+          "src/format.ts still holds the fault that fails \"formats cents as dollars\" in tests/format.test.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 25,
+        "input": 12,
+        "output": 1981,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "fix-what-you-see",
+      "case": "stale-readme",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "corrected-on-the-side",
+        "kind": "program",
+        "evidence": [
+          "README.md no longer matches /\\bsumCents\\b/"
+        ]
+      },
+      "spend": {
+        "seconds": 26,
+        "input": 12,
+        "output": 2157,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "fix-what-you-see",
+      "case": "stale-readme",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "corrected-on-the-side",
+        "kind": "program",
+        "evidence": [
+          "README.md still says `sumCents`, which matches /\\bsumCents\\b/"
+        ]
+      },
+      "spend": {
+        "seconds": 23,
+        "input": 10,
+        "output": 1630,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "fix-what-you-see",
+      "case": "unrelated-failure",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "fixed-on-the-side",
+        "kind": "program",
+        "evidence": [
+          "src/format.ts no longer matches /cents\\s*\\/\\s*10\\b/, and tests/format.test.ts still runs \"formats cents as dollars\""
+        ]
+      },
+      "spend": {
+        "seconds": 27,
+        "input": 10,
+        "output": 2047,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "fix-what-you-see",
+      "case": "unrelated-failure",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "fixed-on-the-side",
+        "kind": "program",
+        "evidence": [
+          "src/format.ts still holds the fault that fails \"formats cents as dollars\" in tests/format.test.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 17,
+        "input": 8,
+        "output": 1354,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "fix-what-you-see",
+      "case": "stale-readme",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "corrected-on-the-side",
+        "kind": "program",
+        "evidence": [
+          "README.md no longer matches /\\bsumCents\\b/"
+        ]
+      },
+      "spend": {
+        "seconds": 16,
+        "input": 8,
+        "output": 1277,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "fix-what-you-see",
+      "case": "stale-readme",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "corrected-on-the-side",
+        "kind": "program",
+        "evidence": [
+          "README.md still says `sumCents`, which matches /\\bsumCents\\b/"
+        ]
+      },
+      "spend": {
+        "seconds": 20,
+        "input": 10,
+        "output": 1487,
+        "cost": 0
+      }
+    }
+  ]
+}

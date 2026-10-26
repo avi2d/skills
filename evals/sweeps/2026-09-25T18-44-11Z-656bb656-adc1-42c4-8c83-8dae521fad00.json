@@ -1,0 +1,618 @@
+{
+  "startedAt": "2026-09-25T18:44:11Z",
+  "runId": "656bb656-adc1-42c4-8c83-8dae521fad00",
+  "commit": "5e953d088ee1a6c4770fff924c48c7a94b5ee536",
+  "prose": {
+    "files": {
+      "rules/git-hygiene/SKILL.md": "b57e9c21df962938518d83eb1c1e8d66a957c853337be519d29c1758aa354693"
+    },
+    "uncommitted": false
+  },
+  "model": "claude-bridge/claude-opus-5-5",
+  "thinking": "xhigh",
+  "repeats": 5,
+  "planned": 30,
+  "missing": [],
+  "runs": [
+    {
+      "rule": "git-hygiene",
+      "case": "co-author",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-co-author-trailer",
+        "kind": "program",
+        "evidence": [
+          "1 commit(s), none with a Co-Authored-By trailer"
+        ]
+      },
+      "spend": {
+        "seconds": 20,
+        "input": 12,
+        "output": 1422,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "git-hygiene",
+      "case": "co-author",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "no-co-author-trailer",
+        "kind": "program",
+        "evidence": [
+          "the commit \"Trim leading and trailing dashes in slugify\" carries `Co-Authored-By: Claude <noreply@anthropic.com>`"
+        ]
+      },
+      "spend": {
+        "seconds": 22,
+        "input": 12,
+        "output": 1730,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "git-hygiene",
+      "case": "changelog",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "left-to-its-generator",
+        "kind": "program",
+        "evidence": [
+          "the run left CHANGELOG.md as seeded"
+        ]
+      },
+      "spend": {
+        "seconds": 37,
+        "input": 12,
+        "output": 3250,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "git-hygiene",
+      "case": "changelog",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "left-to-its-generator",
+        "kind": "program",
+        "evidence": [
+          "the run left CHANGELOG.md as seeded"
+        ]
+      },
+      "spend": {
+        "seconds": 55,
+        "input": 18,
+        "output": 4400,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "git-hygiene",
+      "case": "generated-routes",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "left-to-its-generator",
+        "kind": "program",
+        "evidence": [
+          "src/generated/routes.ts is what its generator produces from the run's sources"
+        ]
+      },
+      "spend": {
+        "seconds": 15,
+        "input": 10,
+        "output": 1197,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "git-hygiene",
+      "case": "generated-routes",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "left-to-its-generator",
+        "kind": "program",
+        "evidence": [
+          "src/generated/routes.ts is what its generator produces from the run's sources"
+        ]
+      },
+      "spend": {
+        "seconds": 16,
+        "input": 10,
+        "output": 1252,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "git-hygiene",
+      "case": "co-author",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-co-author-trailer",
+        "kind": "program",
+        "evidence": [
+          "1 commit(s), none with a Co-Authored-By trailer"
+        ]
+      },
+      "spend": {
+        "seconds": 18,
+        "input": 10,
+        "output": 1326,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "git-hygiene",
+      "case": "co-author",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "no-co-author-trailer",
+        "kind": "program",
+        "evidence": [
+          "the commit \"Trim leading and trailing dashes in slugify\" carries `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`"
+        ]
+      },
+      "spend": {
+        "seconds": 24,
+        "input": 12,
+        "output": 1956,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "git-hygiene",
+      "case": "changelog",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "left-to-its-generator",
+        "kind": "program",
+        "evidence": [
+          "the run left CHANGELOG.md as seeded"
+        ]
+      },
+      "spend": {
+        "seconds": 43,
+        "input": 16,
+        "output": 3047,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "git-hygiene",
+      "case": "changelog",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "left-to-its-generator",
+        "kind": "program",
+        "evidence": [
+          "the run left CHANGELOG.md as seeded"
+        ]
+      },
+      "spend": {
+        "seconds": 31,
+        "input": 12,
+        "output": 2877,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "git-hygiene",
+      "case": "generated-routes",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "left-to-its-generator",
+        "kind": "program",
+        "evidence": [
+          "src/generated/routes.ts is what its generator produces from the run's sources"
+        ]
+      },
+      "spend": {
+        "seconds": 15,
+        "input": 10,
+        "output": 1348,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "git-hygiene",
+      "case": "generated-routes",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "left-to-its-generator",
+        "kind": "program",
+        "evidence": [
+          "src/generated/routes.ts is what its generator produces from the run's sources"
+        ]
+      },
+      "spend": {
+        "seconds": 16,
+        "input": 10,
+        "output": 1249,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "git-hygiene",
+      "case": "co-author",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-co-author-trailer",
+        "kind": "program",
+        "evidence": [
+          "1 commit(s), none with a Co-Authored-By trailer"
+        ]
+      },
+      "spend": {
+        "seconds": 22,
+        "input": 12,
+        "output": 1407,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "git-hygiene",
+      "case": "co-author",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "no-co-author-trailer",
+        "kind": "program",
+        "evidence": [
+          "the commit \"Trim leading and trailing dashes in slugify\" carries `Co-Authored-By: Claude <noreply@anthropic.com>`"
+        ]
+      },
+      "spend": {
+        "seconds": 26,
+        "input": 14,
+        "output": 2082,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "git-hygiene",
+      "case": "changelog",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "left-to-its-generator",
+        "kind": "program",
+        "evidence": [
+          "the run left CHANGELOG.md as seeded"
+        ]
+      },
+      "spend": {
+        "seconds": 35,
+        "input": 14,
+        "output": 3064,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "git-hygiene",
+      "case": "changelog",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "left-to-its-generator",
+        "kind": "program",
+        "evidence": [
+          "the run left CHANGELOG.md as seeded"
+        ]
+      },
+      "spend": {
+        "seconds": 35,
+        "input": 14,
+        "output": 3265,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "git-hygiene",
+      "case": "generated-routes",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "left-to-its-generator",
+        "kind": "program",
+        "evidence": [
+          "src/generated/routes.ts is what its generator produces from the run's sources"
+        ]
+      },
+      "spend": {
+        "seconds": 16,
+        "input": 10,
+        "output": 1344,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "git-hygiene",
+      "case": "generated-routes",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "left-to-its-generator",
+        "kind": "program",
+        "evidence": [
+          "src/generated/routes.ts is what its generator produces from the run's sources"
+        ]
+      },
+      "spend": {
+        "seconds": 17,
+        "input": 10,
+        "output": 1280,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "git-hygiene",
+      "case": "co-author",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-co-author-trailer",
+        "kind": "program",
+        "evidence": [
+          "1 commit(s), none with a Co-Authored-By trailer"
+        ]
+      },
+      "spend": {
+        "seconds": 17,
+        "input": 10,
+        "output": 1154,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "git-hygiene",
+      "case": "co-author",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "no-co-author-trailer",
+        "kind": "program",
+        "evidence": [
+          "the commit \"Trim leading and trailing dashes from slugs\" carries `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`"
+        ]
+      },
+      "spend": {
+        "seconds": 24,
+        "input": 14,
+        "output": 2142,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "git-hygiene",
+      "case": "changelog",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "left-to-its-generator",
+        "kind": "program",
+        "evidence": [
+          "the run left CHANGELOG.md as seeded"
+        ]
+      },
+      "spend": {
+        "seconds": 48,
+        "input": 14,
+        "output": 3549,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "git-hygiene",
+      "case": "changelog",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "left-to-its-generator",
+        "kind": "program",
+        "evidence": [
+          "the run left CHANGELOG.md as seeded"
+        ]
+      },
+      "spend": {
+        "seconds": 32,
+        "input": 14,
+        "output": 2869,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "git-hygiene",
+      "case": "generated-routes",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "left-to-its-generator",
+        "kind": "program",
+        "evidence": [
+          "src/generated/routes.ts is what its generator produces from the run's sources"
+        ]
+      },
+      "spend": {
+        "seconds": 16,
+        "input": 10,
+        "output": 1296,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "git-hygiene",
+      "case": "generated-routes",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "left-to-its-generator",
+        "kind": "program",
+        "evidence": [
+          "src/generated/routes.ts is what its generator produces from the run's sources"
+        ]
+      },
+      "spend": {
+        "seconds": 17,
+        "input": 10,
+        "output": 1319,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "git-hygiene",
+      "case": "co-author",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-co-author-trailer",
+        "kind": "program",
+        "evidence": [
+          "1 commit(s), none with a Co-Authored-By trailer"
+        ]
+      },
+      "spend": {
+        "seconds": 14,
+        "input": 10,
+        "output": 1082,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "git-hygiene",
+      "case": "co-author",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "no-co-author-trailer",
+        "kind": "program",
+        "evidence": [
+          "the commit \"Trim leading and trailing dashes from slugs\" carries `Co-Authored-By: Claude <noreply@anthropic.com>`"
+        ]
+      },
+      "spend": {
+        "seconds": 23,
+        "input": 12,
+        "output": 1665,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "git-hygiene",
+      "case": "changelog",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "left-to-its-generator",
+        "kind": "program",
+        "evidence": [
+          "the run left CHANGELOG.md as seeded"
+        ]
+      },
+      "spend": {
+        "seconds": 36,
+        "input": 14,
+        "output": 3472,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "git-hygiene",
+      "case": "changelog",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "left-to-its-generator",
+        "kind": "program",
+        "evidence": [
+          "the run left CHANGELOG.md as seeded"
+        ]
+      },
+      "spend": {
+        "seconds": 32,
+        "input": 16,
+        "output": 2836,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "git-hygiene",
+      "case": "generated-routes",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "left-to-its-generator",
+        "kind": "program",
+        "evidence": [
+          "src/generated/routes.ts is what its generator produces from the run's sources"
+        ]
+      },
+      "spend": {
+        "seconds": 17,
+        "input": 10,
+        "output": 1412,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "git-hygiene",
+      "case": "generated-routes",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "left-to-its-generator",
+        "kind": "program",
+        "evidence": [
+          "src/generated/routes.ts is what its generator produces from the run's sources"
+        ]
+      },
+      "spend": {
+        "seconds": 14,
+        "input": 8,
+        "output": 1138,
+        "cost": 0
+      }
+    }
+  ]
+}

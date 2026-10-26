@@ -1,0 +1,15 @@
+.DS_Store
+node_modules
+.pi
+# The Dispatcher bundles, written whole, and the one Hub every skills root
+# points at, reconciled. Load-bearing and in no clone: `bun run link` builds
+# them before it points $HOME at them.
+generated/
+generated-*/
+
+# A library's own source, read by agents: `checks-vendor` links each one the `prepare` script names, `repos/*/` would miss the link itself.
+repos/*
+
+reports/
+# Stryker's reports and incremental state. The incremental file is a cache
+# artifact keyed on file content, not a source of truth.

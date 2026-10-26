@@ -1,0 +1,413 @@
+{
+  "startedAt": "2026-09-25T11:53:21Z",
+  "commit": "80c5a61e1bd2da676aa54d0b16814abcca98e1b2",
+  "prose": {
+    "files": {
+      "rules/force-determinism/SKILL.md": "fce75d667243e3347e853a875a2a074b25becc3a37cf4e6ac97020d6a4736c4d"
+    },
+    "uncommitted": false
+  },
+  "model": "opencode-go/muse-spark-1.3-contributor",
+  "thinking": "high",
+  "repeats": 5,
+  "planned": 20,
+  "missing": [],
+  "runs": [
+    {
+      "rule": "force-determinism",
+      "case": "convention-as-check",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "constraint-in-a-program",
+        "kind": "program",
+        "evidence": [
+          "tests/boundaries.test.ts add(s) a line matching /\\btests\\b|\\bfixtures\\b/"
+        ]
+      },
+      "spend": {
+        "seconds": 72,
+        "input": 8283,
+        "output": 4517,
+        "cost": 0.0018141180000000002
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "convention-as-check",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "constraint-in-a-program",
+        "kind": "program",
+        "evidence": [
+          "tests/boundary.test.ts add(s) a line matching /\\btests\\b|\\bfixtures\\b/"
+        ]
+      },
+      "spend": {
+        "seconds": 88,
+        "input": 9236,
+        "output": 5426,
+        "cost": 0.002098356
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "watched-red",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "seen-failing",
+        "kind": "program",
+        "evidence": [
+          "`printf 'export const _violation = console.log(\"prove red\");\\n' > src/__prove_red__.ts\ncat src/__prove_red__.ts\nbun test 2>&1; echo \"EXIT:$?\"` failed under tests/no-console-log.test.ts at step 5, and `rm src/__prove_red__.ts\nbun test 2>&1; echo \"EXIT:$?\"` passed at step 6"
+        ]
+      },
+      "spend": {
+        "seconds": 34,
+        "input": 5136,
+        "output": 1806,
+        "cost": 0.0009102040000000001
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "watched-red",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "seen-failing",
+        "kind": "program",
+        "evidence": [
+          "`bun test 2>&1; echo \"=== exit: $? ===\"; echo \"--- verify it fails with console.log ---\"; echo 'console.log(\"debug\");' >> src/money.ts; bun test 2>&1; echo \"=== exit: $? ===\"; git checkout -- src/money.ts 2>/dev/null || (head -n -1 src/money.ts > /tmp/m.ts && mv /tmp/m.ts src/money.ts); cat src/money.ts; bun test 2>&1; echo \"=== exit: $? ===\"` failed under tests/no-console-log.test.ts at step 8, and the tests passed later in the same command"
+        ]
+      },
+      "spend": {
+        "seconds": 36,
+        "input": 5148,
+        "output": 1908,
+        "cost": 0.0009287019999999999
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "convention-as-check",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "constraint-in-a-program",
+        "kind": "program",
+        "evidence": [
+          "scripts/check-boundaries.mjs, tests/boundaries.test.ts add(s) a line matching /\\btests\\b|\\bfixtures\\b/"
+        ]
+      },
+      "spend": {
+        "seconds": 135,
+        "input": 13602,
+        "output": 8931,
+        "cost": 0.0033722540000000007
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "convention-as-check",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "constraint-in-a-program",
+        "kind": "program",
+        "evidence": [
+          "tests/architecture.test.ts add(s) a line matching /\\btests\\b|\\bfixtures\\b/"
+        ]
+      },
+      "spend": {
+        "seconds": 146,
+        "input": 14506,
+        "output": 8281,
+        "cost": 0.0033750900000000003
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "watched-red",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "seen-failing",
+        "kind": "program",
+        "evidence": [
+          "`printf 'export const __probe = (): void => {\\n  console.log(\"probe violation\");\\n};\\n' > src/__probe__.ts\ncat src/__probe__.ts\necho \"--- running check (expect RED) ---\"\nbun test tests/no-console-log.test.ts; echo \"exit=$?\"` failed under tests/no-console-log.test.ts at step 8, and `rm src/__probe__.ts\necho \"--- running check (expect GREEN) ---\"\nbun test tests/no-console-log.test.ts; echo \"exit=$?\"\necho \"--- full suite ---\"\nbun test; echo \"exit=$?\"` passed at step 9"
+        ]
+      },
+      "spend": {
+        "seconds": 54,
+        "input": 6673,
+        "output": 3055,
+        "cost": 0.001328522
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "watched-red",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "seen-failing",
+        "kind": "program",
+        "evidence": [
+          "`bun test 2>&1\necho \"--- verify it catches console.log ---\"\necho 'console.log(\"debug\");' >> src/money.ts\nbun test 2>&1; echo \"exit: $?\"\ngit checkout -- src/money.ts 2>/dev/null || true\n# restore if git failed (not a git repo or otherwise), remove last line\ntail -n 5 src/money.ts` failed under tests/no-console-log.test.ts at step 7, and `git status --short 2>&1; echo \"---\"; bun test 2>&1 | tail -n 10` passed at step 9"
+        ]
+      },
+      "spend": {
+        "seconds": 26,
+        "input": 4806,
+        "output": 1727,
+        "cost": 0.000868512
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "convention-as-check",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "constraint-in-a-program",
+        "kind": "program",
+        "evidence": [
+          "scripts/check-src-boundary.mjs, tests/boundary.test.ts add(s) a line matching /\\btests\\b|\\bfixtures\\b/"
+        ]
+      },
+      "spend": {
+        "seconds": 129,
+        "input": 13829,
+        "output": 7478,
+        "cost": 0.0031730680000000007
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "convention-as-check",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "constraint-in-a-program",
+        "kind": "program",
+        "evidence": [
+          "tests/boundaries.test.ts add(s) a line matching /\\btests\\b|\\bfixtures\\b/"
+        ]
+      },
+      "spend": {
+        "seconds": 79,
+        "input": 8859,
+        "output": 4982,
+        "cost": 0.0019833460000000004
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "watched-red",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "seen-failing",
+        "kind": "program",
+        "evidence": [
+          "`printf 'export const debug = (x: unknown): void => {\\n  console.log(x);\\n};\\n' > src/__console_log_probe.ts\ncat src/__console_log_probe.ts\necho \"--- running test (expect RED) ---\"\nbun test tests/no-console-log.test.ts 2>&1; echo \"exit=$?\"` failed under tests/no-console-log.test.ts at step 8, and `rm src/__console_log_probe.ts\necho \"--- running test (expect GREEN) ---\"\nbun test tests/no-console-log.test.ts 2>&1; echo \"exit=$?\"\necho \"--- running full suite ---\"\nbun test 2>&1; echo \"exit=$?\"` passed at step 9"
+        ]
+      },
+      "spend": {
+        "seconds": 37,
+        "input": 6327,
+        "output": 2336,
+        "cost": 0.001157004
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "watched-red",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "seen-failing",
+        "kind": "program",
+        "evidence": [
+          "`bun test 2>&1; echo \"=== verify failure case ===\"; echo 'console.log(\"debug\");' >> src/money.ts; cat src/money.ts; bun test 2>&1; git checkout -- src/money.ts; echo \"=== restored ===\"; bun test 2>&1` failed under tests/no-console-log.test.ts at step 10, and the tests passed later in the same command"
+        ]
+      },
+      "spend": {
+        "seconds": 40,
+        "input": 5233,
+        "output": 1984,
+        "cost": 0.0009552180000000001
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "convention-as-check",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "constraint-in-a-program",
+        "kind": "program",
+        "evidence": [
+          "tests/boundaries.test.ts add(s) a line matching /\\btests\\b|\\bfixtures\\b/"
+        ]
+      },
+      "spend": {
+        "seconds": 96,
+        "input": 9661,
+        "output": 5692,
+        "cost": 0.0021894780000000003
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "convention-as-check",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "constraint-in-a-program",
+        "kind": "program",
+        "evidence": [
+          "tests/boundaries.test.ts add(s) a line matching /\\btests\\b|\\bfixtures\\b/"
+        ]
+      },
+      "spend": {
+        "seconds": 130,
+        "input": 12610,
+        "output": 8071,
+        "cost": 0.0030504260000000006
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "watched-red",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "seen-failing",
+        "kind": "program",
+        "evidence": [
+          "`printf 'export const _proveItWorks = (): void => {\\n  console.log(\"prove-it-works violation\");\\n};\\n' > src/__prove-it-works-console-log.ts\ncat src/__prove-it-works-console-log.ts\necho \"--- running check (expect RED) ---\"\nbun test tests/no-console-log.test.ts 2>&1; echo \"exit=$?\"` failed under tests/no-console-log.test.ts at step 6, and `rm src/__prove-it-works-console-log.ts\necho \"--- running check (expect GREEN) ---\"\nbun test tests/no-console-log.test.ts 2>&1; echo \"exit=$?\"\necho \"--- full suite ---\"\nbun test 2>&1; echo \"exit=$?\"` passed at step 7"
+        ]
+      },
+      "spend": {
+        "seconds": 50,
+        "input": 6621,
+        "output": 3445,
+        "cost": 0.001402346
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "watched-red",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "seen-failing",
+        "kind": "program",
+        "evidence": [
+          "`bun test 2>&1; echo \"=== EXIT: $? ===\"; echo \"--- verify it fails when console.log is present ---\"; echo 'export const debug = (x: unknown) => console.log(x);' >> src/money.ts; bun test 2>&1; echo \"=== EXIT: $? ===\"; git checkout -- src/money.ts 2>&1 || git restore src/money.ts 2>&1; echo \"--- after restore ---\"; bun test 2>&1; echo \"=== EXIT: $? ===\"` failed under tests/no-console-log.test.ts at step 7, and the tests passed later in the same command"
+        ]
+      },
+      "spend": {
+        "seconds": 55,
+        "input": 5868,
+        "output": 2877,
+        "cost": 0.0011858580000000004
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "convention-as-check",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "constraint-in-a-program",
+        "kind": "program",
+        "evidence": [
+          "tests/boundary.test.ts add(s) a line matching /\\btests\\b|\\bfixtures\\b/"
+        ]
+      },
+      "spend": {
+        "seconds": 77,
+        "input": 8781,
+        "output": 4238,
+        "cost": 0.0018372120000000004
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "convention-as-check",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "constraint-in-a-program",
+        "kind": "program",
+        "evidence": [
+          "tests/boundaries.test.ts add(s) a line matching /\\btests\\b|\\bfixtures\\b/"
+        ]
+      },
+      "spend": {
+        "seconds": 122,
+        "input": 12498,
+        "output": 7425,
+        "cost": 0.002913324
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "watched-red",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "unjudged",
+        "why": "the agent never wrote a check matching /(?:^|\\/)tests\\/(?:[^/]+\\/)*[^/]+\\.test\\.[cm]?[jt]s$/ through the write tools"
+      },
+      "spend": {
+        "seconds": 118,
+        "input": 12035,
+        "output": 6808,
+        "cost": 0.002862710000000001
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "watched-red",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "seen-failing",
+        "kind": "program",
+        "evidence": [
+          "`bun test 2>&1 | tail -n 20; echo \"=== verify it fails when console.log present ===\"; echo 'console.log(\"debug\");' >> src/money.ts; bun test 2>&1 | tail -n 25; git checkout -- src/money.ts 2>/dev/null || true; bun test 2>&1 | tail -n 10` failed under tests/no-console-log.test.ts at step 8, and the tests passed later in the same command"
+        ]
+      },
+      "spend": {
+        "seconds": 40,
+        "input": 5422,
+        "output": 2154,
+        "cost": 0.0010173040000000001
+      }
+    }
+  ]
+}

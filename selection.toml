@@ -1,0 +1,32 @@
+default_models = ["opus", "claude-bridge/claude-haiku-5-5"]
+
+[profiles.default]
+rules = ["comment-discipline", "fix-what-you-see", "prove-it-works", "typescript-best-practices", "agents-md-router"]
+skills = ["build-and-review-motion", "grilling", "refine-design", "stress-test-content", "teach"]
+references = ["effect-patterns", "interface-copy", "mobile-web", "motion", "motion-vocabulary", "plain-sentences", "plain-words", "punctuation", "russian-prose", "technical-writing", "typography", "ui-principles", "unslop", "visitor-job", "writing-for-agents"]
+
+[profiles.muse-spark]
+models = ["opencode-go/muse-spark-1.3-contributor"]
+
+[profiles.muse-spark.rules]
+add = ["guard-the-context-window", "writing-for-people"]
+
+[profiles.gpt-6]
+models = ["openai-codex/gpt-6-luna", "openai/gpt-6-luna", "openai-codex/gpt-6.1-sol", "openai/gpt-6.1-sol"]
+
+[profiles.gpt-6.rules]
+add = ["force-determinism", "git-hygiene"]
+
+[profiles.claude-opus-5-5]
+models = ["claude-bridge/claude-opus-5-5", "claude-code/claude-opus-5-5"]
+
+[profiles.claude-opus-5-5.rules]
+add = ["git-hygiene-co-author"]
+
+[profiles.ollama-qwen]
+models = ["ollama/qwen3.6:35b-a3b-iq3s"]
+tools = ["read", "write", "edit", "bash"]
+
+[profiles.ollama-qwen.rules]
+add = ["guard-the-context-window"]
+drop = ["comment-discipline", "fix-what-you-see", "typescript-best-practices"]

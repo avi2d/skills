@@ -1,0 +1,1084 @@
+{
+  "startedAt": "2026-10-11T12:02:00Z",
+  "runId": "b8976dee-397f-4622-bac3-b8ff673ba52e",
+  "commit": "6919b7410ec61a9fccb247a9df452cb44b994a5c",
+  "prose": {
+    "files": {
+      "library/writing/references/russian-prose/SKILL.md": "a765865a29882d9cfbbff634129a12e6b64cbd03ff9ffb6428fe581d46085f7a"
+    },
+    "uncommitted": false
+  },
+  "model": "opencode-go/muse-spark-1.3-contributor",
+  "thinking": "high",
+  "repeats": 5,
+  "planned": 40,
+  "missing": [],
+  "runs": [
+    {
+      "rule": "russian-prose",
+      "case": "ru-readme",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "russian-prose",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the russian-prose asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 158,
+        "turns": 7,
+        "input": 6259,
+        "output": 3927,
+        "cacheRead": 28838,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0014689759999999999,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "russian-prose",
+      "case": "ru-readme",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "russian-prose",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the russian-prose asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 5,
+        "turns": 3,
+        "input": 2532,
+        "output": 463,
+        "cacheRead": 3810,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.00035342,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "russian-prose",
+      "case": "ru-pr",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "unjudged",
+        "why": "PR.md does not carry the facts the task gave"
+      },
+      "spend": {
+        "seconds": 56,
+        "turns": 6,
+        "input": 4490,
+        "output": 5494,
+        "cacheRead": 23349,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.001594498,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "russian-prose",
+      "case": "ru-pr",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "russian-prose",
+        "kind": "program",
+        "evidence": [
+          "\"vs\" where a Russian word exists: пробелы в начале/конце названия получателя (Code vs Code),",
+          "\"vs\" where a Russian word exists: регистр названия (Code vs Code),",
+          "\"vs\" where a Russian word exists: форматирование суммы (Code vs Code).",
+          "a reflexive passive verb where an actor could lead the sentence: Из-за этого одна и та же операция импорта пропускалась повторно, если отличалась несущественными деталями:",
+          "a reflexive passive verb where an actor could lead the sentence: Ключ дедупликации теперь нормализован и строится только по смысловым полям:",
+          "a reflexive passive verb where an actor could lead the sentence: Code — через Code, чтобы игнорировались пробелы и регистр.",
+          "a reflexive passive verb where an actor could lead the sentence: Поля объединяются через Code.",
+          "a reflexive passive verb where an actor could lead the sentence: Логика с Code не изменилась: если ключ уже есть в Code, строка пропускается, иначе добавляется в Code и в результат."
+        ]
+      },
+      "spend": {
+        "seconds": 9,
+        "turns": 4,
+        "input": 3124,
+        "output": 904,
+        "cacheRead": 7251,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0005077020000000001,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "russian-prose",
+      "case": "ru-site",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "unjudged",
+        "why": "site/about.md does not carry the facts the task gave"
+      },
+      "spend": {
+        "seconds": 32,
+        "turns": 5,
+        "input": 4096,
+        "output": 5018,
+        "cacheRead": 18372,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0014499440000000003,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "russian-prose",
+      "case": "ru-site",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "russian-prose",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the russian-prose asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 11,
+        "turns": 4,
+        "input": 3088,
+        "output": 1006,
+        "cacheRead": 6739,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0005234780000000001,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "russian-prose",
+      "case": "ru-docs",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "russian-prose",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the russian-prose asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 45,
+        "turns": 4,
+        "input": 3258,
+        "output": 7156,
+        "cacheRead": 13907,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0017848140000000002,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "russian-prose",
+      "case": "ru-docs",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "russian-prose",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the russian-prose asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 10,
+        "turns": 5,
+        "input": 3408,
+        "output": 1089,
+        "cacheRead": 9397,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0005773940000000001,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "russian-prose",
+      "case": "ru-readme",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "russian-prose",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the russian-prose asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 18,
+        "turns": 4,
+        "input": 3701,
+        "output": 2616,
+        "cacheRead": 9299,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0009118980000000002,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "russian-prose",
+      "case": "ru-readme",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "russian-prose",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the russian-prose asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 6,
+        "turns": 3,
+        "input": 2198,
+        "output": 566,
+        "cacheRead": 4322,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.000341644,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "russian-prose",
+      "case": "ru-pr",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "russian-prose",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the russian-prose asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 34,
+        "turns": 4,
+        "input": 3553,
+        "output": 5832,
+        "cacheRead": 13395,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0015484900000000002,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "russian-prose",
+      "case": "ru-pr",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "russian-prose",
+        "kind": "program",
+        "evidence": [
+          "a step in the infinitive rather than the plural imperative: Импортировать строку Code — она должна быть сохранена.",
+          "a step in the infinitive rather than the plural imperative: Повторно импортировать строку Code с тем же набором Code — она должна быть пропущена (результат — пустой массив).",
+          "a step in the infinitive rather than the plural imperative: Запустить тесты импорта и убедиться, что новый и существующие тесты (Code) проходят.",
+          "a reflexive passive verb where an actor could lead the sentence: Изменена логика дедупликации в функции Code (Code): вместо сырого значения Code для определения дубликатов теперь используется нормализованный ключ из даты, суммы и получателя платежа.",
+          "a reflexive passive verb where an actor could lead the sentence: Ключ теперь строится как Code, где:",
+          "a reflexive passive verb where an actor could lead the sentence: сумма приводится к формату с двумя знаками после запятой (Code), поэтому Code и Code считаются одинаковыми;",
+          "a reflexive passive verb where an actor could lead the sentence: имя получателя (Code) обрезается от пробелов по краям (Code) и приводится к нижнему регистру (Code), поэтому Code и Code считаются одинаковыми.",
+          "a reflexive passive verb where an actor could lead the sentence: Добавлен тест Code, который проверяет, что повторная строка с тем же Code и Code, но с отличиями только в пробелах и регистре Code, пропускается как дубликат.",
+          "a reflexive passive verb where an actor could lead the sentence: Раньше дедупликация по Code была слишком строгой: строки, отличающиеся только форматированием суммы или пробелами/регистром в имени получателя, не распознавались как дубликаты и попадали в импорт повторно.",
+          "a reflexive passive verb where an actor could lead the sentence: Поведение дедупликации меняется: строки, ранее считавшиеся разными, теперь могут считаться дубликатами."
+        ]
+      },
+      "spend": {
+        "seconds": 8,
+        "turns": 3,
+        "input": 1565,
+        "output": 1028,
+        "cacheRead": 6227,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.00037455400000000003,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "russian-prose",
+      "case": "ru-site",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "unjudged",
+        "why": "site/about.md does not carry the facts the task gave"
+      },
+      "spend": {
+        "seconds": 24,
+        "turns": 6,
+        "input": 9553,
+        "output": 6666,
+        "cacheRead": 20646,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0023297920000000002,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "russian-prose",
+      "case": "ru-site",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "russian-prose",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the russian-prose asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 11,
+        "turns": 6,
+        "input": 3332,
+        "output": 977,
+        "cacheRead": 11061,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.000550722,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "russian-prose",
+      "case": "ru-docs",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "russian-prose",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the russian-prose asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 84,
+        "turns": 6,
+        "input": 8081,
+        "output": 8512,
+        "cacheRead": 38709,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0025879180000000002,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "russian-prose",
+      "case": "ru-docs",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "russian-prose",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the russian-prose asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 13,
+        "turns": 6,
+        "input": 4063,
+        "output": 1182,
+        "cacheRead": 12085,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.00066687,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "russian-prose",
+      "case": "ru-readme",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "russian-prose",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the russian-prose asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 22,
+        "turns": 3,
+        "input": 3320,
+        "output": 2726,
+        "cacheRead": 6370,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0008899400000000001,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "russian-prose",
+      "case": "ru-readme",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "russian-prose",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the russian-prose asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 8,
+        "turns": 4,
+        "input": 2366,
+        "output": 653,
+        "cacheRead": 6739,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.000380678,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "russian-prose",
+      "case": "ru-pr",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "russian-prose",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the russian-prose asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 33,
+        "turns": 5,
+        "input": 4168,
+        "output": 4681,
+        "cacheRead": 15812,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.001384624,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "russian-prose",
+      "case": "ru-pr",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "russian-prose",
+        "kind": "program",
+        "evidence": [
+          "\"vs\" where a Russian word exists: Из-за этого повторный импорт одной и той же операции не отсекался, если отличался пробелами или регистром в названии получателя (например, Code vs Code) или форматированием суммы (Code vs Code).",
+          "a step in the infinitive rather than the plural imperative: Импортировать строку Code — она сохраняется (1 строка).",
+          "a step in the infinitive rather than the plural imperative: Повторно импортировать Code с тем же Code — она пропускается (0 строк).",
+          "\"unit-тест\" where a Russian word exists: Новый unit-тест покрывает именно этот сценарий, существующий тест Code продолжает проверять базовую дедупликацию.",
+          "a reflexive passive verb where an actor could lead the sentence: Было: Code — сырая строка использовалась как ключ напрямую.",
+          "a reflexive passive verb where an actor could lead the sentence: Из-за этого повторный импорт одной и той же операции не отсекался, если отличался пробелами или регистром в названии получателя (например, Code vs Code) или форматированием суммы (Code vs Code).",
+          "a reflexive passive verb where an actor could lead the sentence: сумма приводится к Code — Code и Code считаются одинаковыми;",
+          "a reflexive passive verb where an actor could lead the sentence: получатель очищается от краевых пробелов (Code) и приводится к нижнему регистру (Code);",
+          "a reflexive passive verb where an actor could lead the sentence: Импортировать строку Code — она сохраняется (1 строка).",
+          "a reflexive passive verb where an actor could lead the sentence: Повторно импортировать Code с тем же Code — она пропускается (0 строк).",
+          "a reflexive passive verb where an actor could lead the sentence: Поведение осознанно стало строже: строки, различающиеся только регистром/пробелами в Code, теперь считаются дубликатами."
+        ]
+      },
+      "spend": {
+        "seconds": 8,
+        "turns": 3,
+        "input": 2684,
+        "output": 877,
+        "cacheRead": 4834,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.00045346800000000006,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "russian-prose",
+      "case": "ru-site",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "russian-prose",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the russian-prose asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 79,
+        "turns": 6,
+        "input": 4988,
+        "output": 11898,
+        "cacheRead": 36661,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.002951722000000001,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "russian-prose",
+      "case": "ru-site",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "russian-prose",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the russian-prose asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 15,
+        "turns": 5,
+        "input": 1885,
+        "output": 927,
+        "cacheRead": 10549,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.00039499800000000003,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "russian-prose",
+      "case": "ru-docs",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "russian-prose",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the russian-prose asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 241,
+        "turns": 15,
+        "input": 17932,
+        "output": 14946,
+        "cacheRead": 162862,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.005108124,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "russian-prose",
+      "case": "ru-docs",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "russian-prose",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the russian-prose asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 10,
+        "turns": 4,
+        "input": 3369,
+        "output": 1037,
+        "cacheRead": 7763,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.000559826,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "russian-prose",
+      "case": "ru-readme",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "russian-prose",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the russian-prose asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 24,
+        "turns": 4,
+        "input": 3387,
+        "output": 3033,
+        "cacheRead": 10323,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0009659460000000001,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "russian-prose",
+      "case": "ru-readme",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "russian-prose",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the russian-prose asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 7,
+        "turns": 3,
+        "input": 2435,
+        "output": 476,
+        "cacheRead": 3923,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.00034654600000000004,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "russian-prose",
+      "case": "ru-pr",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "russian-prose",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the russian-prose asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 32,
+        "turns": 3,
+        "input": 3445,
+        "output": 4504,
+        "cacheRead": 8418,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.001262136,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "russian-prose",
+      "case": "ru-pr",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "russian-prose",
+        "kind": "program",
+        "evidence": [
+          "\"vs\" where a Russian word exists: Добавлен тест в Code: Code, который проверяет, что повторная строка с тем же значением, но другим регистром/пробелами в Code (Code vs Code), считается дубликатом и пропускается.",
+          "\"vs\" where a Russian word exists: Старая логика на Code пропускала дубли, если исходные строки хоть немного отличались форматированием — лишними пробелами, разным регистром получателя или разным представлением суммы (Code vs Code).",
+          "a reflexive passive verb where an actor could lead the sentence: Теперь ключ строится из нормализованных полей — даты, суммы и получателя платежа:",
+          "a reflexive passive verb where an actor could lead the sentence: Добавлен тест в Code: Code, который проверяет, что повторная строка с тем же значением, но другим регистром/пробелами в Code (Code vs Code), считается дубликатом и пропускается.",
+          "a reflexive passive verb where an actor could lead the sentence: Старая логика на Code пропускала дубли, если исходные строки хоть немного отличались форматированием — лишними пробелами, разным регистром получателя или разным представлением суммы (Code vs Code).",
+          "a reflexive passive verb where an actor could lead the sentence: сумма приводится к единому виду через Code,",
+          "a reflexive passive verb where an actor could lead the sentence: получатель платежа сравнивается без учёта пробелов по краям и регистра."
+        ]
+      },
+      "spend": {
+        "seconds": 10,
+        "turns": 4,
+        "input": 3129,
+        "output": 859,
+        "cacheRead": 7251,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.000499202,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "russian-prose",
+      "case": "ru-site",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "russian-prose",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the russian-prose asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 66,
+        "turns": 5,
+        "input": 5054,
+        "output": 9394,
+        "cacheRead": 19908,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.002424016,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "russian-prose",
+      "case": "ru-site",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "russian-prose",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the russian-prose asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 13,
+        "turns": 7,
+        "input": 4121,
+        "output": 1282,
+        "cacheRead": 15526,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.000699552,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "russian-prose",
+      "case": "ru-docs",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "russian-prose",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the russian-prose asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 70,
+        "turns": 7,
+        "input": 5171,
+        "output": 8675,
+        "cacheRead": 47270,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0023466400000000005,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "russian-prose",
+      "case": "ru-docs",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "russian-prose",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the russian-prose asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 8,
+        "turns": 4,
+        "input": 3379,
+        "output": 942,
+        "cacheRead": 6724,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.000539748,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "russian-prose",
+      "case": "ru-readme",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "russian-prose",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the russian-prose asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 16,
+        "turns": 3,
+        "input": 3130,
+        "output": 2103,
+        "cacheRead": 5858,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.000745316,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "russian-prose",
+      "case": "ru-readme",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "russian-prose",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the russian-prose asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 6,
+        "turns": 3,
+        "input": 2527,
+        "output": 457,
+        "cacheRead": 3810,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.00035172000000000003,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "russian-prose",
+      "case": "ru-pr",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "russian-prose",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the russian-prose asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 25,
+        "turns": 3,
+        "input": 3285,
+        "output": 3964,
+        "cacheRead": 8418,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.001138136,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "russian-prose",
+      "case": "ru-pr",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "russian-prose",
+        "kind": "program",
+        "evidence": [
+          "a step in the infinitive rather than the plural imperative: Импортировать строку Code.",
+          "a step in the infinitive rather than the plural imperative: Повторно импортировать Code с тем же Code.",
+          "a reflexive passive verb where an actor could lead the sentence: Из-за этого одна и та же операция могла импортироваться дважды, если отличались пробелы или регистр в имени получателя (например, Code и Code) или форматирование суммы (Code и Code).",
+          "a reflexive passive verb where an actor could lead the sentence: сумма приводится к формату с двумя знаками после запятой через Code,",
+          "a reflexive passive verb where an actor could lead the sentence: имя получателя приводится к нижнему регистру с обрезанными пробелами по краям.",
+          "a reflexive passive verb where an actor could lead the sentence: Ожидается: первый импорт сохраняет 1 строку, второй — 0 (пропуск как дубль).",
+          "a reflexive passive verb where an actor could lead the sentence: Добавленный тест проверяет, что повтор с другим регистром/пробелами в Code и эквивалентной суммой пропускается."
+        ]
+      },
+      "spend": {
+        "seconds": 7,
+        "turns": 3,
+        "input": 2559,
+        "output": 701,
+        "cacheRead": 4834,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.00040576800000000004,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "russian-prose",
+      "case": "ru-site",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "russian-prose",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the russian-prose asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 42,
+        "turns": 7,
+        "input": 10261,
+        "output": 5449,
+        "cacheRead": 30231,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0021763620000000003,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "russian-prose",
+      "case": "ru-site",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "russian-prose",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the russian-prose asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 10,
+        "turns": 4,
+        "input": 2873,
+        "output": 1051,
+        "cacheRead": 6739,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.000510978,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "russian-prose",
+      "case": "ru-docs",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "russian-prose",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the russian-prose asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 28,
+        "turns": 4,
+        "input": 3721,
+        "output": 4713,
+        "cacheRead": 11347,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0013373940000000002,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "russian-prose",
+      "case": "ru-docs",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "russian-prose",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the russian-prose asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 11,
+        "turns": 4,
+        "input": 2991,
+        "output": 1175,
+        "cacheRead": 7763,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0005496260000000001,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    }
+  ]
+}

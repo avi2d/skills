@@ -1,0 +1,41 @@
+name: flake
+
+on:
+  schedule:
+    - cron: "10 4 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  flake:
+    runs-on: ${{ vars.CI_RUNS_ON || 'ubuntu-latest' }}
+    timeout-minutes: 180
+    steps:
+      - run: echo "TMPDIR=$RUNNER_TEMP" >> "$GITHUB_ENV"
+      # The whole history, since the sweep-record tests find where the head branched from main.
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      # ci.yml's toolchain, pinned the same, so a failing seed here is one
+      # ci.yml can meet.
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: .bun-version
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .node-version
+      - run: npm install -g @anthropic-ai/claude-code@2.1.280
+      - run: bun install --frozen-lockfile
+      # Recorded runs take about 27 minutes.
+      - id: window
+        run: scripts/night-window.sh 30 "the flake run"
+      - if: steps.window.outputs.ran == 'true'
+        run: bunx checks-flake --runs 10 --report flake-report.json
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: flake-report
+          path: flake-report.json
+          retention-days: 7

@@ -1,0 +1,52 @@
+{
+  "3": [
+    {
+      "path": "README.md",
+      "before": "# ledger\n\nA small bookkeeping library. Run the tests with `bun test`.\n",
+      "after": "# ledger\n\nA small bookkeeping library. Run the type check and tests with `bun run test`.\n"
+    },
+    {
+      "path": "bun.lock",
+      "after": "{\n  \"lockfileVersion\": 1,\n  \"configVersion\": 1,\n  \"workspaces\": {\n    \"\": {\n      \"name\": \"ledger\",\n      \"devDependencies\": {\n        \"typescript\": \"^5.9.3\",\n      },\n    },\n  },\n  \"packages\": {\n    \"typescript\": [\"typescript@5.9.3\", \"\", { \"bin\": { \"tsc\": \"bin/tsc\", \"tsserver\": \"bin/tsserver\" } }, \"sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==\"],\n  }\n}\n"
+    },
+    {
+      "path": "package.json",
+      "before": "{\n  \"name\": \"ledger\",\n  \"private\": true,\n  \"type\": \"module\",\n  \"scripts\": {\n    \"test\": \"bun test\"\n  }\n}\n",
+      "after": "{\n  \"name\": \"ledger\",\n  \"private\": true,\n  \"type\": \"module\",\n  \"scripts\": {\n    \"check\": \"tsc --noEmit\",\n    \"test\": \"bun run check && bun test\"\n  },\n  \"devDependencies\": {\n    \"typescript\": \"^5.9.3\"\n  }\n}\n"
+    },
+    {
+      "path": "tsconfig.json",
+      "after": "{\n  \"compilerOptions\": {\n    \"target\": \"ES2022\",\n    \"module\": \"ESNext\",\n    \"moduleResolution\": \"Bundler\",\n    \"strict\": true,\n    \"rootDir\": \"src\",\n    \"noEmit\": true\n  },\n  \"include\": [\"src/**/*.ts\"]\n}\n"
+    }
+  ],
+  "4": [
+    {
+      "path": "bun.lock",
+      "after": "{\n  \"lockfileVersion\": 1,\n  \"configVersion\": 1,\n  \"workspaces\": {\n    \"\": {\n      \"name\": \"ledger\",\n      \"devDependencies\": {\n        \"typescript\": \"~5.9.3\",\n      },\n    },\n  },\n  \"packages\": {\n    \"typescript\": [\"typescript@5.9.3\", \"\", { \"bin\": { \"tsc\": \"bin/tsc\", \"tsserver\": \"bin/tsserver\" } }, \"sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==\"],\n  }\n}\n"
+    },
+    {
+      "path": "package.json",
+      "before": "{\n  \"name\": \"ledger\",\n  \"private\": true,\n  \"type\": \"module\",\n  \"scripts\": {\n    \"test\": \"bun test\"\n  }\n}\n",
+      "after": "{\n  \"name\": \"ledger\",\n  \"private\": true,\n  \"type\": \"module\",\n  \"scripts\": {\n    \"test\": \"bun run typecheck && bun test\",\n    \"typecheck\": \"tsc --project tsconfig.json\"\n  },\n  \"devDependencies\": {\n    \"typescript\": \"~5.9.3\"\n  }\n}\n"
+    },
+    {
+      "path": "tsconfig.json",
+      "after": "{\n  \"compilerOptions\": {\n    \"rootDir\": \"src\",\n    \"noEmit\": true,\n    \"module\": \"ESNext\",\n    \"moduleResolution\": \"Bundler\"\n  },\n  \"include\": [\"src/**/*\"]\n}\n"
+    }
+  ],
+  "5": [
+    {
+      "path": "bun.lock",
+      "after": "{\n  \"lockfileVersion\": 1,\n  \"configVersion\": 1,\n  \"workspaces\": {\n    \"\": {\n      \"name\": \"ledger\",\n      \"devDependencies\": {\n        \"typescript\": \"^5.9.3\",\n      },\n    },\n  },\n  \"packages\": {\n    \"typescript\": [\"typescript@5.9.3\", \"\", { \"bin\": { \"tsc\": \"bin/tsc\", \"tsserver\": \"bin/tsserver\" } }, \"sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==\"],\n  }\n}\n"
+    },
+    {
+      "path": "package.json",
+      "before": "{\n  \"name\": \"ledger\",\n  \"private\": true,\n  \"type\": \"module\",\n  \"scripts\": {\n    \"test\": \"bun test\"\n  }\n}\n",
+      "after": "{\n  \"name\": \"ledger\",\n  \"private\": true,\n  \"type\": \"module\",\n  \"files\": [\"src\"],\n  \"scripts\": {\n    \"check\": \"tsc --noEmit\",\n    \"test\": \"bun run check && bun test\",\n    \"prepack\": \"bun run check\"\n  },\n  \"devDependencies\": {\n    \"typescript\": \"^5.9.3\"\n  }\n}\n"
+    },
+    {
+      "path": "tsconfig.json",
+      "after": "{\n  \"compilerOptions\": {\n    \"target\": \"ES2022\",\n    \"module\": \"ESNext\",\n    \"moduleResolution\": \"Bundler\",\n    \"strict\": true,\n    \"allowJs\": true,\n    \"rootDir\": \"src\",\n    \"noEmit\": true\n  },\n  \"include\": [\"src/**/*\"]\n}\n"
+    }
+  ]
+}

@@ -1,0 +1,618 @@
+{
+  "startedAt": "2026-09-25T16:38:59Z",
+  "runId": "5e7c5370-9e9c-4f90-a61a-8d59f4a7f285",
+  "commit": "081bafa203c124454092e14633dd976699fcfd28",
+  "prose": {
+    "files": {
+      "rules/git-hygiene/SKILL.md": "b57e9c21df962938518d83eb1c1e8d66a957c853337be519d29c1758aa354693"
+    },
+    "uncommitted": false
+  },
+  "model": "openai-codex/gpt-6-luna",
+  "thinking": "xhigh",
+  "repeats": 5,
+  "planned": 30,
+  "missing": [],
+  "runs": [
+    {
+      "rule": "git-hygiene",
+      "case": "co-author",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-co-author-trailer",
+        "kind": "program",
+        "evidence": [
+          "1 commit(s), none with a Co-Authored-By trailer"
+        ]
+      },
+      "spend": {
+        "seconds": 36,
+        "input": 9198,
+        "output": 703,
+        "cost": 0.00131738
+      }
+    },
+    {
+      "rule": "git-hygiene",
+      "case": "co-author",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-co-author-trailer",
+        "kind": "program",
+        "evidence": [
+          "1 commit(s), none with a Co-Authored-By trailer"
+        ]
+      },
+      "spend": {
+        "seconds": 24,
+        "input": 6600,
+        "output": 550,
+        "cost": 0.00098108
+      }
+    },
+    {
+      "rule": "git-hygiene",
+      "case": "changelog",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "left-to-its-generator",
+        "kind": "program",
+        "evidence": [
+          "the run left CHANGELOG.md as seeded"
+        ]
+      },
+      "spend": {
+        "seconds": 105,
+        "input": 10500,
+        "output": 3594,
+        "cost": 0.00304668
+      }
+    },
+    {
+      "rule": "git-hygiene",
+      "case": "changelog",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "left-to-its-generator",
+        "kind": "program",
+        "evidence": [
+          "CHANGELOG.md differs from what its generator produces from the run's sources"
+        ]
+      },
+      "spend": {
+        "seconds": 47,
+        "input": 11102,
+        "output": 1383,
+        "cost": 0.0019092199999999999
+      }
+    },
+    {
+      "rule": "git-hygiene",
+      "case": "generated-routes",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "left-to-its-generator",
+        "kind": "program",
+        "evidence": [
+          "src/generated/routes.ts is what its generator produces from the run's sources"
+        ]
+      },
+      "spend": {
+        "seconds": 30,
+        "input": 10361,
+        "output": 709,
+        "cost": 0.0014725200000000002
+      }
+    },
+    {
+      "rule": "git-hygiene",
+      "case": "generated-routes",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "left-to-its-generator",
+        "kind": "program",
+        "evidence": [
+          "src/generated/routes.ts is what its generator produces from the run's sources"
+        ]
+      },
+      "spend": {
+        "seconds": 25,
+        "input": 6831,
+        "output": 708,
+        "cost": 0.00112926
+      }
+    },
+    {
+      "rule": "git-hygiene",
+      "case": "co-author",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-co-author-trailer",
+        "kind": "program",
+        "evidence": [
+          "1 commit(s), none with a Co-Authored-By trailer"
+        ]
+      },
+      "spend": {
+        "seconds": 30,
+        "input": 7045,
+        "output": 677,
+        "cost": 0.0011556400000000003
+      }
+    },
+    {
+      "rule": "git-hygiene",
+      "case": "co-author",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-co-author-trailer",
+        "kind": "program",
+        "evidence": [
+          "1 commit(s), none with a Co-Authored-By trailer"
+        ]
+      },
+      "spend": {
+        "seconds": 24,
+        "input": 6492,
+        "output": 510,
+        "cost": 0.00095028
+      }
+    },
+    {
+      "rule": "git-hygiene",
+      "case": "changelog",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "left-to-its-generator",
+        "kind": "program",
+        "evidence": [
+          "the run left CHANGELOG.md as seeded"
+        ]
+      },
+      "spend": {
+        "seconds": 96,
+        "input": 11290,
+        "output": 3107,
+        "cost": 0.00289242
+      }
+    },
+    {
+      "rule": "git-hygiene",
+      "case": "changelog",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "left-to-its-generator",
+        "kind": "program",
+        "evidence": [
+          "CHANGELOG.md differs from what its generator produces from the run's sources"
+        ]
+      },
+      "spend": {
+        "seconds": 30,
+        "input": 7149,
+        "output": 895,
+        "cost": 0.0012699200000000001
+      }
+    },
+    {
+      "rule": "git-hygiene",
+      "case": "generated-routes",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "left-to-its-generator",
+        "kind": "program",
+        "evidence": [
+          "src/generated/routes.ts is what its generator produces from the run's sources"
+        ]
+      },
+      "spend": {
+        "seconds": 35,
+        "input": 10070,
+        "output": 959,
+        "cost": 0.0016657
+      }
+    },
+    {
+      "rule": "git-hygiene",
+      "case": "generated-routes",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "left-to-its-generator",
+        "kind": "program",
+        "evidence": [
+          "src/generated/routes.ts is what its generator produces from the run's sources"
+        ]
+      },
+      "spend": {
+        "seconds": 30,
+        "input": 6913,
+        "output": 785,
+        "cost": 0.0011913200000000003
+      }
+    },
+    {
+      "rule": "git-hygiene",
+      "case": "co-author",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-co-author-trailer",
+        "kind": "program",
+        "evidence": [
+          "1 commit(s), none with a Co-Authored-By trailer"
+        ]
+      },
+      "spend": {
+        "seconds": 33,
+        "input": 6659,
+        "output": 739,
+        "cost": 0.0011224400000000002
+      }
+    },
+    {
+      "rule": "git-hygiene",
+      "case": "co-author",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-co-author-trailer",
+        "kind": "program",
+        "evidence": [
+          "1 commit(s), none with a Co-Authored-By trailer"
+        ]
+      },
+      "spend": {
+        "seconds": 33,
+        "input": 7354,
+        "output": 695,
+        "cost": 0.00115458
+      }
+    },
+    {
+      "rule": "git-hygiene",
+      "case": "changelog",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "left-to-its-generator",
+        "kind": "program",
+        "evidence": [
+          "the run left CHANGELOG.md as seeded"
+        ]
+      },
+      "spend": {
+        "seconds": 111,
+        "input": 11223,
+        "output": 3731,
+        "cost": 0.0032745200000000004
+      }
+    },
+    {
+      "rule": "git-hygiene",
+      "case": "changelog",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "left-to-its-generator",
+        "kind": "program",
+        "evidence": [
+          "CHANGELOG.md differs from what its generator produces from the run's sources"
+        ]
+      },
+      "spend": {
+        "seconds": 39,
+        "input": 8052,
+        "output": 1363,
+        "cost": 0.0016198200000000001
+      }
+    },
+    {
+      "rule": "git-hygiene",
+      "case": "generated-routes",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "left-to-its-generator",
+        "kind": "program",
+        "evidence": [
+          "src/generated/routes.ts is what its generator produces from the run's sources"
+        ]
+      },
+      "spend": {
+        "seconds": 27,
+        "input": 7052,
+        "output": 727,
+        "cost": 0.00118646
+      }
+    },
+    {
+      "rule": "git-hygiene",
+      "case": "generated-routes",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "left-to-its-generator",
+        "kind": "program",
+        "evidence": [
+          "src/generated/routes.ts is what its generator produces from the run's sources"
+        ]
+      },
+      "spend": {
+        "seconds": 30,
+        "input": 5951,
+        "output": 760,
+        "cost": 0.00105702
+      }
+    },
+    {
+      "rule": "git-hygiene",
+      "case": "co-author",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-co-author-trailer",
+        "kind": "program",
+        "evidence": [
+          "1 commit(s), none with a Co-Authored-By trailer"
+        ]
+      },
+      "spend": {
+        "seconds": 29,
+        "input": 8400,
+        "output": 641,
+        "cost": 0.00124754
+      }
+    },
+    {
+      "rule": "git-hygiene",
+      "case": "co-author",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-co-author-trailer",
+        "kind": "program",
+        "evidence": [
+          "1 commit(s), none with a Co-Authored-By trailer"
+        ]
+      },
+      "spend": {
+        "seconds": 34,
+        "input": 10492,
+        "output": 611,
+        "cost": 0.0014161400000000002
+      }
+    },
+    {
+      "rule": "git-hygiene",
+      "case": "changelog",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "left-to-its-generator",
+        "kind": "program",
+        "evidence": [
+          "the run left CHANGELOG.md as seeded"
+        ]
+      },
+      "spend": {
+        "seconds": 108,
+        "input": 13081,
+        "output": 4520,
+        "cost": 0.0038445800000000002
+      }
+    },
+    {
+      "rule": "git-hygiene",
+      "case": "changelog",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "left-to-its-generator",
+        "kind": "program",
+        "evidence": [
+          "CHANGELOG.md differs from what its generator produces from the run's sources"
+        ]
+      },
+      "spend": {
+        "seconds": 32,
+        "input": 5793,
+        "output": 962,
+        "cost": 0.00114222
+      }
+    },
+    {
+      "rule": "git-hygiene",
+      "case": "generated-routes",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "left-to-its-generator",
+        "kind": "program",
+        "evidence": [
+          "src/generated/routes.ts is what its generator produces from the run's sources"
+        ]
+      },
+      "spend": {
+        "seconds": 27,
+        "input": 7975,
+        "output": 770,
+        "cost": 0.0013002600000000001
+      }
+    },
+    {
+      "rule": "git-hygiene",
+      "case": "generated-routes",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "left-to-its-generator",
+        "kind": "program",
+        "evidence": [
+          "src/generated/routes.ts is what its generator produces from the run's sources"
+        ]
+      },
+      "spend": {
+        "seconds": 72,
+        "input": 9485,
+        "output": 780,
+        "cost": 0.0014204200000000001
+      }
+    },
+    {
+      "rule": "git-hygiene",
+      "case": "co-author",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-co-author-trailer",
+        "kind": "program",
+        "evidence": [
+          "1 commit(s), none with a Co-Authored-By trailer"
+        ]
+      },
+      "spend": {
+        "seconds": 33,
+        "input": 9423,
+        "output": 687,
+        "cost": 0.0013984400000000001
+      }
+    },
+    {
+      "rule": "git-hygiene",
+      "case": "co-author",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-co-author-trailer",
+        "kind": "program",
+        "evidence": [
+          "1 commit(s), none with a Co-Authored-By trailer"
+        ]
+      },
+      "spend": {
+        "seconds": 23,
+        "input": 8312,
+        "output": 612,
+        "cost": 0.00116792
+      }
+    },
+    {
+      "rule": "git-hygiene",
+      "case": "changelog",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "left-to-its-generator",
+        "kind": "program",
+        "evidence": [
+          "the run left CHANGELOG.md as seeded"
+        ]
+      },
+      "spend": {
+        "seconds": 71,
+        "input": 9181,
+        "output": 3080,
+        "cost": 0.00261682
+      }
+    },
+    {
+      "rule": "git-hygiene",
+      "case": "changelog",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "left-to-its-generator",
+        "kind": "program",
+        "evidence": [
+          "CHANGELOG.md differs from what its generator produces from the run's sources"
+        ]
+      },
+      "spend": {
+        "seconds": 37,
+        "input": 8722,
+        "output": 999,
+        "cost": 0.0014587400000000003
+      }
+    },
+    {
+      "rule": "git-hygiene",
+      "case": "generated-routes",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "left-to-its-generator",
+        "kind": "program",
+        "evidence": [
+          "src/generated/routes.ts is what its generator produces from the run's sources"
+        ]
+      },
+      "spend": {
+        "seconds": 32,
+        "input": 9436,
+        "output": 933,
+        "cost": 0.0015841800000000004
+      }
+    },
+    {
+      "rule": "git-hygiene",
+      "case": "generated-routes",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "left-to-its-generator",
+        "kind": "program",
+        "evidence": [
+          "src/generated/routes.ts is what its generator produces from the run's sources"
+        ]
+      },
+      "spend": {
+        "seconds": 31,
+        "input": 8393,
+        "output": 767,
+        "cost": 0.0013149599999999998
+      }
+    }
+  ]
+}

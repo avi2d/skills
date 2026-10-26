@@ -1,0 +1,220 @@
+{
+  "startedAt": "2026-09-25T16:50:31Z",
+  "runId": "b086bc71-2f5d-4c27-823f-06ee2b2c8799",
+  "commit": "7fc465a27f7ed3b207a73699e16343bd7cf98d80",
+  "prose": {
+    "files": {
+      "rules/writing-for-people/SKILL.md": "4739b3809d6fa89a3e1a1de15a740eb3b19d7d69d389ed1b44e16046b6826ec2",
+      "references/technical-writing/SKILL.md": "0dea8fd0bf08736d9df69d30e2b25b03bb9b936ea30db397c098a72d544628a8",
+      "references/unslop/SKILL.md": "d28555bab5bf222fa1a07dbbb2ab10be373ba179ab077a78eb267d1efbc85aec"
+    },
+    "uncommitted": false
+  },
+  "model": "openai-codex/gpt-6-luna",
+  "thinking": "xhigh",
+  "repeats": 5,
+  "planned": 10,
+  "missing": [],
+  "runs": [
+    {
+      "rule": "writing-for-people",
+      "case": "readme-sections",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "task-sections",
+        "kind": "program",
+        "evidence": [
+          "the install and verify sections are titled by their task, and the new prose uses no dash, parenthesis or semicolon"
+        ]
+      },
+      "spend": {
+        "seconds": 41,
+        "input": 13261,
+        "output": 1269,
+        "cost": 0.00231388
+      }
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "readme-sections",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "task-sections",
+        "kind": "program",
+        "evidence": [
+          "the install and verify sections are titled by their task, and the new prose uses no dash, parenthesis or semicolon"
+        ]
+      },
+      "spend": {
+        "seconds": 42,
+        "input": 12628,
+        "output": 1125,
+        "cost": 0.0021683400000000004
+      }
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "readme-sections",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "task-sections",
+        "kind": "program",
+        "evidence": [
+          "the install and verify sections are titled by their task, and the new prose uses no dash, parenthesis or semicolon"
+        ]
+      },
+      "spend": {
+        "seconds": 44,
+        "input": 14561,
+        "output": 1367,
+        "cost": 0.0026208800000000003
+      }
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "readme-sections",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "task-sections",
+        "kind": "program",
+        "evidence": [
+          "the install and verify sections are titled by their task, and the new prose uses no dash, parenthesis or semicolon"
+        ]
+      },
+      "spend": {
+        "seconds": 30,
+        "input": 11197,
+        "output": 902,
+        "cost": 0.0017703800000000002
+      }
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "readme-sections",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "task-sections",
+        "kind": "program",
+        "evidence": [
+          "the install and verify sections are titled by their task, and the new prose uses no dash, parenthesis or semicolon"
+        ]
+      },
+      "spend": {
+        "seconds": 38,
+        "input": 12263,
+        "output": 1299,
+        "cost": 0.0021625200000000002
+      }
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "readme-sections",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "task-sections",
+        "kind": "program",
+        "evidence": [
+          "the install and verify sections are titled by their task, and the new prose uses no dash, parenthesis or semicolon"
+        ]
+      },
+      "spend": {
+        "seconds": 57,
+        "input": 23931,
+        "output": 1678,
+        "cost": 0.0036161000000000006
+      }
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "readme-sections",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "task-sections",
+        "kind": "program",
+        "evidence": [
+          "the install and verify sections are titled by their task, and the new prose uses no dash, parenthesis or semicolon"
+        ]
+      },
+      "spend": {
+        "seconds": 44,
+        "input": 12728,
+        "output": 1583,
+        "cost": 0.0023510200000000005
+      }
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "readme-sections",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "task-sections",
+        "kind": "program",
+        "evidence": [
+          "the install and verify sections are titled by their task, and the new prose uses no dash, parenthesis or semicolon"
+        ]
+      },
+      "spend": {
+        "seconds": 54,
+        "input": 14292,
+        "output": 1632,
+        "cost": 0.00280328
+      }
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "readme-sections",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "task-sections",
+        "kind": "program",
+        "evidence": [
+          "the install and verify sections are titled by their task, and the new prose uses no dash, parenthesis or semicolon"
+        ]
+      },
+      "spend": {
+        "seconds": 50,
+        "input": 20481,
+        "output": 1318,
+        "cost": 0.00303478
+      }
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "readme-sections",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "task-sections",
+        "kind": "program",
+        "evidence": [
+          "the install and verify sections are titled by their task, and the new prose uses no dash, parenthesis or semicolon"
+        ]
+      },
+      "spend": {
+        "seconds": 54,
+        "input": 16100,
+        "output": 1466,
+        "cost": 0.00297276
+      }
+    }
+  ]
+}

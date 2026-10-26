@@ -1,0 +1,1050 @@
+{
+  "startedAt": "2026-10-10T07:39:21Z",
+  "runId": "76e3965b-df2c-46f5-abee-fedadabd9cd9",
+  "commit": "510ebb8a6dda84895f9d3e6a1cbe2eaa7c7d2bbe",
+  "prose": {
+    "files": {
+      "library/writing/references/technical-writing/SKILL.md": "40cd3cd13fdf99dc11cce650ee27173bf5eca64372a5dc4acb6a1986eef93208"
+    },
+    "uncommitted": false
+  },
+  "model": "claude-bridge/claude-opus-5-5",
+  "thinking": "high",
+  "repeats": 5,
+  "planned": 40,
+  "missing": [],
+  "runs": [
+    {
+      "rule": "technical-writing",
+      "case": "en-readme",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the technical-writing asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 40,
+        "input": 12,
+        "output": 2047,
+        "cacheRead": 38583,
+        "cacheWrite": 3167,
+        "cacheWrite1h": 0,
+        "cost": 0.06453959999999999,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "technical-writing",
+      "case": "en-readme",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "a heading names a thing rather than the task: ## Installing",
+          "a heading names a thing rather than the task: ## Verifying the checkout",
+          "a line holds 2 sentences: Ledger requires Bun 1.2 or later. Install dependencies with:"
+        ]
+      },
+      "spend": {
+        "seconds": 21,
+        "input": 12,
+        "output": 1025,
+        "cacheRead": 22943,
+        "cacheWrite": 2005,
+        "cacheWrite1h": 0,
+        "cost": 0.0351616,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "technical-writing",
+      "case": "ru-readme",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the technical-writing asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 78,
+        "input": 28,
+        "output": 5244,
+        "cacheRead": 193930,
+        "cacheWrite": 17242,
+        "cacheWrite1h": 0,
+        "cost": 0.22998800000000003,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "technical-writing",
+      "case": "ru-readme",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "a heading names a thing rather than the task: ## Установка",
+          "a heading names a thing rather than the task: ## Проверка рабочей копии",
+          "a line holds 2 sentences: Нужен Bun версии 1.2 или новее. Зависимости ставятся так:"
+        ]
+      },
+      "spend": {
+        "seconds": 22,
+        "input": 14,
+        "output": 1184,
+        "cacheRead": 27646,
+        "cacheWrite": 1982,
+        "cacheWrite1h": 0,
+        "cost": 0.03917520000000001,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "technical-writing",
+      "case": "en-docs",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the technical-writing asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 33,
+        "input": 10,
+        "output": 2160,
+        "cacheRead": 31888,
+        "cacheWrite": 3826,
+        "cacheWrite1h": 0,
+        "cost": 0.06874760000000002,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "technical-writing",
+      "case": "en-docs",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "the page names no Diátaxis mode in kind front matter",
+          "a heading names a thing rather than the task: # Importing your bank's CSV export",
+          "a line holds 2 sentences: Ledger adds each new transaction to Code. It skips any transaction it has already imported, so you can safely import a file whose dates overlap with an earlier one.",
+          "a line holds 2 sentences: Ledger won't import a file larger than 10 MB. Download a separate export for each month from your bank (or split the file by month), then import each part in turn:",
+          "a line holds 2 sentences: Your bank names its columns differently from what Ledger expects. Add a column mapping for your bank's export to Code, then run the import again."
+        ]
+      },
+      "spend": {
+        "seconds": 30,
+        "input": 10,
+        "output": 1477,
+        "cacheRead": 18963,
+        "cacheWrite": 2168,
+        "cacheWrite1h": 0,
+        "cost": 0.044212600000000005,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "technical-writing",
+      "case": "ru-docs",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the technical-writing asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 221,
+        "input": 30,
+        "output": 7564,
+        "cacheRead": 226296,
+        "cacheWrite": 22873,
+        "cacheWrite1h": 0,
+        "cost": 0.31102420000000003,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "technical-writing",
+      "case": "ru-docs",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "the page names no Diátaxis mode in kind front matter",
+          "a heading names a thing rather than the task: # Импорт выгрузки из банка",
+          "a line holds 2 sentences: Ledger умеет загружать операции из CSV-файла, который выдаёт банк. Новые операции попадают в Code.",
+          "a line holds 2 sentences: Ledger добавит в Code все новые операции из файла. Операции, которые уже были импортированы раньше, он пропустит, поэтому один и тот же файл можно загружать повторно: дубликатов не будет.",
+          "a line holds 3 sentences: Ledger не принимает файлы больше 10 МБ. Разбейте выгрузку по месяцам и импортируйте каждую часть отдельно. Если части пересекутся, ничего страшного: уже загруженные операции Ledger пропустит."
+        ]
+      },
+      "spend": {
+        "seconds": 26,
+        "input": 10,
+        "output": 1699,
+        "cacheRead": 19072,
+        "cacheWrite": 3132,
+        "cacheWrite1h": 0,
+        "cost": 0.0534944,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "technical-writing",
+      "case": "en-readme",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the technical-writing asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 45,
+        "input": 22,
+        "output": 3019,
+        "cacheRead": 82410,
+        "cacheWrite": 5114,
+        "cacheWrite1h": 0,
+        "cost": 0.10252,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "technical-writing",
+      "case": "en-readme",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "a heading names a thing rather than the task: ## Installation",
+          "a heading names a thing rather than the task: ## Verifying the checkout",
+          "a line holds 2 sentences: Ledger requires Bun 1.2 or later. Install dependencies with:"
+        ]
+      },
+      "spend": {
+        "seconds": 27,
+        "input": 12,
+        "output": 932,
+        "cacheRead": 22718,
+        "cacheWrite": 1845,
+        "cacheWrite1h": 0,
+        "cost": 0.0324566,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "technical-writing",
+      "case": "ru-readme",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the technical-writing asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 58,
+        "input": 16,
+        "output": 4855,
+        "cacheRead": 60257,
+        "cacheWrite": 6483,
+        "cacheWrite1h": 0,
+        "cost": 0.14163040000000002,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "technical-writing",
+      "case": "ru-readme",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "a heading names a thing rather than the task: ## Установка",
+          "a heading names a thing rather than the task: ## Проверка рабочей копии",
+          "a line holds 2 sentences: Нужен Bun версии 1.2 или новее. Зависимости устанавливаются командой:"
+        ]
+      },
+      "spend": {
+        "seconds": 16,
+        "input": 12,
+        "output": 1012,
+        "cacheRead": 22914,
+        "cacheWrite": 1871,
+        "cacheWrite1h": 0,
+        "cost": 0.0342258,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "technical-writing",
+      "case": "en-docs",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the technical-writing asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 56,
+        "input": 18,
+        "output": 4544,
+        "cacheRead": 71208,
+        "cacheWrite": 9947,
+        "cacheWrite1h": 0,
+        "cost": 0.15492860000000003,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "technical-writing",
+      "case": "en-docs",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "the page names no Diátaxis mode in kind front matter",
+          "a heading names a thing rather than the task: # Importing your bank's CSV export",
+          "a line holds 2 sentences: Ledger adds each new transaction to Code. Transactions it has already",
+          "a line holds 2 sentences: Ledger refuses files over 10 MB. Split the export by month and import each",
+          "a line holds 2 sentences: Your bank's export doesn't use the columns Ledger expects. Add a column mapping for your bank's export in Code, then run",
+          "a sentence wraps onto the next line: Ledger can read the CSV file your bank lets you download and add its",
+          "a sentence wraps onto the next line: Ledger adds each new transaction to Code. Transactions it has already",
+          "a sentence wraps onto the next line: imported are skipped, so you can import an export that overlaps an earlier one",
+          "a sentence wraps onto the next line: Ledger refuses files over 10 MB. Split the export by month and import each",
+          "a sentence wraps onto the next line: Your bank's export doesn't use the columns Ledger expects. Add a column mapping for your bank's export in Code, then run"
+        ]
+      },
+      "spend": {
+        "seconds": 78,
+        "input": 10,
+        "output": 1502,
+        "cacheRead": 18905,
+        "cacheWrite": 2166,
+        "cacheWrite1h": 0,
+        "cost": 0.044690999999999995,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "technical-writing",
+      "case": "ru-docs",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the technical-writing asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 247,
+        "input": 28,
+        "output": 8460,
+        "cacheRead": 204558,
+        "cacheWrite": 23419,
+        "cacheWrite1h": 0,
+        "cost": 0.3273186,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "technical-writing",
+      "case": "ru-docs",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "the page names no Diátaxis mode in kind front matter",
+          "a heading names a thing rather than the task: # Импорт выгрузки из банка",
+          "a line holds 2 sentences: Ledger умеет загружать операции из CSV-выгрузки вашего банка. Импортированные операции добавляются в Code.",
+          "a line holds 2 sentences: Операции, которые уже были импортированы, Ledger пропускает. Поэтому можно спокойно импортировать выгрузку, которая частично пересекается с предыдущей: дубликатов в Code не появится.",
+          "a line holds 2 sentences: Файлы больше 10 МБ не принимаются. Если выгрузка получилась больше, разбейте её по месяцам и импортируйте каждый месяц отдельно:"
+        ]
+      },
+      "spend": {
+        "seconds": 30,
+        "input": 10,
+        "output": 1722,
+        "cacheRead": 18675,
+        "cacheWrite": 2997,
+        "cacheWrite1h": 0,
+        "cost": 0.053200000000000004,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "technical-writing",
+      "case": "en-readme",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the technical-writing asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 27,
+        "input": 10,
+        "output": 1835,
+        "cacheRead": 31276,
+        "cacheWrite": 2767,
+        "cacheWrite1h": 0,
+        "cost": 0.0568302,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "technical-writing",
+      "case": "en-readme",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "a heading names a thing rather than the task: ## Installing",
+          "a heading names a thing rather than the task: ## Verifying the checkout",
+          "a line holds 2 sentences: Ledger requires Bun 1.2 or later. Install dependencies with:"
+        ]
+      },
+      "spend": {
+        "seconds": 14,
+        "input": 8,
+        "output": 599,
+        "cacheRead": 13998,
+        "cacheWrite": 1303,
+        "cacheWrite1h": 0,
+        "cost": 0.0213266,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "technical-writing",
+      "case": "ru-readme",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the technical-writing asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 70,
+        "input": 22,
+        "output": 5742,
+        "cacheRead": 115872,
+        "cacheWrite": 12724,
+        "cacheWrite1h": 0,
+        "cost": 0.20172240000000002,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "technical-writing",
+      "case": "ru-readme",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "a heading names a thing rather than the task: ## Установка",
+          "a heading names a thing rather than the task: ## Проверка рабочей копии",
+          "a line holds 2 sentences: Нужен Bun версии 1.2 или новее. Зависимости устанавливаются командой:"
+        ]
+      },
+      "spend": {
+        "seconds": 18,
+        "input": 12,
+        "output": 1012,
+        "cacheRead": 22890,
+        "cacheWrite": 1880,
+        "cacheWrite1h": 0,
+        "cost": 0.034266000000000005,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "technical-writing",
+      "case": "en-docs",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the technical-writing asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 65,
+        "input": 16,
+        "output": 3558,
+        "cacheRead": 71921,
+        "cacheWrite": 11620,
+        "cacheWrite1h": 0,
+        "cost": 0.1437082,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "technical-writing",
+      "case": "en-docs",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "the page names no Diátaxis mode in kind front matter",
+          "a line holds 3 sentences: Ledger adds each new transaction to Code. If a transaction is already there from an earlier import, Ledger skips it. That means you can import a statement that overlaps one you imported before without getting duplicates.",
+          "a line holds 3 sentences: Ledger won't import a file larger than 10 MB. Split the export into one file per month and import each one separately. Overlapping dates are fine, because Ledger skips transactions it has already imported.",
+          "a line holds 2 sentences: Your bank names its CSV columns differently from what Ledger expects. Add a column mapping for your bank's export to Code, then run the import again."
+        ]
+      },
+      "spend": {
+        "seconds": 18,
+        "input": 8,
+        "output": 1129,
+        "cacheRead": 14159,
+        "cacheWrite": 1732,
+        "cacheWrite1h": 0,
+        "cost": 0.034103800000000004,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "technical-writing",
+      "case": "ru-docs",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the technical-writing asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 228,
+        "input": 30,
+        "output": 7633,
+        "cacheRead": 241323,
+        "cacheWrite": 27589,
+        "cacheWrite1h": 0,
+        "cost": 0.3389896,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "technical-writing",
+      "case": "ru-docs",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "the page names no Diátaxis mode in kind front matter",
+          "a heading names a thing rather than the task: # Импорт выгрузки из банка",
+          "a line holds 2 sentences: Ledger умеет загружать операции из CSV-выгрузки вашего банка. Новые операции",
+          "a line holds 2 sentences: пропускает. Поэтому один и тот же файл можно импортировать повторно, и дубликатов",
+          "a line holds 2 sentences: Ledger не принимает файлы больше 10 МБ. Скачайте выгрузку по частям, например",
+          "a line holds 2 sentences: ожидает Ledger. Укажите, какие колонки в выгрузке за что отвечают, в файле",
+          "a sentence wraps onto the next line: Ledger умеет загружать операции из CSV-выгрузки вашего банка. Новые операции",
+          "a sentence wraps onto the next line: добавляются в Code, а те, что уже были импортированы раньше, Ledger",
+          "a sentence wraps onto the next line: пропускает. Поэтому один и тот же файл можно импортировать повторно, и дубликатов",
+          "a sentence wraps onto the next line: Ledger не принимает файлы больше 10 МБ. Скачайте выгрузку по частям, например",
+          "a sentence wraps onto the next line: Если периоды частей пересекаются, ничего страшного: уже импортированные операции",
+          "a sentence wraps onto the next line: Значит, колонки в выгрузке вашего банка называются или расположены не так, как",
+          "a sentence wraps onto the next line: ожидает Ledger. Укажите, какие колонки в выгрузке за что отвечают, в файле"
+        ]
+      },
+      "spend": {
+        "seconds": 19,
+        "input": 8,
+        "output": 1420,
+        "cacheRead": 14307,
+        "cacheWrite": 1886,
+        "cacheWrite1h": 0,
+        "cost": 0.0407234,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "technical-writing",
+      "case": "en-readme",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the technical-writing asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 30,
+        "input": 12,
+        "output": 2035,
+        "cacheRead": 40046,
+        "cacheWrite": 3526,
+        "cacheWrite1h": 0,
+        "cost": 0.06638720000000001,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "technical-writing",
+      "case": "en-readme",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "a heading names a thing rather than the task: ## Installation",
+          "a heading names a thing rather than the task: ## Verifying the checkout",
+          "a line holds 2 sentences: Ledger requires Bun 1.2 or later. Install dependencies with:"
+        ]
+      },
+      "spend": {
+        "seconds": 23,
+        "input": 12,
+        "output": 1159,
+        "cacheRead": 23232,
+        "cacheWrite": 2297,
+        "cacheWrite1h": 0,
+        "cost": 0.0393594,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "technical-writing",
+      "case": "ru-readme",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the technical-writing asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 196,
+        "input": 30,
+        "output": 5997,
+        "cacheRead": 217161,
+        "cacheWrite": 19655,
+        "cacheWrite1h": 0,
+        "cost": 0.26176720000000003,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "technical-writing",
+      "case": "ru-readme",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "a heading names a thing rather than the task: ## Установка",
+          "a heading names a thing rather than the task: ## Проверка рабочей копии",
+          "a line holds 2 sentences: Нужен Bun версии 1.2 или новее. Зависимости устанавливаются командой:"
+        ]
+      },
+      "spend": {
+        "seconds": 20,
+        "input": 12,
+        "output": 1164,
+        "cacheRead": 23071,
+        "cacheWrite": 2010,
+        "cacheWrite1h": 0,
+        "cost": 0.037992200000000004,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "technical-writing",
+      "case": "en-docs",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the technical-writing asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 56,
+        "input": 18,
+        "output": 4251,
+        "cacheRead": 81675,
+        "cacheWrite": 10448,
+        "cacheWrite1h": 0,
+        "cost": 0.15366700000000003,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "technical-writing",
+      "case": "en-docs",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "the page names no Diátaxis mode in kind front matter",
+          "a heading names a thing rather than the task: # Importing your bank's CSV export",
+          "a line holds 2 sentences: Ledger adds each new transaction to Code. It skips any transaction it has already imported, so you can import a file again, or import statements whose dates overlap, without getting duplicates.",
+          "a line holds 2 sentences: Ledger won't import a file larger than 10 MB. Split the export into one file per month, then import each file separately:",
+          "a line holds 2 sentences: Your bank may let you pick a date range when you export. If it does, downloading one month at a time is the easiest way to keep each file under the limit.",
+          "a line holds 3 sentences: Banks name the columns in their CSV exports differently. If Ledger doesn't recognize your bank's column names, it reports that columns are missing. To fix this, add a column mapping for your bank's export to Code, then run the import again."
+        ]
+      },
+      "spend": {
+        "seconds": 31,
+        "input": 8,
+        "output": 1390,
+        "cacheRead": 14189,
+        "cacheWrite": 1934,
+        "cacheWrite1h": 0,
+        "cost": 0.040339799999999995,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "technical-writing",
+      "case": "ru-docs",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the technical-writing asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 388,
+        "input": 32,
+        "output": 8366,
+        "cacheRead": 280920,
+        "cacheWrite": 27220,
+        "cacheWrite1h": 0,
+        "cost": 0.35973199999999994,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "technical-writing",
+      "case": "ru-docs",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "the page names no Diátaxis mode in kind front matter",
+          "a heading names a thing rather than the task: # Импорт выгрузки из банка",
+          "a line holds 2 sentences: Ledger добавит новые операции в Code. Операции, которые уже были импортированы, он пропустит, поэтому один и тот же файл можно импортировать повторно: дублей не появится.",
+          "a line holds 2 sentences: Ledger не принимает файлы больше 10 МБ. Разбейте выгрузку по месяцам и импортируйте каждую часть отдельно:"
+        ]
+      },
+      "spend": {
+        "seconds": 25,
+        "input": 12,
+        "output": 1998,
+        "cacheRead": 26293,
+        "cacheWrite": 4656,
+        "cacheWrite1h": 0,
+        "cost": 0.0685466,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "technical-writing",
+      "case": "en-readme",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the technical-writing asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 29,
+        "input": 12,
+        "output": 1986,
+        "cacheRead": 40033,
+        "cacheWrite": 3736,
+        "cacheWrite1h": 0,
+        "cost": 0.0664546,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "technical-writing",
+      "case": "en-readme",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "a heading names a thing rather than the task: ## Installation",
+          "a heading names a thing rather than the task: ## Verifying the checkout",
+          "a line holds 2 sentences: Ledger requires Bun 1.2 or later. Install dependencies with:"
+        ]
+      },
+      "spend": {
+        "seconds": 19,
+        "input": 12,
+        "output": 987,
+        "cacheRead": 22934,
+        "cacheWrite": 1846,
+        "cacheWrite1h": 0,
+        "cost": 0.033604800000000004,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "technical-writing",
+      "case": "ru-readme",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the technical-writing asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 58,
+        "input": 18,
+        "output": 4536,
+        "cacheRead": 88679,
+        "cacheWrite": 13260,
+        "cacheWrite1h": 0,
+        "cost": 0.17482780000000003,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "technical-writing",
+      "case": "ru-readme",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "a heading names a thing rather than the task: ## Установка",
+          "a heading names a thing rather than the task: ## Проверка рабочей копии",
+          "a line holds 2 sentences: Нужен Bun версии 1.2 или новее. Зависимости устанавливаются командой:"
+        ]
+      },
+      "spend": {
+        "seconds": 19,
+        "input": 12,
+        "output": 1003,
+        "cacheRead": 22933,
+        "cacheWrite": 1910,
+        "cacheWrite1h": 0,
+        "cost": 0.03424460000000001,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "technical-writing",
+      "case": "en-docs",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the technical-writing asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 38,
+        "input": 12,
+        "output": 2867,
+        "cacheRead": 38806,
+        "cacheWrite": 4636,
+        "cacheWrite1h": 0,
+        "cost": 0.0883292,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "technical-writing",
+      "case": "en-docs",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "the page names no Diátaxis mode in kind front matter",
+          "a heading names a thing rather than the task: # Importing your bank's CSV export",
+          "a line holds 2 sentences: Ledger adds each new transaction to Code. It skips any transaction it has already imported, so if two exports overlap (for example, last month's and this month's), you won't get duplicates.",
+          "a line holds 2 sentences: Ledger won't import a file larger than 10 MB. Split the export by month, either by downloading one month at a time from your bank or by splitting the file yourself, and then import each part:",
+          "a line holds 2 sentences: Your bank's export uses column names that Ledger doesn't recognise. Add a column mapping for your bank in Code, then run the import again."
+        ]
+      },
+      "spend": {
+        "seconds": 18,
+        "input": 8,
+        "output": 1239,
+        "cacheRead": 14202,
+        "cacheWrite": 1826,
+        "cacheWrite1h": 0,
+        "cost": 0.0367824,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "technical-writing",
+      "case": "ru-docs",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the technical-writing asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 231,
+        "input": 22,
+        "output": 7991,
+        "cacheRead": 150872,
+        "cacheWrite": 20020,
+        "cacheWrite1h": 0,
+        "cost": 0.29018239999999995,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "technical-writing",
+      "case": "ru-docs",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "technical-writing",
+        "kind": "program",
+        "evidence": [
+          "the page names no Diátaxis mode in kind front matter",
+          "a heading names a thing rather than the task: # Импорт выгрузки из банка",
+          "a line holds 3 sentences: Ledger умеет загружать операции из CSV-выгрузки вашего банка. Новые операции попадают в Code, а те, что уже были импортированы раньше, пропускаются. Поэтому один и тот же файл можно импортировать повторно, и дубликатов не будет.",
+          "a line holds 2 sentences: Ledger не принимает файлы больше 10 МБ. Разбейте выгрузку по месяцам и импортируйте части по очереди:",
+          "a line holds 2 sentences: Значит, колонки в выгрузке вашего банка называются или расположены не так, как ожидает Ledger. Чтобы Ledger понял такую выгрузку, задайте соответствие колонок в файле Code."
+        ]
+      },
+      "spend": {
+        "seconds": 19,
+        "input": 8,
+        "output": 1386,
+        "cacheRead": 14363,
+        "cacheWrite": 1952,
+        "cacheWrite1h": 0,
+        "cost": 0.04038460000000001,
+        "costEstimated": true
+      }
+    }
+  ]
+}

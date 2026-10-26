@@ -1,0 +1,452 @@
+{
+  "startedAt": "2026-10-11T18:37:49Z",
+  "runId": "204f9490-3727-47aa-aa7a-9d701c656842",
+  "commit": "aba12a0fe0c5dd236f21eadddc48c3323d998cbb",
+  "prose": {
+    "files": {
+      "library/writing/references/russian-prose/SKILL.md": "a765865a29882d9cfbbff634129a12e6b64cbd03ff9ffb6428fe581d46085f7a"
+    },
+    "uncommitted": false
+  },
+  "model": "claude-bridge/claude-opus-5-5",
+  "thinking": "high",
+  "repeats": 2,
+  "planned": 16,
+  "missing": [],
+  "runs": [
+    {
+      "rule": "russian-prose",
+      "case": "ru-readme",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "russian-prose",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the russian-prose asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 15,
+        "turns": 4,
+        "input": 8,
+        "output": 629,
+        "cacheRead": 13470,
+        "cacheWrite": 2687,
+        "cacheWrite1h": 0,
+        "cost": 0.028741000000000003,
+        "costEstimated": true
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "russian-prose",
+      "case": "ru-readme",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "russian-prose",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the russian-prose asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 26,
+        "turns": 6,
+        "input": 12,
+        "output": 937,
+        "cacheRead": 20086,
+        "cacheWrite": 2664,
+        "cacheWrite1h": 0,
+        "cost": 0.0361252,
+        "costEstimated": true
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "russian-prose",
+      "case": "ru-pr",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "russian-prose",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the russian-prose asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 26,
+        "turns": 4,
+        "input": 8,
+        "output": 1502,
+        "cacheRead": 14395,
+        "cacheWrite": 3718,
+        "cacheWrite1h": 0,
+        "cost": 0.051541,
+        "costEstimated": true
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "russian-prose",
+      "case": "ru-pr",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "russian-prose",
+        "kind": "program",
+        "evidence": [
+          "a reflexive passive verb where an actor could lead the sentence: Раньше ключом для проверки была сырая строка Code, поэтому одна и та же операция проходила повторно, если в исходном файле отличались лишние пробелы, регистр букв или запись суммы (Code и Code).",
+          "a reflexive passive verb where an actor could lead the sentence: Теперь ключ собирается из нормализованных полей:",
+          "a reflexive passive verb where an actor could lead the sentence: Code используется как есть;",
+          "a reflexive passive verb where an actor could lead the sentence: Code округляется до двух знаков, так что Code и Code дают один ключ;",
+          "a reflexive passive verb where an actor could lead the sentence: у Code обрезаются пробелы по краям и он приводится к нижнему регистру.",
+          "a reflexive passive verb where an actor could lead the sentence: В Code добавлен тест: строка Code после строки Code считается дубликатом и не импортируется.",
+          "a reflexive passive verb where an actor could lead the sentence: Две реальные покупки на одну сумму у одного получателя в один день теперь считаются дубликатом, и вторая будет отброшена, даже если сырые строки отличались (например, другим ID транзакции или временем).",
+          "a reflexive passive verb where an actor could lead the sentence: Если множество Code где-то хранится между запусками, в нём лежат ключи старого формата (Code).",
+          "a reflexive passive verb where an actor could lead the sentence: После обновления они не совпадут с новыми, и уже импортированные строки при следующем импорте загрузятся повторно, один раз.",
+          "a reflexive passive verb where an actor could lead the sentence: Если Code хранится, нужна миграция или пересборка множества.",
+          "a reflexive passive verb where an actor could lead the sentence: **Формат даты не нормализуется.**",
+          "a reflexive passive verb where an actor could lead the sentence: Если у одной и той же даты бывает разное написание (Code и Code), такие строки по-прежнему не считаются дубликатами."
+        ]
+      },
+      "spend": {
+        "seconds": 26,
+        "turns": 4,
+        "input": 8,
+        "output": 1785,
+        "cacheRead": 12742,
+        "cacheWrite": 2433,
+        "cacheWrite1h": 0,
+        "cost": 0.0504454,
+        "costEstimated": true
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "russian-prose",
+      "case": "ru-site",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "russian-prose",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the russian-prose asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 29,
+        "turns": 5,
+        "input": 10,
+        "output": 1634,
+        "cacheRead": 19291,
+        "cacheWrite": 2784,
+        "cacheWrite1h": 0,
+        "cost": 0.0504982,
+        "costEstimated": true
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "russian-prose",
+      "case": "ru-site",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "russian-prose",
+        "kind": "program",
+        "evidence": [
+          "a paragraph of 8 sentences, over the 6 the reference allows: Ledger помогает вести учёт операций по банковскому счёту без ручного переписывания. Вы скачиваете выписку из интернет-банка в формате CSV, а Ledger переносит каждую операцию из неё в файл учёта на вашем компьютере. Если вы случайно загрузите одну и ту же выписку дважды, ничего не задвоится: операции, которые уже есть в учёте, Ledger пропускает. Программа работает только на вашем компьютере. Не нужно заводить аккаунт, ваши данные не загружаются ни на какой сервер, и подписку оплачивать тоже не нужно. Ledger бесплатный, а его исходный код открыт (лицензия MIT). Выписки Сбербанка, Тинькофф и Revolut он понимает сразу. Для других банков нужно настроить, в какой колонке файла какие данные лежат."
+        ]
+      },
+      "spend": {
+        "seconds": 21,
+        "turns": 3,
+        "input": 6,
+        "output": 1336,
+        "cacheRead": 8759,
+        "cacheWrite": 1703,
+        "cacheWrite1h": 0,
+        "cost": 0.0370108,
+        "costEstimated": true
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "russian-prose",
+      "case": "ru-docs",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "russian-prose",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the russian-prose asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 33,
+        "turns": 4,
+        "input": 8,
+        "output": 2239,
+        "cacheRead": 14507,
+        "cacheWrite": 3455,
+        "cacheWrite1h": 0,
+        "cost": 0.0649884,
+        "costEstimated": true
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "russian-prose",
+      "case": "ru-docs",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "russian-prose",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the russian-prose asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 28,
+        "turns": 5,
+        "input": 10,
+        "output": 1848,
+        "cacheRead": 17394,
+        "cacheWrite": 3273,
+        "cacheWrite1h": 0,
+        "cost": 0.0568438,
+        "costEstimated": true
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "russian-prose",
+      "case": "ru-readme",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "russian-prose",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the russian-prose asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 17,
+        "turns": 4,
+        "input": 8,
+        "output": 759,
+        "cacheRead": 14932,
+        "cacheWrite": 1309,
+        "cacheWrite1h": 0,
+        "cost": 0.024743400000000006,
+        "costEstimated": true
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "russian-prose",
+      "case": "ru-readme",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "russian-prose",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the russian-prose asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 14,
+        "turns": 4,
+        "input": 8,
+        "output": 661,
+        "cacheRead": 12691,
+        "cacheWrite": 1299,
+        "cacheWrite1h": 0,
+        "cost": 0.0222852,
+        "costEstimated": true
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "russian-prose",
+      "case": "ru-pr",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "russian-prose",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the russian-prose asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 32,
+        "turns": 4,
+        "input": 8,
+        "output": 2199,
+        "cacheRead": 14998,
+        "cacheWrite": 2672,
+        "cacheWrite1h": 0,
+        "cost": 0.0603716,
+        "costEstimated": true
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "russian-prose",
+      "case": "ru-pr",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "russian-prose",
+        "kind": "program",
+        "evidence": [
+          "a reflexive passive verb where an actor could lead the sentence: Из-за этого одна и та же операция импортировалась повторно, если в выгрузке отличались мелочи: лишние пробелы, регистр букв в имени получателя или формат суммы (Code и Code).",
+          "a reflexive passive verb where an actor could lead the sentence: Теперь ключ дедупликации собирается из нормализованных полей:",
+          "a reflexive passive verb where an actor could lead the sentence: В Code добавлен тест: строка с той же датой и суммой, где получатель отличается только пробелами и регистром (Code и Code), при повторном импорте пропускается.",
+          "a reflexive passive verb where an actor could lead the sentence: **Настоящие повторяющиеся операции.**",
+          "a reflexive passive verb where an actor could lead the sentence: Две разные операции с одной датой, суммой и получателем (например, две одинаковые покупки кофе за день) теперь считаются дубликатом, и вторая будет отброшена, даже если исходные строки различаются (номером транзакции, примечанием, временем).",
+          "a reflexive passive verb where an actor could lead the sentence: Если Code где-то хранится между запусками, в нём лежат ключи в старом формате (Code).",
+          "a reflexive passive verb where an actor could lead the sentence: Они не совпадут с новыми, поэтому при первом импорте после обновления уже загруженные строки могут импортироваться повторно.",
+          "a reflexive passive verb where an actor could lead the sentence: Убираются только пробелы по краям и приводится регистр."
+        ]
+      },
+      "spend": {
+        "seconds": 28,
+        "turns": 4,
+        "input": 8,
+        "output": 1719,
+        "cacheRead": 13123,
+        "cacheWrite": 2307,
+        "cacheWrite1h": 0,
+        "cost": 0.048571600000000006,
+        "costEstimated": true
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "russian-prose",
+      "case": "ru-site",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "russian-prose",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the russian-prose asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 19,
+        "turns": 3,
+        "input": 6,
+        "output": 1260,
+        "cacheRead": 10855,
+        "cacheWrite": 1798,
+        "cacheWrite1h": 0,
+        "cost": 0.036385,
+        "costEstimated": true
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "russian-prose",
+      "case": "ru-site",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "russian-prose",
+        "kind": "program",
+        "evidence": [
+          "a paragraph of 8 sentences, over the 6 the reference allows: Ledger переносит операции из банковской выписки в ваш учёт. Вы скачиваете выписку из интернет-банка в виде файла CSV, а Ledger добавляет каждую операцию из неё в файл учёта на вашем компьютере. Если вы загрузите одну и ту же выписку дважды, ничего не задвоится: операции, которые уже есть в учёте, Ledger пропускает. Программа работает только на вашем компьютере. Аккаунт заводить не нужно, ваши данные не отправляются ни на какой сервер, подписки нет. Ledger бесплатный, его код открыт и распространяется по лицензии MIT. Выписки Сбербанка, Тинькофф и Revolut он понимает сразу. Для выписки другого банка нужно указать, в какой колонке файла что находится."
+        ]
+      },
+      "spend": {
+        "seconds": 21,
+        "turns": 3,
+        "input": 6,
+        "output": 1372,
+        "cacheRead": 8899,
+        "cacheWrite": 1582,
+        "cacheWrite1h": 0,
+        "cost": 0.0371538,
+        "costEstimated": true
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "russian-prose",
+      "case": "ru-docs",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "russian-prose",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the russian-prose asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 28,
+        "turns": 4,
+        "input": 8,
+        "output": 2008,
+        "cacheRead": 15197,
+        "cacheWrite": 2609,
+        "cacheWrite1h": 0,
+        "cost": 0.056276400000000004,
+        "costEstimated": true
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "russian-prose",
+      "case": "ru-docs",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "russian-prose",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the russian-prose asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 26,
+        "turns": 5,
+        "input": 10,
+        "output": 1790,
+        "cacheRead": 17461,
+        "cacheWrite": 3445,
+        "cacheWrite1h": 0,
+        "cost": 0.0565572,
+        "costEstimated": true
+      },
+      "wroteTest": false
+    }
+  ]
+}

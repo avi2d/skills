@@ -1,0 +1,5 @@
+# Agent notes
+
+Use the repository's package scripts for checks.
+
+Use named exports only, never `export default`, so imports keep one name that grep and renames can find.

@@ -1,0 +1,220 @@
+{
+  "startedAt": "2026-09-25T17:54:56Z",
+  "runId": "1f24cf16-1949-4a91-87a3-abb00ca5318d",
+  "commit": "ab97f43de0ea0ec72c2157cce2eac0e5528e440d",
+  "prose": {
+    "files": {
+      "rules/writing-for-people/SKILL.md": "4739b3809d6fa89a3e1a1de15a740eb3b19d7d69d389ed1b44e16046b6826ec2",
+      "references/technical-writing/SKILL.md": "0dea8fd0bf08736d9df69d30e2b25b03bb9b936ea30db397c098a72d544628a8",
+      "references/unslop/SKILL.md": "d28555bab5bf222fa1a07dbbb2ab10be373ba179ab077a78eb267d1efbc85aec"
+    },
+    "uncommitted": false
+  },
+  "model": "openai-codex/gpt-6-sol",
+  "thinking": "high",
+  "repeats": 5,
+  "planned": 10,
+  "missing": [],
+  "runs": [
+    {
+      "rule": "writing-for-people",
+      "case": "readme-sections",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "task-sections",
+        "kind": "program",
+        "evidence": [
+          "the install and verify sections are titled by their task, and the new prose uses no dash, parenthesis or semicolon"
+        ]
+      },
+      "spend": {
+        "seconds": 37,
+        "input": 14996,
+        "output": 955,
+        "cost": 0.0460188
+      }
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "readme-sections",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "task-sections",
+        "kind": "program",
+        "evidence": [
+          "the install and verify sections are titled by their task, and the new prose uses no dash, parenthesis or semicolon"
+        ]
+      },
+      "spend": {
+        "seconds": 31,
+        "input": 8053,
+        "output": 609,
+        "cost": 0.026701600000000006
+      }
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "readme-sections",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "task-sections",
+        "kind": "program",
+        "evidence": [
+          "the install and verify sections are titled by their task, and the new prose uses no dash, parenthesis or semicolon"
+        ]
+      },
+      "spend": {
+        "seconds": 36,
+        "input": 14936,
+        "output": 714,
+        "cost": 0.0417992
+      }
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "readme-sections",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "task-sections",
+        "kind": "program",
+        "evidence": [
+          "the install and verify sections are titled by their task, and the new prose uses no dash, parenthesis or semicolon"
+        ]
+      },
+      "spend": {
+        "seconds": 38,
+        "input": 16662,
+        "output": 801,
+        "cost": 0.0472476
+      }
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "readme-sections",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "task-sections",
+        "kind": "program",
+        "evidence": [
+          "the install and verify sections are titled by their task, and the new prose uses no dash, parenthesis or semicolon"
+        ]
+      },
+      "spend": {
+        "seconds": 46,
+        "input": 17203,
+        "output": 997,
+        "cost": 0.050519999999999995
+      }
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "readme-sections",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "task-sections",
+        "kind": "program",
+        "evidence": [
+          "the install and verify sections are titled by their task, and the new prose uses no dash, parenthesis or semicolon"
+        ]
+      },
+      "spend": {
+        "seconds": 37,
+        "input": 15948,
+        "output": 673,
+        "cost": 0.0432084
+      }
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "readme-sections",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "task-sections",
+        "kind": "program",
+        "evidence": [
+          "the install and verify sections are titled by their task, and the new prose uses no dash, parenthesis or semicolon"
+        ]
+      },
+      "spend": {
+        "seconds": 46,
+        "input": 9247,
+        "output": 1028,
+        "cost": 0.0363516
+      }
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "readme-sections",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "task-sections",
+        "kind": "program",
+        "evidence": [
+          "the install and verify sections are titled by their task, and the new prose uses no dash, parenthesis or semicolon"
+        ]
+      },
+      "spend": {
+        "seconds": 31,
+        "input": 8125,
+        "output": 575,
+        "cost": 0.026428800000000002
+      }
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "readme-sections",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "task-sections",
+        "kind": "program",
+        "evidence": [
+          "the install and verify sections are titled by their task, and the new prose uses no dash, parenthesis or semicolon"
+        ]
+      },
+      "spend": {
+        "seconds": 42,
+        "input": 15360,
+        "output": 923,
+        "cost": 0.046401200000000004
+      }
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "readme-sections",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "task-sections",
+        "kind": "program",
+        "evidence": [
+          "the install and verify sections are titled by their task, and the new prose uses no dash, parenthesis or semicolon"
+        ]
+      },
+      "spend": {
+        "seconds": 27,
+        "input": 7234,
+        "output": 641,
+        "cost": 0.025613999999999998
+      }
+    }
+  ]
+}

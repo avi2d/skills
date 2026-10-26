@@ -1,0 +1,850 @@
+{
+  "startedAt": "2026-09-25T11:21:28Z",
+  "commit": "369ded94988cc913e05f3004c17963b495d1e3b9",
+  "prose": {
+    "files": {
+      "rules/comment-discipline/SKILL.md": "9d6b278e5dcf07d27c8fe508ce553412608ad00e4d51d817e4f61faef31b39a1"
+    },
+    "uncommitted": false
+  },
+  "model": "opencode-go/muse-spark-1.3-contributor",
+  "thinking": "high",
+  "repeats": 5,
+  "planned": 40,
+  "missing": [],
+  "runs": [
+    {
+      "rule": "comment-discipline",
+      "case": "public-helper",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-refused-comment",
+        "kind": "program",
+        "evidence": [
+          "2 changed code file(s) add no refused comment: src/array.ts, tests/array.test.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 49,
+        "input": 5543,
+        "output": 2421,
+        "cost": 0.0010851380000000002
+      }
+    },
+    {
+      "rule": "comment-discipline",
+      "case": "public-helper",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "no-refused-comment",
+        "kind": "program",
+        "evidence": [
+          "src/array.ts:5 opens a doc block. Make the code say it, or put what the types cannot hold on a line comment in the fewest words that carry it"
+        ]
+      },
+      "spend": {
+        "seconds": 53,
+        "input": 5803,
+        "output": 2682,
+        "cost": 0.0011722380000000004
+      }
+    },
+    {
+      "rule": "comment-discipline",
+      "case": "decision-record",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-refused-comment",
+        "kind": "program",
+        "evidence": [
+          "2 changed code file(s) add no refused comment: src/retry.ts, tests/retry.test.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 36,
+        "input": 5741,
+        "output": 2959,
+        "cost": 0.001203864
+      }
+    },
+    {
+      "rule": "comment-discipline",
+      "case": "decision-record",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "no-refused-comment",
+        "kind": "program",
+        "evidence": [
+          "src/retry.ts:9 opens a doc block. Make the code say it, or put what the types cannot hold on a line comment in the fewest words that carry it",
+          "src/retry.ts:16 opens a doc block. Make the code say it, or put what the types cannot hold on a line comment in the fewest words that carry it",
+          "src/retry.ts:34 opens a doc block. Make the code say it, or put what the types cannot hold on a line comment in the fewest words that carry it"
+        ]
+      },
+      "spend": {
+        "seconds": 54,
+        "input": 5942,
+        "output": 3520,
+        "cost": 0.00133258
+      }
+    },
+    {
+      "rule": "comment-discipline",
+      "case": "upstream-workaround",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-refused-comment",
+        "kind": "program",
+        "evidence": [
+          "2 changed code file(s) add no refused comment: src/import.ts, tests/import.test.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 83,
+        "input": 10671,
+        "output": 5736,
+        "cost": 0.002315662
+      }
+    },
+    {
+      "rule": "comment-discipline",
+      "case": "upstream-workaround",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "no-refused-comment",
+        "kind": "program",
+        "evidence": [
+          "src/import.ts:10 points at a record or a ticket (\"/issues/118\"). Drop the pointer: a record is reached by searching docs/adr, and the story of the change goes in the commit message",
+          "tests/import.test.ts:9 points at a record or a ticket (\"/issues/118\"). Drop the pointer: a record is reached by searching docs/adr, and the story of the change goes in the commit message"
+        ]
+      },
+      "spend": {
+        "seconds": 37,
+        "input": 6072,
+        "output": 3051,
+        "cost": 0.0012515240000000002
+      }
+    },
+    {
+      "rule": "comment-discipline",
+      "case": "module-rationale",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-refused-comment",
+        "kind": "program",
+        "evidence": [
+          "2 changed code file(s) add no refused comment: src/rate-limit.ts, tests/rate-limit.test.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 57,
+        "input": 7590,
+        "output": 4379,
+        "cost": 0.001705728
+      }
+    },
+    {
+      "rule": "comment-discipline",
+      "case": "module-rationale",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "no-refused-comment",
+        "kind": "program",
+        "evidence": [
+          "src/rate-limit.ts:1 opens with a 9-line rationale block. A record this long belongs in docs/adr or the repo's decision log, and the code does not point at it",
+          "src/rate-limit.ts:1 opens a doc block. Make the code say it, or put what the types cannot hold on a line comment in the fewest words that carry it",
+          "src/rate-limit.ts:14 opens a doc block. Make the code say it, or put what the types cannot hold on a line comment in the fewest words that carry it"
+        ]
+      },
+      "spend": {
+        "seconds": 34,
+        "input": 5607,
+        "output": 2697,
+        "cost": 0.00113192
+      }
+    },
+    {
+      "rule": "comment-discipline",
+      "case": "public-helper",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-refused-comment",
+        "kind": "program",
+        "evidence": [
+          "2 changed code file(s) add no refused comment: src/array.ts, tests/array.test.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 68,
+        "input": 8709,
+        "output": 4664,
+        "cost": 0.001874372
+      }
+    },
+    {
+      "rule": "comment-discipline",
+      "case": "public-helper",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "no-refused-comment",
+        "kind": "program",
+        "evidence": [
+          "src/array.ts:1 opens with a 11-line rationale block. A record this long belongs in docs/adr or the repo's decision log, and the code does not point at it",
+          "src/array.ts:1 opens a doc block. Make the code say it, or put what the types cannot hold on a line comment in the fewest words that carry it"
+        ]
+      },
+      "spend": {
+        "seconds": 38,
+        "input": 5464,
+        "output": 2368,
+        "cost": 0.001078068
+      }
+    },
+    {
+      "rule": "comment-discipline",
+      "case": "decision-record",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-refused-comment",
+        "kind": "program",
+        "evidence": [
+          "2 changed code file(s) add no refused comment: src/retry.ts, tests/retry.test.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 52,
+        "input": 5772,
+        "output": 2776,
+        "cost": 0.001177758
+      }
+    },
+    {
+      "rule": "comment-discipline",
+      "case": "decision-record",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "no-refused-comment",
+        "kind": "program",
+        "evidence": [
+          "src/retry.ts:4 opens a doc block. Make the code say it, or put what the types cannot hold on a line comment in the fewest words that carry it",
+          "src/retry.ts:14 opens a doc block. Make the code say it, or put what the types cannot hold on a line comment in the fewest words that carry it",
+          "src/retry.ts:28 opens a doc block. Make the code say it, or put what the types cannot hold on a line comment in the fewest words that carry it"
+        ]
+      },
+      "spend": {
+        "seconds": 58,
+        "input": 6893,
+        "output": 4302,
+        "cost": 0.00159429
+      }
+    },
+    {
+      "rule": "comment-discipline",
+      "case": "upstream-workaround",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-refused-comment",
+        "kind": "program",
+        "evidence": [
+          "2 changed code file(s) add no refused comment: src/import.ts, tests/import.test.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 84,
+        "input": 9433,
+        "output": 6098,
+        "cost": 0.002264774
+      }
+    },
+    {
+      "rule": "comment-discipline",
+      "case": "upstream-workaround",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "no-refused-comment",
+        "kind": "program",
+        "evidence": [
+          "src/import.ts:11 points at a record or a ticket (\"/issues/118\"). Drop the pointer: a record is reached by searching docs/adr, and the story of the change goes in the commit message"
+        ]
+      },
+      "spend": {
+        "seconds": 44,
+        "input": 5942,
+        "output": 2990,
+        "cost": 0.0012375280000000001
+      }
+    },
+    {
+      "rule": "comment-discipline",
+      "case": "module-rationale",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-refused-comment",
+        "kind": "program",
+        "evidence": [
+          "2 changed code file(s) add no refused comment: src/rate-limit.ts, tests/rate-limit.test.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 50,
+        "input": 6940,
+        "output": 3821,
+        "cost": 0.00151175
+      }
+    },
+    {
+      "rule": "comment-discipline",
+      "case": "module-rationale",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "no-refused-comment",
+        "kind": "program",
+        "evidence": [
+          "src/rate-limit.ts:1 opens with a 11-line rationale block. A record this long belongs in docs/adr or the repo's decision log, and the code does not point at it",
+          "src/rate-limit.ts:1 opens a doc block. Make the code say it, or put what the types cannot hold on a line comment in the fewest words that carry it",
+          "src/rate-limit.ts:14 opens a doc block. Make the code say it, or put what the types cannot hold on a line comment in the fewest words that carry it",
+          "src/rate-limit.ts:16 opens a doc block. Make the code say it, or put what the types cannot hold on a line comment in the fewest words that carry it",
+          "src/rate-limit.ts:18 opens a doc block. Make the code say it, or put what the types cannot hold on a line comment in the fewest words that carry it",
+          "src/rate-limit.ts:26 opens a doc block. Make the code say it, or put what the types cannot hold on a line comment in the fewest words that carry it"
+        ]
+      },
+      "spend": {
+        "seconds": 40,
+        "input": 9283,
+        "output": 2861,
+        "cost": 0.0015292180000000002
+      }
+    },
+    {
+      "rule": "comment-discipline",
+      "case": "public-helper",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-refused-comment",
+        "kind": "program",
+        "evidence": [
+          "2 changed code file(s) add no refused comment: src/array.ts, tests/array.test.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 35,
+        "input": 5810,
+        "output": 2580,
+        "cost": 0.0011451740000000003
+      }
+    },
+    {
+      "rule": "comment-discipline",
+      "case": "public-helper",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "no-refused-comment",
+        "kind": "program",
+        "evidence": [
+          "src/array.ts:5 opens a doc block. Make the code say it, or put what the types cannot hold on a line comment in the fewest words that carry it"
+        ]
+      },
+      "spend": {
+        "seconds": 36,
+        "input": 4744,
+        "output": 1930,
+        "cost": 0.0009016320000000001
+      }
+    },
+    {
+      "rule": "comment-discipline",
+      "case": "decision-record",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-refused-comment",
+        "kind": "program",
+        "evidence": [
+          "2 changed code file(s) add no refused comment: src/retry.ts, tests/retry.test.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 55,
+        "input": 12794,
+        "output": 3520,
+        "cost": 0.0020236380000000003
+      }
+    },
+    {
+      "rule": "comment-discipline",
+      "case": "decision-record",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "no-refused-comment",
+        "kind": "program",
+        "evidence": [
+          "src/retry.ts:8 opens a doc block. Make the code say it, or put what the types cannot hold on a line comment in the fewest words that carry it",
+          "src/retry.ts:10 opens a doc block. Make the code say it, or put what the types cannot hold on a line comment in the fewest words that carry it",
+          "src/retry.ts:12 opens a doc block. Make the code say it, or put what the types cannot hold on a line comment in the fewest words that carry it",
+          "src/retry.ts:55 points at a record or a ticket (\"docs/adr\"). Drop the pointer: a record is reached by searching docs/adr, and the story of the change goes in the commit message",
+          "src/retry.ts:55 opens a doc block. Make the code say it, or put what the types cannot hold on a line comment in the fewest words that carry it"
+        ]
+      },
+      "spend": {
+        "seconds": 63,
+        "input": 6893,
+        "output": 4455,
+        "cost": 0.001618008
+      }
+    },
+    {
+      "rule": "comment-discipline",
+      "case": "upstream-workaround",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-refused-comment",
+        "kind": "program",
+        "evidence": [
+          "2 changed code file(s) add no refused comment: src/import.ts, tests/import.test.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 88,
+        "input": 11301,
+        "output": 6843,
+        "cost": 0.002673158000000001
+      }
+    },
+    {
+      "rule": "comment-discipline",
+      "case": "upstream-workaround",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "no-refused-comment",
+        "kind": "program",
+        "evidence": [
+          "src/import.ts:5 points at a record or a ticket (\"/issues/118\"). Drop the pointer: a record is reached by searching docs/adr, and the story of the change goes in the commit message",
+          "tests/import.test.ts:9 points at a record or a ticket (\"/issues/118\"). Drop the pointer: a record is reached by searching docs/adr, and the story of the change goes in the commit message"
+        ]
+      },
+      "spend": {
+        "seconds": 61,
+        "input": 7039,
+        "output": 3787,
+        "cost": 0.0015130280000000002
+      }
+    },
+    {
+      "rule": "comment-discipline",
+      "case": "module-rationale",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-refused-comment",
+        "kind": "program",
+        "evidence": [
+          "2 changed code file(s) add no refused comment: src/rate-limit.ts, tests/rate-limit.test.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 30,
+        "input": 7817,
+        "output": 2442,
+        "cost": 0.0013016640000000001
+      }
+    },
+    {
+      "rule": "comment-discipline",
+      "case": "module-rationale",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "no-refused-comment",
+        "kind": "program",
+        "evidence": [
+          "src/rate-limit.ts:1 opens with a 13-line rationale block. A record this long belongs in docs/adr or the repo's decision log, and the code does not point at it",
+          "src/rate-limit.ts:1 opens a doc block. Make the code say it, or put what the types cannot hold on a line comment in the fewest words that carry it",
+          "src/rate-limit.ts:16 opens a doc block. Make the code say it, or put what the types cannot hold on a line comment in the fewest words that carry it",
+          "src/rate-limit.ts:18 opens a doc block. Make the code say it, or put what the types cannot hold on a line comment in the fewest words that carry it",
+          "src/rate-limit.ts:20 opens a doc block. Make the code say it, or put what the types cannot hold on a line comment in the fewest words that carry it",
+          "src/rate-limit.ts:28 opens a doc block. Make the code say it, or put what the types cannot hold on a line comment in the fewest words that carry it"
+        ]
+      },
+      "spend": {
+        "seconds": 32,
+        "input": 3749,
+        "output": 2284,
+        "cost": 0.0008686100000000001
+      }
+    },
+    {
+      "rule": "comment-discipline",
+      "case": "public-helper",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-refused-comment",
+        "kind": "program",
+        "evidence": [
+          "2 changed code file(s) add no refused comment: src/array.ts, tests/array.test.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 34,
+        "input": 5649,
+        "output": 2568,
+        "cost": 0.001117232
+      }
+    },
+    {
+      "rule": "comment-discipline",
+      "case": "public-helper",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "no-refused-comment",
+        "kind": "program",
+        "evidence": [
+          "src/array.ts:5 opens a doc block. Make the code say it, or put what the types cannot hold on a line comment in the fewest words that carry it"
+        ]
+      },
+      "spend": {
+        "seconds": 25,
+        "input": 4922,
+        "output": 2167,
+        "cost": 0.0009752500000000002
+      }
+    },
+    {
+      "rule": "comment-discipline",
+      "case": "decision-record",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-refused-comment",
+        "kind": "program",
+        "evidence": [
+          "2 changed code file(s) add no refused comment: src/retry.ts, tests/retry.test.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 32,
+        "input": 5321,
+        "output": 2368,
+        "cost": 0.00105029
+      }
+    },
+    {
+      "rule": "comment-discipline",
+      "case": "decision-record",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "no-refused-comment",
+        "kind": "program",
+        "evidence": [
+          "src/retry.ts:9 opens a doc block. Make the code say it, or put what the types cannot hold on a line comment in the fewest words that carry it",
+          "src/retry.ts:24 opens a doc block. Make the code say it, or put what the types cannot hold on a line comment in the fewest words that carry it"
+        ]
+      },
+      "spend": {
+        "seconds": 43,
+        "input": 6079,
+        "output": 3536,
+        "cost": 0.001347688
+      }
+    },
+    {
+      "rule": "comment-discipline",
+      "case": "upstream-workaround",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-refused-comment",
+        "kind": "program",
+        "evidence": [
+          "2 changed code file(s) add no refused comment: src/import.ts, tests/import.test.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 119,
+        "input": 14833,
+        "output": 8493,
+        "cost": 0.003301408
+      }
+    },
+    {
+      "rule": "comment-discipline",
+      "case": "upstream-workaround",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "no-refused-comment",
+        "kind": "program",
+        "evidence": [
+          "src/import.ts:11 points at a record or a ticket (\"/issues/118\"). Drop the pointer: a record is reached by searching docs/adr, and the story of the change goes in the commit message",
+          "tests/import.test.ts:9 points at a record or a ticket (\"/issues/118\"). Drop the pointer: a record is reached by searching docs/adr, and the story of the change goes in the commit message"
+        ]
+      },
+      "spend": {
+        "seconds": 45,
+        "input": 5698,
+        "output": 3455,
+        "cost": 0.001323506
+      }
+    },
+    {
+      "rule": "comment-discipline",
+      "case": "module-rationale",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-refused-comment",
+        "kind": "program",
+        "evidence": [
+          "2 changed code file(s) add no refused comment: src/rate-limit.ts, tests/rate-limit.test.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 55,
+        "input": 7392,
+        "output": 4088,
+        "cost": 0.001635092
+      }
+    },
+    {
+      "rule": "comment-discipline",
+      "case": "module-rationale",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "no-refused-comment",
+        "kind": "program",
+        "evidence": [
+          "src/rate-limit.ts:1 opens with a 10-line rationale block. A record this long belongs in docs/adr or the repo's decision log, and the code does not point at it",
+          "src/rate-limit.ts:1 opens a doc block. Make the code say it, or put what the types cannot hold on a line comment in the fewest words that carry it",
+          "src/rate-limit.ts:13 opens a doc block. Make the code say it, or put what the types cannot hold on a line comment in the fewest words that carry it",
+          "src/rate-limit.ts:15 opens a doc block. Make the code say it, or put what the types cannot hold on a line comment in the fewest words that carry it",
+          "src/rate-limit.ts:17 opens a doc block. Make the code say it, or put what the types cannot hold on a line comment in the fewest words that carry it",
+          "src/rate-limit.ts:26 opens a doc block. Make the code say it, or put what the types cannot hold on a line comment in the fewest words that carry it"
+        ]
+      },
+      "spend": {
+        "seconds": 50,
+        "input": 5510,
+        "output": 3045,
+        "cost": 0.0011905400000000001
+      }
+    },
+    {
+      "rule": "comment-discipline",
+      "case": "public-helper",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-refused-comment",
+        "kind": "program",
+        "evidence": [
+          "2 changed code file(s) add no refused comment: src/array.ts, tests/array.test.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 54,
+        "input": 7220,
+        "output": 3833,
+        "cost": 0.0015421500000000002
+      }
+    },
+    {
+      "rule": "comment-discipline",
+      "case": "public-helper",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "no-refused-comment",
+        "kind": "program",
+        "evidence": [
+          "src/array.ts:5 opens a doc block. Make the code say it, or put what the types cannot hold on a line comment in the fewest words that carry it"
+        ]
+      },
+      "spend": {
+        "seconds": 21,
+        "input": 4291,
+        "output": 1723,
+        "cost": 0.0008075380000000001
+      }
+    },
+    {
+      "rule": "comment-discipline",
+      "case": "decision-record",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-refused-comment",
+        "kind": "program",
+        "evidence": [
+          "2 changed code file(s) add no refused comment: src/retry.ts, tests/retry.test.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 82,
+        "input": 9344,
+        "output": 5556,
+        "cost": 0.0021127180000000004
+      }
+    },
+    {
+      "rule": "comment-discipline",
+      "case": "decision-record",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "no-refused-comment",
+        "kind": "program",
+        "evidence": [
+          "src/retry.ts:15 opens a doc block. Make the code say it, or put what the types cannot hold on a line comment in the fewest words that carry it",
+          "src/retry.ts:33 opens a doc block. Make the code say it, or put what the types cannot hold on a line comment in the fewest words that carry it"
+        ]
+      },
+      "spend": {
+        "seconds": 47,
+        "input": 6594,
+        "output": 4039,
+        "cost": 0.0015059320000000002
+      }
+    },
+    {
+      "rule": "comment-discipline",
+      "case": "upstream-workaround",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-refused-comment",
+        "kind": "program",
+        "evidence": [
+          "2 changed code file(s) add no refused comment: src/import.ts, tests/import.test.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 72,
+        "input": 9367,
+        "output": 5265,
+        "cost": 0.002080822
+      }
+    },
+    {
+      "rule": "comment-discipline",
+      "case": "upstream-workaround",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "no-refused-comment",
+        "kind": "program",
+        "evidence": [
+          "src/import.ts:11 points at a record or a ticket (\"/issues/118\"). Drop the pointer: a record is reached by searching docs/adr, and the story of the change goes in the commit message",
+          "tests/import.test.ts:9 points at a record or a ticket (\"/issues/118\"). Drop the pointer: a record is reached by searching docs/adr, and the story of the change goes in the commit message"
+        ]
+      },
+      "spend": {
+        "seconds": 28,
+        "input": 5163,
+        "output": 2059,
+        "cost": 0.000970356
+      }
+    },
+    {
+      "rule": "comment-discipline",
+      "case": "module-rationale",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-refused-comment",
+        "kind": "program",
+        "evidence": [
+          "2 changed code file(s) add no refused comment: src/rate-limit.ts, tests/rate-limit.test.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 73,
+        "input": 8251,
+        "output": 5532,
+        "cost": 0.002006012
+      }
+    },
+    {
+      "rule": "comment-discipline",
+      "case": "module-rationale",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "no-refused-comment",
+        "kind": "program",
+        "evidence": [
+          "src/rate-limit.ts:1 opens with a 9-line rationale block. A record this long belongs in docs/adr or the repo's decision log, and the code does not point at it",
+          "src/rate-limit.ts:1 opens a doc block. Make the code say it, or put what the types cannot hold on a line comment in the fewest words that carry it"
+        ]
+      },
+      "spend": {
+        "seconds": 25,
+        "input": 4624,
+        "output": 2084,
+        "cost": 0.0009112460000000001
+      }
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+# Agent notes
+
+Use the repository's package scripts for checks.
+
+Use named exports only (`export function`, `export const`, `export class`), and import by name.

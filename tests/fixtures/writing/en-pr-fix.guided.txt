@@ -1,0 +1,27 @@
+# Key imported rows on date, amount, and normalized payee
+
+A bank export can list one payment twice, once with the payee "Coffee Shop" and once with " coffee shop ".
+`importRows` in `src/import.ts` used `row.raw` as the key, so the two lines got different keys and the payment was imported twice.
+
+`importRows` now builds each row's key from three parts:
+
+- the date, as `row.date`
+- the amount to two decimal places, as `row.amount.toFixed(2)`
+- the payee trimmed and lowercased, as `row.payee.trim().toLowerCase()`
+
+The parts are joined with `|`.
+The payee comes last, so a `|` inside a payee name cannot make two different rows share a key.
+
+`row.raw` no longer affects deduplication.
+If a caller keeps a `seen` set between imports, that set holds keys in the old raw-line format.
+Those keys never match the new format, so the first import after this change can bring back rows that an earlier import already took.
+
+## Tests
+
+`test/import.test.ts` has two new tests:
+
+- A row with the payee " coffee shop " is skipped after a row with "Coffee Shop" on the same date and amount.
+  This test fails on `main`.
+- A row with the payee "Tea Shop" is kept after a row with "Coffee Shop" on the same date and amount.
+
+`bun test` passes all 3 tests.

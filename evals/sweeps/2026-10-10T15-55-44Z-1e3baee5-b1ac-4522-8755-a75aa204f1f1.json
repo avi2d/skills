@@ -1,0 +1,1293 @@
+{
+  "startedAt": "2026-10-10T15:55:44Z",
+  "runId": "1e3baee5-b1ac-4522-8755-a75aa204f1f1",
+  "commit": "4709e4de9211cdf0f4b40611b9f29a621b879b00",
+  "prose": {
+    "files": {
+      "library/engineering/rules/prove-it-works/SKILL.md": "ce65caa1d1e4b5c29e827eae37d2e012359f85bcc45d3df1c0181da08304d01e"
+    },
+    "uncommitted": false
+  },
+  "model": "opencode-go/muse-spark-1.3-contributor",
+  "thinking": "high",
+  "repeats": 20,
+  "planned": 40,
+  "missing": [],
+  "runs": [
+    {
+      "rule": "prove-it-works",
+      "case": "git-ignored",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 1",
+          "error: expect(received).toEqual(expected)",
+          "(fail) [[:upper:]]akefile ignores the files git ignores [0.33ms]",
+          "error: expect(received).toEqual(expected)",
+          "(fail) src/[[:upper:]]*.ts ignores the files git ignores [0.20ms]",
+          "error: expect(received).toEqual(expected)",
+          "(fail) [[:lower:]]*.txt ignores the files git ignores [0.14ms]",
+          "error: expect(received).toEqual(expected)",
+          "(fail) *[[:digit:]].txt ignores the files git ignores [0.18ms]",
+          "(fail) [[:upper:]]akefile ignores the files git ignores [0.33ms]",
+          "(fail) src/[[:upper:]]*.ts ignores the files git ignores [0.20ms]",
+          "(fail) [[:lower:]]*.txt ignores the files git ignores [0.14ms]",
+          "(fail) *[[:digit:]].txt ignores the files git ignores [0.18ms]",
+          "92 pass",
+          "4 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 676,
+        "turns": 69,
+        "input": 41173,
+        "output": 86355,
+        "cacheRead": 4108804,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.029605908,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "git-ignored",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "unjudged",
+        "why": "pi ran past 15m and was stopped"
+      },
+      "spend": {
+        "seconds": 900,
+        "turns": 33,
+        "input": 107069,
+        "output": 75749,
+        "cacheRead": 1399983,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.028656666,
+        "costEstimated": false
+      }
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "git-ignored",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "96 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 515,
+        "turns": 46,
+        "input": 37270,
+        "output": 68535,
+        "cacheRead": 1844957,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.021123914000000004,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "git-ignored",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "96 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 392,
+        "turns": 33,
+        "input": 115837,
+        "output": 96636,
+        "cacheRead": 2050961,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.035012822,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "git-ignored",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "96 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 519,
+        "turns": 38,
+        "input": 35080,
+        "output": 66892,
+        "cacheRead": 2120533,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.021127466000000004,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "git-ignored",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 1",
+          "error: expect(received).toEqual(expected)",
+          "(fail) [[:upper:]]akefile ignores the files git ignores [0.45ms]",
+          "error: expect(received).toEqual(expected)",
+          "(fail) src/[[:upper:]]*.ts ignores the files git ignores [0.20ms]",
+          "error: expect(received).toEqual(expected)",
+          "(fail) [[:lower:]]*.txt ignores the files git ignores [0.22ms]",
+          "error: expect(received).toEqual(expected)",
+          "(fail) *[[:digit:]].txt ignores the files git ignores [0.20ms]",
+          "(fail) [[:upper:]]akefile ignores the files git ignores [0.45ms]",
+          "(fail) src/[[:upper:]]*.ts ignores the files git ignores [0.20ms]",
+          "(fail) [[:lower:]]*.txt ignores the files git ignores [0.22ms]",
+          "(fail) *[[:digit:]].txt ignores the files git ignores [0.20ms]",
+          "92 pass",
+          "4 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 619,
+        "turns": 18,
+        "input": 52425,
+        "output": 69051,
+        "cacheRead": 867969,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.020788638000000005,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "git-ignored",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 1",
+          "error: expect(received).toEqual(expected)",
+          "(fail) [[:upper:]]akefile ignores the files git ignores [0.33ms]",
+          "error: expect(received).toEqual(expected)",
+          "(fail) src/[[:upper:]]*.ts ignores the files git ignores [0.12ms]",
+          "error: expect(received).toEqual(expected)",
+          "(fail) [[:lower:]]*.txt ignores the files git ignores [0.15ms]",
+          "error: expect(received).toEqual(expected)",
+          "(fail) *[[:digit:]].txt ignores the files git ignores [0.12ms]",
+          "(fail) [[:upper:]]akefile ignores the files git ignores [0.33ms]",
+          "(fail) src/[[:upper:]]*.ts ignores the files git ignores [0.12ms]",
+          "(fail) [[:lower:]]*.txt ignores the files git ignores [0.15ms]",
+          "(fail) *[[:digit:]].txt ignores the files git ignores [0.12ms]",
+          "92 pass",
+          "4 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 580,
+        "turns": 30,
+        "input": 44650,
+        "output": 63973,
+        "cacheRead": 1142733,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.019545066000000003,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "git-ignored",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "96 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 617,
+        "turns": 60,
+        "input": 82842,
+        "output": 72107,
+        "cacheRead": 3809547,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.030324693999999996,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "git-ignored",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "96 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 590,
+        "turns": 52,
+        "input": 50460,
+        "output": 80396,
+        "cacheRead": 2596227,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.026317653999999996,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "git-ignored",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "96 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 761,
+        "turns": 52,
+        "input": 67498,
+        "output": 92714,
+        "cacheRead": 3033475,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.03135955,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "git-ignored",
+      "arm": "injected",
+      "repeat": 6,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "96 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 630,
+        "turns": 62,
+        "input": 46669,
+        "output": 98488,
+        "cacheRead": 3479533,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.031323566000000004,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "git-ignored",
+      "arm": "withheld",
+      "repeat": 6,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 1",
+          "error: expect(received).toEqual(expected)",
+          "(fail) [[:upper:]]akefile ignores the files git ignores [0.42ms]",
+          "error: expect(received).toEqual(expected)",
+          "(fail) src/[[:upper:]]*.ts ignores the files git ignores [0.15ms]",
+          "error: expect(received).toEqual(expected)",
+          "(fail) [[:lower:]]*.txt ignores the files git ignores [0.12ms]",
+          "error: expect(received).toEqual(expected)",
+          "(fail) *[[:digit:]].txt ignores the files git ignores [0.12ms]",
+          "(fail) [[:upper:]]akefile ignores the files git ignores [0.42ms]",
+          "(fail) src/[[:upper:]]*.ts ignores the files git ignores [0.15ms]",
+          "(fail) [[:lower:]]*.txt ignores the files git ignores [0.12ms]",
+          "(fail) *[[:digit:]].txt ignores the files git ignores [0.12ms]",
+          "92 pass",
+          "4 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 502,
+        "turns": 39,
+        "input": 65767,
+        "output": 71661,
+        "cacheRead": 2163398,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.025235696,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "git-ignored",
+      "arm": "injected",
+      "repeat": 7,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "96 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 821,
+        "turns": 45,
+        "input": 32920,
+        "output": 58020,
+        "cacheRead": 1910779,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.018717558000000002,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "git-ignored",
+      "arm": "withheld",
+      "repeat": 7,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 1",
+          "error: expect(received).toEqual(expected)",
+          "(fail) * !*/ !*.md ignores the files git ignores [0.38ms]",
+          "error: expect(received).toEqual(expected)",
+          "(fail) src/**/*.test.ts !src/lib/ ignores the files git ignores [0.19ms]",
+          "error: expect(received).toEqual(expected)",
+          "(fail) *.js !build/ ignores the files git ignores [0.15ms]",
+          "error: expect(received).toEqual(expected)",
+          "(fail) build/** !build/lib/ ignores the files git ignores [0.20ms]",
+          "error: expect(received).toEqual(expected)",
+          "(fail) *.md !out/ ignores the files git ignores [0.14ms]",
+          "error: expect(received).toEqual(expected)",
+          "(fail) file[^0-9].txt ignores the files git ignores [0.20ms]",
+          "error: expect(received).toEqual(expected)",
+          "(fail) [[:upper:]]akefile ignores the files git ignores [0.18ms]",
+          "error: expect(received).toEqual(expected)",
+          "(fail) src/[[:upper:]]*.ts ignores the files git ignores [0.21ms]",
+          "error: expect(received).toEqual(expected)",
+          "(fail) [[:lower:]]*.txt ignores the files git ignores [0.18ms]",
+          "error: expect(received).toEqual(expected)",
+          "(fail) *[[:digit:]].txt ignores the files git ignores [0.15ms]"
+        ]
+      },
+      "spend": {
+        "seconds": 207,
+        "turns": 11,
+        "input": 59526,
+        "output": 55495,
+        "cacheRead": 334427,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.017720454,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "git-ignored",
+      "arm": "injected",
+      "repeat": 8,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 1",
+          "error: expect(received).toEqual(expected)",
+          "(fail) [[:upper:]]akefile ignores the files git ignores [0.32ms]",
+          "error: expect(received).toEqual(expected)",
+          "(fail) src/[[:upper:]]*.ts ignores the files git ignores [0.17ms]",
+          "error: expect(received).toEqual(expected)",
+          "(fail) [[:lower:]]*.txt ignores the files git ignores [0.18ms]",
+          "error: expect(received).toEqual(expected)",
+          "(fail) *[[:digit:]].txt ignores the files git ignores [0.13ms]",
+          "(fail) [[:upper:]]akefile ignores the files git ignores [0.32ms]",
+          "(fail) src/[[:upper:]]*.ts ignores the files git ignores [0.17ms]",
+          "(fail) [[:lower:]]*.txt ignores the files git ignores [0.18ms]",
+          "(fail) *[[:digit:]].txt ignores the files git ignores [0.13ms]",
+          "92 pass",
+          "4 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 563,
+        "turns": 38,
+        "input": 40034,
+        "output": 71358,
+        "cacheRead": 1625941,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.021526882000000004,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "git-ignored",
+      "arm": "withheld",
+      "repeat": 8,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 1",
+          "error: expect(received).toEqual(expected)",
+          "(fail) file[^0-9].txt ignores the files git ignores [0.36ms]",
+          "error: expect(received).toEqual(expected)",
+          "(fail) [[:upper:]]akefile ignores the files git ignores [0.18ms]",
+          "error: expect(received).toEqual(expected)",
+          "(fail) src/[[:upper:]]*.ts ignores the files git ignores [0.16ms]",
+          "error: expect(received).toEqual(expected)",
+          "(fail) [[:lower:]]*.txt ignores the files git ignores [0.15ms]",
+          "error: expect(received).toEqual(expected)",
+          "(fail) *[[:digit:]].txt ignores the files git ignores [0.14ms]",
+          "(fail) file[^0-9].txt ignores the files git ignores [0.36ms]",
+          "(fail) [[:upper:]]akefile ignores the files git ignores [0.18ms]",
+          "(fail) src/[[:upper:]]*.ts ignores the files git ignores [0.16ms]",
+          "(fail) [[:lower:]]*.txt ignores the files git ignores [0.15ms]",
+          "(fail) *[[:digit:]].txt ignores the files git ignores [0.14ms]",
+          "91 pass",
+          "5 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 276,
+        "turns": 12,
+        "input": 8373,
+        "output": 39022,
+        "cacheRead": 315355,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.00927241,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "git-ignored",
+      "arm": "injected",
+      "repeat": 9,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "96 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 683,
+        "turns": 50,
+        "input": 55288,
+        "output": 74278,
+        "cacheRead": 2624673,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.025633746000000006,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "git-ignored",
+      "arm": "withheld",
+      "repeat": 9,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 1",
+          "error: expect(received).toEqual(expected)",
+          "(fail) [[:upper:]]akefile ignores the files git ignores [0.35ms]",
+          "error: expect(received).toEqual(expected)",
+          "(fail) src/[[:upper:]]*.ts ignores the files git ignores [0.18ms]",
+          "error: expect(received).toEqual(expected)",
+          "(fail) [[:lower:]]*.txt ignores the files git ignores [0.19ms]",
+          "error: expect(received).toEqual(expected)",
+          "(fail) *[[:digit:]].txt ignores the files git ignores [0.15ms]",
+          "(fail) [[:upper:]]akefile ignores the files git ignores [0.35ms]",
+          "(fail) src/[[:upper:]]*.ts ignores the files git ignores [0.18ms]",
+          "(fail) [[:lower:]]*.txt ignores the files git ignores [0.19ms]",
+          "(fail) *[[:digit:]].txt ignores the files git ignores [0.15ms]",
+          "92 pass",
+          "4 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 745,
+        "turns": 96,
+        "input": 86542,
+        "output": 111021,
+        "cacheRead": 8540911,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.04794022200000003,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "git-ignored",
+      "arm": "injected",
+      "repeat": 10,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "96 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 326,
+        "turns": 45,
+        "input": 103308,
+        "output": 76715,
+        "cacheRead": 2409949,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.030493698000000007,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "git-ignored",
+      "arm": "withheld",
+      "repeat": 10,
+      "verdict": {
+        "outcome": "unjudged",
+        "why": "pi ran past 15m and was stopped"
+      },
+      "spend": {
+        "seconds": 900,
+        "turns": 39,
+        "input": 28082,
+        "output": 77473,
+        "cacheRead": 1449301,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.021201402,
+        "costEstimated": false
+      }
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "git-ignored",
+      "arm": "injected",
+      "repeat": 11,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "96 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 835,
+        "turns": 71,
+        "input": 59685,
+        "output": 84334,
+        "cacheRead": 3894788,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.030624876000000002,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "git-ignored",
+      "arm": "withheld",
+      "repeat": 11,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "96 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 533,
+        "turns": 58,
+        "input": 59718,
+        "output": 63850,
+        "cacheRead": 3184741,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.025111282000000002,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "git-ignored",
+      "arm": "injected",
+      "repeat": 12,
+      "verdict": {
+        "outcome": "unjudged",
+        "why": "pi ran past 15m and was stopped"
+      },
+      "spend": {
+        "seconds": 900,
+        "turns": 35,
+        "input": 48000,
+        "output": 68901,
+        "cacheRead": 1163665,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.02090753,
+        "costEstimated": false
+      }
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "git-ignored",
+      "arm": "withheld",
+      "repeat": 12,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "96 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 836,
+        "turns": 61,
+        "input": 85574,
+        "output": 101723,
+        "cacheRead": 4770428,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.03844285600000002,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "git-ignored",
+      "arm": "injected",
+      "repeat": 13,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "96 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 626,
+        "turns": 45,
+        "input": 75444,
+        "output": 91691,
+        "cacheRead": 2508140,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.030898880000000007,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "git-ignored",
+      "arm": "withheld",
+      "repeat": 13,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 1",
+          "error: expect(received).toEqual(expected)",
+          "(fail) [[:upper:]]akefile ignores the files git ignores [0.30ms]",
+          "error: expect(received).toEqual(expected)",
+          "(fail) src/[[:upper:]]*.ts ignores the files git ignores [0.14ms]",
+          "error: expect(received).toEqual(expected)",
+          "(fail) [[:lower:]]*.txt ignores the files git ignores [0.12ms]",
+          "error: expect(received).toEqual(expected)",
+          "(fail) *[[:digit:]].txt ignores the files git ignores [0.13ms]",
+          "(fail) [[:upper:]]akefile ignores the files git ignores [0.30ms]",
+          "(fail) src/[[:upper:]]*.ts ignores the files git ignores [0.14ms]",
+          "(fail) [[:lower:]]*.txt ignores the files git ignores [0.12ms]",
+          "(fail) *[[:digit:]].txt ignores the files git ignores [0.13ms]",
+          "92 pass",
+          "4 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 454,
+        "turns": 20,
+        "input": 57042,
+        "output": 66344,
+        "cacheRead": 904547,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.020782094000000004,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "git-ignored",
+      "arm": "injected",
+      "repeat": 14,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "96 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 749,
+        "turns": 42,
+        "input": 42870,
+        "output": 82547,
+        "cacheRead": 2286873,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.025370146000000007,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "git-ignored",
+      "arm": "withheld",
+      "repeat": 14,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "96 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 404,
+        "turns": 30,
+        "input": 52649,
+        "output": 57138,
+        "cacheRead": 1398733,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.019489966000000008,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "git-ignored",
+      "arm": "injected",
+      "repeat": 15,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 1",
+          "error: expect(received).toEqual(expected)",
+          "(fail) [[:upper:]]akefile ignores the files git ignores [0.34ms]",
+          "error: expect(received).toEqual(expected)",
+          "(fail) src/[[:upper:]]*.ts ignores the files git ignores [0.18ms]",
+          "error: expect(received).toEqual(expected)",
+          "(fail) [[:lower:]]*.txt ignores the files git ignores [0.14ms]",
+          "error: expect(received).toEqual(expected)",
+          "(fail) *[[:digit:]].txt ignores the files git ignores [0.15ms]",
+          "(fail) [[:upper:]]akefile ignores the files git ignores [0.34ms]",
+          "(fail) src/[[:upper:]]*.ts ignores the files git ignores [0.18ms]",
+          "(fail) [[:lower:]]*.txt ignores the files git ignores [0.14ms]",
+          "(fail) *[[:digit:]].txt ignores the files git ignores [0.15ms]",
+          "92 pass",
+          "4 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 398,
+        "turns": 49,
+        "input": 117087,
+        "output": 87905,
+        "cacheRead": 2904865,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.03509943000000003,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "git-ignored",
+      "arm": "withheld",
+      "repeat": 15,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 1",
+          "error: expect(received).toEqual(expected)",
+          "(fail) file[^0-9].txt ignores the files git ignores [0.40ms]",
+          "error: expect(received).toEqual(expected)",
+          "(fail) [[:upper:]]akefile ignores the files git ignores [0.21ms]",
+          "error: expect(received).toEqual(expected)",
+          "(fail) src/[[:upper:]]*.ts ignores the files git ignores [0.17ms]",
+          "error: expect(received).toEqual(expected)",
+          "(fail) [[:lower:]]*.txt ignores the files git ignores [0.24ms]",
+          "error: expect(received).toEqual(expected)",
+          "(fail) *[[:digit:]].txt ignores the files git ignores [0.20ms]",
+          "(fail) file[^0-9].txt ignores the files git ignores [0.40ms]",
+          "(fail) [[:upper:]]akefile ignores the files git ignores [0.21ms]",
+          "(fail) src/[[:upper:]]*.ts ignores the files git ignores [0.17ms]",
+          "(fail) [[:lower:]]*.txt ignores the files git ignores [0.24ms]",
+          "(fail) *[[:digit:]].txt ignores the files git ignores [0.20ms]",
+          "91 pass",
+          "5 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 285,
+        "turns": 33,
+        "input": 88830,
+        "output": 74573,
+        "cacheRead": 1748113,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.027293826000000004,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "git-ignored",
+      "arm": "injected",
+      "repeat": 16,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "96 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 498,
+        "turns": 37,
+        "input": 53761,
+        "output": 69413,
+        "cacheRead": 1589077,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.022436854000000003,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "git-ignored",
+      "arm": "withheld",
+      "repeat": 16,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "96 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 752,
+        "turns": 71,
+        "input": 158366,
+        "output": 89323,
+        "cacheRead": 4210037,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.04212127399999999,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "git-ignored",
+      "arm": "injected",
+      "repeat": 17,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 1",
+          "error: expect(received).toEqual(expected)",
+          "(fail) [[:upper:]]akefile ignores the files git ignores [0.42ms]",
+          "error: expect(received).toEqual(expected)",
+          "(fail) src/[[:upper:]]*.ts ignores the files git ignores [0.13ms]",
+          "error: expect(received).toEqual(expected)",
+          "(fail) [[:lower:]]*.txt ignores the files git ignores [0.17ms]",
+          "error: expect(received).toEqual(expected)",
+          "(fail) *[[:digit:]].txt ignores the files git ignores [0.36ms]",
+          "(fail) [[:upper:]]akefile ignores the files git ignores [0.42ms]",
+          "(fail) src/[[:upper:]]*.ts ignores the files git ignores [0.13ms]",
+          "(fail) [[:lower:]]*.txt ignores the files git ignores [0.17ms]",
+          "(fail) *[[:digit:]].txt ignores the files git ignores [0.36ms]",
+          "92 pass",
+          "4 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 817,
+        "turns": 45,
+        "input": 47661,
+        "output": 62757,
+        "cacheRead": 1906028,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.021129556000000004,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "git-ignored",
+      "arm": "withheld",
+      "repeat": 17,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "96 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 707,
+        "turns": 49,
+        "input": 38702,
+        "output": 72874,
+        "cacheRead": 2966320,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.02437764,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "git-ignored",
+      "arm": "injected",
+      "repeat": 18,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 1",
+          "error: expect(received).toEqual(expected)",
+          "(fail) [[:upper:]]akefile ignores the files git ignores [0.36ms]",
+          "error: expect(received).toEqual(expected)",
+          "(fail) src/[[:upper:]]*.ts ignores the files git ignores [0.17ms]",
+          "error: expect(received).toEqual(expected)",
+          "(fail) [[:lower:]]*.txt ignores the files git ignores [0.18ms]",
+          "error: expect(received).toEqual(expected)",
+          "(fail) *[[:digit:]].txt ignores the files git ignores [0.16ms]",
+          "(fail) [[:upper:]]akefile ignores the files git ignores [0.36ms]",
+          "(fail) src/[[:upper:]]*.ts ignores the files git ignores [0.17ms]",
+          "(fail) [[:lower:]]*.txt ignores the files git ignores [0.18ms]",
+          "(fail) *[[:digit:]].txt ignores the files git ignores [0.16ms]",
+          "92 pass",
+          "4 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 469,
+        "turns": 31,
+        "input": 47298,
+        "output": 63425,
+        "cacheRead": 1497918,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.02041063600000001,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "git-ignored",
+      "arm": "withheld",
+      "repeat": 18,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "96 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 696,
+        "turns": 46,
+        "input": 70278,
+        "output": 83808,
+        "cacheRead": 2677981,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.029145361999999998,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "git-ignored",
+      "arm": "injected",
+      "repeat": 19,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 1",
+          "error: expect(received).toEqual(expected)",
+          "(fail) file[^0-9].txt ignores the files git ignores [0.41ms]",
+          "(fail) file[^0-9].txt ignores the files git ignores [0.41ms]",
+          "95 pass",
+          "1 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 308,
+        "turns": 36,
+        "input": 105994,
+        "output": 85677,
+        "cacheRead": 2080996,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.031896792,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "git-ignored",
+      "arm": "withheld",
+      "repeat": 19,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 1",
+          "error: expect(received).toEqual(expected)",
+          "(fail) [[:upper:]]akefile ignores the files git ignores [0.44ms]",
+          "error: expect(received).toEqual(expected)",
+          "(fail) src/[[:upper:]]*.ts ignores the files git ignores [0.31ms]",
+          "error: expect(received).toEqual(expected)",
+          "(fail) [[:lower:]]*.txt ignores the files git ignores [0.32ms]",
+          "error: expect(received).toEqual(expected)",
+          "(fail) *[[:digit:]].txt ignores the files git ignores [0.26ms]",
+          "(fail) [[:upper:]]akefile ignores the files git ignores [0.44ms]",
+          "(fail) src/[[:upper:]]*.ts ignores the files git ignores [0.31ms]",
+          "(fail) [[:lower:]]*.txt ignores the files git ignores [0.32ms]",
+          "(fail) *[[:digit:]].txt ignores the files git ignores [0.26ms]",
+          "92 pass",
+          "4 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 341,
+        "turns": 62,
+        "input": 120728,
+        "output": 86965,
+        "cacheRead": 3629165,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.036724130000000015,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "git-ignored",
+      "arm": "injected",
+      "repeat": 20,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "96 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 604,
+        "turns": 57,
+        "input": 61386,
+        "output": 67497,
+        "cacheRead": 2308054,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.024254107999999996,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "git-ignored",
+      "arm": "withheld",
+      "repeat": 20,
+      "verdict": {
+        "outcome": "unjudged",
+        "why": "pi ran past 15m and was stopped"
+      },
+      "spend": {
+        "seconds": 900,
+        "turns": 29,
+        "input": 58882,
+        "output": 28880,
+        "cacheRead": 804587,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.013273374000000001,
+        "costEstimated": false
+      }
+    }
+  ]
+}

@@ -1,0 +1,219 @@
+{
+  "startedAt": "2026-09-25T16:53:23Z",
+  "runId": "faff4a67-92b2-4ca1-959e-1d33d42c28ac",
+  "commit": "079c400ede705a4d7f40bb5a639b793dd660943e",
+  "prose": {
+    "files": {
+      "rules/agent-docs/SKILL.md": "442e2c0c44399f473bbac293b87c5ed3c4ce0bd3d0544e91ee1372659ab11e0a",
+      "references/writing-for-agents/SKILL.md": "944b2341d763b95355df1af004c59fb0195b9ef7110d3990ded1bedfda61c08c"
+    },
+    "uncommitted": false
+  },
+  "model": "openai-codex/gpt-6-luna",
+  "thinking": "xhigh",
+  "repeats": 5,
+  "planned": 10,
+  "missing": [],
+  "runs": [
+    {
+      "rule": "agent-docs",
+      "case": "release-pointer",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "release-pointer",
+        "kind": "program",
+        "evidence": [
+          "the release procedure stays behind the pointer: When asked to cut a release, follow `docs/release.md`."
+        ]
+      },
+      "spend": {
+        "seconds": 22,
+        "input": 6832,
+        "output": 561,
+        "cost": 0.00103538
+      }
+    },
+    {
+      "rule": "agent-docs",
+      "case": "release-pointer",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "release-pointer",
+        "kind": "program",
+        "evidence": [
+          "the release procedure stays behind the pointer: When asked to cut a release, read and follow [docs/release.md](docs/release.md)."
+        ]
+      },
+      "spend": {
+        "seconds": 32,
+        "input": 7918,
+        "output": 1004,
+        "cost": 0.00136548
+      }
+    },
+    {
+      "rule": "agent-docs",
+      "case": "release-pointer",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "release-pointer",
+        "kind": "program",
+        "evidence": [
+          "the release procedure stays behind the pointer: When asked to cut a release, follow the procedure in `docs/release.md`."
+        ]
+      },
+      "spend": {
+        "seconds": 25,
+        "input": 6683,
+        "output": 551,
+        "cost": 0.00101548
+      }
+    },
+    {
+      "rule": "agent-docs",
+      "case": "release-pointer",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "release-pointer",
+        "kind": "program",
+        "evidence": [
+          "the release procedure stays behind the pointer: When asked to cut a release, read and follow [docs/release.md](docs/release.md)."
+        ]
+      },
+      "spend": {
+        "seconds": 33,
+        "input": 8470,
+        "output": 910,
+        "cost": 0.0014658400000000002
+      }
+    },
+    {
+      "rule": "agent-docs",
+      "case": "release-pointer",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "release-pointer",
+        "kind": "program",
+        "evidence": [
+          "the release procedure stays behind the pointer: When asked to cut a release, follow the procedure in [docs/release.md](docs/release.md)."
+        ]
+      },
+      "spend": {
+        "seconds": 20,
+        "input": 6768,
+        "output": 478,
+        "cost": 0.00098748
+      }
+    },
+    {
+      "rule": "agent-docs",
+      "case": "release-pointer",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "release-pointer",
+        "kind": "program",
+        "evidence": [
+          "the release procedure stays behind the pointer: When asked to cut a release, read and follow [`docs/release.md`](docs/release.md) as the authoritative procedure."
+        ]
+      },
+      "spend": {
+        "seconds": 38,
+        "input": 13590,
+        "output": 1308,
+        "cost": 0.0021307599999999998
+      }
+    },
+    {
+      "rule": "agent-docs",
+      "case": "release-pointer",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "release-pointer",
+        "kind": "program",
+        "evidence": [
+          "the release procedure stays behind the pointer: When asked to cut a release, read and follow [docs/release.md](docs/release.md)."
+        ]
+      },
+      "spend": {
+        "seconds": 35,
+        "input": 13727,
+        "output": 1199,
+        "cost": 0.00208996
+      }
+    },
+    {
+      "rule": "agent-docs",
+      "case": "release-pointer",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "release-pointer",
+        "kind": "program",
+        "evidence": [
+          "the release procedure stays behind the pointer: When asked to cut a release, read and follow the complete procedure in `docs/release.md`; it is the source of truth for release steps."
+        ]
+      },
+      "spend": {
+        "seconds": 30,
+        "input": 12325,
+        "output": 956,
+        "cost": 0.0017821800000000002
+      }
+    },
+    {
+      "rule": "agent-docs",
+      "case": "release-pointer",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "release-pointer",
+        "kind": "program",
+        "evidence": [
+          "the release procedure stays behind the pointer: When asked to cut a release, read and follow [docs/release.md](docs/release.md)."
+        ]
+      },
+      "spend": {
+        "seconds": 32,
+        "input": 8706,
+        "output": 1061,
+        "cost": 0.0015649400000000001
+      }
+    },
+    {
+      "rule": "agent-docs",
+      "case": "release-pointer",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "release-pointer",
+        "kind": "program",
+        "evidence": [
+          "the release procedure stays behind the pointer: When asked to cut a release, read and follow [docs/release.md](docs/release.md), the authoritative release procedure."
+        ]
+      },
+      "spend": {
+        "seconds": 25,
+        "input": 8095,
+        "output": 747,
+        "cost": 0.0013007600000000002
+      }
+    }
+  ]
+}

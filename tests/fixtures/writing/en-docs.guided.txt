@@ -1,0 +1,29 @@
+---
+kind: how-to
+---
+
+# Import your bank's CSV export
+
+Import your bank's CSV export to bring its transactions into Ledger.
+Ledger adds each new transaction to `ledger.csv` and skips the ones it has imported before, so an export that overlaps an earlier one is safe to import.
+
+To import an export:
+
+1. Download the CSV export from your bank's website.
+1. Run `bun run import` with the path to the export:
+
+   ```sh
+   bun run import ~/Downloads/statement.csv
+   ```
+
+## Troubleshooting
+
+### Ledger refuses a file over 10 MB
+
+Ledger imports files of 10 MB or less.
+Split the export by month and import each part.
+
+### Ledger says columns are missing
+
+Ledger has no column mapping for your bank's export.
+Add a column mapping for the export to `ledger.config.json`, then run the import again.

@@ -1,0 +1,38 @@
+# Ledger 1.3
+
+Ledger 1.3 lets you preview an import, imports each payment once, and reads Alfa-Bank exports without setup.
+It also takes larger files and says which columns a rejected file is missing.
+
+## Update Bun before you update Ledger
+
+Ledger 1.3 needs Bun 1.2 or later.
+To see which version you have, run `bun --version`.
+If the version is older than 1.2, run `bun upgrade`.
+
+## Preview an import before it changes your books
+
+To see what an import would add, run `bun run import --dry-run <file>`.
+Ledger lists the transactions the import would add and writes nothing to `ledger.csv`.
+When the list looks right, run the same command without `--dry-run`.
+
+## Import each payment once
+
+Ledger 1.2 imported a payment twice when its payee name differed only in spaces or letter case, such as `"Coffee Shop"` and `" coffee shop "`.
+Ledger 1.3 imports that payment once.
+Two transactions now count as one payment when they have the same date, the same amount to the cent, and the same payee.
+Before it compares payees, Ledger removes the spaces at the start and end of each name and changes every letter to lowercase.
+
+## Import Alfa-Bank exports as they are
+
+Ledger 1.3 reads an Alfa-Bank export as the bank produces it.
+You no longer need a column mapping for Alfa-Bank in `ledger.config.json`.
+
+## Import files up to 50 MB
+
+Each file you import can now be up to 50 MB.
+The limit in Ledger 1.2 was 10 MB.
+
+## Find the columns a rejected file is missing
+
+When a file lacks columns that Ledger needs, Ledger stops with the error `MISSING_COLUMNS`.
+In Ledger 1.3, that error names each missing column.

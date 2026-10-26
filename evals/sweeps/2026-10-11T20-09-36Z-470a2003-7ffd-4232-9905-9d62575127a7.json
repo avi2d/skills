@@ -1,0 +1,854 @@
+{
+  "startedAt": "2026-10-11T20:09:36Z",
+  "runId": "470a2003-7ffd-4232-9905-9d62575127a7",
+  "commit": "c964b22917922c4ca249b2366422e568c9014463",
+  "prose": {
+    "files": {
+      "library/writing/rules/writing-for-people/SKILL.md": "9bcadd221d5ba309fc5ea1bf2d22377c2ad33d8d63f1c6b32330a2acdd853ad7",
+      "library/writing/references/technical-writing/SKILL.md": "40cd3cd13fdf99dc11cce650ee27173bf5eca64372a5dc4acb6a1986eef93208",
+      "library/writing/references/plain-sentences/SKILL.md": "7578e3a33c7048a2d2b99b6e9cf08432e3bebcf500018624d232d5fac88afdae",
+      "library/writing/references/plain-words/SKILL.md": "54dafbac68e1bbe118e50c5aaa51d1a702aa1de60f75d34831d86b58ad01f918",
+      "library/writing/references/punctuation/SKILL.md": "08c581ef47c6bfaa5b19c278efc9bf2d2b8823a27d207c91afeba0b3316e3128",
+      "library/writing/references/unslop/SKILL.md": "9f4aaec146e6adc292e1c72131a2fa29df9e66f15215e78716c36f67c480ddd6",
+      "library/writing/references/russian-prose/SKILL.md": "a765865a29882d9cfbbff634129a12e6b64cbd03ff9ffb6428fe581d46085f7a",
+      "library/writing/references/writing-for-agents/SKILL.md": "a8f02493dd121fa3c4fa57eaa1244b16b1277a9aeb732de918baae4385cdaed5",
+      "library/interface/references/interface-copy/SKILL.md": "377f26e1f6d05fc4184ce6a5b647f323952bb39c60ed20feb4bf4d9493f85a5a"
+    },
+    "uncommitted": false
+  },
+  "model": "claude-bridge/claude-opus-5-5",
+  "thinking": "high",
+  "repeats": 2,
+  "planned": 32,
+  "missing": [],
+  "runs": [
+    {
+      "rule": "writing-for-people",
+      "case": "en-readme",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "writing-for-people",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the writing-for-people asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 41,
+        "turns": 7,
+        "input": 14,
+        "output": 1980,
+        "cacheRead": 57326,
+        "cacheWrite": 9636,
+        "cacheWrite1h": 0,
+        "cost": 0.0993012,
+        "costEstimated": true
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "en-readme",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "writing-for-people",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the writing-for-people asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 33,
+        "turns": 7,
+        "input": 14,
+        "output": 1508,
+        "cacheRead": 49247,
+        "cacheWrite": 7840,
+        "cacheWrite1h": 0,
+        "cost": 0.0792654,
+        "costEstimated": true
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "ru-readme",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "writing-for-people",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the writing-for-people asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 48,
+        "turns": 6,
+        "input": 12,
+        "output": 3291,
+        "cacheRead": 56345,
+        "cacheWrite": 13601,
+        "cacheWrite1h": 0,
+        "cost": 0.145142,
+        "costEstimated": true
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "ru-readme",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "writing-for-people",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the writing-for-people asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 37,
+        "turns": 6,
+        "input": 12,
+        "output": 2820,
+        "cacheRead": 44451,
+        "cacheWrite": 10395,
+        "cacheWrite1h": 0,
+        "cost": 0.1173132,
+        "costEstimated": true
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "en-pr",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "writing-for-people",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the writing-for-people asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 45,
+        "turns": 4,
+        "input": 8,
+        "output": 3709,
+        "cacheRead": 29101,
+        "cacheWrite": 14041,
+        "cacheWrite1h": 0,
+        "cost": 0.15023720000000002,
+        "costEstimated": true
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "en-pr",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "writing-for-people",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the writing-for-people asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 44,
+        "turns": 4,
+        "input": 8,
+        "output": 3667,
+        "cacheRead": 26684,
+        "cacheWrite": 13527,
+        "cacheWrite1h": 0,
+        "cost": 0.14634380000000002,
+        "costEstimated": true
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "ru-pr",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "writing-for-people",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the writing-for-people asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 64,
+        "turns": 5,
+        "input": 10,
+        "output": 4252,
+        "cacheRead": 40015,
+        "cacheWrite": 15610,
+        "cacheWrite1h": 0,
+        "cost": 0.171133,
+        "costEstimated": true
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "ru-pr",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "writing-for-people",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the writing-for-people asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 42,
+        "turns": 5,
+        "input": 10,
+        "output": 3525,
+        "cacheRead": 44636,
+        "cacheWrite": 15227,
+        "cacheWrite1h": 0,
+        "cost": 0.15560220000000002,
+        "costEstimated": true
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "en-site",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "writing-for-people",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the writing-for-people asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 20,
+        "turns": 3,
+        "input": 6,
+        "output": 1530,
+        "cacheRead": 15696,
+        "cacheWrite": 8134,
+        "cacheWrite1h": 0,
+        "cost": 0.0744332,
+        "costEstimated": true
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "en-site",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "writing-for-people",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the writing-for-people asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 40,
+        "turns": 4,
+        "input": 8,
+        "output": 2227,
+        "cacheRead": 26102,
+        "cacheWrite": 11757,
+        "cacheWrite1h": 0,
+        "cost": 0.10857740000000002,
+        "costEstimated": true
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "ru-site",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "writing-for-people",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the writing-for-people asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 34,
+        "turns": 4,
+        "input": 8,
+        "output": 2965,
+        "cacheRead": 30173,
+        "cacheWrite": 13699,
+        "cacheWrite1h": 0,
+        "cost": 0.1338616,
+        "costEstimated": true
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "ru-site",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "unjudged",
+        "why": "site/about.md does not carry the facts the task gave"
+      },
+      "spend": {
+        "seconds": 50,
+        "turns": 4,
+        "input": 8,
+        "output": 3397,
+        "cacheRead": 27868,
+        "cacheWrite": 13621,
+        "cacheWrite1h": 0,
+        "cost": 0.14165060000000002,
+        "costEstimated": true
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "en-errors",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "writing-for-people",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the writing-for-people asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 26,
+        "turns": 4,
+        "input": 8,
+        "output": 2058,
+        "cacheRead": 28783,
+        "cacheWrite": 10474,
+        "cacheWrite1h": 0,
+        "cost": 0.09931859999999999,
+        "costEstimated": true
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "en-errors",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "writing-for-people",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the writing-for-people asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 24,
+        "turns": 5,
+        "input": 10,
+        "output": 1594,
+        "cacheRead": 27500,
+        "cacheWrite": 5988,
+        "cacheWrite1h": 0,
+        "cost": 0.06736,
+        "costEstimated": true
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "ru-errors",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "writing-for-people",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the writing-for-people asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 33,
+        "turns": 5,
+        "input": 10,
+        "output": 2705,
+        "cacheRead": 34110,
+        "cacheWrite": 8323,
+        "cacheWrite1h": 0,
+        "cost": 0.102577,
+        "costEstimated": true
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "ru-errors",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "writing-for-people",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the writing-for-people asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 33,
+        "turns": 5,
+        "input": 10,
+        "output": 2914,
+        "cacheRead": 36742,
+        "cacheWrite": 10463,
+        "cacheWrite1h": 0,
+        "cost": 0.11798340000000002,
+        "costEstimated": true
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "en-readme",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "writing-for-people",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the writing-for-people asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 32,
+        "turns": 5,
+        "input": 10,
+        "output": 2049,
+        "cacheRead": 42680,
+        "cacheWrite": 12679,
+        "cacheWrite1h": 0,
+        "cost": 0.11295100000000001,
+        "costEstimated": true
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "en-readme",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "writing-for-people",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the writing-for-people asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 25,
+        "turns": 4,
+        "input": 8,
+        "output": 1684,
+        "cacheRead": 24991,
+        "cacheWrite": 10127,
+        "cacheWrite1h": 0,
+        "cost": 0.08934520000000001,
+        "costEstimated": true
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "ru-readme",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "writing-for-people",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the writing-for-people asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 51,
+        "turns": 7,
+        "input": 14,
+        "output": 3144,
+        "cacheRead": 68691,
+        "cacheWrite": 14216,
+        "cacheWrite1h": 0,
+        "cost": 0.1477542,
+        "costEstimated": true
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "ru-readme",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "writing-for-people",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the writing-for-people asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 41,
+        "turns": 7,
+        "input": 14,
+        "output": 2980,
+        "cacheRead": 61275,
+        "cacheWrite": 12312,
+        "cacheWrite1h": 0,
+        "cost": 0.133471,
+        "costEstimated": true
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "en-pr",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "writing-for-people",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the writing-for-people asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 56,
+        "turns": 5,
+        "input": 10,
+        "output": 3299,
+        "cacheRead": 44708,
+        "cacheWrite": 13848,
+        "cacheWrite1h": 0,
+        "cost": 0.14420159999999999,
+        "costEstimated": true
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "en-pr",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "writing-for-people",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the writing-for-people asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 49,
+        "turns": 4,
+        "input": 8,
+        "output": 4129,
+        "cacheRead": 26697,
+        "cacheWrite": 13945,
+        "cacheWrite1h": 0,
+        "cost": 0.1576764,
+        "costEstimated": true
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "ru-pr",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "writing-for-people",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the writing-for-people asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 63,
+        "turns": 8,
+        "input": 16,
+        "output": 4587,
+        "cacheRead": 91288,
+        "cacheWrite": 16971,
+        "cacheWrite1h": 0,
+        "cost": 0.19491660000000002,
+        "costEstimated": true
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "ru-pr",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "writing-for-people",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the writing-for-people asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 40,
+        "turns": 4,
+        "input": 8,
+        "output": 3702,
+        "cacheRead": 28503,
+        "cacheWrite": 14627,
+        "cacheWrite1h": 0,
+        "cost": 0.15290760000000003,
+        "costEstimated": true
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "en-site",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "writing-for-people",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the writing-for-people asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 24,
+        "turns": 4,
+        "input": 8,
+        "output": 1470,
+        "cacheRead": 25346,
+        "cacheWrite": 8192,
+        "cacheWrite1h": 0,
+        "cost": 0.0754612,
+        "costEstimated": true
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "en-site",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "writing-for-people",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the writing-for-people asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 32,
+        "turns": 4,
+        "input": 8,
+        "output": 2579,
+        "cacheRead": 26060,
+        "cacheWrite": 12126,
+        "cacheWrite1h": 0,
+        "cost": 0.117454,
+        "costEstimated": true
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "ru-site",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "writing-for-people",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the writing-for-people asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 55,
+        "turns": 4,
+        "input": 8,
+        "output": 5251,
+        "cacheRead": 28953,
+        "cacheWrite": 15977,
+        "cacheWrite1h": 0,
+        "cost": 0.1907276,
+        "costEstimated": true
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "ru-site",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "writing-for-people",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the writing-for-people asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 40,
+        "turns": 4,
+        "input": 8,
+        "output": 3369,
+        "cacheRead": 28053,
+        "cacheWrite": 13753,
+        "cacheWrite1h": 0,
+        "cost": 0.1417876,
+        "costEstimated": true
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "en-errors",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "writing-for-people",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the writing-for-people asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 28,
+        "turns": 5,
+        "input": 10,
+        "output": 2155,
+        "cacheRead": 40837,
+        "cacheWrite": 10619,
+        "cacheWrite1h": 0,
+        "cost": 0.1044024,
+        "costEstimated": true
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "en-errors",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "writing-for-people",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the writing-for-people asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 23,
+        "turns": 5,
+        "input": 10,
+        "output": 1694,
+        "cacheRead": 27657,
+        "cacheWrite": 6113,
+        "cacheWrite1h": 0,
+        "cost": 0.0700164,
+        "costEstimated": true
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "ru-errors",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "writing-for-people",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the writing-for-people asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 30,
+        "turns": 4,
+        "input": 8,
+        "output": 2404,
+        "cacheRead": 28905,
+        "cacheWrite": 10436,
+        "cacheWrite1h": 0,
+        "cost": 0.106073,
+        "costEstimated": true
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "ru-errors",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "writing-for-people",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the writing-for-people asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 38,
+        "turns": 5,
+        "input": 10,
+        "output": 3392,
+        "cacheRead": 44983,
+        "cacheWrite": 13477,
+        "cacheWrite1h": 0,
+        "cost": 0.14426160000000002,
+        "costEstimated": true
+      },
+      "wroteTest": false
+    }
+  ]
+}

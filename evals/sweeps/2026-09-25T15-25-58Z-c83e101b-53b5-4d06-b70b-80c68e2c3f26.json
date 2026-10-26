@@ -1,0 +1,212 @@
+{
+  "startedAt": "2026-09-25T15:25:58Z",
+  "runId": "c83e101b-53b5-4d06-b70b-80c68e2c3f26",
+  "commit": "fe490afb12520ab4f32270e744513fedf7c46437",
+  "prose": {
+    "files": {
+      "rules/writing-for-people/SKILL.md": "4739b3809d6fa89a3e1a1de15a740eb3b19d7d69d389ed1b44e16046b6826ec2",
+      "references/technical-writing/SKILL.md": "0dea8fd0bf08736d9df69d30e2b25b03bb9b936ea30db397c098a72d544628a8",
+      "references/unslop/SKILL.md": "d28555bab5bf222fa1a07dbbb2ab10be373ba179ab077a78eb267d1efbc85aec"
+    },
+    "uncommitted": false
+  },
+  "model": "opencode-go/muse-spark-1.3-contributor",
+  "thinking": "high",
+  "repeats": 5,
+  "planned": 10,
+  "missing": [],
+  "runs": [
+    {
+      "rule": "writing-for-people",
+      "case": "readme-sections",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "unjudged",
+        "why": "pi ran past 15m and was stopped"
+      },
+      "spend": {
+        "seconds": 900,
+        "input": 7913,
+        "output": 814,
+        "cost": 0.0009701380000000002
+      }
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "readme-sections",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "task-sections",
+        "kind": "program",
+        "evidence": [
+          "the install and verify sections are titled by their task, and the new prose uses no dash, parenthesis or semicolon"
+        ]
+      },
+      "spend": {
+        "seconds": 38,
+        "input": 10226,
+        "output": 2759,
+        "cost": 0.0016351480000000001
+      }
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "readme-sections",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "task-sections",
+        "kind": "program",
+        "evidence": [
+          "the install and verify sections are titled by their task, and the new prose uses no dash, parenthesis or semicolon"
+        ]
+      },
+      "spend": {
+        "seconds": 47,
+        "input": 11790,
+        "output": 2781,
+        "cost": 0.001863698
+      }
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "readme-sections",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "task-sections",
+        "kind": "program",
+        "evidence": [
+          "the install and verify sections are titled by their task, and the new prose uses no dash, parenthesis or semicolon"
+        ]
+      },
+      "spend": {
+        "seconds": 19,
+        "input": 9179,
+        "output": 1847,
+        "cost": 0.0013275980000000001
+      }
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "readme-sections",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "task-sections",
+        "kind": "program",
+        "evidence": [
+          "the install and verify sections are titled by their task, and the new prose uses no dash, parenthesis or semicolon"
+        ]
+      },
+      "spend": {
+        "seconds": 80,
+        "input": 14669,
+        "output": 5734,
+        "cost": 0.0028007620000000005
+      }
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "readme-sections",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "task-sections",
+        "kind": "program",
+        "evidence": [
+          "the install and verify sections are titled by their task, and the new prose uses no dash, parenthesis or semicolon"
+        ]
+      },
+      "spend": {
+        "seconds": 24,
+        "input": 9949,
+        "output": 2238,
+        "cost": 0.0015004320000000001
+      }
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "readme-sections",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "task-sections",
+        "kind": "program",
+        "evidence": [
+          "the install and verify sections are titled by their task, and the new prose uses no dash, parenthesis or semicolon"
+        ]
+      },
+      "spend": {
+        "seconds": 28,
+        "input": 9957,
+        "output": 2487,
+        "cost": 0.00154031
+      }
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "readme-sections",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "task-sections",
+        "kind": "program",
+        "evidence": [
+          "the install and verify sections are titled by their task, and the new prose uses no dash, parenthesis or semicolon"
+        ]
+      },
+      "spend": {
+        "seconds": 44,
+        "input": 11576,
+        "output": 3162,
+        "cost": 0.001921028
+      }
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "readme-sections",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "unjudged",
+        "why": "pi ran past 15m and was stopped"
+      },
+      "spend": {
+        "seconds": 900,
+        "input": 7900,
+        "output": 1096,
+        "cost": 0.0010252380000000001
+      }
+    },
+    {
+      "rule": "writing-for-people",
+      "case": "readme-sections",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "task-sections",
+        "kind": "program",
+        "evidence": [
+          "the install and verify sections are titled by their task, and the new prose uses no dash, parenthesis or semicolon"
+        ]
+      },
+      "spend": {
+        "seconds": 27,
+        "input": 9648,
+        "output": 2236,
+        "cost": 0.001471212
+      }
+    }
+  ]
+}

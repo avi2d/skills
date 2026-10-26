@@ -1,0 +1,418 @@
+{
+  "startedAt": "2026-09-25T16:21:07Z",
+  "runId": "aad67ea3-dfc9-42eb-8448-dd60ae1fa943",
+  "commit": "6b2ca0e1147ace6687b8bfc55bfd95de545c0c8b",
+  "prose": {
+    "files": {
+      "rules/force-determinism/SKILL.md": "fce75d667243e3347e853a875a2a074b25becc3a37cf4e6ac97020d6a4736c4d"
+    },
+    "uncommitted": false
+  },
+  "model": "openai-codex/gpt-6-luna",
+  "thinking": "xhigh",
+  "repeats": 5,
+  "planned": 20,
+  "missing": [],
+  "runs": [
+    {
+      "rule": "force-determinism",
+      "case": "convention-as-check",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "constraint-in-a-program",
+        "kind": "program",
+        "evidence": [
+          "scripts/check-package-boundaries.mjs add(s) a line matching /\\btests\\b|\\bfixtures\\b/"
+        ]
+      },
+      "spend": {
+        "seconds": 231,
+        "input": 31701,
+        "output": 10651,
+        "cost": 0.009627119999999996
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "convention-as-check",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "constraint-in-a-program",
+        "kind": "program",
+        "evidence": [
+          "tests/package-boundary.test.ts add(s) a line matching /\\btests\\b|\\bfixtures\\b/"
+        ]
+      },
+      "spend": {
+        "seconds": 86,
+        "input": 9736,
+        "output": 3372,
+        "cost": 0.0028541600000000006
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "watched-red",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "seen-failing",
+        "kind": "program",
+        "evidence": [
+          "`bun test tests/no-console-log.test.ts` failed under tests/no-console-log.test.ts at step 11, and `rm src/.console-log-proof.ts && bun test` passed at step 12"
+        ]
+      },
+      "spend": {
+        "seconds": 79,
+        "input": 10171,
+        "output": 2387,
+        "cost": 0.00240004
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "watched-red",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "seen-failing",
+        "kind": "program",
+        "evidence": [
+          "no test run failed under the check it wrote (tests/no-console-log.test.ts)"
+        ]
+      },
+      "spend": {
+        "seconds": 49,
+        "input": 8945,
+        "output": 1385,
+        "cost": 0.0016279600000000001
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "convention-as-check",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "constraint-in-a-program",
+        "kind": "program",
+        "evidence": [
+          "tests/package-content.test.ts, tests/source-boundary.test.ts add(s) a line matching /\\btests\\b|\\bfixtures\\b/"
+        ]
+      },
+      "spend": {
+        "seconds": 170,
+        "input": 19721,
+        "output": 7288,
+        "cost": 0.006624740000000001
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "convention-as-check",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "constraint-in-a-program",
+        "kind": "program",
+        "evidence": [
+          "tests/boundaries.test.ts add(s) a line matching /\\btests\\b|\\bfixtures\\b/"
+        ]
+      },
+      "spend": {
+        "seconds": 102,
+        "input": 13138,
+        "output": 4343,
+        "cost": 0.0038232199999999996
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "watched-red",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "seen-failing",
+        "kind": "program",
+        "evidence": [
+          "`printf 'console.log(\"temporary violation\");\\n' > src/.console-log-test.ts\nbun test tests/no-console-log.test.ts; status=$?\nrm src/.console-log-test.ts\nexit $status` failed under tests/no-console-log.test.ts at step 8, and `bun test && git status --short && git diff -- tests/no-console-log.test.ts` passed at step 9"
+        ]
+      },
+      "spend": {
+        "seconds": 55,
+        "input": 8151,
+        "output": 1519,
+        "cost": 0.00168724
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "watched-red",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "seen-failing",
+        "kind": "program",
+        "evidence": [
+          "no test run failed under the check it wrote (tests/no-console-log.test.ts)"
+        ]
+      },
+      "spend": {
+        "seconds": 40,
+        "input": 6772,
+        "output": 1222,
+        "cost": 0.00134452
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "convention-as-check",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "constraint-in-a-program",
+        "kind": "program",
+        "evidence": [
+          "tests/source-boundary.test.ts add(s) a line matching /\\btests\\b|\\bfixtures\\b/"
+        ]
+      },
+      "spend": {
+        "seconds": 425,
+        "input": 33867,
+        "output": 13404,
+        "cost": 0.012761340000000001
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "convention-as-check",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "constraint-in-a-program",
+        "kind": "program",
+        "evidence": [
+          "tests/boundaries.test.ts add(s) a line matching /\\btests\\b|\\bfixtures\\b/"
+        ]
+      },
+      "spend": {
+        "seconds": 164,
+        "input": 23111,
+        "output": 7225,
+        "cost": 0.006563600000000001
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "watched-red",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "seen-failing",
+        "kind": "program",
+        "evidence": [
+          "`bun test tests/no-console-log.test.ts` failed under tests/no-console-log.test.ts at step 9, and `bun test` passed at step 11"
+        ]
+      },
+      "spend": {
+        "seconds": 85,
+        "input": 11025,
+        "output": 2453,
+        "cost": 0.00256964
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "watched-red",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "seen-failing",
+        "kind": "program",
+        "evidence": [
+          "no test run failed under the check it wrote (tests/no-console-log.test.ts)"
+        ]
+      },
+      "spend": {
+        "seconds": 34,
+        "input": 6435,
+        "output": 956,
+        "cost": 0.00115222
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "convention-as-check",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "constraint-in-a-program",
+        "kind": "program",
+        "evidence": [
+          "tests/boundaries.test.ts add(s) a line matching /\\btests\\b|\\bfixtures\\b/"
+        ]
+      },
+      "spend": {
+        "seconds": 219,
+        "input": 29714,
+        "output": 9381,
+        "cost": 0.009023819999999998
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "convention-as-check",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "constraint-in-a-program",
+        "kind": "program",
+        "evidence": [
+          "tests/source-boundary.test.ts add(s) a line matching /\\btests\\b|\\bfixtures\\b/"
+        ]
+      },
+      "spend": {
+        "seconds": 164,
+        "input": 12564,
+        "output": 5533,
+        "cost": 0.00428402
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "watched-red",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "seen-failing",
+        "kind": "program",
+        "evidence": [
+          "`bun test tests/no-console-log.test.ts` failed under tests/no-console-log.test.ts at step 12, and `bun test` passed at step 14"
+        ]
+      },
+      "spend": {
+        "seconds": 81,
+        "input": 10816,
+        "output": 2327,
+        "cost": 0.00249598
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "watched-red",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "seen-failing",
+        "kind": "program",
+        "evidence": [
+          "no test run failed under the check it wrote (tests/no-console-log.test.ts)"
+        ]
+      },
+      "spend": {
+        "seconds": 39,
+        "input": 7511,
+        "output": 1367,
+        "cost": 0.0014755600000000001
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "convention-as-check",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "constraint-in-a-program",
+        "kind": "program",
+        "evidence": [
+          "tests/package-boundary.test.ts add(s) a line matching /\\btests\\b|\\bfixtures\\b/"
+        ]
+      },
+      "spend": {
+        "seconds": 407,
+        "input": 37847,
+        "output": 13825,
+        "cost": 0.014445039999999998
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "convention-as-check",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "constraint-in-a-program",
+        "kind": "program",
+        "evidence": [
+          "tests/package-boundaries.test.ts add(s) a line matching /\\btests\\b|\\bfixtures\\b/"
+        ]
+      },
+      "spend": {
+        "seconds": 105,
+        "input": 13407,
+        "output": 4543,
+        "cost": 0.0038938
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "watched-red",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "seen-failing",
+        "kind": "program",
+        "evidence": [
+          "`printf 'console.log(\"temporary test violation\");\\n' > src/.console-log-violation.ts\nbun test tests/no-console-log.test.ts` failed under tests/no-console-log.test.ts at step 7, and `rm src/.console-log-violation.ts && bun test` passed at step 8"
+        ]
+      },
+      "spend": {
+        "seconds": 79,
+        "input": 7570,
+        "output": 2279,
+        "cost": 0.0020501
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "watched-red",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "seen-failing",
+        "kind": "program",
+        "evidence": [
+          "no test run failed under the check it wrote (tests/no-console-log.test.ts)"
+        ]
+      },
+      "spend": {
+        "seconds": 39,
+        "input": 8628,
+        "output": 1279,
+        "cost": 0.0015432599999999999
+      }
+    }
+  ]
+}

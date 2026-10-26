@@ -1,0 +1,1156 @@
+{
+  "startedAt": "2026-10-10T12:05:51Z",
+  "runId": "6b294489-9c52-4206-8426-d6c45c168b85",
+  "commit": "4709e4de9211cdf0f4b40611b9f29a621b879b00",
+  "prose": {
+    "files": {
+      "library/engineering/rules/prove-it-works/SKILL.md": "ce65caa1d1e4b5c29e827eae37d2e012359f85bcc45d3df1c0181da08304d01e"
+    },
+    "uncommitted": false
+  },
+  "model": "opencode-go/muse-spark-1.3-contributor",
+  "thinking": "high",
+  "repeats": 20,
+  "planned": 40,
+  "missing": [],
+  "runs": [
+    {
+      "rule": "prove-it-works",
+      "case": "cron-next",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "29 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 226,
+        "turns": 18,
+        "input": 15450,
+        "output": 21065,
+        "cacheRead": 287361,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.006332722000000001,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "cron-next",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "29 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 153,
+        "turns": 9,
+        "input": 7967,
+        "output": 24396,
+        "cacheRead": 138120,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.005952140000000002,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "cron-next",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "29 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 100,
+        "turns": 18,
+        "input": 26595,
+        "output": 18837,
+        "cacheRead": 237170,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.006901240000000001,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "cron-next",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "29 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 84,
+        "turns": 7,
+        "input": 5604,
+        "output": 9970,
+        "cacheRead": 44710,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0026438200000000007,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "cron-next",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "29 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 101,
+        "turns": 16,
+        "input": 11110,
+        "output": 15785,
+        "cacheRead": 189855,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.004647710000000001,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "cron-next",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "29 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 174,
+        "turns": 17,
+        "input": 16654,
+        "output": 27198,
+        "cacheRead": 389392,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.007883784000000001,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "cron-next",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "29 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 116,
+        "turns": 12,
+        "input": 11450,
+        "output": 11621,
+        "cacheRead": 105947,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.003681094,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "cron-next",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "29 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 84,
+        "turns": 9,
+        "input": 7049,
+        "output": 11947,
+        "cacheRead": 77704,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0032497080000000005,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "cron-next",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "29 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 163,
+        "turns": 16,
+        "input": 12792,
+        "output": 21557,
+        "cacheRead": 238495,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.006067590000000001,
+        "costEstimated": false
+      },
+      "wroteTest": true
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "cron-next",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 1",
+          "error: expect(received).toEqual(expected)",
+          "(fail) 0 0 */2 * 1 runs next as cron runs it [0.37ms]",
+          "(fail) 0 0 */2 * 1 runs next as cron runs it [0.37ms]",
+          "28 pass",
+          "1 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 103,
+        "turns": 7,
+        "input": 5753,
+        "output": 14473,
+        "cacheRead": 55462,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0035808240000000002,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "cron-next",
+      "arm": "injected",
+      "repeat": 6,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "29 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 116,
+        "turns": 11,
+        "input": 8476,
+        "output": 17951,
+        "cacheRead": 120938,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0046796760000000015,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "cron-next",
+      "arm": "withheld",
+      "repeat": 6,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "29 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 76,
+        "turns": 8,
+        "input": 5874,
+        "output": 11764,
+        "cacheRead": 55319,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.003050838,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "cron-next",
+      "arm": "injected",
+      "repeat": 7,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "29 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 55,
+        "turns": 11,
+        "input": 23067,
+        "output": 15907,
+        "cacheRead": 95707,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.005679514,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "cron-next",
+      "arm": "withheld",
+      "repeat": 7,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "29 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 122,
+        "turns": 10,
+        "input": 11428,
+        "output": 17968,
+        "cacheRead": 126201,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.004988802000000001,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "cron-next",
+      "arm": "injected",
+      "repeat": 8,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 1",
+          "error: expect(received).toEqual(expected)",
+          "(fail) 0 0 */2 * 1 runs next as cron runs it [0.30ms]",
+          "(fail) 0 0 */2 * 1 runs next as cron runs it [0.30ms]",
+          "28 pass",
+          "1 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 142,
+        "turns": 14,
+        "input": 13753,
+        "output": 22743,
+        "cacheRead": 222909,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.006369718,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "cron-next",
+      "arm": "withheld",
+      "repeat": 8,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "29 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 115,
+        "turns": 7,
+        "input": 16594,
+        "output": 14978,
+        "cacheRead": 45222,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.004745444000000001,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "cron-next",
+      "arm": "injected",
+      "repeat": 9,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "29 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 163,
+        "turns": 14,
+        "input": 12668,
+        "output": 19165,
+        "cacheRead": 193213,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.005486226000000002,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "cron-next",
+      "arm": "withheld",
+      "repeat": 9,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "29 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 111,
+        "turns": 8,
+        "input": 5635,
+        "output": 16208,
+        "cacheRead": 72727,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.003950554,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "cron-next",
+      "arm": "injected",
+      "repeat": 10,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "29 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 105,
+        "turns": 13,
+        "input": 15804,
+        "output": 15205,
+        "cacheRead": 138060,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.00489752,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "cron-next",
+      "arm": "withheld",
+      "repeat": 10,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "29 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 83,
+        "turns": 11,
+        "input": 8199,
+        "output": 13231,
+        "cacheRead": 109162,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0036844240000000004,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "cron-next",
+      "arm": "injected",
+      "repeat": 11,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "29 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 106,
+        "turns": 12,
+        "input": 8266,
+        "output": 16653,
+        "cacheRead": 131547,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.004420294000000001,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "cron-next",
+      "arm": "withheld",
+      "repeat": 11,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "29 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 103,
+        "turns": 7,
+        "input": 6071,
+        "output": 16193,
+        "cacheRead": 61094,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.003967888,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "cron-next",
+      "arm": "injected",
+      "repeat": 12,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "29 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 119,
+        "turns": 13,
+        "input": 16160,
+        "output": 15325,
+        "cacheRead": 128844,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.004938688000000001,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "cron-next",
+      "arm": "withheld",
+      "repeat": 12,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "29 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 190,
+        "turns": 14,
+        "input": 11324,
+        "output": 21338,
+        "cacheRead": 224445,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.005848890000000001,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "cron-next",
+      "arm": "injected",
+      "repeat": 13,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 1",
+          "error: expect(received).toEqual(expected)",
+          "(fail) 0 0 */2 * 1 runs next as cron runs it [0.33ms]",
+          "(fail) 0 0 */2 * 1 runs next as cron runs it [0.33ms]",
+          "28 pass",
+          "1 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 116,
+        "turns": 11,
+        "input": 9315,
+        "output": 18114,
+        "cacheRead": 131690,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0048176799999999995,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "cron-next",
+      "arm": "withheld",
+      "repeat": 13,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 1",
+          "error: expect(received).toEqual(expected)",
+          "(fail) 0 0 */2 * 1 runs next as cron runs it [0.29ms]",
+          "(fail) 0 0 */2 * 1 runs next as cron runs it [0.29ms]",
+          "28 pass",
+          "1 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 96,
+        "turns": 6,
+        "input": 5683,
+        "output": 15495,
+        "cacheRead": 53045,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0037733900000000006,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "cron-next",
+      "arm": "injected",
+      "repeat": 14,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 1",
+          "error: expect(received).toEqual(expected)",
+          "(fail) 0 0 */2 * 1 runs next as cron runs it [0.45ms]",
+          "(fail) 0 0 */2 * 1 runs next as cron runs it [0.45ms]",
+          "28 pass",
+          "1 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 164,
+        "turns": 15,
+        "input": 11939,
+        "output": 22505,
+        "cacheRead": 238126,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.006171152000000001,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "cron-next",
+      "arm": "withheld",
+      "repeat": 14,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "29 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 168,
+        "turns": 12,
+        "input": 8115,
+        "output": 16307,
+        "cacheRead": 143323,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.004359546000000001,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "cron-next",
+      "arm": "injected",
+      "repeat": 15,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "29 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 107,
+        "turns": 12,
+        "input": 9391,
+        "output": 13650,
+        "cacheRead": 113115,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0038953300000000002,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "cron-next",
+      "arm": "withheld",
+      "repeat": 15,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "29 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 113,
+        "turns": 9,
+        "input": 7035,
+        "output": 17486,
+        "cacheRead": 103304,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.004407308,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "cron-next",
+      "arm": "injected",
+      "repeat": 16,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "29 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 116,
+        "turns": 16,
+        "input": 11425,
+        "output": 14924,
+        "cacheRead": 178079,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.004483458000000001,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "cron-next",
+      "arm": "withheld",
+      "repeat": 16,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "29 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 64,
+        "turns": 7,
+        "input": 18683,
+        "output": 14630,
+        "cacheRead": 38295,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.00487089,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "cron-next",
+      "arm": "injected",
+      "repeat": 17,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "29 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 161,
+        "turns": 18,
+        "input": 17737,
+        "output": 22212,
+        "cacheRead": 280193,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.006776486,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "cron-next",
+      "arm": "withheld",
+      "repeat": 17,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "29 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 132,
+        "turns": 13,
+        "input": 11986,
+        "output": 15844,
+        "cacheRead": 171852,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.004711104,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "cron-next",
+      "arm": "injected",
+      "repeat": 18,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "29 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 73,
+        "turns": 18,
+        "input": 23101,
+        "output": 15467,
+        "cacheRead": 227058,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.005857616000000001,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "cron-next",
+      "arm": "withheld",
+      "repeat": 18,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "29 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 113,
+        "turns": 13,
+        "input": 10193,
+        "output": 17338,
+        "cacheRead": 193356,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.004873612,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "cron-next",
+      "arm": "injected",
+      "repeat": 19,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 1",
+          "error: expect(received).toEqual(expected)",
+          "(fail) 0 0 */2 * 1 runs next as cron runs it [0.30ms]",
+          "(fail) 0 0 */2 * 1 runs next as cron runs it [0.30ms]",
+          "28 pass",
+          "1 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 112,
+        "turns": 12,
+        "input": 8690,
+        "output": 16105,
+        "cacheRead": 143323,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.004376646,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "cron-next",
+      "arm": "withheld",
+      "repeat": 19,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "29 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 86,
+        "turns": 7,
+        "input": 6237,
+        "output": 12162,
+        "cacheRead": 46246,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0031485920000000004,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "cron-next",
+      "arm": "injected",
+      "repeat": 20,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "29 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 126,
+        "turns": 14,
+        "input": 10042,
+        "output": 15169,
+        "cacheRead": 146621,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.004331242,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "prove-it-works",
+      "case": "cron-next",
+      "arm": "withheld",
+      "repeat": 20,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "hidden-verifier",
+        "kind": "program",
+        "evidence": [
+          "the hidden verifier exited 0",
+          "29 pass",
+          "0 fail"
+        ]
+      },
+      "spend": {
+        "seconds": 98,
+        "turns": 9,
+        "input": 7375,
+        "output": 14181,
+        "cacheRead": 86408,
+        "cacheWrite": 0,
+        "cacheWrite1h": 0,
+        "cost": 0.0037465160000000005,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    }
+  ]
+}

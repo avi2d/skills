@@ -1,0 +1,12 @@
+# Agent notes
+
+## Commands
+
+- Test: `TZ=UTC bun test`
+- Lint: `bun run lint` (oxlint)
+- Type check: `bun run typecheck` (`tsc --noEmit`)
+- Build: `bun run build` (bundles `src/index.ts` into `dist/`)
+
+## Gotchas
+
+- Always set `TZ=UTC` when running tests. The date fixtures are written in UTC, so the date tests fail in any other timezone.

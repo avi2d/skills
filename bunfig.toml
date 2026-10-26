@@ -1,0 +1,5 @@
+[test]
+root = "tests"
+# The Dispatcher bundles and the Hub, which the suite reads and no clone carries.
+preload = ["./tests/lib/emitted.ts"]
+pathIgnorePatterns = ["**/tests/quarantine/**", "**/tests/live/**", "**/tests/pixel/**", "repos/**"]

@@ -1,0 +1,418 @@
+{
+  "startedAt": "2026-09-25T17:31:54Z",
+  "runId": "2d29ece2-ea57-4f6d-a35a-41e6582807d4",
+  "commit": "02fdeb502d24d29d1750d7ce25b496eabea81bfe",
+  "prose": {
+    "files": {
+      "rules/force-determinism/SKILL.md": "fce75d667243e3347e853a875a2a074b25becc3a37cf4e6ac97020d6a4736c4d"
+    },
+    "uncommitted": false
+  },
+  "model": "openai-codex/gpt-6-sol",
+  "thinking": "high",
+  "repeats": 5,
+  "planned": 20,
+  "missing": [],
+  "runs": [
+    {
+      "rule": "force-determinism",
+      "case": "convention-as-check",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "constraint-in-a-program",
+        "kind": "program",
+        "evidence": [
+          "tests/import-boundary.test.ts add(s) a line matching /\\btests\\b|\\bfixtures\\b/"
+        ]
+      },
+      "spend": {
+        "seconds": 122,
+        "input": 6968,
+        "output": 3833,
+        "cost": 0.061610000000000005
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "convention-as-check",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "constraint-in-a-program",
+        "kind": "program",
+        "evidence": [
+          "tests/package-boundaries.test.ts add(s) a line matching /\\btests\\b|\\bfixtures\\b/"
+        ]
+      },
+      "spend": {
+        "seconds": 103,
+        "input": 9232,
+        "output": 4077,
+        "cost": 0.0670164
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "watched-red",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "seen-failing",
+        "kind": "program",
+        "evidence": [
+          "`mkdir -p src/__console_log_probe && printf 'console.log(\"probe\");\\n' > src/__console_log_probe/probe.ts\nbun test tests/no-console-log.test.ts` failed under tests/no-console-log.test.ts at step 10, and `rm src/__console_log_probe/probe.ts && rmdir src/__console_log_probe && bun test && git status --short` passed at step 11"
+        ]
+      },
+      "spend": {
+        "seconds": 67,
+        "input": 5544,
+        "output": 1865,
+        "cost": 0.0328612
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "watched-red",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "seen-failing",
+        "kind": "program",
+        "evidence": [
+          "`bun test && printf 'console.log(\"check\");\\n' > src/__console_log_probe.ts; bun test tests/no-console-log.test.ts; status=$?; rm src/__console_log_probe.ts; test \"$status\" -ne 0 && git status --short` failed under tests/no-console-log.test.ts at step 8, and that check never passed after it without being rewritten"
+        ]
+      },
+      "spend": {
+        "seconds": 41,
+        "input": 4897,
+        "output": 1179,
+        "cost": 0.02312
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "convention-as-check",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "constraint-in-a-program",
+        "kind": "program",
+        "evidence": [
+          "scripts/lint-import-boundaries.ts add(s) a line matching /\\btests\\b|\\bfixtures\\b/"
+        ]
+      },
+      "spend": {
+        "seconds": 153,
+        "input": 17004,
+        "output": 4843,
+        "cost": 0.09905239999999998
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "convention-as-check",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "constraint-in-a-program",
+        "kind": "program",
+        "evidence": [
+          "scripts/check-boundaries.ts, tests/boundaries.test.ts add(s) a line matching /\\btests\\b|\\bfixtures\\b/"
+        ]
+      },
+      "spend": {
+        "seconds": 198,
+        "input": 25169,
+        "output": 6177,
+        "cost": 0.13745200000000002
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "watched-red",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "seen-failing",
+        "kind": "program",
+        "evidence": [
+          "`printf 'console.log(\"deliberate violation\");\\n' > src/__console_log_probe.ts\nbun test; result=$?\nrm src/__console_log_probe.ts\nprintf 'RED exit status: %s\\n' \"$result\"\n[ \"$result\" -ne 0 ]` failed under tests/no-console-log.test.ts at step 10, and `bun test && git status --short` passed at step 11"
+        ]
+      },
+      "spend": {
+        "seconds": 53,
+        "input": 6455,
+        "output": 1620,
+        "cost": 0.0326172
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "watched-red",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "seen-failing",
+        "kind": "program",
+        "evidence": [
+          "`probe=src/.console-log-probe.ts; printf 'console.log(\"probe\");\\n' > \"$probe\"; bun test tests/no-console-log.test.ts; result=$?; rm \"$probe\"; test \"$result\" -ne 0` failed under tests/no-console-log.test.ts at step 10, and that check never passed after it without being rewritten"
+        ]
+      },
+      "spend": {
+        "seconds": 42,
+        "input": 3260,
+        "output": 1333,
+        "cost": 0.0226148
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "convention-as-check",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "constraint-in-a-program",
+        "kind": "program",
+        "evidence": [
+          "no changed file outside prose adds a line matching /\\btests\\b|\\bfixtures\\b/"
+        ]
+      },
+      "spend": {
+        "seconds": 86,
+        "input": 13341,
+        "output": 2380,
+        "cost": 0.0591092
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "convention-as-check",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "constraint-in-a-program",
+        "kind": "program",
+        "evidence": [
+          "tests/boundaries.test.ts add(s) a line matching /\\btests\\b|\\bfixtures\\b/"
+        ]
+      },
+      "spend": {
+        "seconds": 140,
+        "input": 11999,
+        "output": 5059,
+        "cost": 0.08551919999999999
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "watched-red",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "seen-failing",
+        "kind": "program",
+        "evidence": [
+          "`bun test` failed under tests/no-console-log.test.ts at step 11, and `rm src/nested/prove-console-log.ts && rmdir src/nested && bun test && git status --short` passed at step 12"
+        ]
+      },
+      "spend": {
+        "seconds": 55,
+        "input": 8701,
+        "output": 1706,
+        "cost": 0.038174
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "watched-red",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "seen-failing",
+        "kind": "program",
+        "evidence": [
+          "`tmp=src/__no_console_log_check.ts; trap 'rm -f \"$tmp\"' EXIT; printf 'console.log(\"probe\");\\n' > \"$tmp\"; if bun test tests/no-console-log.test.ts; then echo 'ERROR: guard did not fail'; exit 1; else echo 'Guard fails as expected'; fi` failed under tests/no-console-log.test.ts at step 9, and that check never passed after it without being rewritten"
+        ]
+      },
+      "spend": {
+        "seconds": 45,
+        "input": 6840,
+        "output": 1374,
+        "cost": 0.0294168
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "convention-as-check",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "constraint-in-a-program",
+        "kind": "program",
+        "evidence": [
+          "no changed file outside prose adds a line matching /\\btests\\b|\\bfixtures\\b/"
+        ]
+      },
+      "spend": {
+        "seconds": 105,
+        "input": 12355,
+        "output": 3129,
+        "cost": 0.06593280000000001
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "convention-as-check",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "constraint-in-a-program",
+        "kind": "program",
+        "evidence": [
+          "tests/source-boundary.test.ts add(s) a line matching /\\btests\\b|\\bfixtures\\b/"
+        ]
+      },
+      "spend": {
+        "seconds": 141,
+        "input": 18250,
+        "output": 5122,
+        "cost": 0.09967519999999999
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "watched-red",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "seen-failing",
+        "kind": "program",
+        "evidence": [
+          "`bun test` failed under tests/no-console-log.test.ts at step 9, and `rm src/prove-no-console-log.ts && bun test && git status --short` passed at step 10"
+        ]
+      },
+      "spend": {
+        "seconds": 47,
+        "input": 4815,
+        "output": 1423,
+        "cost": 0.0270088
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "watched-red",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "seen-failing",
+        "kind": "program",
+        "evidence": [
+          "no test run failed under the check it wrote (tests/no-console-log.test.ts)"
+        ]
+      },
+      "spend": {
+        "seconds": 41,
+        "input": 2870,
+        "output": 1366,
+        "cost": 0.0215504
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "convention-as-check",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "constraint-in-a-program",
+        "kind": "program",
+        "evidence": [
+          "no changed file outside prose adds a line matching /\\btests\\b|\\bfixtures\\b/"
+        ]
+      },
+      "spend": {
+        "seconds": 112,
+        "input": 9073,
+        "output": 3013,
+        "cost": 0.06634960000000001
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "convention-as-check",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "constraint-in-a-program",
+        "kind": "program",
+        "evidence": [
+          "tests/source-boundary.test.ts add(s) a line matching /\\btests\\b|\\bfixtures\\b/"
+        ]
+      },
+      "spend": {
+        "seconds": 133,
+        "input": 12595,
+        "output": 4706,
+        "cost": 0.0864068
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "watched-red",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "seen-failing",
+        "kind": "program",
+        "evidence": [
+          "`bun test` failed under tests/no-console-log.test.ts at step 9, and `rm src/__console_log_probe.ts && bun test && git status --short` passed at step 10"
+        ]
+      },
+      "spend": {
+        "seconds": 44,
+        "input": 3915,
+        "output": 1386,
+        "cost": 0.025325200000000006
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "watched-red",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "seen-failing",
+        "kind": "program",
+        "evidence": [
+          "`mkdir -p src/.console-guard-check; printf 'console.log(\"check\");\\n' > src/.console-guard-check/check.ts; bun test tests/no-console-log.test.ts; result=$?; rm -rf src/.console-guard-check; test \"$result\" -ne 0` failed under tests/no-console-log.test.ts at step 9, and that check never passed after it without being rewritten"
+        ]
+      },
+      "spend": {
+        "seconds": 64,
+        "input": 9148,
+        "output": 1599,
+        "cost": 0.0357964
+      }
+    }
+  ]
+}

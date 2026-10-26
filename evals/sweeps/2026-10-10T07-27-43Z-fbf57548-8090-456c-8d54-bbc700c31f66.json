@@ -1,0 +1,978 @@
+{
+  "startedAt": "2026-10-10T07:27:43Z",
+  "runId": "fbf57548-8090-456c-8d54-bbc700c31f66",
+  "commit": "510ebb8a6dda84895f9d3e6a1cbe2eaa7c7d2bbe",
+  "prose": {
+    "files": {
+      "library/writing/references/plain-words/SKILL.md": "54dafbac68e1bbe118e50c5aaa51d1a702aa1de60f75d34831d86b58ad01f918"
+    },
+    "uncommitted": false
+  },
+  "model": "claude-bridge/claude-opus-5-5",
+  "thinking": "high",
+  "repeats": 5,
+  "planned": 40,
+  "missing": [],
+  "runs": [
+    {
+      "rule": "plain-words",
+      "case": "en-readme",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-words",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-words asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 10,
+        "input": 8,
+        "output": 528,
+        "cacheRead": 18407,
+        "cacheWrite": 1258,
+        "cacheWrite1h": 0,
+        "cost": 0.020563400000000003,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-words",
+      "case": "en-readme",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-words",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-words asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 18,
+        "input": 12,
+        "output": 1002,
+        "cacheRead": 22698,
+        "cacheWrite": 1839,
+        "cacheWrite1h": 0,
+        "cost": 0.03382260000000001,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-words",
+      "case": "en-pr",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-words",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-words asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 23,
+        "input": 8,
+        "output": 1636,
+        "cacheRead": 19340,
+        "cacheWrite": 2532,
+        "cacheWrite1h": 0,
+        "cost": 0.049280000000000004,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-words",
+      "case": "en-pr",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "plain-words",
+        "kind": "program",
+        "evidence": [
+          "a Latin abbreviation: Code used to treat a row as a duplicate only if its raw text matched exactly. So when the same transaction showed up again with different payee spacing or casing (Code vs Code), or with the amount written differently (Code vs Code), it was imported twice."
+        ]
+      },
+      "spend": {
+        "seconds": 27,
+        "input": 8,
+        "output": 1819,
+        "cacheRead": 15082,
+        "cacheWrite": 2934,
+        "cacheWrite1h": 0,
+        "cost": 0.054098400000000005,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-words",
+      "case": "en-site",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-words",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-words asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 18,
+        "input": 8,
+        "output": 1042,
+        "cacheRead": 18133,
+        "cacheWrite": 1297,
+        "cacheWrite1h": 0,
+        "cost": 0.0309836,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-words",
+      "case": "en-site",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-words",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-words asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 20,
+        "input": 8,
+        "output": 1388,
+        "cacheRead": 13716,
+        "cacheWrite": 1735,
+        "cacheWrite1h": 0,
+        "cost": 0.0392102,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-words",
+      "case": "en-errors",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-words",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-words asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 18,
+        "input": 10,
+        "output": 1069,
+        "cacheRead": 23614,
+        "cacheWrite": 1590,
+        "cacheWrite1h": 0,
+        "cost": 0.034092800000000006,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-words",
+      "case": "en-errors",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-words",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-words asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 18,
+        "input": 10,
+        "output": 1079,
+        "cacheRead": 18701,
+        "cacheWrite": 1658,
+        "cacheWrite1h": 0,
+        "cost": 0.033650200000000005,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-words",
+      "case": "en-readme",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-words",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-words asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 10,
+        "input": 8,
+        "output": 517,
+        "cacheRead": 18403,
+        "cacheWrite": 1257,
+        "cacheWrite1h": 0,
+        "cost": 0.0203376,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-words",
+      "case": "en-readme",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-words",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-words asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 12,
+        "input": 8,
+        "output": 600,
+        "cacheRead": 13941,
+        "cacheWrite": 1293,
+        "cacheWrite1h": 0,
+        "cost": 0.0212852,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-words",
+      "case": "en-pr",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-words",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-words asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 25,
+        "input": 8,
+        "output": 1806,
+        "cacheRead": 19347,
+        "cacheWrite": 2616,
+        "cacheWrite1h": 0,
+        "cost": 0.0531014,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-words",
+      "case": "en-pr",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "plain-words",
+        "kind": "program",
+        "evidence": [
+          "a Latin abbreviation: Code used to skip a row only if its raw text exactly matched a row it had already seen. A row with the same transaction but different formatting, such as extra spaces around the payee, different capitalisation, or Code vs Code, got through and was imported twice."
+        ]
+      },
+      "spend": {
+        "seconds": 25,
+        "input": 8,
+        "output": 1716,
+        "cacheRead": 15021,
+        "cacheWrite": 2681,
+        "cacheWrite1h": 0,
+        "cost": 0.050761200000000006,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-words",
+      "case": "en-site",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-words",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-words asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 20,
+        "input": 8,
+        "output": 1302,
+        "cacheRead": 18155,
+        "cacheWrite": 1705,
+        "cacheWrite1h": 0,
+        "cost": 0.038228,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-words",
+      "case": "en-site",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-words",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-words asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 14,
+        "input": 8,
+        "output": 845,
+        "cacheRead": 13680,
+        "cacheWrite": 1323,
+        "cacheWrite1h": 0,
+        "cost": 0.026283,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-words",
+      "case": "en-errors",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-words",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-words asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 16,
+        "input": 10,
+        "output": 1179,
+        "cacheRead": 23734,
+        "cacheWrite": 1650,
+        "cacheWrite1h": 0,
+        "cost": 0.036616800000000005,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-words",
+      "case": "en-errors",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-words",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-words asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 17,
+        "input": 10,
+        "output": 1053,
+        "cacheRead": 18726,
+        "cacheWrite": 1714,
+        "cacheWrite1h": 0,
+        "cost": 0.0334152,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-words",
+      "case": "en-readme",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-words",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-words asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 11,
+        "input": 8,
+        "output": 529,
+        "cacheRead": 18405,
+        "cacheWrite": 1257,
+        "cacheWrite1h": 0,
+        "cost": 0.020578,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-words",
+      "case": "en-readme",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-words",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-words asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 12,
+        "input": 8,
+        "output": 609,
+        "cacheRead": 14009,
+        "cacheWrite": 1319,
+        "cacheWrite1h": 0,
+        "cost": 0.0216088,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-words",
+      "case": "en-pr",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-words",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-words asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 26,
+        "input": 8,
+        "output": 1833,
+        "cacheRead": 19457,
+        "cacheWrite": 2631,
+        "cacheWrite1h": 0,
+        "cost": 0.053738400000000006,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-words",
+      "case": "en-pr",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "plain-words",
+        "kind": "program",
+        "evidence": [
+          "a Latin abbreviation: **What gets normalised is limited.** Only leading and trailing whitespace and letter case in the payee are handled. Doubled spaces inside a name (Code) and different date formats (Code vs Code) still count as different rows. Amounts are rounded to cents, so values less than half a cent apart are treated as equal."
+        ]
+      },
+      "spend": {
+        "seconds": 29,
+        "input": 8,
+        "output": 2060,
+        "cacheRead": 15122,
+        "cacheWrite": 2922,
+        "cacheWrite1h": 0,
+        "cost": 0.058866400000000006,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-words",
+      "case": "en-site",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-words",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-words asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 18,
+        "input": 8,
+        "output": 1303,
+        "cacheRead": 18176,
+        "cacheWrite": 1703,
+        "cacheWrite1h": 0,
+        "cost": 0.038242200000000004,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-words",
+      "case": "en-site",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-words",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-words asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 20,
+        "input": 10,
+        "output": 1304,
+        "cacheRead": 17905,
+        "cacheWrite": 1628,
+        "cacheWrite1h": 0,
+        "cost": 0.037841,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-words",
+      "case": "en-errors",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-words",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-words asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 17,
+        "input": 10,
+        "output": 1117,
+        "cacheRead": 23620,
+        "cacheWrite": 1514,
+        "cacheWrite1h": 0,
+        "cost": 0.034674,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-words",
+      "case": "en-errors",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-words",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-words asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 16,
+        "input": 10,
+        "output": 1146,
+        "cacheRead": 18832,
+        "cacheWrite": 1764,
+        "cacheWrite1h": 0,
+        "cost": 0.035546400000000006,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-words",
+      "case": "en-readme",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-words",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-words asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 10,
+        "input": 8,
+        "output": 513,
+        "cacheRead": 18403,
+        "cacheWrite": 1257,
+        "cacheWrite1h": 0,
+        "cost": 0.0202576,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-words",
+      "case": "en-readme",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-words",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-words asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 16,
+        "input": 12,
+        "output": 920,
+        "cacheRead": 22638,
+        "cacheWrite": 1858,
+        "cacheWrite1h": 0,
+        "cost": 0.032265600000000005,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-words",
+      "case": "en-pr",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-words",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-words asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 19,
+        "input": 8,
+        "output": 1417,
+        "cacheRead": 19099,
+        "cacheWrite": 2334,
+        "cacheWrite1h": 0,
+        "cost": 0.043861800000000006,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-words",
+      "case": "en-pr",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-words",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-words asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 23,
+        "input": 8,
+        "output": 1551,
+        "cacheRead": 14926,
+        "cacheWrite": 2502,
+        "cacheWrite1h": 0,
+        "cost": 0.0465472,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-words",
+      "case": "en-site",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-words",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-words asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 18,
+        "input": 8,
+        "output": 1297,
+        "cacheRead": 18229,
+        "cacheWrite": 1696,
+        "cacheWrite1h": 0,
+        "cost": 0.03809780000000001,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-words",
+      "case": "en-site",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-words",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-words asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 19,
+        "input": 8,
+        "output": 1437,
+        "cacheRead": 13698,
+        "cacheWrite": 1723,
+        "cacheWrite1h": 0,
+        "cost": 0.0401266,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-words",
+      "case": "en-errors",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-words",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-words asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 19,
+        "input": 10,
+        "output": 907,
+        "cacheRead": 23544,
+        "cacheWrite": 1393,
+        "cacheWrite1h": 0,
+        "cost": 0.029853800000000007,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-words",
+      "case": "en-errors",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-words",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-words asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 18,
+        "input": 10,
+        "output": 1072,
+        "cacheRead": 18724,
+        "cacheWrite": 1721,
+        "cacheWrite1h": 0,
+        "cost": 0.03382980000000001,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-words",
+      "case": "en-readme",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-words",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-words asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 12,
+        "input": 8,
+        "output": 550,
+        "cacheRead": 18405,
+        "cacheWrite": 1258,
+        "cacheWrite1h": 0,
+        "cost": 0.021003,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-words",
+      "case": "en-readme",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-words",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-words asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 12,
+        "input": 8,
+        "output": 599,
+        "cacheRead": 14006,
+        "cacheWrite": 1319,
+        "cacheWrite1h": 0,
+        "cost": 0.021408200000000002,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-words",
+      "case": "en-pr",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-words",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-words asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 22,
+        "input": 8,
+        "output": 1331,
+        "cacheRead": 18606,
+        "cacheWrite": 2016,
+        "cacheWrite1h": 0,
+        "cost": 0.04045320000000001,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-words",
+      "case": "en-pr",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "plain-words",
+        "kind": "program",
+        "evidence": [
+          "a Latin abbreviation: Code used to treat two rows as the same only if their raw source lines matched exactly. That meant the same transaction got imported twice if the export changed in a cosmetic way, for example extra whitespace around the payee, a different payee case, or Code vs Code."
+        ]
+      },
+      "spend": {
+        "seconds": 24,
+        "input": 8,
+        "output": 1673,
+        "cacheRead": 14327,
+        "cacheWrite": 2270,
+        "cacheWrite1h": 0,
+        "cost": 0.04770740000000001,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-words",
+      "case": "en-site",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-words",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-words asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 18,
+        "input": 8,
+        "output": 1252,
+        "cacheRead": 18199,
+        "cacheWrite": 1650,
+        "cacheWrite1h": 0,
+        "cost": 0.0369618,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-words",
+      "case": "en-site",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-words",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-words asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 18,
+        "input": 8,
+        "output": 1374,
+        "cacheRead": 13692,
+        "cacheWrite": 1676,
+        "cacheWrite1h": 0,
+        "cost": 0.0386304,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-words",
+      "case": "en-errors",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-words",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-words asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 21,
+        "input": 10,
+        "output": 1111,
+        "cacheRead": 23650,
+        "cacheWrite": 1609,
+        "cacheWrite1h": 0,
+        "cost": 0.035035000000000004,
+        "costEstimated": true
+      }
+    },
+    {
+      "rule": "plain-words",
+      "case": "en-errors",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "plain-words",
+        "kind": "program",
+        "evidence": [
+          "the text breaks none of the plain-words asks this judge reads"
+        ]
+      },
+      "spend": {
+        "seconds": 17,
+        "input": 10,
+        "output": 1086,
+        "cacheRead": 18646,
+        "cacheWrite": 1708,
+        "cacheWrite1h": 0,
+        "cost": 0.03402920000000001,
+        "costEstimated": true
+      }
+    }
+  ]
+}

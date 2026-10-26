@@ -1,0 +1,398 @@
+{
+  "startedAt": "2026-09-25T18:34:40Z",
+  "runId": "35de01a9-98c0-476f-b9e7-82fbad403e7b",
+  "commit": "b51f4ce10d5df2428b90627d5f26b5b7c20b7241",
+  "prose": {
+    "files": {
+      "rules/force-determinism/SKILL.md": "fce75d667243e3347e853a875a2a074b25becc3a37cf4e6ac97020d6a4736c4d"
+    },
+    "uncommitted": false
+  },
+  "model": "claude-bridge/claude-opus-5-5",
+  "thinking": "xhigh",
+  "repeats": 5,
+  "planned": 20,
+  "missing": [],
+  "runs": [
+    {
+      "rule": "force-determinism",
+      "case": "convention-as-check",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "constraint-in-a-program",
+        "kind": "program",
+        "evidence": [
+          "tests/boundaries.test.ts add(s) a line matching /\\btests\\b|\\bfixtures\\b/"
+        ]
+      },
+      "spend": {
+        "seconds": 120,
+        "input": 20,
+        "output": 10801,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "convention-as-check",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "constraint-in-a-program",
+        "kind": "program",
+        "evidence": [
+          "tests/boundaries.test.ts add(s) a line matching /\\btests\\b|\\bfixtures\\b/"
+        ]
+      },
+      "spend": {
+        "seconds": 65,
+        "input": 14,
+        "output": 5292,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "watched-red",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "seen-failing",
+        "kind": "program",
+        "evidence": [
+          "`cp src/money.ts /tmp/money.ts.bak\nprintf '\\nexport const debug = (x: unknown) => {\\n  console\\n    .log(x);\\n};\\n' >> src/money.ts\nmkdir -p src/nested && echo 'export const f = () => console[\"log\"](\"hi\");' > src/nested/deep.ts\nbun test tests/no-console-log.test.ts 2>&1; echo \"exit=$?\"` failed under tests/no-console-log.test.ts at step 4, and `git status --short; bun test 2>&1; echo \"exit=$?\"` passed at step 8"
+        ]
+      },
+      "spend": {
+        "seconds": 65,
+        "input": 14,
+        "output": 6242,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "watched-red",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "seen-failing",
+        "kind": "program",
+        "evidence": [
+          "`bun test 2>&1; echo \"exit=$?\"; echo \"=== with violation ===\"; mkdir -p src/nested && printf 'export const f = () => {\\n  console.log(\"hi\");\\n  console[\"log\"](\"x\");\\n};\\n' > src/nested/debug.ts; bun test 2>&1; echo \"exit=$?\"; rm -r src/nested; git status --short` failed under tests/no-console-log.test.ts at step 4, and that check never passed after it without being rewritten"
+        ]
+      },
+      "spend": {
+        "seconds": 23,
+        "input": 10,
+        "output": 1837,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "convention-as-check",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "constraint-in-a-program",
+        "kind": "program",
+        "evidence": [
+          "tests/boundary.test.ts add(s) a line matching /\\btests\\b|\\bfixtures\\b/"
+        ]
+      },
+      "spend": {
+        "seconds": 176,
+        "input": 22,
+        "output": 16620,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "convention-as-check",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "constraint-in-a-program",
+        "kind": "program",
+        "evidence": [
+          "tests/boundaries.test.ts add(s) a line matching /\\btests\\b|\\bfixtures\\b/"
+        ]
+      },
+      "spend": {
+        "seconds": 78,
+        "input": 16,
+        "output": 6432,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "watched-red",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "unjudged",
+        "why": "the output of `cd \"$PWD\" && cp /tmp/money.ts.bak src/money.ts && mkdir -p src/deep/er && echo 'export const f = () => console[\"log\"](\"x\");' > src/deep/er/nested.ts && bun test tests/no-console-log.test.ts 2>&1 | grep -E '^\\+|\\((pass|fail)\\)'; rm -r src/deep\necho \"--- empty src/\"\nmkdir /tmp/src-hidden && mv src/* /tmp/src-hidden/ && bun test tests/no-console-log.test.ts 2>&1 | grep -E 'toBeGreaterThan|Received:|\\((pass|fail)\\)'; mv /tmp/src-hidden/* src/ && rmdir /tmp/src-hidden` at step 7 shows test results without the check's own header, so whether the check went red or green there cannot be seen"
+      },
+      "spend": {
+        "seconds": 59,
+        "input": 16,
+        "output": 5184,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "watched-red",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "unjudged",
+        "why": "the output of `cd /private/var/folders/87/xct3_xnj7jv7kn7vfbtzhty00000gn/T/skills-eval-4eHoAH/repo && printf '\\nconsole.log(\"debug\");\\n' >> src/money.ts && mkdir -p src/nested && printf 'export const f = () => {\\n  console\\n    .log(\"x\");\\n};\\n' > src/nested/deep.ts && bun test tests/no-console-log.test.ts 2>&1; git checkout -- src/money.ts && rm -rf src/nested && git status --short && bun test 2>&1 | tail -4` at step 6 shows test results without the check's own header, so whether the check went red or green there cannot be seen"
+      },
+      "spend": {
+        "seconds": 32,
+        "input": 10,
+        "output": 2702,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "convention-as-check",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "constraint-in-a-program",
+        "kind": "program",
+        "evidence": [
+          "tests/boundaries.test.ts add(s) a line matching /\\btests\\b|\\bfixtures\\b/"
+        ]
+      },
+      "spend": {
+        "seconds": 144,
+        "input": 18,
+        "output": 13642,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "convention-as-check",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "constraint-in-a-program",
+        "kind": "program",
+        "evidence": [
+          "tests/boundaries.test.ts add(s) a line matching /\\btests\\b|\\bfixtures\\b/"
+        ]
+      },
+      "spend": {
+        "seconds": 60,
+        "input": 18,
+        "output": 5300,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "watched-red",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "seen-failing",
+        "kind": "program",
+        "evidence": [
+          "`cp src/money.ts /tmp/money.ts.bak\nprintf '\\nexport const debug = (cents: number): void => {\\n  console.log(formatCents(cents));\\n};\\n' >> src/money.ts\nmkdir -p src/nested && printf 'export const trace = <T,>(x: T): T => {\\n  console[\"log\"](x);\\n  return x;\\n};\\n' > src/nested/trace.ts\nbun test 2>&1; echo \"exit=$?\"` failed under tests/no-console-log.test.ts at step 6, and `rm -r src/nested && cp /tmp/money.ts.bak src/money.ts && rm /tmp/money.ts.bak\ngit status --short; git diff --stat src; echo ---\nbun test 2>&1; echo \"exit=$?\"` passed at step 12"
+        ]
+      },
+      "spend": {
+        "seconds": 78,
+        "input": 22,
+        "output": 6781,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "watched-red",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "unjudged",
+        "why": "the output of `bun test 2>&1 | tail -8\necho \"===== with violations =====\"\nmkdir -p src/nested\nprintf 'export const f = () => {\\n  console.log(\"hi\");\\n};\\n' > src/nested/tmp.ts\nprintf '\\nconsole[\"log\"](\"x\");\\n' >> src/money.ts\nbun test 2>&1 | tail -25\nrm -r src/nested; git checkout src/money.ts; git status --short` at step 4 shows test results without the check's own header, so whether the check went red or green there cannot be seen"
+      },
+      "spend": {
+        "seconds": 20,
+        "input": 10,
+        "output": 1632,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "convention-as-check",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "constraint-in-a-program",
+        "kind": "program",
+        "evidence": [
+          "tests/boundaries.test.ts add(s) a line matching /\\btests\\b|\\bfixtures\\b/"
+        ]
+      },
+      "spend": {
+        "seconds": 174,
+        "input": 22,
+        "output": 14661,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "convention-as-check",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "constraint-in-a-program",
+        "kind": "program",
+        "evidence": [
+          "tests/boundaries.test.ts add(s) a line matching /\\btests\\b|\\bfixtures\\b/"
+        ]
+      },
+      "spend": {
+        "seconds": 67,
+        "input": 12,
+        "output": 6382,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "watched-red",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "unjudged",
+        "why": "the output of `for v in '// console.log(\"x\")' '/* console.log(\"x\") */' 'console.error(\"x\");' 'const catalog = 1; const consoleLogger = 2;'; do\n  cp /tmp/money.ts.bak src/money.ts; printf '%s\\n' \"$v\" >> src/money.ts\n  bun test tests/no-console-log.test.ts >/tmp/out 2>&1; echo \"exit=$? :: $v\"\ndone\ncp /tmp/money.ts.bak src/money.ts\necho \"--- nested .tsx\"\nmkdir -p src/ui && printf 'export const A = () => { console.log(\"x\"); return <div />; };\\n' > src/ui/a.tsx\nbun test tests/no-console-log.test.ts 2>&1 | grep -E 'a.tsx|pass|fail'; rm -r src/ui\necho \"--- empty src/\"\nmkdir /tmp/srcbak && mv src/*.ts /tmp/srcbak/\nbun test tests/no-console-log.test.ts 2>&1 | grep -E 'Expected|Received|pass|fail'\nmv /tmp/srcbak/*.ts src/ && rmdir /tmp/srcbak` at step 9 shows test results without the check's own header, so whether the check went red or green there cannot be seen"
+      },
+      "spend": {
+        "seconds": 77,
+        "input": 20,
+        "output": 6415,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "watched-red",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "unjudged",
+        "why": "the output of `bun test 2>&1 | tail -8; echo \"=== planted ===\"; mkdir -p src/tmpcheck && printf 'export const x = 1;\\n  console.log(\"hi\");\\n' > src/tmpcheck/probe.ts; bun test 2>&1 | tail -20; rm -r src/tmpcheck; echo \"=== after cleanup ===\"; git status --short; bun test 2>&1 | tail -3` at step 4 shows test results without the check's own header, so whether the check went red or green there cannot be seen"
+      },
+      "spend": {
+        "seconds": 23,
+        "input": 10,
+        "output": 1770,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "convention-as-check",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "constraint-in-a-program",
+        "kind": "program",
+        "evidence": [
+          "tests/src-boundary.test.ts add(s) a line matching /\\btests\\b|\\bfixtures\\b/"
+        ]
+      },
+      "spend": {
+        "seconds": 167,
+        "input": 24,
+        "output": 15932,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "convention-as-check",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "constraint-in-a-program",
+        "kind": "program",
+        "evidence": [
+          "tests/boundaries.test.ts add(s) a line matching /\\btests\\b|\\bfixtures\\b/"
+        ]
+      },
+      "spend": {
+        "seconds": 76,
+        "input": 12,
+        "output": 7272,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "watched-red",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "seen-failing",
+        "kind": "program",
+        "evidence": [
+          "`cd /private/var/folders/87/xct3_xnj7jv7kn7vfbtzhty00000gn/T/skills-eval-KNPR1L/repo && cp src/money.ts /tmp/money.bak && cat >> src/money.ts <<'EOF'\n\nexport const debug = (cents: number): void => {\n  console.log(formatCents(cents));\n};\nEOF\nbun test 2>&1; echo \"exit=$?\"` failed under tests/no-console-log.test.ts at step 5, and `cd /private/var/folders/87/xct3_xnj7jv7kn7vfbtzhty00000gn/T/skills-eval-KNPR1L/repo && rm src/nested/probe.tsx && rmdir src/nested && git status --short && git diff --stat && bun test 2>&1; echo \"exit=$?\"` passed at step 10"
+        ]
+      },
+      "spend": {
+        "seconds": 80,
+        "input": 20,
+        "output": 7076,
+        "cost": 0
+      }
+    },
+    {
+      "rule": "force-determinism",
+      "case": "watched-red",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "seen-failing",
+        "kind": "program",
+        "evidence": [
+          "`bun test 2>&1; echo \"exit=$?\"\nmkdir -p src/nested && printf 'export const f = () => {\\n  console.log(\"hi\");\\n  console?.log(1);\\n  console[\"log\"](2);\\n  console.error(\"ok\");\\n};\\n' > src/nested/tmp-probe.ts\nbun test 2>&1; echo \"exit=$?\"\nrm -r src/nested; git status --short` failed under tests/no-console-log.test.ts at step 4, and that check never passed after it without being rewritten"
+        ]
+      },
+      "spend": {
+        "seconds": 28,
+        "input": 10,
+        "output": 2333,
+        "cost": 0
+      }
+    }
+  ]
+}

@@ -1,0 +1,3 @@
+# Agent notes
+
+- Run tests with `TZ=UTC bun test`. The date fixtures are written in UTC, so the date tests only pass when `TZ=UTC` is set.

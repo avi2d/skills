@@ -1,0 +1,44 @@
+# Single-developer repo behind its owner's daemon: without this,
+# a commands.* change here would wait for a merge before it took effect.
+allow_repo_commands: true
+
+commands:
+  # The isolated worktree starts with tracked files only, so dependencies, the
+  # Dispatcher bundles and the Hub of links all need materializing before test
+  # or lint can run.
+  prepare: bun install --frozen-lockfile && bun run generate
+
+  lint: bun run lint && bun run typecheck
+
+  test: bun run test:fast
+
+review:
+  path_instructions:
+    - path: "library/*/rules/**"
+      instructions: |
+        Judge this Rule's prose against library/writing/references/writing-for-agents/SKILL.md,
+        this repo's own standard for a document an agent consumes: context
+        pointers, the information hierarchy, completion criteria, leading
+        words, pruning. Don't restate that standard here; read it.
+    - path: "library/*/skills/**"
+      instructions: |
+        Judge this Skill's prose against library/writing/references/writing-for-agents/SKILL.md,
+        this repo's own standard for a document an agent consumes: context
+        pointers, the information hierarchy, completion criteria, leading
+        words, pruning. Don't restate that standard here; read it.
+    - path: "library/*/references/**"
+      instructions: |
+        Judge this Reference's prose against library/writing/references/writing-for-agents/SKILL.md,
+        this repo's own standard for a document an agent consumes: context
+        pointers, the information hierarchy, completion criteria, leading
+        words, pruning. Don't restate that standard here; read it.
+    - path: "docs/glossary.md"
+      instructions: |
+        Use the term as docs/glossary.md already defines it rather than a
+        synonym, and flag a change that contradicts an existing record under
+        docs/adr/ by number instead of silently overriding it.
+    - path: "docs/adr/**"
+      instructions: |
+        Read docs/glossary.md before judging a new or edited record.
+        Flag a decision that contradicts an existing one under docs/adr/ by
+        number instead of silently overriding it.

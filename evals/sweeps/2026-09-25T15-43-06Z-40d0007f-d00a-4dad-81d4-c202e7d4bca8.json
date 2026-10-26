@@ -1,0 +1,219 @@
+{
+  "startedAt": "2026-09-25T15:43:06Z",
+  "runId": "40d0007f-d00a-4dad-81d4-c202e7d4bca8",
+  "commit": "9c5f431e45689e914f480282b3bf5c6b894522b5",
+  "prose": {
+    "files": {
+      "rules/agent-docs/SKILL.md": "442e2c0c44399f473bbac293b87c5ed3c4ce0bd3d0544e91ee1372659ab11e0a",
+      "references/writing-for-agents/SKILL.md": "944b2341d763b95355df1af004c59fb0195b9ef7110d3990ded1bedfda61c08c"
+    },
+    "uncommitted": false
+  },
+  "model": "opencode-go/muse-spark-1.3-contributor",
+  "thinking": "high",
+  "repeats": 5,
+  "planned": 10,
+  "missing": [],
+  "runs": [
+    {
+      "rule": "agent-docs",
+      "case": "release-pointer",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "release-pointer",
+        "kind": "program",
+        "evidence": [
+          "the release procedure stays behind the pointer: Cutting a release: follow docs/release.md."
+        ]
+      },
+      "spend": {
+        "seconds": 21,
+        "input": 6142,
+        "output": 1466,
+        "cost": 0.0009420660000000001
+      }
+    },
+    {
+      "rule": "agent-docs",
+      "case": "release-pointer",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "release-pointer",
+        "kind": "program",
+        "evidence": [
+          "the release procedure stays behind the pointer: To cut a release, read docs/release.md."
+        ]
+      },
+      "spend": {
+        "seconds": 45,
+        "input": 6185,
+        "output": 1351,
+        "cost": 0.0009292240000000002
+      }
+    },
+    {
+      "rule": "agent-docs",
+      "case": "release-pointer",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "release-pointer",
+        "kind": "program",
+        "evidence": [
+          "the release procedure stays behind the pointer: Cut a release: follow docs/release.md."
+        ]
+      },
+      "spend": {
+        "seconds": 17,
+        "input": 6058,
+        "output": 1546,
+        "cost": 0.000938176
+      }
+    },
+    {
+      "rule": "agent-docs",
+      "case": "release-pointer",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "release-pointer",
+        "kind": "program",
+        "evidence": [
+          "the release procedure stays behind the pointer: Cutting a release: read docs/release.md."
+        ]
+      },
+      "spend": {
+        "seconds": 27,
+        "input": 6801,
+        "output": 2199,
+        "cost": 0.001151494
+      }
+    },
+    {
+      "rule": "agent-docs",
+      "case": "release-pointer",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "release-pointer",
+        "kind": "program",
+        "evidence": [
+          "the release procedure stays behind the pointer: To cut a release, follow docs/release.md."
+        ]
+      },
+      "spend": {
+        "seconds": 20,
+        "input": 11250,
+        "output": 1796,
+        "cost": 0.0015096800000000002
+      }
+    },
+    {
+      "rule": "agent-docs",
+      "case": "release-pointer",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "release-pointer",
+        "kind": "program",
+        "evidence": [
+          "the release procedure stays behind the pointer: Release: read docs/release.md when cutting a release."
+        ]
+      },
+      "spend": {
+        "seconds": 20,
+        "input": 5912,
+        "output": 1429,
+        "cost": 0.000895312
+      }
+    },
+    {
+      "rule": "agent-docs",
+      "case": "release-pointer",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "release-pointer",
+        "kind": "program",
+        "evidence": [
+          "the release procedure stays behind the pointer: Cutting a release: follow docs/release.md."
+        ]
+      },
+      "spend": {
+        "seconds": 48,
+        "input": 6966,
+        "output": 2296,
+        "cost": 0.001192258
+      }
+    },
+    {
+      "rule": "agent-docs",
+      "case": "release-pointer",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "release-pointer",
+        "kind": "program",
+        "evidence": [
+          "the release procedure stays behind the pointer: Cut a release: follow docs/release.md."
+        ]
+      },
+      "spend": {
+        "seconds": 13,
+        "input": 10682,
+        "output": 1396,
+        "cost": 0.0013677300000000002
+      }
+    },
+    {
+      "rule": "agent-docs",
+      "case": "release-pointer",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "release-pointer",
+        "kind": "program",
+        "evidence": [
+          "the release procedure stays behind the pointer: When cutting a release, follow docs/release.md."
+        ]
+      },
+      "spend": {
+        "seconds": 32,
+        "input": 6527,
+        "output": 1874,
+        "cost": 0.0010501940000000002
+      }
+    },
+    {
+      "rule": "agent-docs",
+      "case": "release-pointer",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "release-pointer",
+        "kind": "program",
+        "evidence": [
+          "the release procedure stays behind the pointer: To cut a release, follow docs/release.md."
+        ]
+      },
+      "spend": {
+        "seconds": 14,
+        "input": 7725,
+        "output": 1337,
+        "cost": 0.0010546280000000002
+      }
+    }
+  ]
+}

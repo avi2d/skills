@@ -1,0 +1,78 @@
+{
+  "$schema": "https://pi.dev/schemas/settings.schema.json",
+  "lastChangelogVersion": "0.99.1",
+  "defaultProvider": "claude-bridge",
+  "defaultModel": "claude-opus-5-5",
+  "defaultThinkingLevel": "high",
+  "hideThinkingBlock": true,
+  "theme": "terminal",
+  "fullscreenCopyOnSelect": false,
+  "packages": [
+    "npm:@ff-labs/pi-fff@0.10.5",
+    "git:github.com/avi2d/pi-claude-bridge@v0.9.3+avi2d.4",
+    "npm:pi-web-access@0.34.0"
+  ],
+  "extensions": [
+    "extensions/herdr-agent-state.ts"
+  ],
+  "defaultTools": ["+codemode"],
+  "codemode": { "mode": "only" },
+  "haikuCompaction": { "enabled": true },
+  "compaction": {
+    "modelOverrides": {
+      "claude-bridge/claude-fable-5-1": {
+        "reserveTokens": 850000,
+        "keepRecentTokens": 10000
+      },
+      "claude-bridge/claude-opus-5": {
+        "reserveTokens": 850000,
+        "keepRecentTokens": 10000
+      },
+      "claude-bridge/claude-opus-5-5": {
+        "reserveTokens": 850000,
+        "keepRecentTokens": 10000
+      },
+      "claude-bridge/claude-sonnet-5": {
+        "reserveTokens": 850000,
+        "keepRecentTokens": 10000
+      },
+      "claude-bridge/claude-sonnet-5-5": {
+        "reserveTokens": 850000,
+        "keepRecentTokens": 10000
+      },
+      "claude-bridge/claude-haiku-5-5": {
+        "reserveTokens": 850000,
+        "keepRecentTokens": 10000
+      },
+      "opencode-go/muse-spark-1.3-contributor": {
+        "reserveTokens": 898576
+      },
+      "opencode-go/deepseek-v4-pro": {
+        "reserveTokens": 850000
+      },
+      "opencode-go/glm-5.3": {
+        "reserveTokens": 850000
+      },
+      "openrouter/deepseek/deepseek-v4-pro-0813": {
+        "reserveTokens": 898576
+      },
+      "openrouter/z-ai/glm-5.3": {
+        "reserveTokens": 898575
+      }
+    }
+  },
+  "retry": {
+    "provider": {
+      "maxRetries": 12,
+      "maxRetryDelayMs": 180000
+    }
+  },
+  "showCacheMissNotices": true,
+  "cacheWarming": "off",
+  "terminal": {
+    "showTerminalProgress": false
+  },
+  "warnings": {
+    "anthropicExtraUsage": false
+  }
+}

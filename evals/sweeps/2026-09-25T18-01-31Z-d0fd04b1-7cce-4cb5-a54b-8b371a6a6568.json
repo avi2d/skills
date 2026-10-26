@@ -1,0 +1,427 @@
+{
+  "startedAt": "2026-09-25T18:01:31Z",
+  "runId": "d0fd04b1-7cce-4cb5-a54b-8b371a6a6568",
+  "commit": "a67eca7da2a8df18652397ad60a277dec1d4f3b8",
+  "prose": {
+    "files": {
+      "rules/typescript-best-practices/SKILL.md": "e78b866651e0652add4b50b6f32fbe85ee3db168cd164119bd29ea7384d23383"
+    },
+    "uncommitted": false
+  },
+  "model": "openai-codex/gpt-6-sol",
+  "thinking": "high",
+  "repeats": 5,
+  "planned": 20,
+  "missing": [],
+  "runs": [
+    {
+      "rule": "typescript-best-practices",
+      "case": "json-config",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-type-assertion",
+        "kind": "program",
+        "evidence": [
+          "2 changed TypeScript file(s) add no type assertion: src/config.ts, tests/config.test.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 87,
+        "input": 6688,
+        "output": 3254,
+        "cost": 0.05198320000000001
+      }
+    },
+    {
+      "rule": "typescript-best-practices",
+      "case": "json-config",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "no-type-assertion",
+        "kind": "program",
+        "evidence": [
+          "src/config.ts:8 makes an `as` assertion"
+        ]
+      },
+      "spend": {
+        "seconds": 44,
+        "input": 5903,
+        "output": 1124,
+        "cost": 0.024454
+      }
+    },
+    {
+      "rule": "typescript-best-practices",
+      "case": "error-message",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-type-assertion",
+        "kind": "program",
+        "evidence": [
+          "2 changed TypeScript file(s) add no type assertion: src/ledger-file.ts, tests/ledger-file.test.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 45,
+        "input": 8075,
+        "output": 1640,
+        "cost": 0.0342652
+      }
+    },
+    {
+      "rule": "typescript-best-practices",
+      "case": "error-message",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "no-type-assertion",
+        "kind": "program",
+        "evidence": [
+          "tests/ledger-file.test.ts:26 makes an `as` assertion",
+          "tests/ledger-file.test.ts:34 makes an `as` assertion",
+          "tests/ledger-file.test.ts:35 makes an `as` assertion"
+        ]
+      },
+      "spend": {
+        "seconds": 41,
+        "input": 5070,
+        "output": 1370,
+        "cost": 0.0254528
+      }
+    },
+    {
+      "rule": "typescript-best-practices",
+      "case": "json-config",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-type-assertion",
+        "kind": "program",
+        "evidence": [
+          "2 changed TypeScript file(s) add no type assertion: src/config.ts, tests/config.test.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 77,
+        "input": 10831,
+        "output": 3108,
+        "cost": 0.0554812
+      }
+    },
+    {
+      "rule": "typescript-best-practices",
+      "case": "json-config",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "no-type-assertion",
+        "kind": "program",
+        "evidence": [
+          "src/config.ts:8 makes an `as` assertion"
+        ]
+      },
+      "spend": {
+        "seconds": 40,
+        "input": 4925,
+        "output": 1138,
+        "cost": 0.0240716
+      }
+    },
+    {
+      "rule": "typescript-best-practices",
+      "case": "error-message",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-type-assertion",
+        "kind": "program",
+        "evidence": [
+          "2 changed TypeScript file(s) add no type assertion: src/ledger-file.ts, tests/ledger-file.test.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 55,
+        "input": 9156,
+        "output": 2078,
+        "cost": 0.040884000000000004
+      }
+    },
+    {
+      "rule": "typescript-best-practices",
+      "case": "error-message",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "no-type-assertion",
+        "kind": "program",
+        "evidence": [
+          "tests/ledger-file.test.ts:25 makes an `as` assertion",
+          "tests/ledger-file.test.ts:36 makes an `as` assertion",
+          "tests/ledger-file.test.ts:37 makes an `as` assertion"
+        ]
+      },
+      "spend": {
+        "seconds": 48,
+        "input": 7598,
+        "output": 1647,
+        "cost": 0.0339188
+      }
+    },
+    {
+      "rule": "typescript-best-practices",
+      "case": "json-config",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-type-assertion",
+        "kind": "program",
+        "evidence": [
+          "2 changed TypeScript file(s) add no type assertion: src/config.ts, tests/config.test.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 68,
+        "input": 8197,
+        "output": 2307,
+        "cost": 0.04153760000000001
+      }
+    },
+    {
+      "rule": "typescript-best-practices",
+      "case": "json-config",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "no-type-assertion",
+        "kind": "program",
+        "evidence": [
+          "src/config.ts:8 makes an `as` assertion"
+        ]
+      },
+      "spend": {
+        "seconds": 46,
+        "input": 5889,
+        "output": 1233,
+        "cost": 0.0265144
+      }
+    },
+    {
+      "rule": "typescript-best-practices",
+      "case": "error-message",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-type-assertion",
+        "kind": "program",
+        "evidence": [
+          "2 changed TypeScript file(s) add no type assertion: src/ledger-file.ts, tests/ledger-file.test.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 50,
+        "input": 8758,
+        "output": 1578,
+        "cost": 0.0355744
+      }
+    },
+    {
+      "rule": "typescript-best-practices",
+      "case": "error-message",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "no-type-assertion",
+        "kind": "program",
+        "evidence": [
+          "tests/ledger-file.test.ts:27 makes an `as` assertion",
+          "tests/ledger-file.test.ts:37 makes an `as` assertion",
+          "tests/ledger-file.test.ts:38 makes an `as` assertion"
+        ]
+      },
+      "spend": {
+        "seconds": 49,
+        "input": 4193,
+        "output": 1406,
+        "cost": 0.0246988
+      }
+    },
+    {
+      "rule": "typescript-best-practices",
+      "case": "json-config",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-type-assertion",
+        "kind": "program",
+        "evidence": [
+          "2 changed TypeScript file(s) add no type assertion: src/config.ts, tests/config.test.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 76,
+        "input": 10085,
+        "output": 2894,
+        "cost": 0.053103599999999994
+      }
+    },
+    {
+      "rule": "typescript-best-practices",
+      "case": "json-config",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "no-type-assertion",
+        "kind": "program",
+        "evidence": [
+          "src/config.ts:8 makes an `as` assertion"
+        ]
+      },
+      "spend": {
+        "seconds": 36,
+        "input": 4731,
+        "output": 1026,
+        "cost": 0.0213092
+      }
+    },
+    {
+      "rule": "typescript-best-practices",
+      "case": "error-message",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-type-assertion",
+        "kind": "program",
+        "evidence": [
+          "2 changed TypeScript file(s) add no type assertion: src/ledger-file.ts, tests/ledger-file.test.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 52,
+        "input": 10665,
+        "output": 1596,
+        "cost": 0.038749200000000004
+      }
+    },
+    {
+      "rule": "typescript-best-practices",
+      "case": "error-message",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "no-type-assertion",
+        "kind": "program",
+        "evidence": [
+          "tests/ledger-file.test.ts:26 makes an `as` assertion",
+          "tests/ledger-file.test.ts:37 makes an `as` assertion",
+          "tests/ledger-file.test.ts:38 makes an `as` assertion"
+        ]
+      },
+      "spend": {
+        "seconds": 50,
+        "input": 5075,
+        "output": 1782,
+        "cost": 0.0298644
+      }
+    },
+    {
+      "rule": "typescript-best-practices",
+      "case": "json-config",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-type-assertion",
+        "kind": "program",
+        "evidence": [
+          "2 changed TypeScript file(s) add no type assertion: src/config.ts, tests/config.test.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 68,
+        "input": 5754,
+        "output": 2575,
+        "cost": 0.04033
+      }
+    },
+    {
+      "rule": "typescript-best-practices",
+      "case": "json-config",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "no-type-assertion",
+        "kind": "program",
+        "evidence": [
+          "src/config.ts:8 makes an `as` assertion"
+        ]
+      },
+      "spend": {
+        "seconds": 38,
+        "input": 4320,
+        "output": 1096,
+        "cost": 0.021750400000000003
+      }
+    },
+    {
+      "rule": "typescript-best-practices",
+      "case": "error-message",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-type-assertion",
+        "kind": "program",
+        "evidence": [
+          "2 changed TypeScript file(s) add no type assertion: src/ledger-file.ts, tests/ledger-file.test.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 44,
+        "input": 5013,
+        "output": 1431,
+        "cost": 0.026383999999999998
+      }
+    },
+    {
+      "rule": "typescript-best-practices",
+      "case": "error-message",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "no-type-assertion",
+        "kind": "program",
+        "evidence": [
+          "tests/ledger-file.test.ts:37 makes an `as` assertion",
+          "tests/ledger-file.test.ts:39 makes an `as` assertion"
+        ]
+      },
+      "spend": {
+        "seconds": 57,
+        "input": 3154,
+        "output": 1433,
+        "cost": 0.023351600000000004
+      }
+    }
+  ]
+}
