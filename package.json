@@ -42,7 +42,7 @@
     "vitest-evals": "0.17.0"
   },
   "dependencies": {
-    "@avi2dg/checks": "^0.52.0",
+    "@avi2dg/checks": "^0.57.0",
     "@effect/platform-bun": "4.0.0",
     "effect": "4.0.0"
   },

@@ -50,17 +50,16 @@ A fresh clone and a fresh worktree are green without a command anyone has to rem
 One test holds the emitted tree to exactly what the generator would write, and asserts it had something to look at.
 
 `bun run lint` is `oxlint`, then `checks-lint`.
-`checks-lint` runs every gate in `@avi2dg/checks` over the commits since the branch left main.
-Among them, `checks-lint-coverage` fails on a tracked `.ts` file oxlint's walk skipped, and `checks-docs` holds each doc the branch touches to its template.
-`checks-imports` holds every tracked `.ts` file to the dependency rules in `dependency-cruiser.config.ts`.
-`checks-repetition` fails a production file that repeats more lines than it did where the branch left main.
+`checks-lint` runs the pull request gates in `@avi2dg/checks` over the commits since the branch left main, scoped to the gates the change reaches.
+`checks-docs` holds each doc the branch touches to its template.
+`checks-graphwalk` holds every tracked `.ts` file to the dependency rules, fails on an unreached one, and fails on an unused export missing from `exports-baseline.json`.
+A file nothing imports and no tool names goes in the `entry` list of `knip.config.ts`.
+The `exports-baseline.json` stays empty, so an unused export is deleted or unexported, not listed.
 The kit's size rules in `oxlint.config.ts` fail any production or test file over budget, whether or not the branch touched it.
-`checks-unused` fails on a tracked `.ts` file no entry point reaches, so a file that nothing imports and no tool names is added to the `entry` list in `knip.config.ts`.
-`checks-exports` fails on an exported value or type nothing imports that `exports-baseline.json` does not list, and that file is committed empty, so an unused export is deleted or unexported rather than listed.
-`checks-suppressions-ratchet` fails on a count the branch raised or added in `oxlint-suppressions.json`.
-The suite fails on any entry in that file, so the file is absent or empty.
-`checks-advisories` fails a branch whose `bun.lock` change adds a package version with a known security advisory, unless an entry in `advisory-acks.json` accepts it for at most 30 days.
-`.github/workflows/advisories.yml` runs it with `--all` every night over the whole of `bun.lock`, which finds an advisory published after its package landed.
+The suite fails on any entry in `oxlint-suppressions.json`, so the file is absent or empty.
+Four gates run only at night through `checks-lint --night`, namely `checks-lint-coverage`, `checks-repetition`, `checks-suppressions-ratchet` and `checks-quarantine-clock`.
+`checks-advisories` holds `advisory-acks.json` to its rules on every run and defers its scan to the scheduled run, so the pull request run fetches no advisory database.
+`.github/workflows/advisories.yml` runs it with `--all` every night over the whole of `bun.lock`, which finds an advisory published after its package landed and an advisory a `bun.lock` change adds.
 
 `@avi2dg/checks` comes from the public npm registry by semver range, so a clone, a worktree and CI all install the same tree with nothing beside them.
 `tests/e2e/toolchain.test.ts` refuses a `file:` dependency, and a repository dependency that names anything but a commit.
@@ -160,7 +159,7 @@ To replay a test that failed on one seed:
 `.github/workflows/flake.yml` runs the suite every night on ten seeds with `checks-flake`, and keeps the seeds each failing test failed with.
 A scheduled run skips with a notice when fewer than 30 minutes are left before 05:00 UTC.
 A test found flaky moves to `tests/quarantine/unit/`, which a default run skips.
-`checks-quarantine-clock`, which `bun run lint` runs, fails a test left there more than 30 days.
+`checks-quarantine-clock` runs at night and fails a test left there more than 30 days.
 Fix the test and move it back, or delete it.
 
 ## Re-pin a library
