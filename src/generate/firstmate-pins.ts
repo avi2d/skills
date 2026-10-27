@@ -5,7 +5,7 @@ export const SUPERVISION_BRANCH_MODEL = "harness/firstmate/supervision-branch-mo
 export const SUPERVISION_BRANCH_EFFORT = "harness/firstmate/supervision-branch-effort";
 
 export const FIRSTMATE_PINS: Readonly<Record<string, string>> = {
-  [SECOND_MATE_HARNESS]: "pi claude-bridge/claude-haiku-5-5 high\n",
+  [SECOND_MATE_HARNESS]: "pi claude-bridge/claude-sonnet-5-5 high\n",
   [SUPERVISION_BRANCH_MODEL]: "opencode-go/muse-spark-1.3-contributor\n",
   [SUPERVISION_BRANCH_EFFORT]: "high\n",
 };
