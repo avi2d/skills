@@ -7,7 +7,7 @@ import { trackedFiles } from "./lib/git";
 
 const repo = new URL("../../", import.meta.url).pathname;
 const DEPCRUISE = `${repo}node_modules/dependency-cruiser/bin/dependency-cruiser.mjs`;
-const CHECKS_IMPORTS = `${repo}node_modules/.bin/checks-imports`;
+const CHECKS_GRAPHWALK = `${repo}node_modules/.bin/checks-graphwalk`;
 const typescript = /\.[cm]?tsx?$/;
 const spawnTimeoutMs = 30_000;
 const cruiseResult = Schema.decodeUnknownSync(Schema.Struct({
@@ -29,7 +29,7 @@ test("the dependency rules cruise every authored TypeScript module, not an empty
 }, { timeout: spawnTimeoutMs });
 
 test("the lint fails a tracked module outside src, harness and tests that imports nothing installed", async () => {
-  const scratch = mkdtempSync(join(realpathSync(tmpdir()), "skills-checks-imports-"));
+  const scratch = mkdtempSync(join(realpathSync(tmpdir()), "skills-checks-graphwalk-"));
   try {
     const offenders = ["scripts/x.ts", "tools/x.mts", "bin/x.cts"];
     writeFileSync(join(scratch, "dependency-cruiser.config.ts"), await Bun.file(`${repo}dependency-cruiser.config.ts`).text());
@@ -39,7 +39,7 @@ test("the lint fails a tracked module outside src, harness and tests that import
       writeFileSync(join(scratch, path), 'import "no-such-package";\n');
     }
     await Bun.$`git init -q && git add -- dependency-cruiser.config.ts ${offenders}`.cwd(scratch);
-    const ran = Bun.spawnSync([CHECKS_IMPORTS], { cwd: scratch });
+    const ran = Bun.spawnSync([CHECKS_GRAPHWALK], { cwd: scratch });
     const unresolvable = ran.stderr
       .toString()
       .split("\n")
