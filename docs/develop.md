@@ -52,8 +52,9 @@ One test holds the emitted tree to exactly what the generator would write, and a
 `bun run lint` is `oxlint`, then `checks-lint`.
 `checks-lint` runs the pull request gates in `@avi2dg/checks` over the commits since the branch left main, scoped to the gates the change reaches.
 `checks-docs` holds each doc the branch touches to its template.
-`checks-graphwalk` holds every tracked `.ts` file to the dependency rules in `dependency-cruiser.config.ts`, fails on a tracked `.ts` file no entry point reaches, and fails on an unused export that `exports-baseline.json` does not list.
-A file that nothing imports and no tool names is added to the `entry` list in `knip.config.ts`, and `exports-baseline.json` is committed empty, so an unused export is deleted or unexported rather than listed.
+`checks-graphwalk` holds every tracked `.ts` file to the dependency rules, fails on an unreached one, and fails on an unused export missing from `exports-baseline.json`.
+A file nothing imports and no tool names goes in the `entry` list of `knip.config.ts`.
+The `exports-baseline.json` stays empty, so an unused export is deleted or unexported, not listed.
 The kit's size rules in `oxlint.config.ts` fail any production or test file over budget, whether or not the branch touched it.
 The suite fails on any entry in `oxlint-suppressions.json`, so the file is absent or empty.
 Four gates run only at night through `checks-lint --night`, namely `checks-lint-coverage`, `checks-repetition`, `checks-suppressions-ratchet` and `checks-quarantine-clock`.
