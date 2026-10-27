@@ -230,8 +230,8 @@ describe("a patch carrying a comment a Rule forbids", () => {
     const clean = await driven.fire("PreToolUse", { ...apply("*** Update File: src/b.ts", "@@", " one();", "-two();", "+three();"), cwd });
     expect(clean.reply, "a patch was refused for the pointer the file already held").toBeUndefined();
 
-    const pointing = await driven.fire("PreToolUse", { ...apply("*** Update File: src/b.ts", "@@", " one();", "+// see RFC 9110"), cwd });
-    expect(carried(pointing.reply)).toContain('src/b.ts:3 points at a record or a ticket ("RFC 9110")');
+    const pointing = await driven.fire("PreToolUse", { ...apply("*** Update File: src/b.ts", "@@", " one();", "+// see #9110"), cwd });
+    expect(carried(pointing.reply)).toContain('src/b.ts:3 points at a record or a ticket ("#9110")');
   });
 });
 
