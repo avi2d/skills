@@ -96,7 +96,7 @@ The second entry has no usage floor, as [record 0101](adr/0101-the-second-claude
 pi names Sol `openai/gpt-6.1-sol` on both machines.
 The login folders of `second` and `main` sit under `~/.claude-accounts/`, and the review step skips the `second` entry while its folder holds no Claude Code login.
 `minimax_extra_review` adds MiniMax M3.1 Flash as an extra advisory reviewer beside the normal review.
-It stays enabled in the generated config and falls back to Muse Spark when MiniMax errors, times out or disappears.
+It stays disabled in the generated config and falls back to Muse Spark when MiniMax errors, times out or disappears.
 `beam_drafts` holds Beam draft settings for the commit and document steps with one retry on an empty answer and an apply check on every edit.
 It stays disabled in the generated config and falls back to Muse Spark when Beam errors, times out or disappears.
 Both uses run only in skills, checks, fleet-dash, tui-dash and ru-compliance, and every other repo fails closed.

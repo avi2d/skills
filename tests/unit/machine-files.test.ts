@@ -252,10 +252,10 @@ test.each([
 
 const FREE_MODEL_REPOS = ["skills", "checks", "fleet-dash", "tui-dash", "ru-compliance"] as const;
 
-test.each([...MACHINES])("the %s config leaves MiniMax on and Beam off with Muse fallback inside the five-repo allowlist", (machine) => {
+test.each([...MACHINES])("the %s config leaves MiniMax off and Beam off with Muse fallback inside the five-repo allowlist", (machine) => {
   const config = noMistakesConfigOf(machine, HOME);
   expect(config.minimax_extra_review).toEqual({
-    enabled: true,
+    enabled: false,
     model: "opencode-go/minimax-m3.1-flash-free",
     fallback_model: "opencode-go/muse-spark-1.3-contributor",
     mode: "advisory",

@@ -186,7 +186,7 @@ export const noMistakesConfigOf = (machine: Machine, home: string): NoMistakesCo
     { agent: "pi", model: OPUS, effort: "high", env: { CLAUDE_CONFIG_DIR: loginDir(home, MAIN_ACCOUNT) } },
   ],
   minimax_extra_review: {
-    enabled: true,
+    enabled: false,
     model: MINIMAX,
     fallback_model: SPARK,
     mode: "advisory",
