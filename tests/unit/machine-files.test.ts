@@ -225,7 +225,7 @@ test("a string the YAML writer emits keeps a character YAML would read as syntax
 });
 
 test.each([
-  ["harness/firstmate/secondmate-harness", "pi claude-bridge/claude-haiku-5-5 high"],
+  ["harness/firstmate/secondmate-harness", "pi claude-bridge/claude-sonnet-5-5 high"],
   ["harness/firstmate/supervision-branch-model", "opencode-go/muse-spark-1.3-contributor"],
   ["harness/firstmate/supervision-branch-effort", "high"],
 ])("the committed %s holds today's pin %s", async (rel, pin) => {
@@ -233,15 +233,11 @@ test.each([
   expect(await Bun.file(`${REPO}${rel}`).text()).toBe(`${pin}\n`);
 });
 
-test("the secondmate and supervision pins match the dispatch workhorse models", () => {
+test("secondmate harness defaults to haiku", () => {
+  expect(FIRSTMATE_PINS["harness/firstmate/secondmate-harness"]?.trim()).toBe("pi claude-bridge/claude-sonnet-5-5 high");
   const small = crewDispatchOf("mac").rules.find((rule) => rule.kind === "small");
   if (small === undefined) return expect.unreachable("the mac source holds no small rule");
   const [cheap] = small.use;
-  const haikuProfile = small.use.find((profile) => profile.model === "claude-bridge/claude-haiku-5-5");
-  if (haikuProfile === undefined) return expect.unreachable("the mac small rule holds no Haiku profile");
-  expect(FIRSTMATE_PINS["harness/firstmate/secondmate-harness"]?.trim()).toBe(
-    `${haikuProfile.harness} ${haikuProfile.model} ${haikuProfile.effort}`,
-  );
   expect(FIRSTMATE_PINS["harness/firstmate/supervision-branch-model"]?.trim()).toBe(cheap.model);
   expect(FIRSTMATE_PINS["harness/firstmate/supervision-branch-effort"]?.trim()).toBe(cheap.effort);
 });
