@@ -9,7 +9,7 @@
   "fullscreenCopyOnSelect": false,
   "packages": [
     "npm:@ff-labs/pi-fff@0.10.5",
-    "git:github.com/avi2d/pi-claude-bridge@v0.9.3+avi2d.6",
+    "git:github.com/avi2d/pi-claude-bridge@v0.9.3+avi2d.7",
     "npm:pi-web-access@0.34.0"
   ],
   "extensions": [
