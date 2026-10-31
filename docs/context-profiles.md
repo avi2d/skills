@@ -21,6 +21,7 @@ Tool definitions are absent from this repository and have no character size in t
 | rule: `typescript-best-practices` | 1598 | 20.8% |
 | rule: `agents-md-router` | 311 | 4.1% |
 | skill: `build-and-review-motion` | 5794 |  |
+| skill: `develop-a-website` | 7178 |  |
 | skill: `grilling` | 3528 |  |
 | skill: `refine-design` | 5708 |  |
 | skill: `stress-test-content` | 6585 |  |
@@ -57,6 +58,7 @@ Tool definitions are absent from this repository and have no character size in t
 | rule: `agents-md-router` | 311 | 3.5% |
 | rule: `writing-for-people` | 861 | 9.7% |
 | skill: `build-and-review-motion` | 5794 |  |
+| skill: `develop-a-website` | 7178 |  |
 | skill: `grilling` | 3528 |  |
 | skill: `refine-design` | 5708 |  |
 | skill: `stress-test-content` | 6585 |  |
@@ -93,6 +95,7 @@ Tool definitions are absent from this repository and have no character size in t
 | rule: `typescript-best-practices` | 1598 | 19.0% |
 | rule: `agents-md-router` | 311 | 3.7% |
 | skill: `build-and-review-motion` | 5794 |  |
+| skill: `develop-a-website` | 7178 |  |
 | skill: `grilling` | 3528 |  |
 | skill: `refine-design` | 5708 |  |
 | skill: `stress-test-content` | 6585 |  |
@@ -128,6 +131,7 @@ Tool definitions are absent from this repository and have no character size in t
 | rule: `typescript-best-practices` | 1598 | 20.5% |
 | rule: `agents-md-router` | 311 | 4.0% |
 | skill: `build-and-review-motion` | 5794 |  |
+| skill: `develop-a-website` | 7178 |  |
 | skill: `grilling` | 3528 |  |
 | skill: `refine-design` | 5708 |  |
 | skill: `stress-test-content` | 6585 |  |
@@ -160,6 +164,7 @@ Tool definitions are absent from this repository and have no character size in t
 | rule: `prove-it-works` | 2760 | 80.6% |
 | rule: `agents-md-router` | 311 | 9.1% |
 | skill: `build-and-review-motion` | 5794 |  |
+| skill: `develop-a-website` | 7178 |  |
 | skill: `grilling` | 3528 |  |
 | skill: `refine-design` | 5708 |  |
 | skill: `stress-test-content` | 6585 |  |
