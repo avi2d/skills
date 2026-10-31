@@ -35,6 +35,7 @@ The sizes were checked on 2026-10-31 against StatCounter's screen resolution sta
 1. Run `checks-browser` on every pull request, in a script that builds the published site first.
 1. For the night run, keep a second declaration in a directory of its own, whose `site` points back at the build, such as `../dist`, and whose viewports are the `full` preset, and run `checks-browser <directory>` on it every night.
 1. Add a viewport of the site's own beside a preset only for a size no preset holds, because a name or a size declared twice is refused.
+1. Add the expanded anchor names and dimensions to the brief, so the brief holds the job question, the blocks and every expected size.
 
 The checks decide the measurable floor: layout, keyboard reach and visible focus, motion with reduced motion on, axe's WCAG 2.2 AA rules, HTML nesting and failed requests.
 Whether a block reads well, feels right and does the page's job stays with the judge and the person.
@@ -44,6 +45,7 @@ Whether a block reads well, feels right and does the page's job stays with the j
 ## 3. Build the block
 
 1. Build one block at a time in page order, with the real copy and working links.
+1. Approve each block on its own job, and judge the page job question only once the blocks that answer it exist in the first screen the visitor sees.
 1. Reuse the site's own tokens, components and action names, so a new block speaks the vocabulary of the approved ones.
 1. Build motion in a block through the `build-and-review-motion` skill, and run the `stress-test-content` skill on a block that renders content an editor or a visitor supplies.
 1. Keep every approved block as it was approved.
@@ -70,7 +72,7 @@ Look at every capture before going on.
 ## 5. Check and judge
 
 1. Run `checks-browser` on the published build, and fix every failure it names.
-1. Start a fresh agent that shares none of this session's context, and give it [judge.md](judge.md), the captures, the brief with its job question, the scope of the change, the commit and the demo server's address.
+1. Start a fresh agent that shares none of this session's context, and give it [judge.md](judge.md), the captures, the brief with its job question and the expanded anchor names and dimensions, the scope of the change, the commit and the demo server's address.
 1. Act on the verdict: recapture, rebuild and fix send the block back through the loop to a new fresh judge, and only ship sends it to the person.
 
 The judge runs as soon as a change is ready, so a review never waits for the night run.
