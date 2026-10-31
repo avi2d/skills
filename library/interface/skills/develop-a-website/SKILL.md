@@ -30,7 +30,7 @@ Its `checks-browser` page, installed at `node_modules/@avi2dg/checks/docs/gates/
 The sizes were checked on 2026-10-31 against StatCounter's screen resolution statistics, Apple's Human Interface Guidelines, Material Design's device metrics and the Chrome UX Report, and are due a recheck once a year, so take them from the installed page.
 
 1. Install the kit and the optional peers its page names, at the versions it pins.
-1. Copy the starter `browser-checks.json` the page names, and change its routes and targets to the site's own: every page with its locale, each page's headline, and every action a visitor takes, marked `focusable`.
+1. Copy the starter `browser-checks.json` the page names, and set its routes and targets to the blocks built so far: every page with its locale, each page's headline, and every action a visitor takes, marked `focusable`, and grow it as each block is built.
 1. Keep the starter's `anchor` preset as the viewports, its `enlarged-text` state, which sets the default text to 32 px, and its reduced motion state.
 1. Run `checks-browser` on every pull request, in a script that builds the published site first.
 1. For the night run, keep a second declaration in a directory of its own, whose `site` points back at the build, such as `../dist`, and whose viewports are the `full` preset, and run `checks-browser <directory>` on it every night.
@@ -40,12 +40,13 @@ The sizes were checked on 2026-10-31 against StatCounter's screen resolution sta
 The checks decide the measurable floor: layout, keyboard reach and visible focus, motion with reduced motion on, axe's WCAG 2.2 AA rules, HTML nesting and failed requests.
 Whether a block reads well, feels right and does the page's job stays with the judge and the person.
 
-**Done when** `checks-browser` runs on the built site and its inventory names every declared route and target at every anchor size and state.
+**Done when** `checks-browser` runs on the built site and its inventory names every declared route and target for the blocks built so far at every anchor size and state.
 
 ## 3. Build the block
 
 1. Build one block at a time in page order, with the real copy and working links.
 1. Approve each block on its own job, and judge the page job question only once the blocks that answer it exist in the first screen the visitor sees.
+1. Grow the declaration to the new block before its check, so each check covers only the blocks built so far.
 1. Reuse the site's own tokens, components and action names, so a new block speaks the vocabulary of the approved ones.
 1. Build motion in a block through the `build-and-review-motion` skill, and run the `stress-test-content` skill on a block that renders content an editor or a visitor supplies.
 1. Keep every approved block as it was approved.
