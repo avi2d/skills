@@ -2,7 +2,7 @@ default_models = ["opus", "claude-bridge/claude-haiku-5-5"]
 
 [profiles.default]
 rules = ["comment-discipline", "fix-what-you-see", "prove-it-works", "typescript-best-practices", "agents-md-router"]
-skills = ["build-and-review-motion", "grilling", "refine-design", "stress-test-content", "teach"]
+skills = ["build-and-review-motion", "develop-a-website", "grilling", "refine-design", "stress-test-content", "teach"]
 references = ["effect-patterns", "interface-copy", "mobile-web", "motion", "motion-vocabulary", "plain-sentences", "plain-words", "punctuation", "russian-prose", "technical-writing", "typography", "ui-principles", "unslop", "visitor-job", "writing-for-agents"]
 
 [profiles.muse-spark]
