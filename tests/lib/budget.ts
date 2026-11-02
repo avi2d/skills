@@ -4,7 +4,7 @@ export type Spend = { name: string; tokens: number };
 
 // Four characters to the token. The ceilings are set against this same count, so what it measures is a
 // budget rather than a tokenizer's answer.
-const estimate = (text: string): number => Math.ceil(text.length / 4);
+export const estimate = (text: string): number => Math.ceil(text.length / 4);
 
 export const spendOf = (rules: readonly IndexedRule[]): Spend[] =>
   rules.map((rule) => ({ name: rule.name, tokens: estimate(rule.text) })).sort((a, b) => b.tokens - a.tokens);

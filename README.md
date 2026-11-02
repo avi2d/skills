@@ -48,6 +48,7 @@ These paths in $HOME then belong to the checkout:
 - `~/.codex/skills-dispatch`
 - `~/Projects/firstmate/config/crew-dispatch.json`
 - `~/.no-mistakes/config.yaml`
+- `~/.orc/orchestrator.md`
 - `~/Projects/firstmate/config/secondmate-harness`
 - `~/Projects/firstmate/config/supervision-branch-model`
 - `~/Projects/firstmate/config/supervision-branch-effort`
@@ -137,6 +138,7 @@ for path in \
   '.codex/skills-dispatch' \
   'Projects/firstmate/config/crew-dispatch.json' \
   '.no-mistakes/config.yaml' \
+  '.orc/orchestrator.md' \
   'Projects/firstmate/config/secondmate-harness' \
   'Projects/firstmate/config/supervision-branch-model' \
   'Projects/firstmate/config/supervision-branch-effort' \

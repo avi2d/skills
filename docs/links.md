@@ -36,6 +36,7 @@ A target under `generated/` is written by the same run, because a clone arrives 
 | `~/.codex/skills-dispatch` | `generated/codex/dispatcher` |
 | `~/Projects/firstmate/config/crew-dispatch.json` | `harness/firstmate/crew-dispatch.mac.json` on the Mac, `harness/firstmate/crew-dispatch.json` on the Windows machine and any other |
 | `~/.no-mistakes/config.yaml` | `generated/no-mistakes/config.yaml` |
+| `~/.orc/orchestrator.md` | `harness/orc/orchestrator.md` |
 | `~/Projects/firstmate/config/secondmate-harness` | `harness/firstmate/secondmate-harness` on the Mac |
 | `~/Projects/firstmate/config/supervision-branch-model` | `harness/firstmate/supervision-branch-model` on the Mac |
 | `~/Projects/firstmate/config/supervision-branch-effort` | `harness/firstmate/supervision-branch-effort` on the Mac |
