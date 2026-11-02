@@ -246,8 +246,17 @@ test.each([
   ["a field no-mistakes does not know", { bogus_field: 1 }, /bogus_field/],
   ["a duration with no unit", { agent_timeout: "30" }, /agent_timeout/],
   ["a rebase strategy no-mistakes refuses", { rebase: { strategy: "squash" } }, /strategy/],
+  ["a Pages project with an uppercase letter and an underscore", { test: { evidence: { cloudflare_pages: { project: "Avi2d_Evidence" } } } }, /project/],
+  ["a Pages project ending in a hyphen", { test: { evidence: { cloudflare_pages: { project: "avi2d-" } } } }, /project/],
+  ["a Pages project longer than a 63-character DNS label", { test: { evidence: { cloudflare_pages: { project: "a".repeat(64) } } } }, /project/],
 ])("generation refuses %s in the no-mistakes config", async (_, change, named) => {
   expect(await saidBy(noMistakesYaml({ ...noMistakesConfigOf("windows", HOME), ...change }))).toMatch(named);
+});
+
+test.each([...MACHINES])("the %s config rejects a missing or misplaced Pages project", async (machine) => {
+  expect(Bun.YAML.parse(await valueOf(noMistakesYaml(noMistakesConfigOf(machine, HOME))))).toMatchObject({
+    test: { evidence: { cloudflare_pages: { project: "avi2d-nm-evidence" } } },
+  });
 });
 
 const FREE_MODEL_REPOS = ["skills", "checks", "fleet-dash", "tui-dash", "ru-compliance"] as const;
