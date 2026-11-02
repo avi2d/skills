@@ -106,6 +106,10 @@ const COMMENT_REVIEW = [
 
 const SOL_FLOOR_MINIMUM = 30;
 
+const PagesProject = Schema.String.check(Schema.isPattern(/^(?=.{1,63}$)[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/)).annotate({
+  description: "A DNS label of lowercase letters, digits and inner hyphens, which no-mistakes refuses otherwise",
+});
+
 const PathInstruction = Schema.Struct({
   path: Schema.NonEmptyString.annotate({ description: "A glob over the changed files the instruction reviews" }),
   instructions: Schema.NonEmptyString,
@@ -147,6 +151,13 @@ const NoMistakesConfig = Schema.Struct({
     }),
   }),
   review: Schema.Struct({ path_instructions: Schema.Array(PathInstruction) }),
+  test: Schema.Struct({
+    evidence: Schema.Struct({
+      cloudflare_pages: Schema.Struct({
+        project: PagesProject.annotate({ description: "Every repo publishes screenshots here unless its trusted .no-mistakes.yaml sets the project to an empty string" }),
+      }),
+    }),
+  }),
 });
 
 type NoMistakesConfig = typeof NoMistakesConfig.Type;
@@ -209,6 +220,7 @@ export const noMistakesConfigOf = (machine: Machine, home: string): NoMistakesCo
   rebase: { strategy: "merge" },
   pr: { title_max_length: 100 },
   review: { path_instructions: [{ path: "**/*", instructions: COMMENT_REVIEW }] },
+  test: { evidence: { cloudflare_pages: { project: "avi2d-nm-evidence" } } },
 });
 
 type Mapping = { readonly [key: string]: Yaml };
