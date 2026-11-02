@@ -106,6 +106,11 @@ It flags a comment that restates its line or carries a measured number that will
 Every repository publishes to that project unless its trusted `.no-mistakes.yaml` sets the project to an empty string.
 `bun run link` refuses a real `~/.no-mistakes/config.yaml` and leaves it as it was, so a config kept by hand is moved aside before the link replaces it.
 
+## orc
+
+`harness/orc/orchestrator.md` holds the rules for the orc chat orchestrator.
+[The link map](links.md) says where `bun run link` puts it.
+
 ## Related topics
 
 - [The link map](links.md)
