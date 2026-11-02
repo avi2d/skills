@@ -3,13 +3,14 @@ import { HARNESSES } from "../../src/bodies/bodies";
 import { indexFor } from "../../src/generate/dispatch-index";
 import { active } from "../../src/generate/generate";
 import { REPO } from "../../src/generate/link";
-import { opening, overBudget, spendOf, type Spend } from "../lib/budget";
+import { estimate, opening, overBudget, spendOf, type Spend } from "../lib/budget";
 import { valueOf } from "../lib/effect";
 
 // A Rule costs on two schedules, so one ceiling cannot hold both: `always` is charged to every session,
 // and a scope condition is charged only where it matches.
 const OPENING = 1_200;
 const WORST = 3_550;
+const ORCHESTRATOR_CHARACTERS = 4_000;
 
 const { bodies, profiles } = await valueOf(active(REPO));
 
@@ -27,6 +28,12 @@ describe("what a session pays before it does anything", () => {
       expect(overBudget(spendOf(rules), WORST)).toBeUndefined();
     });
   }
+
+  test("orc's orchestrator rules, which `orc chat` opens every chat with, stay under 4,000 characters", async () => {
+    const orchestrator = "harness/orc/orchestrator.md";
+    const spend = [{ name: orchestrator, tokens: estimate(await Bun.file(`${REPO}${orchestrator}`).text()) }];
+    expect(overBudget(spend, estimate("x".repeat(ORCHESTRATOR_CHARACTERS)))).toBeUndefined();
+  });
 
   test("the ceiling reports the overage and the largest bodies, so a run says what to cut", () => {
     const spend: Spend[] = [

@@ -60,6 +60,7 @@ export const linksUnder = (root: string, machine: Machine): LinkMap => ({
       }
     : {}),
   ".no-mistakes/config.yaml": noMistakesConfigUnder(root),
+  ".orc/orchestrator.md": "harness/orc/orchestrator.md",
 });
 
 export const MACHINE = machineOn(platform());
