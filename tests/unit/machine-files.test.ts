@@ -254,10 +254,9 @@ test.each([
 });
 
 test.each([...MACHINES])("the %s config rejects a missing or misplaced Pages project", async (machine) => {
-  const emitted = Bun.YAML.parse(await valueOf(noMistakesYaml(noMistakesConfigOf(machine, HOME)))) as {
-    test: { evidence: { cloudflare_pages: { project: unknown } } };
-  };
-  expect(emitted.test.evidence.cloudflare_pages.project).toBe("avi2d-nm-evidence");
+  expect(Bun.YAML.parse(await valueOf(noMistakesYaml(noMistakesConfigOf(machine, HOME))))).toMatchObject({
+    test: { evidence: { cloudflare_pages: { project: "avi2d-nm-evidence" } } },
+  });
 });
 
 const FREE_MODEL_REPOS = ["skills", "checks", "fleet-dash", "tui-dash", "ru-compliance"] as const;
