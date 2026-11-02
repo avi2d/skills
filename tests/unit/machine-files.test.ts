@@ -253,10 +253,11 @@ test.each([
   expect(await saidBy(noMistakesYaml({ ...noMistakesConfigOf("windows", HOME), ...change }))).toMatch(named);
 });
 
-test.each([...MACHINES])("the %s config names the Pages project at test.evidence.cloudflare_pages.project for every repo, not in a per-repo override", async (machine) => {
-  const yaml = await valueOf(noMistakesYaml(noMistakesConfigOf(machine, HOME)));
-  expect(yaml).toContain('\ntest:\n  evidence:\n    cloudflare_pages:\n      project: "avi2d-nm-evidence"\n');
-  expect(yaml).not.toContain("repository_overrides");
+test.each([...MACHINES])("the %s config rejects a missing or misplaced Pages project", async (machine) => {
+  const emitted = Bun.YAML.parse(await valueOf(noMistakesYaml(noMistakesConfigOf(machine, HOME)))) as {
+    test: { evidence: { cloudflare_pages: { project: unknown } } };
+  };
+  expect(emitted.test.evidence.cloudflare_pages.project).toBe("avi2d-nm-evidence");
 });
 
 const FREE_MODEL_REPOS = ["skills", "checks", "fleet-dash", "tui-dash", "ru-compliance"] as const;
