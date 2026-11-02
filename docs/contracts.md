@@ -102,6 +102,8 @@ It stays disabled in the generated config and falls back to Muse Spark when Beam
 Both uses run only in skills, checks, fleet-dash, tui-dash and ru-compliance, and every other repo fails closed.
 `review` holds one path instruction over every changed file that reviews added comments against comment discipline as warnings that never fix or block.
 It flags a comment that restates its line or carries a measured number that will go stale, and it keeps a comment that gives a reason the code cannot show.
+`test.evidence.cloudflare_pages.project` names the Cloudflare Pages project that keeps PR screenshots.
+Every repository publishes to that project unless its trusted `.no-mistakes.yaml` sets the project to an empty string.
 `bun run link` refuses a real `~/.no-mistakes/config.yaml` and leaves it as it was, so a config kept by hand is moved aside before the link replaces it.
 
 ## Related topics
