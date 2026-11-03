@@ -46,14 +46,14 @@ const printing = (body: unknown) => `cat <<'JSON'\n${JSON.stringify(body)}\nJSON
 
 const HOME = "/home/someone";
 
-const codexFloorOf = (machine: (typeof MACHINES)[number]) => () => noMistakesConfigOf(machine, HOME).reviewer_chain[0].floor.command;
+const codexFloorOf = (machine: (typeof MACHINES)[number]) => () => noMistakesConfigOf(machine, HOME).reviewer_chain[1].floor.command;
 
 const keychainServiceOf = (configDir: string) => `Claude Code-credentials-${new Bun.CryptoHasher("sha256").update(configDir).digest("hex").slice(0, 8)}`;
 
 type Login = "signed in" | "absent" | "empty";
 
 const secondFloorOf = (machine: (typeof MACHINES)[number], login: Login) => {
-  const [, second] = noMistakesConfigOf(machine, HOME).reviewer_chain;
+  const [, , second] = noMistakesConfigOf(machine, HOME).reviewer_chain;
   const loginDir = second.env.CLAUDE_CONFIG_DIR;
   const command = (dir: string) => second.floor.command.replaceAll(loginDir, join(dir, "login"));
   const credentials = { "signed in": { "login/.credentials.json": '{"claudeAiOauth":{}}' }, absent: {}, empty: { "login/.credentials.json": "" } }[login];

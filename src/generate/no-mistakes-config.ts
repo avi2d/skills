@@ -31,6 +31,14 @@ const AbsolutePath = Schema.String.check(Schema.isStartingWith("/")).annotate({
 });
 
 const ReviewerChain = Schema.Tuple([
+  Schema.Struct({
+    agent: Schema.Literal("pi"),
+    model: Schema.Literal(OPUS),
+    effort: Effort,
+    env: Schema.Struct({ CLAUDE_CONFIG_DIR: AbsolutePath }),
+  }).annotate({
+    description: "Opus 5.5 on the clauth account main, the Claude $200 Max account, logged in under its own config dir",
+  }),
   Schema.Struct({ agent: Schema.Literal("pi"), model: Schema.Literal(SOL), effort: Effort, floor: Floor }).annotate({
     description: "GPT-6.1 Sol on the Codex $20 account",
   }),
@@ -41,14 +49,6 @@ const ReviewerChain = Schema.Tuple([
     env: Schema.Struct({ CLAUDE_CONFIG_DIR: AbsolutePath }),
     floor: Floor,
   }).annotate({ description: "Opus 5.5 on the clauth account second, the Claude $100 Max account, logged in under its own config dir" }),
-  Schema.Struct({
-    agent: Schema.Literal("pi"),
-    model: Schema.Literal(OPUS),
-    effort: Effort,
-    env: Schema.Struct({ CLAUDE_CONFIG_DIR: AbsolutePath }),
-  }).annotate({
-    description: "Opus 5.5 on the clauth account main, the Claude $200 Max account, logged in under its own config dir",
-  }),
 ]).annotate({ description: "Reviewers in order of preference: the review step skips an entry whose floor reads below its minimum" });
 
 // A floor's field walks only objects, and quota-axi lists accounts in an array.
@@ -146,6 +146,7 @@ export const noMistakesConfigOf = (machine: Machine, home: string): NoMistakesCo
     pi: { model: SPARK, effort: "high" },
   },
   reviewer_chain: [
+    { agent: "pi", model: OPUS, effort: "high", env: { CLAUDE_CONFIG_DIR: loginDir(home, MAIN_ACCOUNT) } },
     {
       agent: "pi",
       model: SOL,
@@ -159,7 +160,6 @@ export const noMistakesConfigOf = (machine: Machine, home: string): NoMistakesCo
       env: { CLAUDE_CONFIG_DIR: loginDir(home, SECOND_ACCOUNT) },
       floor: { command: `${loginIn(machine, loginDir(home, SECOND_ACCOUNT))} && ${FULL_ALLOWANCE}`, field: "remaining_percent", minimum: 0 },
     },
-    { agent: "pi", model: OPUS, effort: "high", env: { CLAUDE_CONFIG_DIR: loginDir(home, MAIN_ACCOUNT) } },
   ],
   auto_fix: { rebase: 3, lint: 3, test: 3, review: 0, document: 3, ci: 3 },
   ci: { rerun_transient: 0, revalidate_repairs: false },

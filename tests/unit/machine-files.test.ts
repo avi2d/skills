@@ -152,13 +152,13 @@ test.each([...MACHINES])("the %s comment review reports a warning with no-op, ne
   expect(emitted()).toMatchObject({ review: { path_instructions: [{ path: "**/*", instructions: expect.stringContaining("will go stale") }] } });
 });
 
-test("each machine reviews first on GPT-6.1 Sol under the name its pi gives the ChatGPT provider", () => {
-  expect(noMistakesConfigOf("windows", HOME).reviewer_chain[0].model).toBe("openai/gpt-6.1-sol");
-  expect(noMistakesConfigOf("mac", HOME).reviewer_chain[0].model).toBe("openai/gpt-6.1-sol");
+test("each machine's Sol reviewer sits second under the name its pi gives the ChatGPT provider, so the review never starts on Codex ahead of main", () => {
+  expect(noMistakesConfigOf("windows", HOME).reviewer_chain[1].model).toBe("openai/gpt-6.1-sol");
+  expect(noMistakesConfigOf("mac", HOME).reviewer_chain[1].model).toBe("openai/gpt-6.1-sol");
 });
 
-test.each([...MACHINES])("the %s reviewer chain runs Sol on Codex, then Opus on the second Claude account, then Opus on main", (machine) => {
-  const [sol, second, main] = noMistakesConfigOf(machine, HOME).reviewer_chain;
+test.each([...MACHINES])("the %s reviewer chain runs Opus on main first, so Codex and the second Claude account never lead it", (machine) => {
+  const [main, sol, second] = noMistakesConfigOf(machine, HOME).reviewer_chain;
   expect(sol.floor).toMatchObject({ command: expect.stringMatching(/^quota-axi --provider codex --json \| jq /), minimum: 30 });
   expect(second.model).toBe("claude-bridge/claude-opus-5-5");
   expect(second.env.CLAUDE_CONFIG_DIR).toBe("/home/someone/.claude-accounts/second");
@@ -176,11 +176,11 @@ test("generation writes this machine's no-mistakes config under the generated ro
   const config = Bun.YAML.parse(new TextDecoder().decode(bytes));
   const home = process.env.HOME ?? expect.unreachable("the test runs with no $HOME");
   expect(config).toEqual(noMistakesConfigOf(MACHINE, home));
-  expect(config).toMatchObject({ reviewer_chain: [{}, { env: { CLAUDE_CONFIG_DIR: `${home}/.claude-accounts/second` } }, {}] });
+  expect(config).toMatchObject({ reviewer_chain: [{ env: { CLAUDE_CONFIG_DIR: `${home}/.claude-accounts/main` } }, {}, { env: { CLAUDE_CONFIG_DIR: `${home}/.claude-accounts/second` } }] });
 });
 
 test("the Mac second-account floor asks the Keychain for the service Claude Code derives from that login dir", () => {
-  const [, second] = noMistakesConfigOf("mac", HOME).reviewer_chain;
+  const [, , second] = noMistakesConfigOf("mac", HOME).reviewer_chain;
   const service = `Claude Code-credentials-${createHash("sha256").update(second.env.CLAUDE_CONFIG_DIR.normalize("NFC")).digest("hex").slice(0, 8)}`;
   expect(second.floor.command).toStartWith(`security find-generic-password -s '${service}' >/dev/null 2>&1 && `);
 });
@@ -195,18 +195,18 @@ const withChain = (reorder: (chain: Chain) => readonly unknown[]) => {
 const withoutFloor = ({ floor: _, ...entry }: Record<string, unknown> = {}) => entry;
 
 test.each([
-  ["Opus on the second account ahead of Sol", ([sol, second, main]: Chain) => [second, sol, main], /no excess property\n {2}at \["reviewer_chain"\]\[0\]\["env"\]$/],
-  ["Opus on main ahead of the second account", ([sol, second, main]: Chain) => [sol, main, second], /Missing key\n {2}at \["reviewer_chain"\]\[1\]\["floor"\]$/],
-  ["a first reviewer off Sol", ([sol, second, main]: Chain) => [{ ...sol, model: "openai/gpt-6-luna" }, second, main], /at \["reviewer_chain"\]\[0\]\["model"\]$/],
-  ["a chain that drops Sol", ([, second, main]: Chain) => [second, main], /at \["reviewer_chain"\]\[0\]/],
-  ["Sol with no floor", ([sol, second, main]: Chain) => [withoutFloor(sol), second, main], /Missing key\n {2}at \["reviewer_chain"\]\[0\]\["floor"\]$/],
-  ["the second account with no floor", ([sol, second, main]: Chain) => [sol, withoutFloor(second), main], /Missing key\n {2}at \["reviewer_chain"\]\[1\]\["floor"\]$/],
+  ["the second account ahead of Sol", ([main, sol, second]: Chain) => [main, second, sol], /no excess property\n {2}at \["reviewer_chain"\]\[1\]\["env"\]$/],
+  ["the second account ahead of main", ([main, sol, second]: Chain) => [second, sol, main], /no excess property\n {2}at \["reviewer_chain"\]\[0\]\["floor"\]$/],
+  ["a first reviewer off Opus on main", ([main, sol, second]: Chain) => [{ ...main, model: "openai/gpt-6-luna" }, sol, second], /at \["reviewer_chain"\]\[0\]\["model"\]$/],
+  ["a chain that drops Sol", ([main, , second]: Chain) => [main, second], /at \["reviewer_chain"\]\[1\]/],
+  ["Sol with no floor", ([main, sol, second]: Chain) => [main, withoutFloor(sol), second], /Missing key\n {2}at \["reviewer_chain"\]\[1\]\["floor"\]$/],
+  ["the second account with no floor", ([main, sol, second]: Chain) => [main, sol, withoutFloor(second)], /Missing key\n {2}at \["reviewer_chain"\]\[2\]\["floor"\]$/],
 ])("generation refuses a reviewer chain with %s", async (_, reorder, named) => {
   expect(await saidBy(noMistakesYaml(withChain(reorder)))).toMatch(named);
 });
 
 test("generation refuses a login folder written with a tilde, which no-mistakes passes to the agent unexpanded", async () => {
-  const source = withChain(([sol, second, main]) => [sol, { ...second, env: { CLAUDE_CONFIG_DIR: "~/.claude-accounts/second" } }, main]);
+  const source = withChain(([main, sol, second]) => [main, sol, { ...second, env: { CLAUDE_CONFIG_DIR: "~/.claude-accounts/second" } }]);
   expect(await saidBy(noMistakesYaml(source))).toMatch(/Expected a string starting with "\/"\n {2}at .*\["CLAUDE_CONFIG_DIR"\]$/);
 });
 
