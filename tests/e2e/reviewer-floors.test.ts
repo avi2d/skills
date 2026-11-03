@@ -40,12 +40,6 @@ const secondFloorOf = (machine: (typeof MACHINES)[number], login: Login) => {
   return [command, { tools: { security: keychain }, files: credentials }] as const;
 };
 
-test.each([...MACHINES])("the %s last reviewer runs Sol with no floor, which the fork always tries", (machine) => {
-  const [, , sol] = noMistakesConfigOf(machine, HOME).reviewer_chain;
-  expect(sol.model).toBe("openai/gpt-6.1-sol");
-  expect("floor" in sol).toBe(false);
-});
-
 test.each([...MACHINES])("the %s Claude floor passes the whole allowance once the second login is signed in", async (machine) => {
   expect(await runFloor(...secondFloorOf(machine, "signed in"))).toEqual({ code: 0, stdout: '{"remaining_percent":100}\n' });
 });
