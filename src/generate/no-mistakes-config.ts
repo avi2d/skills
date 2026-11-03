@@ -39,9 +39,6 @@ const ReviewerChain = Schema.Tuple([
   }).annotate({
     description: "Opus 5.5 on the clauth account main, the Claude $200 Max account, logged in under its own config dir",
   }),
-  Schema.Struct({ agent: Schema.Literal("pi"), model: Schema.Literal(SOL), effort: Effort, floor: Floor }).annotate({
-    description: "GPT-6.1 Sol on the Codex $20 account",
-  }),
   Schema.Struct({
     agent: Schema.Literal("pi"),
     model: Schema.Literal(OPUS),
@@ -49,10 +46,10 @@ const ReviewerChain = Schema.Tuple([
     env: Schema.Struct({ CLAUDE_CONFIG_DIR: AbsolutePath }),
     floor: Floor,
   }).annotate({ description: "Opus 5.5 on the clauth account second, the Claude $100 Max account, logged in under its own config dir" }),
+  Schema.Struct({ agent: Schema.Literal("pi"), model: Schema.Literal(SOL), effort: Effort }).annotate({
+    description: "GPT-6.1 Sol on the Codex $20 account",
+  }),
 ]).annotate({ description: "Reviewers in order of preference: the review step skips an entry whose floor reads below its minimum" });
-
-// A floor's field walks only objects, and quota-axi lists accounts in an array.
-const CODEX_REMAINING = `{remaining_percent: ([.providers[] | select(.provider == "codex" and .state.stale == false) | .windows[] | select(.id == "five_hour") | .percentRemaining] | first)}`;
 
 const loginDir = (home: string, account: string) => `${home}/.claude-accounts/${account}`;
 
@@ -70,8 +67,6 @@ const COMMENT_REVIEW = [
   "Keep a comment that gives a reason the code cannot show, or an invariant the types cannot hold.",
   "Never report a comment as 'error', and never as 'ask-user' or 'auto-fix'.",
 ].join(" ");
-
-const SOL_FLOOR_MINIMUM = 30;
 
 const PagesProject = Schema.String.check(Schema.isPattern(/^(?=.{1,63}$)[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/)).annotate({
   description: "A DNS label of lowercase letters, digits and inner hyphens, which no-mistakes refuses otherwise",
@@ -149,17 +144,12 @@ export const noMistakesConfigOf = (machine: Machine, home: string): NoMistakesCo
     { agent: "pi", model: OPUS, effort: "high", env: { CLAUDE_CONFIG_DIR: loginDir(home, MAIN_ACCOUNT) } },
     {
       agent: "pi",
-      model: SOL,
-      effort: "high",
-      floor: { command: `quota-axi --provider codex --json | jq '${CODEX_REMAINING}'`, field: "remaining_percent", minimum: SOL_FLOOR_MINIMUM },
-    },
-    {
-      agent: "pi",
       model: OPUS,
       effort: "high",
       env: { CLAUDE_CONFIG_DIR: loginDir(home, SECOND_ACCOUNT) },
       floor: { command: `${loginIn(machine, loginDir(home, SECOND_ACCOUNT))} && ${FULL_ALLOWANCE}`, field: "remaining_percent", minimum: 0 },
     },
+    { agent: "pi", model: SOL, effort: "high" },
   ],
   auto_fix: { rebase: 3, lint: 3, test: 3, review: 0, document: 3, ci: 3 },
   ci: { rerun_transient: 0, revalidate_repairs: false },
