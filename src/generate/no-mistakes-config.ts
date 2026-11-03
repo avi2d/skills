@@ -1,6 +1,5 @@
 import { Config, Effect, Schema } from "effect";
 import { FileFailure, MalformedMachineConfig } from "../platform/failures";
-import type { Machine } from "./machine";
 
 const Duration = Schema.TemplateLiteral([Schema.Finite, Schema.Literals(["ms", "s", "m", "h"])]);
 
@@ -26,8 +25,12 @@ const Floor = Schema.Struct({
   minimum: Schema.Int.check(Schema.isBetween({ minimum: 0, maximum: 100 })),
 });
 
-const AbsolutePath = Schema.String.check(Schema.isStartingWith("/")).annotate({
+const MainAccountDir = Schema.String.check(Schema.isStartingWith("/")).check(Schema.isEndingWith("/.claude-accounts/main")).annotate({
   description: "no-mistakes hands an entry's env to the agent unexpanded, so a tilde would never reach a home",
+});
+
+const SecondAccountDir = Schema.String.check(Schema.isStartingWith("/")).check(Schema.isEndingWith("/.claude-accounts/second")).annotate({
+  description: "no-mistakes hands a login dir to the agent unexpanded",
 });
 
 const ReviewerChain = Schema.Tuple([
@@ -35,7 +38,7 @@ const ReviewerChain = Schema.Tuple([
     agent: Schema.Literal("pi"),
     model: Schema.Literal(OPUS),
     effort: Effort,
-    env: Schema.Struct({ CLAUDE_CONFIG_DIR: AbsolutePath }),
+    env: Schema.Struct({ CLAUDE_CONFIG_DIR: MainAccountDir }),
   }).annotate({
     description: "Opus 5.5 on the clauth account main, the Claude $200 Max account, logged in under its own config dir",
   }),
@@ -46,7 +49,7 @@ const ReviewerChain = Schema.Tuple([
     agent: Schema.Literal("pi"),
     model: Schema.Literal(OPUS),
     effort: Effort,
-    env: Schema.Struct({ CLAUDE_CONFIG_DIR: AbsolutePath }),
+    env: Schema.Struct({ CLAUDE_CONFIG_DIR: SecondAccountDir }),
   }).annotate({ description: "Opus 5.5 on the clauth account second, the Claude $100 Max account, logged in under its own config dir" }),
 ]).annotate({ description: "Reviewers in order of preference: the review step skips an entry whose floor reads below its minimum" });
 
@@ -118,7 +121,7 @@ const NoMistakesConfig = Schema.Struct({
 
 type NoMistakesConfig = typeof NoMistakesConfig.Type;
 
-export const noMistakesConfigOf = (machine: Machine, home: string): NoMistakesConfig => ({
+export const noMistakesConfigOf = (home: string): NoMistakesConfig => ({
   agent: "pi",
   forgejo_axi_path: "forgejo-axi",
   ci_timeout: "168h",

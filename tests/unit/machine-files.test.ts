@@ -139,25 +139,24 @@ test("the description check finds a description that names a model or an effort"
   ]);
 });
 
-test.each([...MACHINES])("the %s no-mistakes config reads back as YAML into exactly its source", async (machine) => {
-  expect(Bun.YAML.parse(await valueOf(noMistakesYaml(noMistakesConfigOf(machine, HOME))))).toEqual(noMistakesConfigOf(machine, HOME));
+test("the no-mistakes config reads back as YAML into exactly its source", async () => {
+  expect(Bun.YAML.parse(await valueOf(noMistakesYaml(noMistakesConfigOf(HOME))))).toEqual(noMistakesConfigOf(HOME));
 });
 
-test.each([...MACHINES])("the %s comment review reports a warning with no-op, never an error or an escalation, and names restating and stale comments", async (machine) => {
-  const yaml = await valueOf(noMistakesYaml(noMistakesConfigOf(machine, HOME)));
+test("the comment review reports a warning with no-op, never an error or an escalation, and names restating and stale comments", async () => {
+  const yaml = await valueOf(noMistakesYaml(noMistakesConfigOf(HOME)));
   const emitted = () => Bun.YAML.parse(yaml);
   expect(emitted()).toMatchObject({ review: { path_instructions: [{ path: "**/*", instructions: expect.stringContaining("severity 'warning' and action 'no-op'") }] } });
   expect(emitted()).toMatchObject({ review: { path_instructions: [{ path: "**/*", instructions: expect.stringContaining("restates the line under it") }] } });
   expect(emitted()).toMatchObject({ review: { path_instructions: [{ path: "**/*", instructions: expect.stringContaining("will go stale") }] } });
 });
 
-test("each machine's Sol reviewer sits second under the name its pi gives the ChatGPT provider, so the second account never leads Codex", () => {
-  expect(noMistakesConfigOf("windows", HOME).reviewer_chain[1].model).toBe("openai/gpt-6.1-sol");
-  expect(noMistakesConfigOf("mac", HOME).reviewer_chain[1].model).toBe("openai/gpt-6.1-sol");
+test("the Sol reviewer sits second under the name its pi gives the ChatGPT provider, so the second account never leads Codex", () => {
+  expect(noMistakesConfigOf(HOME).reviewer_chain[1].model).toBe("openai/gpt-6.1-sol");
 });
 
-test.each([...MACHINES])("the %s reviewer chain runs Opus on main first, then Sol on Codex with its floor, then the second account last with no floor", (machine) => {
-  const [main, sol, second] = noMistakesConfigOf(machine, HOME).reviewer_chain;
+test("the reviewer chain runs Opus on main first, then Sol on Codex with its floor, then the second account last with no floor", () => {
+  const [main, sol, second] = noMistakesConfigOf(HOME).reviewer_chain;
   expect(sol.floor).toMatchObject({ command: expect.stringMatching(/^quota-axi --provider codex --json \| jq /), minimum: 30 });
   expect(second).toEqual({ agent: "pi", model: "claude-bridge/claude-opus-5-5", effort: "high", env: { CLAUDE_CONFIG_DIR: "/home/someone/.claude-accounts/second" } });
   expect(main).toEqual({
@@ -172,14 +171,14 @@ test("generation writes this machine's no-mistakes config under the generated ro
   const bytes = (await valueOf(generated(REPO))).get(noMistakesConfigUnder(GENERATED_ROOT)) ?? expect.unreachable("generation wrote no no-mistakes config");
   const config = Bun.YAML.parse(new TextDecoder().decode(bytes));
   const home = process.env.HOME ?? expect.unreachable("the test runs with no $HOME");
-  expect(config).toEqual(noMistakesConfigOf(MACHINE, home));
+  expect(config).toEqual(noMistakesConfigOf(home));
   expect(config).toMatchObject({ reviewer_chain: [{ env: { CLAUDE_CONFIG_DIR: `${home}/.claude-accounts/main` } }, {}, { env: { CLAUDE_CONFIG_DIR: `${home}/.claude-accounts/second` } }] });
 });
 
 type Chain = readonly Record<string, unknown>[];
 
 const withChain = (reorder: (chain: Chain) => readonly unknown[]) => {
-  const source = noMistakesConfigOf("windows", HOME);
+  const source = noMistakesConfigOf(HOME);
   return { ...source, reviewer_chain: reorder(source.reviewer_chain) };
 };
 
@@ -191,6 +190,7 @@ test.each([
   ["a chain that drops Sol", ([main, , second]: Chain) => [main, second], /at \["reviewer_chain"\]\[1\]/],
   ["Sol with no floor", ([main, sol, second]: Chain) => [main, withoutFloor(sol), second], /Missing key\n {2}at \["reviewer_chain"\]\[1\]\["floor"\]$/],
   ["the second account with a floor it no longer carries", ([main, sol, second]: Chain) => [main, sol, { ...second, floor: { command: "true", field: "remaining_percent", minimum: 0 } }], /no excess property\n {2}at \["reviewer_chain"\]\[2\]\["floor"\]$/],
+  ["the second account login ahead of main", ([main, sol, second]: Chain) => [second, sol, main], /at \["reviewer_chain"\]\[0\]/],
 ])("generation refuses a reviewer chain with %s", async (_, reorder, named) => {
   expect(await saidBy(noMistakesYaml(withChain(reorder)))).toMatch(named);
 });
@@ -201,7 +201,7 @@ test("generation refuses a login folder written with a tilde, which no-mistakes 
 });
 
 test("generation refuses a reviewer role beside the chain, which no-mistakes refuses to combine", async () => {
-  const source = { ...noMistakesConfigOf("windows", HOME), review_agents: { reviewer: { agent: "pi", model: "openai/gpt-6.1-sol", effort: "high" } } };
+  const source = { ...noMistakesConfigOf(HOME), review_agents: { reviewer: { agent: "pi", model: "openai/gpt-6.1-sol", effort: "high" } } };
   expect(await saidBy(noMistakesYaml(source))).toMatch(/review_agents/);
 });
 
@@ -242,11 +242,11 @@ test.each([
   ["a Pages project ending in a hyphen", { test: { evidence: { cloudflare_pages: { project: "avi2d-" } } } }, /project/],
   ["a Pages project longer than a 63-character DNS label", { test: { evidence: { cloudflare_pages: { project: "a".repeat(64) } } } }, /project/],
 ])("generation refuses %s in the no-mistakes config", async (_, change, named) => {
-  expect(await saidBy(noMistakesYaml({ ...noMistakesConfigOf("windows", HOME), ...change }))).toMatch(named);
+  expect(await saidBy(noMistakesYaml({ ...noMistakesConfigOf(HOME), ...change }))).toMatch(named);
 });
 
-test.each([...MACHINES])("the %s config rejects a missing or misplaced Pages project", async (machine) => {
-  expect(Bun.YAML.parse(await valueOf(noMistakesYaml(noMistakesConfigOf(machine, HOME))))).toMatchObject({
+test("the config rejects a missing or misplaced Pages project", async () => {
+  expect(Bun.YAML.parse(await valueOf(noMistakesYaml(noMistakesConfigOf(HOME))))).toMatchObject({
     test: { evidence: { cloudflare_pages: { project: "avi2d-nm-evidence" } } },
   });
 });

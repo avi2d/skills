@@ -9,7 +9,7 @@ Accepted. Amends 0083, 0100 and 0101: the reviewer chain runs Opus on main first
 ## Context
 
 The captain asked for review on the main Claude account first, then Codex, with the second account last.
-The generated config had listed Codex first, the second account second, and main third, so an empty login on the second account stopped the chain before main.
+The generated config had listed Codex first, the second account second, and main third.
 The fork always tries the last entry whatever its floor reads, and it moves to the next entry only after a usage limit error, as 0083 records.
 A floor on the last entry therefore never skips anything, so the second account carries none.
 

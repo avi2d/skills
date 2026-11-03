@@ -93,7 +93,7 @@ The schema knows only the fields no-mistakes reads, because no-mistakes refuses 
 In `reviewer_chain`, the review step tries Opus 5.5 on the clauth account `main` first, then GPT-6.1 Sol on the Codex $20 account, then Opus 5.5 on the clauth account `second` last.
 The first entry carries no floor, so the review step always tries it.
 The Codex entry skips while its five-hour window reads under 30%.
-The last entry carries no floor, so the review step always tries it after a usage limit error on an earlier entry, as [record 0101](adr/0101-the-second-claude-reviewer-is-the-max-account-and-loses-its-usage-floor.md) records.
+The last entry carries no floor, so the review step always tries it after a usage limit error on an earlier entry, as [record 0102](adr/0102-the-main-account-reviews-first-codex-second-and-the-second-account-last-with-no-floor.md) records.
 pi names Sol `openai/gpt-6.1-sol` on both machines.
 The login folders of `second` and `main` sit under `~/.claude-accounts/`.
 `review` holds one path instruction over every changed file that reviews added comments against comment discipline as warnings that never fix or block.

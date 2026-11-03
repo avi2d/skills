@@ -2,7 +2,6 @@ import { expect, test } from "bun:test";
 import { chmod, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
-import { MACHINES } from "../../src/generate/machine";
 import { noMistakesConfigOf } from "../../src/generate/no-mistakes-config";
 
 const JQ = Bun.which("jq") ?? expect.unreachable("the reviewer floors pipe through jq, which is not on PATH");
@@ -40,19 +39,19 @@ const printing = (body: unknown) => `cat <<'JSON'\n${JSON.stringify(body)}\nJSON
 
 const HOME = "/home/someone";
 
-const codexFloorOf = (machine: (typeof MACHINES)[number]) => noMistakesConfigOf(machine, HOME).reviewer_chain[1].floor.command;
+const codexFloor = () => noMistakesConfigOf(HOME).reviewer_chain[1].floor.command;
 
-test.each([...MACHINES])("the %s Codex floor reads the five-hour window quota-axi reports", async (machine) => {
-  const ran = await runFloor(codexFloorOf(machine), { "quota-axi": printing(codexStatus(52)) });
+test("the Codex floor reads the five-hour window quota-axi reports", async () => {
+  const ran = await runFloor(codexFloor(), { "quota-axi": printing(codexStatus(52)) });
   expect(ran).toEqual({ code: 0, stdout: `${JSON.stringify({ remaining_percent: 52 }, null, 2)}\n` });
 });
 
-test.each([...MACHINES])("the %s Codex floor leaves the weekly window out of the five-hour reading", async (machine) => {
-  const ran = await runFloor(codexFloorOf(machine), { "quota-axi": printing(codexStatus(55, { weekly: 0 })) });
+test("the Codex floor leaves the weekly window out of the five-hour reading", async () => {
+  const ran = await runFloor(codexFloor(), { "quota-axi": printing(codexStatus(55, { weekly: 0 })) });
   expect(ran).toEqual({ code: 0, stdout: `${JSON.stringify({ remaining_percent: 55 }, null, 2)}\n` });
 });
 
-test.each([...MACHINES])("the %s Codex floor reports no percentage when quota-axi serves a stale cached five-hour window", async (machine) => {
-  const ran = await runFloor(codexFloorOf(machine), { "quota-axi": printing(codexStatus(80, { stale: true })) });
+test("the Codex floor reports no percentage when quota-axi serves a stale cached five-hour window", async () => {
+  const ran = await runFloor(codexFloor(), { "quota-axi": printing(codexStatus(80, { stale: true })) });
   expect(ran).toEqual({ code: 0, stdout: `${JSON.stringify({ remaining_percent: null }, null, 2)}\n` });
 });
