@@ -99,7 +99,7 @@ The login folders of `second` and `main` sit under `~/.claude-accounts/`, and th
 It stays disabled in the generated config and falls back to Muse Spark when MiniMax errors, times out or disappears.
 `beam_drafts` holds Beam draft settings for the commit and document steps with one retry on an empty answer and an apply check on every edit.
 It stays disabled in the generated config and falls back to Muse Spark when Beam errors, times out or disappears.
-Both uses run only in skills, checks, fleet-dash, tui-dash and ru-compliance, and every other repo fails closed.
+Both uses run only in skills, checks, tui-dash and ru-compliance, and every other repo fails closed.
 `review` holds one path instruction over every changed file that reviews added comments against comment discipline as warnings that never fix or block.
 It flags a comment that restates its line or carries a measured number that will go stale, and it keeps a comment that gives a reason the code cannot show.
 `test.evidence.cloudflare_pages.project` names the Cloudflare Pages project that keeps PR screenshots.
