@@ -4,7 +4,7 @@ Date: 2026-10-04
 
 ## Status
 
-Accepted. Amended by 0095, 0100 and 0101: the Codex floor reads the five-hour window with a minimum of 30, so Sol stops at 30 percent of it; the account `second` is now the $100 Max plan and its floor checks only for its login.
+Accepted. Amended by 0095, 0100 and 0101: the Codex floor reads the five-hour window with a minimum of 30, so Sol stops at 30 percent of it; the account `second` is now the $100 Max plan and its floor checks only for its login. Amended by 0102: the chain runs main first, Sol second behind its five-hour floor, and second last with no floor.
 
 ## Context
 

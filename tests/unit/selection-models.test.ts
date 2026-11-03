@@ -16,11 +16,12 @@ for (const machine of MACHINES) {
   for (const profile of [...dispatch.rules.flatMap((rule) => rule.use), ...dispatch.ownRules.flatMap((rule) => rule.use), ...dispatch.default]) {
     at(profile.model, CREW_DISPATCH[machine] + " on " + machine);
   }
-  const mistakes = noMistakesConfigOf(machine, "/home/someone");
-  at(mistakes.agent_config.claude.model, "the no-mistakes config agent_config.claude on " + machine);
-  at(mistakes.agent_config.pi.model, "the no-mistakes config agent_config.pi on " + machine);
-  for (const reviewer of mistakes.reviewer_chain) at(reviewer.model, "the no-mistakes config reviewer_chain on " + machine);
 }
+
+const mistakes = noMistakesConfigOf("/home/someone");
+at(mistakes.agent_config.claude.model, "the no-mistakes config agent_config.claude");
+at(mistakes.agent_config.pi.model, "the no-mistakes config agent_config.pi");
+for (const reviewer of mistakes.reviewer_chain) at(reviewer.model, "the no-mistakes config reviewer_chain");
 
 test("every model the generated configs name runs from a profile or the default set", () => {
   const placed = new Set([...selection.profiles.flatMap((profile) => profile.models), ...selection.defaultModels]);

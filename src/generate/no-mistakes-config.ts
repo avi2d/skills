@@ -1,6 +1,5 @@
 import { Config, Effect, Schema } from "effect";
 import { FileFailure, MalformedMachineConfig } from "../platform/failures";
-import type { Machine } from "./machine";
 
 const Duration = Schema.TemplateLiteral([Schema.Finite, Schema.Literals(["ms", "s", "m", "h"])]);
 
@@ -26,11 +25,22 @@ const Floor = Schema.Struct({
   minimum: Schema.Int.check(Schema.isBetween({ minimum: 0, maximum: 100 })),
 });
 
-const AbsolutePath = Schema.String.check(Schema.isStartingWith("/")).annotate({
-  description: "no-mistakes hands an entry's env to the agent unexpanded, so a tilde would never reach a home",
-});
+const ACCOUNTS_DIR = "/.claude-accounts";
+
+const accountDirOf = (account: string) =>
+  Schema.String.check(Schema.isStartingWith("/")).check(Schema.isEndingWith(`${ACCOUNTS_DIR}/${account}`)).annotate({
+    description: "no-mistakes hands an entry's env to the agent unexpanded, so a tilde would never reach a home",
+  });
 
 const ReviewerChain = Schema.Tuple([
+  Schema.Struct({
+    agent: Schema.Literal("pi"),
+    model: Schema.Literal(OPUS),
+    effort: Effort,
+    env: Schema.Struct({ CLAUDE_CONFIG_DIR: accountDirOf(MAIN_ACCOUNT) }),
+  }).annotate({
+    description: "Opus 5.5 on the clauth account main, the Claude $200 Max account, logged in under its own config dir",
+  }),
   Schema.Struct({ agent: Schema.Literal("pi"), model: Schema.Literal(SOL), effort: Effort, floor: Floor }).annotate({
     description: "GPT-6.1 Sol on the Codex $20 account",
   }),
@@ -38,31 +48,16 @@ const ReviewerChain = Schema.Tuple([
     agent: Schema.Literal("pi"),
     model: Schema.Literal(OPUS),
     effort: Effort,
-    env: Schema.Struct({ CLAUDE_CONFIG_DIR: AbsolutePath }),
-    floor: Floor,
+    env: Schema.Struct({ CLAUDE_CONFIG_DIR: accountDirOf(SECOND_ACCOUNT) }),
   }).annotate({ description: "Opus 5.5 on the clauth account second, the Claude $100 Max account, logged in under its own config dir" }),
-  Schema.Struct({
-    agent: Schema.Literal("pi"),
-    model: Schema.Literal(OPUS),
-    effort: Effort,
-    env: Schema.Struct({ CLAUDE_CONFIG_DIR: AbsolutePath }),
-  }).annotate({
-    description: "Opus 5.5 on the clauth account main, the Claude $200 Max account, logged in under its own config dir",
-  }),
 ]).annotate({ description: "Reviewers in order of preference: the review step skips an entry whose floor reads below its minimum" });
 
 // A floor's field walks only objects, and quota-axi lists accounts in an array.
 const CODEX_REMAINING = `{remaining_percent: ([.providers[] | select(.provider == "codex" and .state.stale == false) | .windows[] | select(.id == "five_hour") | .percentRemaining] | first)}`;
 
-const loginDir = (home: string, account: string) => `${home}/.claude-accounts/${account}`;
+const SOL_FLOOR_MINIMUM = 30;
 
-// Claude Code names a config dir's Keychain item by the first 8 hex chars of sha256 over that dir.
-const keychainServiceOf = (dir: string) => `Claude Code-credentials-${new Bun.CryptoHasher("sha256").update(dir.normalize("NFC")).digest("hex").slice(0, 8)}`;
-
-const loginIn = (machine: Machine, dir: string) =>
-  machine === "mac" ? `security find-generic-password -s '${keychainServiceOf(dir)}' >/dev/null 2>&1` : `test -s '${dir}/.credentials.json'`;
-
-const FULL_ALLOWANCE = `echo '{"remaining_percent":100}'`;
+const loginDir = (home: string, account: string) => `${home}${ACCOUNTS_DIR}/${account}`;
 
 // The base review prompt skips style, so the instruction says comments are wanted.
 const COMMENT_REVIEW = [
@@ -70,8 +65,6 @@ const COMMENT_REVIEW = [
   "Keep a comment that gives a reason the code cannot show, or an invariant the types cannot hold.",
   "Never report a comment as 'error', and never as 'ask-user' or 'auto-fix'.",
 ].join(" ");
-
-const SOL_FLOOR_MINIMUM = 30;
 
 const PagesProject = Schema.String.check(Schema.isPattern(/^(?=.{1,63}$)[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/)).annotate({
   description: "A DNS label of lowercase letters, digits and inner hyphens, which no-mistakes refuses otherwise",
@@ -127,7 +120,7 @@ const NoMistakesConfig = Schema.Struct({
 
 type NoMistakesConfig = typeof NoMistakesConfig.Type;
 
-export const noMistakesConfigOf = (machine: Machine, home: string): NoMistakesConfig => ({
+export const noMistakesConfigOf = (home: string): NoMistakesConfig => ({
   agent: "pi",
   forgejo_axi_path: "forgejo-axi",
   ci_timeout: "168h",
@@ -146,6 +139,7 @@ export const noMistakesConfigOf = (machine: Machine, home: string): NoMistakesCo
     pi: { model: SPARK, effort: "high" },
   },
   reviewer_chain: [
+    { agent: "pi", model: OPUS, effort: "high", env: { CLAUDE_CONFIG_DIR: loginDir(home, MAIN_ACCOUNT) } },
     {
       agent: "pi",
       model: SOL,
@@ -157,9 +151,7 @@ export const noMistakesConfigOf = (machine: Machine, home: string): NoMistakesCo
       model: OPUS,
       effort: "high",
       env: { CLAUDE_CONFIG_DIR: loginDir(home, SECOND_ACCOUNT) },
-      floor: { command: `${loginIn(machine, loginDir(home, SECOND_ACCOUNT))} && ${FULL_ALLOWANCE}`, field: "remaining_percent", minimum: 0 },
     },
-    { agent: "pi", model: OPUS, effort: "high", env: { CLAUDE_CONFIG_DIR: loginDir(home, MAIN_ACCOUNT) } },
   ],
   auto_fix: { rebase: 3, lint: 3, test: 3, review: 0, document: 3, ci: 3 },
   ci: { rerun_transient: 0, revalidate_repairs: false },

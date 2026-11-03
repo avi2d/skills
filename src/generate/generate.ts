@@ -1,4 +1,3 @@
-import { platform } from "node:os";
 import { Effect, Option, type FileSystem } from "effect";
 import { loadBodies, type Body, type Harness } from "../bodies/bodies";
 import type { IndexedProfile } from "../dispatcher/dispatch";
@@ -10,7 +9,6 @@ import { consultable, hubUnder, hubs, type HubOutcome } from "./hub";
 import { dormantRules, loadSelection, profilesOf, selected } from "../bodies/selection";
 import { main } from "../platform/platform";
 import { machineDrift, writeMachineFiles } from "./machine-files";
-import { machineOn } from "./machine";
 import { noMistakesConfigOf, noMistakesConfigUnder, noMistakesYaml, readHome } from "./no-mistakes-config";
 
 export const DISPATCHERS: { harness: Harness; bundle: Bundle }[] = [
@@ -49,7 +47,7 @@ export const emitted = Effect.fnUntraced(function* (
     for (const [dest, bytes] of yield* bundle(spec, repo)) out.set(dest, bytes);
     out.set(`${root}/${spec.dir}/${INDEX}`, indexBytes(yield* indexFor(harness, bodies, profiles, dormant)));
   }
-  const noMistakes = yield* noMistakesYaml(noMistakesConfigOf(machineOn(platform()), yield* readHome));
+  const noMistakes = yield* noMistakesYaml(noMistakesConfigOf(yield* readHome));
   out.set(noMistakesConfigUnder(root), new TextEncoder().encode(noMistakes));
   return out;
 });

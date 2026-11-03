@@ -4,7 +4,7 @@ Date: 2026-10-19
 
 ## Status
 
-Accepted. Supersedes 0095 and amends 0083: the Sol floor reads the Codex window with id five_hour and its minimum is 30, so Sol stops at 30 percent of the five-hour window. Amended by 0101: the account `second` is now the $100 Max plan and its 30 percent floor is gone.
+Accepted. Supersedes 0095 and amends 0083: the Sol floor reads the Codex window with id five_hour and its minimum is 30, so Sol stops at 30 percent of the five-hour window. Amended by 0101: the account `second` is now the $100 Max plan and its 30 percent floor is gone. Amended by 0102: Sol runs second behind the 30 percent minimum, which stays.
 
 ## Context
 
