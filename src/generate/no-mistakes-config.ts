@@ -14,12 +14,6 @@ const OPUS = "claude-bridge/claude-opus-5-5";
 
 const SPARK = "opencode-go/muse-spark-1.3-contributor";
 
-const MINIMAX = "opencode-go/minimax-m3.1-flash-free";
-
-const BEAM = "opencode-go/beam-free";
-
-const FREE_MODEL_REPOS = ["skills", "checks", "tui-dash", "ru-compliance"] as const;
-
 const SECOND_ACCOUNT = "second";
 
 const MAIN_ACCOUNT = "main";
@@ -56,32 +50,6 @@ const ReviewerChain = Schema.Tuple([
     description: "Opus 5.5 on the clauth account main, the Claude $200 Max account, logged in under its own config dir",
   }),
 ]).annotate({ description: "Reviewers in order of preference: the review step skips an entry whose floor reads below its minimum" });
-
-const FreeModelRepos = Schema.Tuple([
-  Schema.Literal(FREE_MODEL_REPOS[0]),
-  Schema.Literal(FREE_MODEL_REPOS[1]),
-  Schema.Literal(FREE_MODEL_REPOS[2]),
-  Schema.Literal(FREE_MODEL_REPOS[3]),
-]).annotate({ description: "Repos a free model may run on: any other repo fails closed" });
-
-const MinimaxExtraReview = Schema.Struct({
-  enabled: Schema.Boolean,
-  model: Schema.Literal(MINIMAX),
-  fallback_model: Schema.Literal(SPARK),
-  mode: Schema.Literal("advisory"),
-  steps: Schema.Tuple([Schema.Literal("review")]),
-  repos: FreeModelRepos,
-}).annotate({ description: "MiniMax as an extra reviewer: findings sit beside the normal review and never gate, fix or apply" });
-
-const BeamDrafts = Schema.Struct({
-  enabled: Schema.Boolean,
-  model: Schema.Literal(BEAM),
-  fallback_model: Schema.Literal(SPARK),
-  steps: Schema.Tuple([Schema.Literal("commit"), Schema.Literal("document")]),
-  empty_retries: Schema.Literal(1),
-  apply_check: Schema.Literal(true),
-  repos: FreeModelRepos,
-}).annotate({ description: "Beam drafts commit messages and the doc pass, retrying once on empty and apply-checking every edit" });
 
 // A floor's field walks only objects, and quota-axi lists accounts in an array.
 const CODEX_REMAINING = `{remaining_percent: ([.providers[] | select(.provider == "codex" and .state.stale == false) | .windows[] | select(.id == "five_hour") | .percentRemaining] | first)}`;
@@ -133,8 +101,6 @@ const NoMistakesConfig = Schema.Struct({
     pi: Schema.Struct({ model: Schema.Literal(SPARK), effort: Effort }),
   }),
   reviewer_chain: ReviewerChain,
-  minimax_extra_review: MinimaxExtraReview,
-  beam_drafts: BeamDrafts,
   auto_fix: Schema.Struct({ rebase: Count, lint: Count, test: Count, review: Count, document: Count, ci: Count }),
   ci: Schema.Struct({ rerun_transient: Count, revalidate_repairs: Schema.Boolean }),
   intent: Schema.Struct({
@@ -195,23 +161,6 @@ export const noMistakesConfigOf = (machine: Machine, home: string): NoMistakesCo
     },
     { agent: "pi", model: OPUS, effort: "high", env: { CLAUDE_CONFIG_DIR: loginDir(home, MAIN_ACCOUNT) } },
   ],
-  minimax_extra_review: {
-    enabled: false,
-    model: MINIMAX,
-    fallback_model: SPARK,
-    mode: "advisory",
-    steps: ["review"],
-    repos: FREE_MODEL_REPOS,
-  },
-  beam_drafts: {
-    enabled: false,
-    model: BEAM,
-    fallback_model: SPARK,
-    steps: ["commit", "document"],
-    empty_retries: 1,
-    apply_check: true,
-    repos: FREE_MODEL_REPOS,
-  },
   auto_fix: { rebase: 3, lint: 3, test: 3, review: 0, document: 3, ci: 3 },
   ci: { rerun_transient: 0, revalidate_repairs: false },
   intent: { enabled: true, threshold: 0.2, slack_days: 3 },
