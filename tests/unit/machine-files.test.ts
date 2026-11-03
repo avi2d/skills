@@ -6,7 +6,7 @@ import { join } from "node:path";
 import { TASK_KINDS, crewDispatchJson } from "../../src/generate/crew-dispatch";
 import { crewDispatchOf } from "../../src/generate/crew-dispatch-config";
 import { generated } from "../../src/generate/generate";
-import { MACHINE, REPO } from "../../src/generate/link";
+import { REPO } from "../../src/generate/link";
 import { MACHINES } from "../../src/generate/machine";
 import { FIRSTMATE_PINS } from "../../src/generate/firstmate-pins";
 import { CREW_DISPATCH, machineDrift, machineFiles } from "../../src/generate/machine-files";

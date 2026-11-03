@@ -20,5 +20,5 @@ Only the Codex floor runs quota-axi and jq.
 
 ## Consequences
 
-The review step always tries main first, then Sol while its five-hour window holds 30% or more, then the second account, which the fork reaches after a usage limit error whatever the earlier entries read.
+The review step always tries main first, then Sol while its five-hour window holds 30% or more, then the second account, which the fork reaches when `main` hits a usage limit and Sol is skipped or hits one too.
 The review step needs quota-axi and jq for the Codex floor.

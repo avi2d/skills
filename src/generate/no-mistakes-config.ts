@@ -25,20 +25,19 @@ const Floor = Schema.Struct({
   minimum: Schema.Int.check(Schema.isBetween({ minimum: 0, maximum: 100 })),
 });
 
-const MainAccountDir = Schema.String.check(Schema.isStartingWith("/")).check(Schema.isEndingWith("/.claude-accounts/main")).annotate({
-  description: "no-mistakes hands an entry's env to the agent unexpanded, so a tilde would never reach a home",
-});
+const ACCOUNTS_DIR = "/.claude-accounts";
 
-const SecondAccountDir = Schema.String.check(Schema.isStartingWith("/")).check(Schema.isEndingWith("/.claude-accounts/second")).annotate({
-  description: "no-mistakes hands a login dir to the agent unexpanded",
-});
+const accountDirOf = (account: string) =>
+  Schema.String.check(Schema.isStartingWith("/")).check(Schema.isEndingWith(`${ACCOUNTS_DIR}/${account}`)).annotate({
+    description: "no-mistakes hands an entry's env to the agent unexpanded, so a tilde would never reach a home",
+  });
 
 const ReviewerChain = Schema.Tuple([
   Schema.Struct({
     agent: Schema.Literal("pi"),
     model: Schema.Literal(OPUS),
     effort: Effort,
-    env: Schema.Struct({ CLAUDE_CONFIG_DIR: MainAccountDir }),
+    env: Schema.Struct({ CLAUDE_CONFIG_DIR: accountDirOf(MAIN_ACCOUNT) }),
   }).annotate({
     description: "Opus 5.5 on the clauth account main, the Claude $200 Max account, logged in under its own config dir",
   }),
@@ -49,7 +48,7 @@ const ReviewerChain = Schema.Tuple([
     agent: Schema.Literal("pi"),
     model: Schema.Literal(OPUS),
     effort: Effort,
-    env: Schema.Struct({ CLAUDE_CONFIG_DIR: SecondAccountDir }),
+    env: Schema.Struct({ CLAUDE_CONFIG_DIR: accountDirOf(SECOND_ACCOUNT) }),
   }).annotate({ description: "Opus 5.5 on the clauth account second, the Claude $100 Max account, logged in under its own config dir" }),
 ]).annotate({ description: "Reviewers in order of preference: the review step skips an entry whose floor reads below its minimum" });
 
@@ -58,7 +57,7 @@ const CODEX_REMAINING = `{remaining_percent: ([.providers[] | select(.provider =
 
 const SOL_FLOOR_MINIMUM = 30;
 
-const loginDir = (home: string, account: string) => `${home}/.claude-accounts/${account}`;
+const loginDir = (home: string, account: string) => `${home}${ACCOUNTS_DIR}/${account}`;
 
 // The base review prompt skips style, so the instruction says comments are wanted.
 const COMMENT_REVIEW = [
