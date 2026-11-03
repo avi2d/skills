@@ -244,7 +244,8 @@ test("secondmate harness defaults to haiku", () => {
 
 test.each([
   ["a field no-mistakes does not know", { bogus_field: 1 }, /bogus_field/],
-  ["the retired minimax_extra_review key", { minimax_extra_review: { enabled: false } }, /minimax_extra_review/],
+  ["the retired minimax_extra_review section", { minimax_extra_review: { enabled: false, model: "opencode-go/minimax-m3.1-flash-free", fallback_model: "opencode-go/muse-spark-1.3-contributor", mode: "advisory", steps: ["review"], repos: ["skills", "checks", "tui-dash", "ru-compliance"] } }, /Expected no excess property\n {2}at \["minimax_extra_review"\]/],
+  ["the retired beam_drafts section", { beam_drafts: { enabled: false, model: "opencode-go/beam-free", fallback_model: "opencode-go/muse-spark-1.3-contributor", steps: ["commit", "document"], empty_retries: 1, apply_check: true, repos: ["skills", "checks", "tui-dash", "ru-compliance"] } }, /Expected no excess property\n {2}at \["beam_drafts"\]/],
   ["a duration with no unit", { agent_timeout: "30" }, /agent_timeout/],
   ["a rebase strategy no-mistakes refuses", { rebase: { strategy: "squash" } }, /strategy/],
   ["a Pages project with an uppercase letter and an underscore", { test: { evidence: { cloudflare_pages: { project: "Avi2d_Evidence" } } } }, /project/],
