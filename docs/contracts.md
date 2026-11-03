@@ -95,7 +95,7 @@ The first entry carries no floor, so the review step always tries it.
 The second entry keeps only its login check with minimum 0, as [record 0101](adr/0101-the-second-claude-reviewer-is-the-max-account-and-loses-its-usage-floor.md) records, so the review step skips it while its folder holds no Claude Code login.
 The last entry carries no floor, so the review step always tries it after a usage limit error on an earlier entry.
 pi names Sol `openai/gpt-6.1-sol` on both machines.
-The login folders of `second` and `main` sit under `~/.claude-accounts/`, and the review step skips the `second` entry while its folder holds no Claude Code login.
+The login folders of `second` and `main` sit under `~/.claude-accounts/`.
 `review` holds one path instruction over every changed file that reviews added comments against comment discipline as warnings that never fix or block.
 It flags a comment that restates its line or carries a measured number that will go stale, and it keeps a comment that gives a reason the code cannot show.
 `test.evidence.cloudflare_pages.project` names the Cloudflare Pages project that keeps PR screenshots.

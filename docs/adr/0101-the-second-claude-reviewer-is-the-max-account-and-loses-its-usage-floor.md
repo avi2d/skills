@@ -4,7 +4,7 @@ Date: 2026-10-20
 
 ## Status
 
-Accepted. Amends 0083 and 0100: the clauth account `second` is the captain's $100 Max plan, and its entry no longer stops at 30 percent of its allowance; the Codex floor stays at 30.
+Accepted. Amends 0083 and 0100: the clauth account `second` is the captain's $100 Max plan, and its entry no longer stops at 30 percent of its allowance; the Codex floor stays at 30. Amended by 0102: the chain runs main first, second second, and Sol last with no floor.
 
 ## Context
 
