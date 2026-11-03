@@ -39,27 +39,23 @@ const ReviewerChain = Schema.Tuple([
   }).annotate({
     description: "Opus 5.5 on the clauth account main, the Claude $200 Max account, logged in under its own config dir",
   }),
+  Schema.Struct({ agent: Schema.Literal("pi"), model: Schema.Literal(SOL), effort: Effort, floor: Floor }).annotate({
+    description: "GPT-6.1 Sol on the Codex $20 account",
+  }),
   Schema.Struct({
     agent: Schema.Literal("pi"),
     model: Schema.Literal(OPUS),
     effort: Effort,
     env: Schema.Struct({ CLAUDE_CONFIG_DIR: AbsolutePath }),
-    floor: Floor,
   }).annotate({ description: "Opus 5.5 on the clauth account second, the Claude $100 Max account, logged in under its own config dir" }),
-  Schema.Struct({ agent: Schema.Literal("pi"), model: Schema.Literal(SOL), effort: Effort }).annotate({
-    description: "GPT-6.1 Sol on the Codex $20 account",
-  }),
 ]).annotate({ description: "Reviewers in order of preference: the review step skips an entry whose floor reads below its minimum" });
 
+// A floor's field walks only objects, and quota-axi lists accounts in an array.
+const CODEX_REMAINING = `{remaining_percent: ([.providers[] | select(.provider == "codex" and .state.stale == false) | .windows[] | select(.id == "five_hour") | .percentRemaining] | first)}`;
+
+const SOL_FLOOR_MINIMUM = 30;
+
 const loginDir = (home: string, account: string) => `${home}/.claude-accounts/${account}`;
-
-// Claude Code names a config dir's Keychain item by the first 8 hex chars of sha256 over that dir.
-const keychainServiceOf = (dir: string) => `Claude Code-credentials-${new Bun.CryptoHasher("sha256").update(dir.normalize("NFC")).digest("hex").slice(0, 8)}`;
-
-const loginIn = (machine: Machine, dir: string) =>
-  machine === "mac" ? `security find-generic-password -s '${keychainServiceOf(dir)}' >/dev/null 2>&1` : `test -s '${dir}/.credentials.json'`;
-
-const FULL_ALLOWANCE = `echo '{"remaining_percent":100}'`;
 
 // The base review prompt skips style, so the instruction says comments are wanted.
 const COMMENT_REVIEW = [
@@ -144,12 +140,16 @@ export const noMistakesConfigOf = (machine: Machine, home: string): NoMistakesCo
     { agent: "pi", model: OPUS, effort: "high", env: { CLAUDE_CONFIG_DIR: loginDir(home, MAIN_ACCOUNT) } },
     {
       agent: "pi",
+      model: SOL,
+      effort: "high",
+      floor: { command: `quota-axi --provider codex --json | jq '${CODEX_REMAINING}'`, field: "remaining_percent", minimum: SOL_FLOOR_MINIMUM },
+    },
+    {
+      agent: "pi",
       model: OPUS,
       effort: "high",
       env: { CLAUDE_CONFIG_DIR: loginDir(home, SECOND_ACCOUNT) },
-      floor: { command: `${loginIn(machine, loginDir(home, SECOND_ACCOUNT))} && ${FULL_ALLOWANCE}`, field: "remaining_percent", minimum: 0 },
     },
-    { agent: "pi", model: SOL, effort: "high" },
   ],
   auto_fix: { rebase: 3, lint: 3, test: 3, review: 0, document: 3, ci: 3 },
   ci: { rerun_transient: 0, revalidate_repairs: false },

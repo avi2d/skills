@@ -109,4 +109,4 @@ Read those before acting on the record they revise.
 | [0099](0099-writing-for-people-is-switched-on-for-muse-spark-alone.md) | Writing for people is switched on for Muse Spark alone | Accepted |  |
 | [0100](0100-the-codex-reviewer-stops-at-30-percent-of-the-five-hour-window.md) | The Codex reviewer stops at 30 percent of the five-hour window | Accepted | [0101](0101-the-second-claude-reviewer-is-the-max-account-and-loses-its-usage-floor.md), [0102](0102-the-main-account-reviews-first-and-codex-reviews-last-with-no-floor.md) |
 | [0101](0101-the-second-claude-reviewer-is-the-max-account-and-loses-its-usage-floor.md) | The second Claude reviewer is the Max account and loses its usage floor | Accepted | [0102](0102-the-main-account-reviews-first-and-codex-reviews-last-with-no-floor.md) |
-| [0102](0102-the-main-account-reviews-first-and-codex-reviews-last-with-no-floor.md) | The main account reviews first and Codex reviews last with no floor | Accepted |  |
+| [0102](0102-the-main-account-reviews-first-and-codex-reviews-last-with-no-floor.md) | The main account reviews first, Codex second, and the second account last with no floor | Accepted |  |

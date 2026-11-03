@@ -90,10 +90,10 @@ pi silently moves an effort a model does not support to the next level up that i
 
 `bun run generate` writes the no-mistakes global config to `generated/no-mistakes/config.yaml` from `src/generate/no-mistakes-config.ts`, for the machine it runs on and the `$HOME` it runs under, and `bun run link` links `~/.no-mistakes/config.yaml` to it.
 The schema knows only the fields no-mistakes reads, because no-mistakes refuses a config file with a field it does not know.
-In `reviewer_chain`, the review step tries Opus 5.5 on the clauth account `main` first, then Opus 5.5 on the clauth account `second`, then GPT-6.1 Sol on the Codex $20 account last.
+In `reviewer_chain`, the review step tries Opus 5.5 on the clauth account `main` first, then GPT-6.1 Sol on the Codex $20 account, then Opus 5.5 on the clauth account `second` last.
 The first entry carries no floor, so the review step always tries it.
-The second entry keeps only its login check with minimum 0, as [record 0101](adr/0101-the-second-claude-reviewer-is-the-max-account-and-loses-its-usage-floor.md) records, so the review step skips it while its folder holds no Claude Code login.
-The last entry carries no floor, so the review step always tries it after a usage limit error on an earlier entry.
+The Codex entry skips while its five-hour window reads under 30%.
+The last entry carries no floor, so the review step always tries it after a usage limit error on an earlier entry, as [record 0101](adr/0101-the-second-claude-reviewer-is-the-max-account-and-loses-its-usage-floor.md) records.
 pi names Sol `openai/gpt-6.1-sol` on both machines.
 The login folders of `second` and `main` sit under `~/.claude-accounts/`.
 `review` holds one path instruction over every changed file that reviews added comments against comment discipline as warnings that never fix or block.

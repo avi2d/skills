@@ -1,6 +1,5 @@
 import { expect, test } from "bun:test";
 import { Schema } from "effect";
-import { createHash } from "node:crypto";
 import { cp, mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -152,17 +151,15 @@ test.each([...MACHINES])("the %s comment review reports a warning with no-op, ne
   expect(emitted()).toMatchObject({ review: { path_instructions: [{ path: "**/*", instructions: expect.stringContaining("will go stale") }] } });
 });
 
-test("each machine's Sol reviewer sits last under the name its pi gives the ChatGPT provider, so the review never starts on Codex ahead of main", () => {
-  expect(noMistakesConfigOf("windows", HOME).reviewer_chain[2].model).toBe("openai/gpt-6.1-sol");
-  expect(noMistakesConfigOf("mac", HOME).reviewer_chain[2].model).toBe("openai/gpt-6.1-sol");
+test("each machine's Sol reviewer sits second under the name its pi gives the ChatGPT provider, so the second account never leads Codex", () => {
+  expect(noMistakesConfigOf("windows", HOME).reviewer_chain[1].model).toBe("openai/gpt-6.1-sol");
+  expect(noMistakesConfigOf("mac", HOME).reviewer_chain[1].model).toBe("openai/gpt-6.1-sol");
 });
 
-test.each([...MACHINES])("the %s reviewer chain runs Opus on main first, then Opus on the second account, then Sol last with no floor", (machine) => {
-  const [main, second, sol] = noMistakesConfigOf(machine, HOME).reviewer_chain;
-  expect(second.model).toBe("claude-bridge/claude-opus-5-5");
-  expect(second.env.CLAUDE_CONFIG_DIR).toBe("/home/someone/.claude-accounts/second");
-  expect(second.floor).toMatchObject({ field: "remaining_percent", minimum: 0 });
-  expect(sol).toEqual({ agent: "pi", model: "openai/gpt-6.1-sol", effort: "high" });
+test.each([...MACHINES])("the %s reviewer chain runs Opus on main first, then Sol on Codex with its floor, then the second account last with no floor", (machine) => {
+  const [main, sol, second] = noMistakesConfigOf(machine, HOME).reviewer_chain;
+  expect(sol.floor).toMatchObject({ command: expect.stringMatching(/^quota-axi --provider codex --json \| jq /), minimum: 30 });
+  expect(second).toEqual({ agent: "pi", model: "claude-bridge/claude-opus-5-5", effort: "high", env: { CLAUDE_CONFIG_DIR: "/home/someone/.claude-accounts/second" } });
   expect(main).toEqual({
     agent: "pi",
     model: "claude-bridge/claude-opus-5-5",
@@ -176,13 +173,7 @@ test("generation writes this machine's no-mistakes config under the generated ro
   const config = Bun.YAML.parse(new TextDecoder().decode(bytes));
   const home = process.env.HOME ?? expect.unreachable("the test runs with no $HOME");
   expect(config).toEqual(noMistakesConfigOf(MACHINE, home));
-  expect(config).toMatchObject({ reviewer_chain: [{ env: { CLAUDE_CONFIG_DIR: `${home}/.claude-accounts/main` } }, { env: { CLAUDE_CONFIG_DIR: `${home}/.claude-accounts/second` } }, {}] });
-});
-
-test("the Mac second-account floor asks the Keychain for the service Claude Code derives from that login dir", () => {
-  const [, second] = noMistakesConfigOf("mac", HOME).reviewer_chain;
-  const service = `Claude Code-credentials-${createHash("sha256").update(second.env.CLAUDE_CONFIG_DIR.normalize("NFC")).digest("hex").slice(0, 8)}`;
-  expect(second.floor.command).toStartWith(`security find-generic-password -s '${service}' >/dev/null 2>&1 && `);
+  expect(config).toMatchObject({ reviewer_chain: [{ env: { CLAUDE_CONFIG_DIR: `${home}/.claude-accounts/main` } }, {}, { env: { CLAUDE_CONFIG_DIR: `${home}/.claude-accounts/second` } }] });
 });
 
 type Chain = readonly Record<string, unknown>[];
@@ -195,18 +186,17 @@ const withChain = (reorder: (chain: Chain) => readonly unknown[]) => {
 const withoutFloor = ({ floor: _, ...entry }: Record<string, unknown> = {}) => entry;
 
 test.each([
-  ["Sol ahead of the second account", ([main, second, sol]: Chain) => [main, sol, second], /at \["reviewer_chain"\]\[1\]\["model"\]$/],
-  ["the second account ahead of main", ([main, second, sol]: Chain) => [second, main, sol], /no excess property\n {2}at \["reviewer_chain"\]\[0\]\["floor"\]$/],
-  ["a first reviewer off Opus on main", ([main, second, sol]: Chain) => [{ ...main, model: "openai/gpt-6-luna" }, second, sol], /at \["reviewer_chain"\]\[0\]\["model"\]$/],
-  ["a chain that drops the second account", ([main, , sol]: Chain) => [main, sol], /at \["reviewer_chain"\]\[1\]/],
-  ["Sol with a floor the last entry never reads", ([main, second, sol]: Chain) => [main, second, { ...sol, floor: { command: "true", field: "remaining_percent", minimum: 0 } }], /no excess property\n {2}at \["reviewer_chain"\]\[2\]\["floor"\]$/],
-  ["the second account with no floor", ([main, second, sol]: Chain) => [main, withoutFloor(second), sol], /Missing key\n {2}at \["reviewer_chain"\]\[1\]\["floor"\]$/],
+  ["the second account ahead of Sol", ([main, sol, second]: Chain) => [main, second, sol], /no excess property\n {2}at \["reviewer_chain"\]\[1\]\["env"\]$/],
+  ["a first reviewer off Opus on main", ([main, sol, second]: Chain) => [{ ...main, model: "openai/gpt-6-luna" }, sol, second], /at \["reviewer_chain"\]\[0\]\["model"\]$/],
+  ["a chain that drops Sol", ([main, , second]: Chain) => [main, second], /at \["reviewer_chain"\]\[1\]/],
+  ["Sol with no floor", ([main, sol, second]: Chain) => [main, withoutFloor(sol), second], /Missing key\n {2}at \["reviewer_chain"\]\[1\]\["floor"\]$/],
+  ["the second account with a floor it no longer carries", ([main, sol, second]: Chain) => [main, sol, { ...second, floor: { command: "true", field: "remaining_percent", minimum: 0 } }], /no excess property\n {2}at \["reviewer_chain"\]\[2\]\["floor"\]$/],
 ])("generation refuses a reviewer chain with %s", async (_, reorder, named) => {
   expect(await saidBy(noMistakesYaml(withChain(reorder)))).toMatch(named);
 });
 
 test("generation refuses a login folder written with a tilde, which no-mistakes passes to the agent unexpanded", async () => {
-  const source = withChain(([main, second, sol]) => [main, { ...second, env: { CLAUDE_CONFIG_DIR: "~/.claude-accounts/second" } }, sol]);
+  const source = withChain(([main, sol, second]) => [main, sol, { ...second, env: { CLAUDE_CONFIG_DIR: "~/.claude-accounts/second" } }]);
   expect(await saidBy(noMistakesYaml(source))).toMatch(/Expected a string starting with "\/"\n {2}at .*\["CLAUDE_CONFIG_DIR"\]$/);
 });
 
