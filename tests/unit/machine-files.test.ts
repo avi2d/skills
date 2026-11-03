@@ -244,6 +244,7 @@ test("secondmate harness defaults to haiku", () => {
 
 test.each([
   ["a field no-mistakes does not know", { bogus_field: 1 }, /bogus_field/],
+  ["the retired minimax_extra_review key", { minimax_extra_review: { enabled: false } }, /minimax_extra_review/],
   ["a duration with no unit", { agent_timeout: "30" }, /agent_timeout/],
   ["a rebase strategy no-mistakes refuses", { rebase: { strategy: "squash" } }, /strategy/],
   ["a Pages project with an uppercase letter and an underscore", { test: { evidence: { cloudflare_pages: { project: "Avi2d_Evidence" } } } }, /project/],
@@ -257,63 +258,6 @@ test.each([...MACHINES])("the %s config rejects a missing or misplaced Pages pro
   expect(Bun.YAML.parse(await valueOf(noMistakesYaml(noMistakesConfigOf(machine, HOME))))).toMatchObject({
     test: { evidence: { cloudflare_pages: { project: "avi2d-nm-evidence" } } },
   });
-});
-
-const FREE_MODEL_REPOS = ["skills", "checks", "tui-dash", "ru-compliance"] as const;
-
-test.each([...MACHINES])("the %s config leaves MiniMax off and Beam off with Muse fallback inside the four-repo allowlist", (machine) => {
-  const config = noMistakesConfigOf(machine, HOME);
-  expect(config.minimax_extra_review).toEqual({
-    enabled: false,
-    model: "opencode-go/minimax-m3.1-flash-free",
-    fallback_model: "opencode-go/muse-spark-1.3-contributor",
-    mode: "advisory",
-    steps: ["review"],
-    repos: FREE_MODEL_REPOS,
-  });
-  expect(config.beam_drafts).toEqual({
-    enabled: false,
-    model: "opencode-go/beam-free",
-    fallback_model: "opencode-go/muse-spark-1.3-contributor",
-    steps: ["commit", "document"],
-    empty_retries: 1,
-    apply_check: true,
-    repos: FREE_MODEL_REPOS,
-  });
-});
-
-test("disabling a free-model use decodes, so each switch stays optional", async () => {
-  const source = noMistakesConfigOf("windows", HOME);
-  const disabled = {
-    ...source,
-    minimax_extra_review: { ...source.minimax_extra_review, enabled: false },
-    beam_drafts: { ...source.beam_drafts, enabled: false },
-  };
-  expect(Bun.YAML.parse(await valueOf(noMistakesYaml(disabled)))).toEqual(disabled);
-});
-
-const withFreeModels = (minimax: Record<string, unknown>, beam: Record<string, unknown>) => {
-  const source = noMistakesConfigOf("windows", HOME);
-  return {
-    ...source,
-    minimax_extra_review: { ...source.minimax_extra_review, ...minimax },
-    beam_drafts: { ...source.beam_drafts, ...beam },
-  };
-};
-
-test.each([
-  ["a minimax reviewer that gates", withFreeModels({ mode: "blocking" }, {}), /at \["minimax_extra_review"\]\["mode"\]$/],
-  ["minimax outside the review step", withFreeModels({ steps: ["document"] }, {}), /at \["minimax_extra_review"\]\["steps"\](\[\d+\])?$/],
-  ["a minimax use off its free id", withFreeModels({ model: "opencode-go/muse-spark-1.3-contributor" }, {}), /at \["minimax_extra_review"\]\["model"\]$/],
-  ["minimax with its fallback off Muse", withFreeModels({ fallback_model: "claude-bridge/claude-opus-5-5" }, {}), /at \["minimax_extra_review"\]\["fallback_model"\]$/],
-  ["minimax with a repo outside the allowlist", withFreeModels({ repos: [...FREE_MODEL_REPOS, "website"] }, {}), /at \["minimax_extra_review"\]\["repos"\](\[\d+\])?$/],
-  ["beam drafting outside commit and document", withFreeModels({}, { steps: ["commit", "mechanical"] }), /at \["beam_drafts"\]\["steps"\](\[\d+\])?$/],
-  ["beam with no empty retry", withFreeModels({}, { empty_retries: 0 }), /at \["beam_drafts"\]\["empty_retries"\]$/],
-  ["beam with no apply check", withFreeModels({}, { apply_check: false }), /at \["beam_drafts"\]\["apply_check"\]$/],
-  ["beam with its fallback off Muse", withFreeModels({}, { fallback_model: "openai/gpt-6.1-sol" }), /at \["beam_drafts"\]\["fallback_model"\]$/],
-  ["beam with a repo outside the allowlist", withFreeModels({}, { repos: [...FREE_MODEL_REPOS, "decisions"] }), /at \["beam_drafts"\]\["repos"\](\[\d+\])?$/],
-])("generation refuses %s", async (_, source, named) => {
-  expect(await saidBy(noMistakesYaml(source))).toMatch(named);
 });
 
 test("a string list the YAML writer emits reads back as the same list", () => {
