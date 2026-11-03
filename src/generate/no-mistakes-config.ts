@@ -18,7 +18,7 @@ const MINIMAX = "opencode-go/minimax-m3.1-flash-free";
 
 const BEAM = "opencode-go/beam-free";
 
-const FREE_MODEL_REPOS = ["skills", "checks", "fleet-dash", "tui-dash", "ru-compliance"] as const;
+const FREE_MODEL_REPOS = ["skills", "checks", "tui-dash", "ru-compliance"] as const;
 
 const SECOND_ACCOUNT = "second";
 
@@ -62,7 +62,6 @@ const FreeModelRepos = Schema.Tuple([
   Schema.Literal(FREE_MODEL_REPOS[1]),
   Schema.Literal(FREE_MODEL_REPOS[2]),
   Schema.Literal(FREE_MODEL_REPOS[3]),
-  Schema.Literal(FREE_MODEL_REPOS[4]),
 ]).annotate({ description: "Repos a free model may run on: any other repo fails closed" });
 
 const MinimaxExtraReview = Schema.Struct({

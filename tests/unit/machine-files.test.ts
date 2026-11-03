@@ -259,9 +259,9 @@ test.each([...MACHINES])("the %s config rejects a missing or misplaced Pages pro
   });
 });
 
-const FREE_MODEL_REPOS = ["skills", "checks", "fleet-dash", "tui-dash", "ru-compliance"] as const;
+const FREE_MODEL_REPOS = ["skills", "checks", "tui-dash", "ru-compliance"] as const;
 
-test.each([...MACHINES])("the %s config leaves MiniMax off and Beam off with Muse fallback inside the five-repo allowlist", (machine) => {
+test.each([...MACHINES])("the %s config leaves MiniMax off and Beam off with Muse fallback inside the four-repo allowlist", (machine) => {
   const config = noMistakesConfigOf(machine, HOME);
   expect(config.minimax_extra_review).toEqual({
     enabled: false,
@@ -306,12 +306,12 @@ test.each([
   ["minimax outside the review step", withFreeModels({ steps: ["document"] }, {}), /at \["minimax_extra_review"\]\["steps"\](\[\d+\])?$/],
   ["a minimax use off its free id", withFreeModels({ model: "opencode-go/muse-spark-1.3-contributor" }, {}), /at \["minimax_extra_review"\]\["model"\]$/],
   ["minimax with its fallback off Muse", withFreeModels({ fallback_model: "claude-bridge/claude-opus-5-5" }, {}), /at \["minimax_extra_review"\]\["fallback_model"\]$/],
-  ["minimax with a repo outside the allowlist", withFreeModels({ repos: [...FREE_MODEL_REPOS.slice(0, 4), "website"] }, {}), /at \["minimax_extra_review"\]\["repos"\](\[\d+\])?$/],
+  ["minimax with a repo outside the allowlist", withFreeModels({ repos: [...FREE_MODEL_REPOS, "website"] }, {}), /at \["minimax_extra_review"\]\["repos"\](\[\d+\])?$/],
   ["beam drafting outside commit and document", withFreeModels({}, { steps: ["commit", "mechanical"] }), /at \["beam_drafts"\]\["steps"\](\[\d+\])?$/],
   ["beam with no empty retry", withFreeModels({}, { empty_retries: 0 }), /at \["beam_drafts"\]\["empty_retries"\]$/],
   ["beam with no apply check", withFreeModels({}, { apply_check: false }), /at \["beam_drafts"\]\["apply_check"\]$/],
   ["beam with its fallback off Muse", withFreeModels({}, { fallback_model: "openai/gpt-6.1-sol" }), /at \["beam_drafts"\]\["fallback_model"\]$/],
-  ["beam with a repo outside the allowlist", withFreeModels({}, { repos: [...FREE_MODEL_REPOS.slice(0, 4), "decisions"] }), /at \["beam_drafts"\]\["repos"\](\[\d+\])?$/],
+  ["beam with a repo outside the allowlist", withFreeModels({}, { repos: [...FREE_MODEL_REPOS, "decisions"] }), /at \["beam_drafts"\]\["repos"\](\[\d+\])?$/],
 ])("generation refuses %s", async (_, source, named) => {
   expect(await saidBy(noMistakesYaml(source))).toMatch(named);
 });
