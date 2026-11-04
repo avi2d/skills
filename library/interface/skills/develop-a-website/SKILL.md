@@ -1,6 +1,6 @@
 ---
 name: develop-a-website
-description: "Build or change a website one block at a time on a live demo server, with a demo-only variants panel the published build leaves out, screenshots of every change at the shared screen sizes, the shared browser checks, a fresh judge, and the person's approval of each block. Use when a person asks to build, redesign or change the pages of a website."
+description: "Build or change a website one block at a time on a Cloudflare Pages preview link, with a demo-only variants panel the published build leaves out, screenshots of every change at the shared screen sizes, the shared browser checks, a Mobile Safari simulator check, a fresh judge, and the person's approval of each block. Use when a person asks to build, redesign or change the pages of a website."
 kind: skill
 source: local
 consults:
@@ -11,17 +11,17 @@ consults:
 # Develop a website
 
 A page is built and approved one **block** at a time, where a block is a section the person can judge alone, such as the header, the first screen, a list of services or the footer.
-Every block runs one loop: build it on the demo server, capture it, check it, have a fresh judge review it, then show it to the person.
-The person approves what they saw on the running page, and the captures are the evidence beside it.
+Every block runs one loop: build it at its per-commit deployment URL, capture it, check it in the simulator, have a fresh judge review it, then show it to the person.
+The person approves what they saw at the per-commit deployment URL, and the captures are the evidence beside it.
 The judge decides only whether a block is ready to show, and the approval is the person's alone.
 
-## 1. Open the demo server
+## 1. Open the preview link
 
-1. Run the site's development or preview server on an address the person's own browser and phone can open, and give the person that address.
+1. Deploy the site to a Cloudflare Pages preview. Never preview from a local or LAN server.
 1. Write the brief: the page's job from the `visitor-job` reference, written as the one question a first-time visitor answers from the first screen, and the page's blocks in page order.
-1. Name the commit the server runs in every review, so each review says what it saw.
+1. Name the commit under review and its per-commit deployment URL in every review, so each review says what it saw and where.
 
-**Done when** the person has opened the address, and the brief holds the job question and every block in scope.
+**Done when** the preview deploys, and the brief holds the job question and every block in scope.
 
 ## 2. Declare the shared screens and checks
 
@@ -55,12 +55,12 @@ Whether a block reads well, feels right and does the page's job stays with the j
 When a block has more than one direction worth seeing, offer them as **variants**:
 
 1. Build each direction as a named variant of the block, and name what each one changes, such as layout, density or interaction.
-1. Add a panel to the demo build that switches the block between its variants instantly, at native size in the same browser, with a replay where motion matters.
-1. Load the panel and every variant only in the demo build, behind the build tool's development flag or an entry the published build never imports.
+1. Add a panel to the preview build that switches the block between its variants instantly, at native size in the same browser, with a replay where motion matters.
+1. Load the panel and every variant only in the preview build, behind a flag or an entry the published build never imports.
 1. Mark the panel and every variant with an attribute the published build can be searched for, such as `data-demo-variant`.
 1. Once the person picks, delete the other variants and the block's entry in the panel, after keeping the captures of every variant and the pick with the pull request.
 
-**Done when** the block renders on the demo server at the commit under review, and a search of the published build's output for every demo marker finds nothing.
+**Done when** the block renders at its per-commit deployment URL at the commit under review, and a search of the published build's output for every demo marker finds nothing.
 
 ## 4. Capture every change
 
@@ -70,19 +70,20 @@ Look at every capture before going on.
 
 **Done when** every touched page has a capture for each anchor size, extent and language at the current commit, and each one has been looked at.
 
-## 5. Check and judge
+## 5. Check in the simulator and judge
 
 1. Run `checks-browser` on the published build, and fix every failure it names.
-1. Start a fresh agent that shares none of this session's context, and give it [judge.md](judge.md), the captures, the brief with its job question and the expanded anchor names and dimensions, the scope of the change, the commit and the demo server's address.
+1. Open the per-commit deployment URL for the commit under review in Mobile Safari on the Mac iPhone simulator and check every visual change there before the person sees it: scroll each touched page with real touch, read the page end under the Safari toolbar, and for header and menu work check the Dynamic Island strip. Save a screenshot or recording of each simulator check with the short commit hash in the name, as the captures are named.
+1. Start a fresh agent that shares none of this session's context, and give it [judge.md](judge.md), the captures, the simulator evidence, the brief with its job question and the expanded anchor names and dimensions, the scope of the change, the commit and its per-commit deployment URL.
 1. Act on the verdict: recapture, rebuild and fix send the block back through the loop to a new fresh judge, and only ship sends it to the person.
 
 The judge runs as soon as a change is ready, so a review never waits for the night run.
 
-**Done when** `checks-browser` exits 0 and the latest verdict, given at the current commit, is ship.
+**Done when** `checks-browser` exits 0, the simulator check has passed at the current commit, and the latest verdict, given at the current commit, is ship.
 
 ## 6. Get the block approved
 
-1. Show the person the block on the demo server, with its captures, the judge's verdict and what remains open.
+1. Send the person the per-commit deployment URL for the commit under review only after the simulator check on it has passed, with its captures, the simulator evidence, the judge's verdict and what remains open.
 1. Ask about this block alone: approve it, or name what to change.
 1. Record each approval with the block, the commit and the person's own words, in the pull request or the project's record of decisions.
 1. Start the next block once this one is approved, and treat silence or an answer about something else as not approved yet.
@@ -93,4 +94,4 @@ The judge runs as soon as a change is ready, so a review never waits for the nig
 
 1. Build the published site, search its output for every demo marker, and confirm the search finds nothing.
 1. Run `checks-browser` on that build and confirm it exits 0.
-1. Hand over the pull request with the approvals, the captures at its last commit, the judge's last verdict and the checks' output.
+1. Hand over the pull request with the approvals, the captures and the simulator evidence at its last commit, the judge's last verdict and the checks' output.
