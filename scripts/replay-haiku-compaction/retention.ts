@@ -103,10 +103,10 @@ function factsOf(summary: string, source: Source): Fact[] {
   const text = indexed(summary);
   const items = parseItems(summary);
   const raw: Fact[] = [
-    ...urlsIn(text.raw).filter((url) => source.raw.includes(url)).map((fact) => ({ class: "url" as const, text: fact })),
-    ...pathsIn(text.raw).filter((path) => source.raw.includes(path)).map((fact) => ({ class: "path" as const, text: fact })),
+    ...urlsIn(text.raw).filter((url) => mentions(source.raw, url)).map((fact) => ({ class: "url" as const, text: fact })),
+    ...pathsIn(text.raw).filter((path) => mentions(source.raw, path)).map((fact) => ({ class: "path" as const, text: fact })),
     ...source.taskIds.filter((id) => mentions(text.raw, id)).map((fact) => ({ class: "taskId" as const, text: fact })),
-    ...source.decisionKeys.filter((key) => text.raw.includes(key)).map((fact) => ({ class: "decisionKey" as const, text: fact })),
+    ...source.decisionKeys.filter((key) => mentions(text.raw, key)).map((fact) => ({ class: "decisionKey" as const, text: fact })),
     ...quotesIn(text.raw)
       .filter((quote) => quoted(quote, source.words))
       .map((quote) => ({ class: quoteClass(quote, source), text: quote })),
@@ -128,7 +128,7 @@ function retains(summary: string, fact: Fact): boolean {
     case "url":
     case "path":
     case "decisionKey":
-      return text.raw.includes(fact.text);
+      return mentions(text.raw, fact.text);
     case "taskId":
       return mentions(text.raw, fact.text);
     case "quote":

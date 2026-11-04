@@ -60,6 +60,17 @@ describe("retentionOf", () => {
     expect(retention.lost).toEqual([]);
     expect(retention.classes.every((slot) => slot.recorded === slot.candidate)).toBe(true);
   });
+  test("pull/12 is not credited by pull/123", () => {
+    const source = "user: see https://github.com/o/r/pull/12";
+    const recorded = ["## Goal", "- Land https://github.com/o/r/pull/12."].join("\n");
+    const candidate = ["## Goal", "- Land https://github.com/o/r/pull/123."].join("\n");
+    const retention = retentionOf(recorded, candidate, source, source);
+    const byClass = new Map(retention.classes.map((slot) => [slot.class, slot]));
+    expect(byClass.get("url")).toEqual({ class: "url", pooled: 1, recorded: 1, candidate: 0 });
+    expect(retention.lost).toEqual([{ class: "url", text: "https://github.com/o/r/pull/12" }]);
+    const twenty = Array.from({ length: 20 }, () => retention);
+    expect(retentionVerdict(poolRetention(twenty), 20, twenty)).toBe("NEEDS-DECISION");
+  });
   test("captain says do not ship in a user message and the candidate drops it", () => {
     const source = ["user: the captain said " + QUOTE + "do not ship" + QUOTE + " tonight"].join("\n");
     const recorded = ["## Goal", "- The captain said " + QUOTE + "do not ship" + QUOTE + "."].join("\n");

@@ -104,8 +104,10 @@ function regionOf(
 
 function writerOf(lines: readonly SessionEntry[], index: number): string | undefined {
   for (let i = index - 1; i >= 0; i -= 1) {
-    const message = lines[i]?.message;
-    if (lines[i]?.type === "message" && message?.role === "assistant") return message.provider + "/" + message.model;
+    const line = lines[i];
+    if (line?.type === "model_change" && line.provider && line.modelId) return line.provider + "/" + line.modelId;
+    const message = line?.message;
+    if (line?.type === "message" && message?.role === "assistant") return message.provider + "/" + message.model;
   }
   return undefined;
 }

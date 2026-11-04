@@ -1,5 +1,8 @@
 import { describe, expect, test } from "bun:test";
+import { Effect, FileSystem, Path } from "effect";
 import { assembleSummary, poolScores, rescoreSaved, verdictFor, type CaseReport } from "../../scripts/replay-haiku-compaction/report";
+import { rescoreReport } from "../../scripts/replay-haiku-compaction/rescore";
+import { valueOf } from "../lib/effect";
 import { userTextOf } from "../../scripts/replay-haiku-compaction";
 import { buildCase, explicitFilter, selectCases } from "../../scripts/replay-haiku-compaction/cases";
 import { distinctive, isOpenDecision, itemRecalled, normalize, parseFileSections, parseItems, scoreSummaries, stripFileSections, tokenHit, worded, type SessionEntry } from "../../scripts/replay-haiku-compaction/scoring";
@@ -259,6 +262,66 @@ describe("rescoreSaved", () => {
   });
 });
 
+describe("rescoreReport", () => {
+  test("a saved-report rescore does not drop the recorded failures", async () => {
+    const blankScore = {
+      classes: [],
+      overall: 0,
+      total: 0,
+      hits: 0,
+      quoteRecall: 0,
+      quoteTotal: 0,
+      decisionRecall: 0,
+      decisionTotal: 0,
+      recordedChars: 0,
+      candidateChars: 0,
+    };
+    const keeper: CaseReport = {
+      file: "sessions.jsonl",
+      dir: "s1",
+      index: 0,
+      split: false,
+      tokensBefore: 0,
+      rebuiltTokens: 0,
+      skipped: 0,
+      historyMessages: 1,
+      prefixMessages: 1,
+      recordedModel: "opencode-go/muse-spark",
+      recordedItems: 0,
+      recordedChars: 0,
+      candidateChars: 0,
+      referenceChars: 0,
+      candidateCost: 0,
+      referenceCost: 0,
+      candidateTokens: { calls: 0, reportedInput: 0, reportedOutput: 0, estimatedInput: 0, estimatedOutput: 0 },
+      retention: { classes: [], lost: [], gained: [] },
+      candidate: blankScore,
+      reference: blankScore,
+      candidateText: "## Goal\n- Ship it.",
+      referenceText: "## Goal\n- Ship it.",
+      recordedText: "## Goal\n- Ship it.",
+      sourceText: "user: ship it",
+      captainText: "user: ship it",
+      previousSummary: undefined,
+    };
+    const failures = [{ case: "s1#0", arm: "candidate", error: "boom" }];
+    const wrote = await valueOf(Effect.scoped(Effect.gen(function* () {
+      const fs = yield* FileSystem.FileSystem;
+      const path = yield* Path.Path;
+      const tmp = yield* fs.makeTempDirectoryScoped({ prefix: "replay-rescore-" });
+      const input = path.join(tmp, "report.json");
+      const out = path.join(tmp, "rescored");
+      yield* fs.writeFileString(input, JSON.stringify({ candidate: "c", reference: "recorded", failures, cases: [keeper] }));
+      yield* rescoreReport(fs, path, input, out, "test");
+      const parsed: unknown = JSON.parse(yield* fs.readFileString(path.join(out, "report.json")));
+      const markdown = yield* fs.readFileString(path.join(out, "report.md"));
+      return { parsed, kept: markdown.includes("- s1#0 candidate: boom") };
+    })));
+    expect(wrote.parsed).toMatchObject({ failures });
+    expect(wrote.kept).toBe(true);
+  });
+});
+
 describe("buildCase", () => {
   function message(id: string, role: "user" | "assistant", provider: string): SessionEntry {
     if (role === "user") return { id, type: "message", message: { role, content: "text " + id, timestamp: 0 } };
@@ -321,6 +384,17 @@ describe("buildCase", () => {
     expect(buildCase("f.jsonl", "d", lines("opencode-go", compaction), 3, "opencode-go/m")).toBeDefined();
     expect(buildCase("f.jsonl", "d", lines("opencode-go", compaction), 3, "claude-bridge/")).toBeUndefined();
     expect(buildCase("f.jsonl", "d", lines("opencode-go", { ...compaction, fromHook: true }), 3, "opencode-go/m")).toBeUndefined();
+  });
+  test("a model switch before compact is not credited to the earlier model", () => {
+    const lines: SessionEntry[] = [
+      message("u1", "user", "claude-bridge"),
+      message("a1", "assistant", "claude-bridge"),
+      { type: "model_change", provider: "opencode-go", modelId: "m" },
+      message("u2", "user", "claude-bridge"),
+      { id: "c1", type: "compaction", summary: "## Goal\n- Old.\n", firstKeptEntryId: "u2", tokensBefore: 1 },
+    ];
+    expect(buildCase("f.jsonl", "d", lines, 4, "opencode-go/")).toBeDefined();
+    expect(buildCase("f.jsonl", "d", lines, 4, "claude-bridge/")).toBeUndefined();
   });
 });
 

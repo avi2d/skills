@@ -2,10 +2,17 @@ import { Config, Console, Effect, FileSystem, Path } from "effect";
 import { ArgsError, ReadError } from "./scoring";
 import { RECORDED_REFERENCE, rescoreSaved, writeReports, type CaseReport } from "./report";
 
+type SavedFailure = {
+  readonly case: string;
+  readonly arm: string;
+  readonly error: string;
+};
+
 type SavedReport = {
   readonly candidate: string;
   readonly reference: string;
   readonly cases: readonly CaseReport[];
+  readonly failures: readonly SavedFailure[];
 };
 
 function fieldOf(value: object, key: string): unknown {
@@ -29,11 +36,23 @@ function isCaseReport(value: unknown): value is CaseReport {
   return true;
 }
 
+function isSavedFailure(value: unknown): value is SavedFailure {
+  if (typeof value !== "object" || value === null) return false;
+  return typeof fieldOf(value, "case") === "string" && typeof fieldOf(value, "arm") === "string" && typeof fieldOf(value, "error") === "string";
+}
+
+function failuresOf(value: object): readonly SavedFailure[] | undefined {
+  const failures = fieldOf(value, "failures");
+  if (failures === undefined) return [];
+  if (!Array.isArray(failures) || !failures.every(isSavedFailure)) return undefined;
+  return failures;
+}
+
 function isSavedReport(value: unknown): value is SavedReport {
   if (typeof value !== "object" || value === null) return false;
   if (typeof fieldOf(value, "candidate") !== "string" || typeof fieldOf(value, "reference") !== "string") return false;
   const cases = fieldOf(value, "cases");
-  return Array.isArray(cases) && cases.every(isCaseReport);
+  return Array.isArray(cases) && cases.every(isCaseReport) && failuresOf(value) !== undefined;
 }
 
 export function rescoreReport(
@@ -75,7 +94,7 @@ export function rescoreReport(
       cases: undefined,
       maxOutputTokens: 0,
       rescore: undefined,
-    }, done, [], summary);
+    }, done, [...(failuresOf(parsed) ?? [])], summary);
     yield* Console.log(script + ": wrote " + dir);
     return true;
   });
