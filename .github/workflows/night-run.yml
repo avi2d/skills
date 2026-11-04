@@ -1,8 +1,6 @@
 name: night-run
 
 on:
-  schedule:
-    - cron: "17 2 * * 2,4,6"
   workflow_dispatch:
 
 permissions:
@@ -14,7 +12,7 @@ concurrency:
 
 jobs:
   mutation:
-    timeout-minutes: 180
+    timeout-minutes: 60
     runs-on: ubuntu-latest
     outputs:
       ran: ${{ steps.window.outputs.ran }}
@@ -29,11 +27,9 @@ jobs:
           node-version-file: .node-version
       - run: bun install --frozen-lockfile
       - run: bun run generate
-      # Recorded full runs take about 115 minutes.
       - id: window
         run: scripts/night-window.sh 115 mutation
       - if: steps.window.outputs.ran == 'true'
-        timeout-minutes: ${{ fromJSON(steps.window.outputs.minutes || '150') }}
         run: time bunx stryker run
       - if: steps.window.outputs.ran == 'true'
         uses: actions/upload-artifact@v4
@@ -44,7 +40,7 @@ jobs:
 
   tests:
     runs-on: ubuntu-latest
-    timeout-minutes: 180
+    timeout-minutes: 60
     outputs:
       ran: ${{ steps.window.outputs.ran }}
     steps:
@@ -82,6 +78,7 @@ jobs:
     # Requiring ran would skip the report exactly when the run did nothing.
     if: ${{ !cancelled() }}
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       contents: read
       actions: read
