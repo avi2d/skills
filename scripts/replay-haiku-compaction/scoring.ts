@@ -15,6 +15,8 @@ export type SessionEntry = {
   readonly id?: string;
   readonly type?: string;
   readonly parentUuid?: string | null;
+  readonly provider?: string;
+  readonly modelId?: string;
   readonly message?: AgentMessage;
   readonly summary?: string;
   readonly firstKeptEntryId?: string;

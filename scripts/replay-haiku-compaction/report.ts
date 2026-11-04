@@ -1,7 +1,7 @@
 import { Effect, FileSystem, Path } from "effect";
 import { NO_PRIOR_HISTORY, mergeSplitSummary, withFileOps } from "../../harness/pi/extensions/haiku-compaction";
 import { ArgsError, ReadError, parseFileSections, scoreSummaries, stripFileSections, type SummaryScore } from "./scoring";
-import { poolRetention, retentionOf, retentionVerdict, type ClassRetention, type Retention } from "./retention";
+
 
 export const DEFAULT_MAX_OUTPUT_TOKENS = 8000;
 const DEFAULT_LIMIT = 24;
@@ -99,7 +99,6 @@ export type CaseReport = {
   readonly candidateCost: number;
   readonly referenceCost: number;
   readonly candidateTokens: ArmTokens;
-  readonly retention: Retention;
   readonly candidate: SummaryScore;
   readonly reference: SummaryScore;
   readonly candidateText: string;
@@ -134,29 +133,12 @@ export function verdictFor(candidateOverall: number, referenceOverall: number, c
   return "MERGE-GRADE";
 }
 
-function retentionSection(retention: readonly ClassRetention[], cases: readonly CaseReport[]): string[] {
-  const rows = retention.map((slot) => "| " + slot.class + " | " + String(slot.pooled) + " | " + String(slot.recorded) + " | " + String(slot.candidate) + " |");
-  const lost = cases.flatMap((c) => c.retention.lost.map((fact) => "- " + c.dir + "#" + String(c.index) + " " + fact.class + ": " + fact.text));
-  return [
-    "## Retention against the recorded summary",
-    "",
-    "| class | pooled | recorded | candidate |",
-    "| --- | --- | --- | --- |",
-    ...rows,
-    "",
-    "## Recorded facts the candidate lost",
-    ...lost,
-    "",
-  ];
-}
-
 function renderReportMarkdown(input: {
   readonly candidate: string;
   readonly reference: string;
   readonly cases: readonly CaseReport[];
   readonly failures: { case: string; arm: string; error: string }[];
   readonly verdict: string;
-  readonly retention: readonly ClassRetention[];
 }): string {
   const lines: string[] = [];
   lines.push("# Haiku compaction replay");
@@ -164,7 +146,6 @@ function renderReportMarkdown(input: {
   lines.push("Candidate: " + input.candidate + " / Reference: " + input.reference);
   lines.push("Verdict: " + input.verdict);
   lines.push("");
-  lines.push(...retentionSection(input.retention, input.cases));
   lines.push("| case | split | items | candidate | reference | quotes c/r | decisions c/r |");
   lines.push("| --- | --- | --- | --- | --- | --- | --- |");
   for (const c of input.cases) {
@@ -200,33 +181,15 @@ type RescoreCase = {
 };
 
 type RescoreResult = {
-  readonly retention: ClassRetention[];
-  readonly verdict: "MERGE-GRADE" | "NEEDS-DECISION";
-  readonly captainQuoteLosses: number;
-  readonly decisionLosses: number;
-  readonly toolQuoteLosses: number;
-  readonly retentions: Retention[];
-  readonly refreshed: { readonly retention: Retention; readonly candidate: SummaryScore; readonly reference: SummaryScore }[];
+  readonly refreshed: { readonly candidate: SummaryScore; readonly reference: SummaryScore }[];
 };
 
 function rescoreCases(cases: readonly RescoreCase[]): RescoreResult {
-  const refreshed = cases.map((c) => ({
-    retention: retentionOf(c.recordedText, c.candidateText, c.sourceText, c.captainText),
-    candidate: scoreSummaries(c.recordedText, c.candidateText),
-    reference: scoreSummaries(c.recordedText, c.referenceText),
-  }));
-  const retentions = refreshed.map((r) => r.retention);
-  const retention = poolRetention(retentions);
-  const verdict = retentionVerdict(retention, cases.length, retentions);
-  const lost = retentions.flatMap((r) => r.lost);
   return {
-    retention,
-    verdict,
-    captainQuoteLosses: lost.filter((fact) => fact.class === "quote").length,
-    decisionLosses: lost.filter((fact) => fact.class === "openDecision").length,
-    toolQuoteLosses: lost.filter((fact) => fact.class === "toolQuote").length,
-    retentions,
-    refreshed,
+    refreshed: cases.map((c) => ({
+      candidate: scoreSummaries(c.recordedText, c.candidateText),
+      reference: scoreSummaries(c.recordedText, c.referenceText),
+    })),
   };
 }
 
@@ -245,9 +208,6 @@ function reassembledText(text: string, historyPart: string): string {
 export type RescoredRun = {
   readonly done: CaseReport[];
   readonly summary: ResultSummary;
-  readonly captainQuoteLosses: number;
-  readonly decisionLosses: number;
-  readonly toolQuoteLosses: number;
 };
 
 export function rescoreSaved(cases: readonly CaseReport[], againstRecorded: boolean): RescoredRun {
@@ -269,18 +229,10 @@ export function rescoreSaved(cases: readonly CaseReport[], againstRecorded: bool
   const rescored = rescoreCases(adjusted);
   const done = adjusted.map((c, i) => ({
     ...c,
-    retention: rescored.retentions[i] ?? c.retention,
     candidate: rescored.refreshed[i]?.candidate ?? c.candidate,
     reference: rescored.refreshed[i]?.reference ?? c.reference,
   }));
-  const base = summarizeResults(done, againstRecorded);
-  return {
-    done,
-    summary: againstRecorded ? { ...base, verdict: rescored.verdict, retention: rescored.retention } : base,
-    captainQuoteLosses: rescored.captainQuoteLosses,
-    decisionLosses: rescored.decisionLosses,
-    toolQuoteLosses: rescored.toolQuoteLosses,
-  };
+  return { done, summary: summarizeResults(done) };
 }
 
 export type ResultSummary = {
@@ -290,21 +242,18 @@ export type ResultSummary = {
   candidateCostTotal: number;
   referenceCostTotal: number;
   candidateTokens: ArmTokens;
-  retention: ClassRetention[];
 };
 
-export function summarizeResults(done: readonly CaseReport[], againstRecorded: boolean): ResultSummary {
+export function summarizeResults(done: readonly CaseReport[]): ResultSummary {
   const candidatePool = poolScores(done.map((c) => c.candidate));
   const referencePool = poolScores(done.map((c) => c.reference));
-  const retention = poolRetention(done.map((c) => c.retention));
-  const modelVerdict = done.length >= 20
+  const verdict = done.length >= 20
     ? verdictFor(candidatePool.overall, referencePool.overall, candidatePool.quote, referencePool.quote, candidatePool.decision, referencePool.decision)
     : "NEEDS-DECISION";
-  const verdict = againstRecorded ? retentionVerdict(retention, done.length, done.map((c) => c.retention)) : modelVerdict;
   const candidateCostTotal = done.reduce((sum, c) => sum + c.candidateCost, 0);
   const referenceCostTotal = done.reduce((sum, c) => sum + c.referenceCost, 0);
   const candidateTokens = done.reduce((sum, c) => addTokens(sum, c.candidateTokens), NO_TOKENS);
-  return { verdict, candidatePool, referencePool, candidateCostTotal, referenceCostTotal, candidateTokens, retention };
+  return { verdict, candidatePool, referencePool, candidateCostTotal, referenceCostTotal, candidateTokens };
 }
 
 export function writeReports(
@@ -329,14 +278,13 @@ export function writeReports(
       candidateCostTotal: summary.candidateCostTotal,
       referenceCostTotal: summary.referenceCostTotal,
       candidateTokens: summary.candidateTokens,
-      retention: summary.retention,
       failures,
       cases: done,
     };
     yield* fs.writeFileString(path.join(out, "report.json"), JSON.stringify(payload, undefined, 2)).pipe(
       Effect.mapError((cause) => new ReadError({ message: "cannot write report: " + String(cause) })),
     );
-    yield* fs.writeFileString(path.join(out, "report.md"), renderReportMarkdown({ candidate: args.candidate, reference: args.reference, cases: done, failures, verdict: summary.verdict, retention: summary.retention })).pipe(
+    yield* fs.writeFileString(path.join(out, "report.md"), renderReportMarkdown({ candidate: args.candidate, reference: args.reference, cases: done, failures, verdict: summary.verdict })).pipe(
       Effect.mapError((cause) => new ReadError({ message: "cannot write report: " + String(cause) })),
     );
   });

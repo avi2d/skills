@@ -2,10 +2,17 @@ import { Config, Console, Effect, FileSystem, Path } from "effect";
 import { ArgsError, ReadError } from "./scoring";
 import { RECORDED_REFERENCE, rescoreSaved, writeReports, type CaseReport } from "./report";
 
+type SavedFailure = {
+  readonly case: string;
+  readonly arm: string;
+  readonly error: string;
+};
+
 type SavedReport = {
   readonly candidate: string;
   readonly reference: string;
   readonly cases: readonly CaseReport[];
+  readonly failures: readonly SavedFailure[];
 };
 
 function fieldOf(value: object, key: string): unknown {
@@ -23,10 +30,21 @@ function isCaseReport(value: unknown): value is CaseReport {
   if (typeof fieldOf(value, "split") !== "boolean") return false;
   const previousSummary = fieldOf(value, "previousSummary");
   if (previousSummary !== undefined && typeof previousSummary !== "string") return false;
-  for (const key of ["candidateTokens", "retention", "candidate", "reference"]) {
+  for (const key of ["candidateTokens", "candidate", "reference"]) {
     if (typeof fieldOf(value, key) !== "object" || fieldOf(value, key) === null) return false;
   }
   return true;
+}
+
+function isSavedFailure(value: unknown): value is SavedFailure {
+  if (typeof value !== "object" || value === null) return false;
+  return typeof fieldOf(value, "case") === "string" && typeof fieldOf(value, "arm") === "string" && typeof fieldOf(value, "error") === "string";
+}
+
+function failuresOf(value: object): readonly SavedFailure[] | undefined {
+  const failures = fieldOf(value, "failures");
+  if (!Array.isArray(failures) || !failures.every(isSavedFailure)) return undefined;
+  return failures;
 }
 
 function isSavedReport(value: unknown): value is SavedReport {
@@ -51,6 +69,10 @@ export function rescoreReport(
       try: (): unknown => JSON.parse(text),
       catch: () => new ArgsError({ message: "cannot parse " + file }),
     });
+    const failures = typeof parsed === "object" && parsed !== null ? failuresOf(parsed) : undefined;
+    if (failures === undefined) {
+      return yield* new ArgsError({ message: "invalid failures in " + file + "; expected an array of {case, arm, error} entries" });
+    }
     if (!isSavedReport(parsed) || parsed.cases.length === 0) {
       return yield* new ArgsError({ message: "no rescorable cases in " + file + "; re-run the replay to record source text" });
     }
@@ -59,7 +81,6 @@ export function rescoreReport(
     const summary = rescored.summary;
     yield* Console.log(script + ": rescored " + String(done.length) + " case(s) from " + file);
     yield* Console.log(script + ": spend candidate=" + summary.candidateCostTotal.toFixed(4) + " reference=" + summary.referenceCostTotal.toFixed(4));
-    yield* Console.log(script + ": captain-quote losses=" + String(rescored.captainQuoteLosses) + " decision losses=" + String(rescored.decisionLosses) + " tool-quote losses=" + String(rescored.toolQuoteLosses));
     yield* Console.log(script + ": verdict " + summary.verdict);
     const dir = out ?? (yield* Config.String("TMPDIR").pipe(Config.withDefault("/tmp"))) + "/replay-haiku-compaction-rescore-" + String(Date.now());
     yield* writeReports(fs, path, dir, {
@@ -75,7 +96,7 @@ export function rescoreReport(
       cases: undefined,
       maxOutputTokens: 0,
       rescore: undefined,
-    }, done, [], summary);
+    }, done, [...failures], summary);
     yield* Console.log(script + ": wrote " + dir);
     return true;
   });

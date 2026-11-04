@@ -16,7 +16,6 @@ import {
   type SessionEntry,
 } from "./replay-haiku-compaction/scoring";
 import { buildCase, caseKey, explicitFilter, selectCases, type ReplayCase } from "./replay-haiku-compaction/cases";
-import { retentionOf } from "./replay-haiku-compaction/retention";
 import {
   NO_TOKENS,
   RECORDED_REFERENCE,
@@ -253,7 +252,6 @@ function caseReportOf(c: ReplayCase, sourceText: string, captainText: string, ou
       candidateCost: outcome.candidateCost,
       referenceCost: outcome.referenceCost,
       candidateTokens: outcome.candidateTokens,
-      retention: retentionOf(c.recorded, outcome.candidateText, sourceText, captainText),
       candidate: scoreSummaries(c.recorded, outcome.candidateText),
       reference: scoreSummaries(c.recorded, outcome.referenceText),
       candidateText: outcome.candidateText,
@@ -322,11 +320,8 @@ function runAllCases(
   });
 }
 
-function logRetention(summary: ResultSummary): Effect.Effect<void> {
+function logTokens(summary: ResultSummary): Effect.Effect<void> {
   return Effect.gen(function* () {
-    for (const slot of summary.retention) {
-      yield* Console.log(NAME + ": retention " + slot.class + " recorded " + String(slot.recorded) + "/" + String(slot.pooled) + " candidate " + String(slot.candidate) + "/" + String(slot.pooled));
-    }
     const tokens = summary.candidateTokens;
     yield* Console.log(NAME + ": candidate tokens calls=" + String(tokens.calls) + " estimated in=" + String(tokens.estimatedInput) + " out=" + String(tokens.estimatedOutput) + " reported in=" + String(tokens.reportedInput) + " out=" + String(tokens.reportedOutput));
   });
@@ -356,7 +351,7 @@ const main = Effect.gen(function* () {
   const reference = againstRecorded ? undefined : yield* resolveModel(registry, args.reference);
   yield* Console.log(NAME + ": candidate " + args.candidate + ", reference " + args.reference);
   const { done, failures } = yield* runAllCases(registry, candidate, reference, cases, args.maxOutputTokens, keepUrls);
-  const summary = summarizeResults(done, againstRecorded);
+  const summary = summarizeResults(done);
   return yield* finishLiveRun(fs, path, args, done, failures, summary);
 }).pipe(Effect.scoped);
 
@@ -369,7 +364,7 @@ function finishLiveRun(
   summary: ResultSummary,
 ): Effect.Effect<boolean, ReadError | Config.ConfigError> {
   return Effect.gen(function* () {
-    yield* logRetention(summary);
+    yield* logTokens(summary);
     yield* Console.log(NAME + ": spend candidate=" + summary.candidateCostTotal.toFixed(4) + " reference=" + summary.referenceCostTotal.toFixed(4));
     yield* Console.log(NAME + ": candidate overall " + summary.candidatePool.overall.toFixed(3) + " over " + String(summary.candidatePool.items) + " items; reference " + summary.referencePool.overall.toFixed(3));
     yield* Console.log(NAME + ": quotes candidate " + summary.candidatePool.quote.toFixed(3) + " reference " + summary.referencePool.quote.toFixed(3) + "; decisions candidate " + summary.candidatePool.decision.toFixed(3) + " reference " + summary.referencePool.decision.toFixed(3));
