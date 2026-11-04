@@ -123,7 +123,7 @@ Its tests job installs `claude` and the pinned `sqlite3`, and checks out the who
 The tests that skip locally without those run at night.
 A tier that fails, or holds an undeclared skip, marks its step failed.
 The job goes on, so the report job still files each failing test.
-`checks-night-run` compares each file's score with the previous night's.
+`checks-night-run` compares each file's score with the previous run's.
 It opens or updates one issue labelled `night-run` for each file whose score fell and each failing test.
 Agents fix each issue as its own task.
 The night run gives a per-file score only, and restores, saves and refreshes no incremental state or baseline.
