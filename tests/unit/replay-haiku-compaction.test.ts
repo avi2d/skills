@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { Effect, FileSystem, Path } from "effect";
 import { assembleSummary, poolScores, rescoreSaved, verdictFor, type CaseReport } from "../../scripts/replay-haiku-compaction/report";
 import { rescoreReport } from "../../scripts/replay-haiku-compaction/rescore";
-import { valueOf } from "../lib/effect";
+import { saidBy, valueOf } from "../lib/effect";
 import { userTextOf } from "../../scripts/replay-haiku-compaction";
 import { buildCase, explicitFilter, selectCases } from "../../scripts/replay-haiku-compaction/cases";
 import { distinctive, isOpenDecision, itemRecalled, normalize, parseFileSections, parseItems, scoreSummaries, stripFileSections, tokenHit, worded, type SessionEntry } from "../../scripts/replay-haiku-compaction/scoring";
@@ -172,7 +172,6 @@ describe("rescoreSaved", () => {
       candidateCost: 0,
       referenceCost: 0,
       candidateTokens: { calls: 0, reportedInput: 0, reportedOutput: 0, estimatedInput: 0, estimatedOutput: 0 },
-      retention: { classes: [], lost: [], gained: [] },
       candidate: blankScore,
       reference: blankScore,
       candidateText: texts.candidate,
@@ -191,9 +190,6 @@ describe("rescoreSaved", () => {
       captain: "user: ship it",
     });
     const one = rescoreSaved([keeper], true);
-    expect(one.captainQuoteLosses).toBe(0);
-    expect(one.decisionLosses).toBe(0);
-    expect(one.toolQuoteLosses).toBe(0);
     expect(one.summary.verdict).toBe("NEEDS-DECISION");
     const recorded = ["## Goal", "- The captain said " + QUOTE + "hold the release" + QUOTE + "."].join("\n");
     const lossy = savedCaseOf({
@@ -203,8 +199,6 @@ describe("rescoreSaved", () => {
       captain: "user: the captain said " + QUOTE + "hold the release" + QUOTE,
     });
     const lost = rescoreSaved(Array.from({ length: 20 }, () => lossy), true);
-    expect(lost.captainQuoteLosses).toBe(20);
-    expect(lost.decisionLosses).toBe(0);
     expect(lost.summary.verdict).toBe("NEEDS-DECISION");
     const twenty = rescoreSaved(Array.from({ length: 20 }, () => keeper), true);
     expect(twenty.summary.verdict).toBe("MERGE-GRADE");
@@ -233,9 +227,6 @@ describe("rescoreSaved", () => {
     );
     const fixed = rescoreSaved(Array.from({ length: 20 }, () => stale), true);
     expect(fixed.done[0]?.candidateText).toBe(previous + "\n\n---\n\n**Turn Context (split turn):**\n\n" + prefix);
-    expect(fixed.captainQuoteLosses).toBe(20);
-    expect(fixed.decisionLosses).toBe(20);
-    expect(fixed.toolQuoteLosses).toBe(0);
     expect(fixed.summary.verdict).toBe("NEEDS-DECISION");
   });
   test("rescoring an already assembled report changes nothing", () => {
@@ -256,9 +247,6 @@ describe("rescoreSaved", () => {
     const twice = rescoreSaved(once.done, true);
     expect(twice.done).toEqual(once.done);
     expect(twice.summary.verdict).toBe(once.summary.verdict);
-    expect(twice.captainQuoteLosses).toBe(once.captainQuoteLosses);
-    expect(twice.decisionLosses).toBe(once.decisionLosses);
-    expect(twice.toolQuoteLosses).toBe(once.toolQuoteLosses);
   });
 });
 
@@ -294,7 +282,6 @@ describe("rescoreReport", () => {
       candidateCost: 0,
       referenceCost: 0,
       candidateTokens: { calls: 0, reportedInput: 0, reportedOutput: 0, estimatedInput: 0, estimatedOutput: 0 },
-      retention: { classes: [], lost: [], gained: [] },
       candidate: blankScore,
       reference: blankScore,
       candidateText: "## Goal\n- Ship it.",
@@ -319,6 +306,17 @@ describe("rescoreReport", () => {
     })));
     expect(wrote.parsed).toMatchObject({ failures });
     expect(wrote.kept).toBe(true);
+  });
+  test("a saved-report rescore with malformed failures reports the failures, not the cases", async () => {
+    const message = await saidBy(Effect.scoped(Effect.gen(function* () {
+      const fs = yield* FileSystem.FileSystem;
+      const path = yield* Path.Path;
+      const tmp = yield* fs.makeTempDirectoryScoped({ prefix: "replay-rescore-" });
+      const input = path.join(tmp, "report.json");
+      yield* fs.writeFileString(input, JSON.stringify({ candidate: "c", reference: "recorded", failures: [{ case: "s1#0" }], cases: [] }));
+      yield* rescoreReport(fs, path, input, path.join(tmp, "rescored"), "test");
+    })));
+    expect(message).toMatch(/invalid failures in .*report\.json; expected an array of \{case, arm, error\} entries/);
   });
 });
 
