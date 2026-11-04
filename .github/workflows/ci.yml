@@ -13,6 +13,7 @@ permissions:
 jobs:
   checks:
     runs-on: ubuntu-latest
+    timeout-minutes: 60
     steps:
       - run: echo "TMPDIR=$RUNNER_TEMP" >> "$GITHUB_ENV"
       # The head, not GitHub's merge ref, so the tree the gates read is the commit the range ends at.
