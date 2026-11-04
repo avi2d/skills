@@ -26,11 +26,7 @@ jobs:
           node-version-file: .node-version
       - run: npm install -g @anthropic-ai/claude-code@2.1.280
       - run: bun install --frozen-lockfile
-      # Recorded runs take about 27 minutes.
-      - id: window
-        run: scripts/night-window.sh 30 "the flake run"
-      - if: steps.window.outputs.ran == 'true'
-        run: bunx checks-flake --runs 10 --report flake-report.json
+      - run: bunx checks-flake --runs 10 --report flake-report.json
       - uses: actions/upload-artifact@v4
         if: failure()
         with:

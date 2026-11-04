@@ -14,8 +14,6 @@ jobs:
   mutation:
     timeout-minutes: 60
     runs-on: ubuntu-latest
-    outputs:
-      ran: ${{ steps.window.outputs.ran }}
     steps:
       - run: echo "TMPDIR=$RUNNER_TEMP" >> "$GITHUB_ENV"
       - uses: actions/checkout@v5
@@ -27,12 +25,8 @@ jobs:
           node-version-file: .node-version
       - run: bun install --frozen-lockfile
       - run: bun run generate
-      - id: window
-        run: scripts/night-window.sh 115 mutation
-      - if: steps.window.outputs.ran == 'true'
-        run: time bunx stryker run
-      - if: steps.window.outputs.ran == 'true'
-        uses: actions/upload-artifact@v4
+      - run: time bunx stryker run
+      - uses: actions/upload-artifact@v4
         with:
           name: night-run-mutation
           path: reports/mutation/mutation.json
@@ -41,8 +35,6 @@ jobs:
   tests:
     runs-on: ubuntu-latest
     timeout-minutes: 60
-    outputs:
-      ran: ${{ steps.window.outputs.ran }}
     steps:
       - run: echo "TMPDIR=$RUNNER_TEMP" >> "$GITHUB_ENV"
       - uses: actions/checkout@v5
@@ -58,16 +50,11 @@ jobs:
       - run: npm install -g @anthropic-ai/claude-code@2.1.280
       - run: scripts/ci-sqlite3.sh
       - run: scripts/ci-no-mistakes.sh
-      - id: window
-        run: scripts/night-window.sh 60 "the test tiers"
-      - if: steps.window.outputs.ran == 'true'
-        continue-on-error: true
+      - continue-on-error: true
         run: bunx checks-test --tier=unit --junit=reports/night-run-tests/unit.xml
-      - if: steps.window.outputs.ran == 'true'
-        continue-on-error: true
+      - continue-on-error: true
         run: bunx checks-test --tier=e2e --junit=reports/night-run-tests/e2e.xml
-      - if: steps.window.outputs.ran == 'true'
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
           name: night-run-tests
           path: reports/night-run-tests/
@@ -75,7 +62,6 @@ jobs:
 
   report:
     needs: [mutation, tests]
-    # Requiring ran would skip the report exactly when the run did nothing.
     if: ${{ !cancelled() }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -89,24 +75,19 @@ jobs:
         with:
           bun-version-file: .bun-version
       - run: bun install --frozen-lockfile
-      - if: needs.mutation.result == 'success' && needs.mutation.outputs.ran == 'true'
+      - if: needs.mutation.result == 'success'
         uses: actions/download-artifact@v4
         with:
           name: night-run-mutation
           path: reports/mutation
-      - if: needs.tests.result == 'success' && needs.tests.outputs.ran == 'true'
+      - if: needs.tests.result == 'success'
         uses: actions/download-artifact@v4
         with:
           name: night-run-tests
           path: reports/night-run-tests
-      - if: needs.mutation.result == 'success' && needs.mutation.outputs.ran == 'true' || needs.tests.result == 'success' && needs.tests.outputs.ran == 'true'
-        env:
+      - env:
           GH_TOKEN: ${{ github.token }}
-        run: bunx checks-night-run ${{ needs.mutation.result == 'success' && needs.mutation.outputs.ran == 'true' && '--mutation reports/mutation/mutation.json' || '' }} ${{ needs.tests.result == 'success' && needs.tests.outputs.ran == 'true' && '--tests reports/night-run-tests/unit.xml --tests reports/night-run-tests/e2e.xml' || '' }}
-      - if: needs.mutation.result == 'success' && needs.tests.result == 'success' && needs.mutation.outputs.ran != 'true' && needs.tests.outputs.ran != 'true'
-        run: echo "::notice::night window missed, so neither mutation nor the test tiers ran and there is nothing to file"
-      - if: "!(needs.mutation.result == 'success' && needs.mutation.outputs.ran == 'true' || needs.tests.result == 'success' && needs.tests.outputs.ran == 'true') && (needs.mutation.result != 'success' || needs.tests.result != 'success')"
-        run: echo "::notice::no reports available, so there is nothing to file"
+        run: bunx checks-night-run --mutation reports/mutation/mutation.json ${{ needs.tests.result == 'success' && '--tests reports/night-run-tests/unit.xml --tests reports/night-run-tests/e2e.xml' || '' }}
       - uses: actions/upload-artifact@v4
         with:
           name: night-run
