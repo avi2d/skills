@@ -1,8 +1,6 @@
 name: flake
 
 on:
-  schedule:
-    - cron: "10 4 * * *"
   workflow_dispatch:
 
 permissions:
@@ -11,7 +9,7 @@ permissions:
 jobs:
   flake:
     runs-on: ubuntu-latest
-    timeout-minutes: 180
+    timeout-minutes: 60
     steps:
       - run: echo "TMPDIR=$RUNNER_TEMP" >> "$GITHUB_ENV"
       # The whole history, since the sweep-record tests find where the head branched from main.
@@ -28,11 +26,7 @@ jobs:
           node-version-file: .node-version
       - run: npm install -g @anthropic-ai/claude-code@2.1.280
       - run: bun install --frozen-lockfile
-      # Recorded runs take about 27 minutes.
-      - id: window
-        run: scripts/night-window.sh 30 "the flake run"
-      - if: steps.window.outputs.ran == 'true'
-        run: bunx checks-flake --runs 10 --report flake-report.json
+      - run: bunx checks-flake --runs 10 --report flake-report.json
       - uses: actions/upload-artifact@v4
         if: failure()
         with:

@@ -59,7 +59,7 @@ The kit's size rules in `oxlint.config.ts` fail any production or test file over
 The suite fails on any entry in `oxlint-suppressions.json`, so the file is absent or empty.
 Four gates run only at night through `checks-lint --night`, namely `checks-lint-coverage`, `checks-repetition`, `checks-suppressions-ratchet` and `checks-quarantine-clock`.
 `checks-advisories` holds `advisory-acks.json` to its rules on every run and defers its scan to the scheduled run, so the pull request run fetches no advisory database.
-`.github/workflows/advisories.yml` runs it with `--all` every night over the whole of `bun.lock`, which finds an advisory published after its package landed and an advisory a `bun.lock` change adds.
+`.github/workflows/advisories.yml` runs it with `--all` every Monday over the whole of `bun.lock`, which finds an advisory published after its package landed and an advisory a `bun.lock` change adds.
 
 `@avi2dg/checks` comes from the public npm registry by semver range, so a clone, a worktree and CI all install the same tree with nothing beside them.
 `tests/e2e/toolchain.test.ts` refuses a `file:` dependency, and a repository dependency that names anything but a commit.
@@ -116,21 +116,20 @@ A run over the whole of `src/**`, which is what Stryker's default `mutate` selec
 `stryker.conf.mjs` spreads the kit's `stryker.preset.js` and then sets only the keys this repository needs differently.
 The score is advisory, because the preset's `thresholds.break` is null, so no pull request waits on mutation.
 Mutation runs only in the night run, and no workflow runs it on a pull request or a push.
-On each night it is scheduled, `.github/workflows/night-run.yml` runs a full `bunx stryker run`.
+`.github/workflows/night-run.yml` runs a full `bunx stryker run` when you start it by hand.
 It runs the unit tier and the e2e tier, and keeps a JUnit report for each.
 It hands each report to `bunx checks-night-run`.
 Its tests job installs `claude` and the pinned `sqlite3`, and checks out the whole history, as `ci.yml` does.
 The tests that skip locally without those run at night.
 A tier that fails, or holds an undeclared skip, marks its step failed.
 The job goes on, so the report job still files each failing test.
-`checks-night-run` compares each file's score with the previous night's.
+`checks-night-run` compares each file's score with the previous run's.
 It opens or updates one issue labelled `night-run` for each file whose score fell and each failing test.
 Agents fix each issue as its own task.
 The night run gives a per-file score only, and restores, saves and refreshes no incremental state or baseline.
-The night run starts at 02:17 UTC on Tuesday, Thursday and Saturday, and by hand with `gh workflow run night-run`.
+The night run starts only when you run `gh workflow run night-run`.
 It queues behind itself, so two runs never file the same finding twice.
-A scheduled run skips, with a notice, the mutation run when fewer than 115 minutes are left before 05:00 UTC, and the test tiers when fewer than 60 are.
-It stops the mutation run at 05:00 UTC, and the report job then files the test findings alone.
+The report job always passes `--mutation`, so a mutation run that times out still files an issue.
 The runner hands `bun.testFiles` to `bun test` verbatim and expands no glob.
 `stryker.conf.mjs` sets it to the preset's `unitTestFiles()`, every test file under `tests/unit/`, so a covered, non-static mutant loads only the files that cover it.
 The out-of-process tests under `tests/e2e/` and everything under `tests/quarantine/` stay out.
@@ -156,8 +155,8 @@ To replay a test that failed on one seed:
 1. Find the seed in the failing run's output, or in the `flake-report` artifact of `.github/workflows/flake.yml`.
 1. Run `bun test --randomize --seed=<seed>`.
 
-`.github/workflows/flake.yml` runs the suite every night on ten seeds with `checks-flake`, and keeps the seeds each failing test failed with.
-A scheduled run skips with a notice when fewer than 30 minutes are left before 05:00 UTC.
+`.github/workflows/flake.yml` runs the suite on ten seeds with `checks-flake` when you start it by hand.
+It keeps the seeds each failing test failed with.
 A test found flaky moves to `tests/quarantine/unit/`, which a default run skips.
 `checks-quarantine-clock` runs at night and fails a test left there more than 30 days.
 Fix the test and move it back, or delete it.
