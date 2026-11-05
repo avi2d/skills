@@ -34,7 +34,7 @@ When following one makes a sentence worse, fix the sentence another way or leave
 
 ## Pick the page type
 
-A README is one page of typed topics in the order its template sets: a concept, tasks, a reference table and troubleshooting.
+A README holds what the `readme-front-door` rule says it holds.
 A page under `docs/` is one Diátaxis mode, and it names that mode in `kind` front matter.
 `checks-docs` refuses a page with none.
 
