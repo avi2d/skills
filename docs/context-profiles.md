@@ -36,7 +36,7 @@ Tool definitions are absent from this repository and have no character size in t
 | reference: `plain-words` | 3646 |  |
 | reference: `punctuation` | 2443 |  |
 | reference: `russian-prose` | 1858 |  |
-| reference: `technical-writing` | 7248 |  |
+| reference: `technical-writing` | 7186 |  |
 | reference: `typography` | 4272 |  |
 | reference: `ui-principles` | 8674 |  |
 | reference: `unslop` | 2761 |  |
@@ -74,7 +74,7 @@ Tool definitions are absent from this repository and have no character size in t
 | reference: `plain-words` | 3646 |  |
 | reference: `punctuation` | 2443 |  |
 | reference: `russian-prose` | 1858 |  |
-| reference: `technical-writing` | 7248 |  |
+| reference: `technical-writing` | 7186 |  |
 | reference: `typography` | 4272 |  |
 | reference: `ui-principles` | 8674 |  |
 | reference: `unslop` | 2761 |  |
@@ -112,7 +112,7 @@ Tool definitions are absent from this repository and have no character size in t
 | reference: `plain-words` | 3646 |  |
 | reference: `punctuation` | 2443 |  |
 | reference: `russian-prose` | 1858 |  |
-| reference: `technical-writing` | 7248 |  |
+| reference: `technical-writing` | 7186 |  |
 | reference: `typography` | 4272 |  |
 | reference: `ui-principles` | 8674 |  |
 | reference: `unslop` | 2761 |  |
@@ -149,7 +149,7 @@ Tool definitions are absent from this repository and have no character size in t
 | reference: `plain-words` | 3646 |  |
 | reference: `punctuation` | 2443 |  |
 | reference: `russian-prose` | 1858 |  |
-| reference: `technical-writing` | 7248 |  |
+| reference: `technical-writing` | 7186 |  |
 | reference: `typography` | 4272 |  |
 | reference: `ui-principles` | 8674 |  |
 | reference: `unslop` | 2761 |  |
@@ -183,7 +183,7 @@ Tool definitions are absent from this repository and have no character size in t
 | reference: `plain-words` | 3646 |  |
 | reference: `punctuation` | 2443 |  |
 | reference: `russian-prose` | 1858 |  |
-| reference: `technical-writing` | 7248 |  |
+| reference: `technical-writing` | 7186 |  |
 | reference: `typography` | 4272 |  |
 | reference: `ui-principles` | 8674 |  |
 | reference: `unslop` | 2761 |  |
