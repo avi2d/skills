@@ -47,6 +47,15 @@ describe("the checked-in Rules", () => {
     }
   });
 
+  test("`readme-front-door` is selected for a README.md write wherever it sits, and not for an AGENTS.md, a CLAUDE.md or a page under docs/", () => {
+    for (const path of ["README.md", "packages/tool/README.md", "/work/README.md"]) {
+      expect(delivered(run(index, [start, wrote(path)]).actions), path).toContain("readme-front-door");
+    }
+    for (const path of [...ROUTER_DOCS, "docs/guide.md", "src/a.ts"]) {
+      expect(delivered(run(index, [start, wrote(path)]).actions), path).not.toContain("readme-front-door");
+    }
+  });
+
   test("`agent-docs` is cut from the default selection, and a project switching it on reaches a SKILL.md wherever it sits, never an AGENTS.md or CLAUDE.md", () => {
     for (const path of SKILL_DOCS) expect(delivered(run(index, [start, wrote(path)]).actions), path).toEqual([]);
     const on = projectOf({ on: ["agent-docs", "writing-for-people"] });

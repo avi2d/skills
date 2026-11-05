@@ -15,11 +15,12 @@ Tool definitions are absent from this repository and have no character size in t
 
 | Part | Characters | Share of Rules by characters |
 | --- | ---: | ---: |
-| rule: `comment-discipline` | 2671 | 34.8% |
-| rule: `fix-what-you-see` | 328 | 4.3% |
-| rule: `prove-it-works` | 2760 | 36.0% |
-| rule: `typescript-best-practices` | 1598 | 20.8% |
-| rule: `agents-md-router` | 311 | 4.1% |
+| rule: `comment-discipline` | 2671 | 32.0% |
+| rule: `fix-what-you-see` | 328 | 3.9% |
+| rule: `prove-it-works` | 2760 | 33.1% |
+| rule: `typescript-best-practices` | 1598 | 19.1% |
+| rule: `agents-md-router` | 311 | 3.7% |
+| rule: `readme-front-door` | 678 | 8.1% |
 | skill: `build-and-review-motion` | 5794 |  |
 | skill: `develop-a-website` | 8421 |  |
 | skill: `grilling` | 3528 |  |
@@ -50,13 +51,14 @@ Tool definitions are absent from this repository and have no character size in t
 
 | Part | Characters | Share of Rules by characters |
 | --- | ---: | ---: |
-| rule: `comment-discipline` | 2671 | 30.1% |
-| rule: `fix-what-you-see` | 328 | 3.7% |
-| rule: `guard-the-context-window` | 353 | 4.0% |
-| rule: `prove-it-works` | 2760 | 31.1% |
-| rule: `typescript-best-practices` | 1598 | 18.0% |
-| rule: `agents-md-router` | 311 | 3.5% |
-| rule: `writing-for-people` | 861 | 9.7% |
+| rule: `comment-discipline` | 2671 | 27.9% |
+| rule: `fix-what-you-see` | 328 | 3.4% |
+| rule: `guard-the-context-window` | 353 | 3.7% |
+| rule: `prove-it-works` | 2760 | 28.9% |
+| rule: `typescript-best-practices` | 1598 | 16.7% |
+| rule: `agents-md-router` | 311 | 3.3% |
+| rule: `readme-front-door` | 678 | 7.1% |
+| rule: `writing-for-people` | 861 | 9.0% |
 | skill: `build-and-review-motion` | 5794 |  |
 | skill: `develop-a-website` | 8421 |  |
 | skill: `grilling` | 3528 |  |
@@ -87,13 +89,14 @@ Tool definitions are absent from this repository and have no character size in t
 
 | Part | Characters | Share of Rules by characters |
 | --- | ---: | ---: |
-| rule: `comment-discipline` | 2671 | 31.7% |
-| rule: `fix-what-you-see` | 328 | 3.9% |
-| rule: `force-determinism` | 647 | 7.7% |
-| rule: `git-hygiene` | 100 | 1.2% |
-| rule: `prove-it-works` | 2760 | 32.8% |
-| rule: `typescript-best-practices` | 1598 | 19.0% |
-| rule: `agents-md-router` | 311 | 3.7% |
+| rule: `comment-discipline` | 2671 | 29.4% |
+| rule: `fix-what-you-see` | 328 | 3.6% |
+| rule: `force-determinism` | 647 | 7.1% |
+| rule: `git-hygiene` | 100 | 1.1% |
+| rule: `prove-it-works` | 2760 | 30.4% |
+| rule: `typescript-best-practices` | 1598 | 17.6% |
+| rule: `agents-md-router` | 311 | 3.4% |
+| rule: `readme-front-door` | 678 | 7.5% |
 | skill: `build-and-review-motion` | 5794 |  |
 | skill: `develop-a-website` | 8421 |  |
 | skill: `grilling` | 3528 |  |
@@ -124,12 +127,13 @@ Tool definitions are absent from this repository and have no character size in t
 
 | Part | Characters | Share of Rules by characters |
 | --- | ---: | ---: |
-| rule: `comment-discipline` | 2671 | 34.3% |
-| rule: `fix-what-you-see` | 328 | 4.2% |
-| rule: `git-hygiene-co-author` | 112 | 1.4% |
-| rule: `prove-it-works` | 2760 | 35.5% |
-| rule: `typescript-best-practices` | 1598 | 20.5% |
-| rule: `agents-md-router` | 311 | 4.0% |
+| rule: `comment-discipline` | 2671 | 31.6% |
+| rule: `fix-what-you-see` | 328 | 3.9% |
+| rule: `git-hygiene-co-author` | 112 | 1.3% |
+| rule: `prove-it-works` | 2760 | 32.6% |
+| rule: `typescript-best-practices` | 1598 | 18.9% |
+| rule: `agents-md-router` | 311 | 3.7% |
+| rule: `readme-front-door` | 678 | 8.0% |
 | skill: `build-and-review-motion` | 5794 |  |
 | skill: `develop-a-website` | 8421 |  |
 | skill: `grilling` | 3528 |  |
@@ -160,9 +164,10 @@ Tool definitions are absent from this repository and have no character size in t
 
 | Part | Characters | Share of Rules by characters |
 | --- | ---: | ---: |
-| rule: `guard-the-context-window` | 353 | 10.3% |
-| rule: `prove-it-works` | 2760 | 80.6% |
-| rule: `agents-md-router` | 311 | 9.1% |
+| rule: `guard-the-context-window` | 353 | 8.6% |
+| rule: `prove-it-works` | 2760 | 67.3% |
+| rule: `agents-md-router` | 311 | 7.6% |
+| rule: `readme-front-door` | 678 | 16.5% |
 | skill: `build-and-review-motion` | 5794 |  |
 | skill: `develop-a-website` | 8421 |  |
 | skill: `grilling` | 3528 |  |

@@ -12,7 +12,7 @@ import { main } from "../platform/platform";
 export const RECORDS = "docs/adr";
 export const RECORD_INDEX = `${RECORDS}/README.md`;
 export const LINK_PAGE = "docs/links.md";
-export const README = "README.md";
+export const INSTALL_PAGE = "docs/install.md";
 const WRITING_REFERENCE = "library/writing/references/technical-writing/SKILL.md";
 const KIT_TEMPLATE = "@avi2dg/checks/templates/readme.md";
 const KIT_TEMPLATES = "@avi2dg/checks/templates/*";
@@ -178,7 +178,7 @@ export const linkPage = (links: MachineLinks, merged: MergeMap, retired: readonl
     "",
     "## Related topics",
     "",
-    "- [Uninstall](../README.md#uninstall)",
+    "- [Uninstall](install.md#uninstall)",
     "- [How a Rule reaches a harness](how-a-rule-reaches-a-harness.md)",
     "",
   ].join("\n");
@@ -239,22 +239,22 @@ export const withTemplates = (reference: string, templates: readonly string[]): 
 };
 
 export const withLinks = Effect.fnUntraced(function* (
-  readme: string,
+  page: string,
   links: LinkMap,
   merged: MergeMap,
   retired: readonly string[],
 ): Effect.fn.Return<string, MalformedBody> {
-  const owned = yield* spliced(README, readme, OWNED_LIST, [
+  const owned = yield* spliced(INSTALL_PAGE, page, OWNED_LIST, [
     ...Object.keys(links).map((rel) => `- ${inHome(rel)}`),
     ...Object.entries(merged).map(([rel, { from }]) => `- ${inHome(rel)}, written from \`${from}\` rather than linked`),
   ]);
-  return yield* spliced(README, owned, UNINSTALL_SCRIPT, uninstallScript(links, retired));
+  return yield* spliced(INSTALL_PAGE, owned, UNINSTALL_SCRIPT, uninstallScript(links, retired));
 });
 
-const readmeWithLinks = Effect.fnUntraced(function* (
+const installPageWithLinks = Effect.fnUntraced(function* (
   repo: string,
 ): Effect.fn.Return<string, FileFailure | MalformedBody, FileSystem.FileSystem> {
-  const path = `${repo}${README}`;
+  const path = `${repo}${INSTALL_PAGE}`;
   const windows = linksUnder(DEFAULT_GENERATED_ROOT, "windows");
   const links: Record<string, string> = { ...windows };
   for (const [rel, target] of Object.entries(linksUnder(DEFAULT_GENERATED_ROOT, "mac"))) {
@@ -294,7 +294,7 @@ export const pages = Effect.fnUntraced(function* (
   return [
     { path: RECORD_INDEX, text: recordIndex(yield* records(repo)) },
     { path: LINK_PAGE, text: linkPage(linksOnEveryMachine(DEFAULT_GENERATED_ROOT), MERGED, RETIRED) },
-    { path: README, text: yield* readmeWithLinks(repo) },
+    { path: INSTALL_PAGE, text: yield* installPageWithLinks(repo) },
     { path: WRITING_REFERENCE, text: yield* writingReference(repo) },
     { path: SWEEP_PAGE, text: sweepPage(yield* sweepRecords(`${repo}${SWEEPS}`)) },
     { path: PROFILE_PAGE, text: renderProfiles(yield* profileSizes(profiles, bodies)) },

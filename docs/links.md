@@ -68,5 +68,5 @@ Each path below was once in the map.
 
 ## Related topics
 
-- [Uninstall](../README.md#uninstall)
+- [Uninstall](install.md#uninstall)
 - [How a Rule reaches a harness](how-a-rule-reaches-a-harness.md)
