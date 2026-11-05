@@ -7,7 +7,7 @@ Develop here when you change a Body, the generator, a Dispatcher, the suite, or 
 
 ## Before you begin
 
-- A checkout installed as the README's [Install](../README.md#install) section describes.
+- A checkout installed as [Install and uninstall skills](install.md#install) describes.
 - Claude Code 2.1.280 on `PATH`, for the delivery tests that drive a real `claude`, which skip without it.
 
 ## Run the checks

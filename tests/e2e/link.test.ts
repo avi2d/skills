@@ -6,7 +6,7 @@ import { dirname, join } from "node:path";
 import { Schema } from "effect";
 import { skipReason } from "@avi2dg/checks/scripts/test-skips.ts";
 import { DEFAULT_GENERATED_ROOT } from "../../src/generate/bundle";
-import { README } from "../../src/docs/docs";
+import { INSTALL_PAGE } from "../../src/docs/docs";
 import { MERGED, REPO, link, preflight } from "../../src/generate/link";
 import { resolvedTargets, wouldDangle } from "../lib/dangling";
 import { clonePaths } from "./lib/clone";
@@ -203,7 +203,7 @@ test("the account's own home is read from the passwd record, which a temporary $
   }
 });
 
-test("the uninstall in the README removes every link the linker wrote, and leaves what it did not write", async () => {
+test("the uninstall on the install page removes every link the linker wrote, and leaves what it did not write", async () => {
   const home = await mkdtemp(join(tmpdir(), "skills-uninstall-"));
   const elsewhere = await mkdtemp(join(tmpdir(), "skills-elsewhere-"));
   try {
@@ -213,8 +213,8 @@ test("the uninstall in the README removes every link the linker wrote, and leave
     await mkdir(join(home, ".claude"), { recursive: true });
     await writeFile(join(home, ".claude/agents"), "not a link\n");
 
-    const readme = await Bun.file(`${REPO}${README}`).text();
-    const script = /```sh\n([\s\S]*?)```/.exec(readme)?.[1] ?? expect.unreachable(`${README} holds no sh block`);
+    const page = await Bun.file(`${REPO}${INSTALL_PAGE}`).text();
+    const script = /```sh\n([\s\S]*?)```/.exec(page)?.[1] ?? expect.unreachable(`${INSTALL_PAGE} holds no sh block`);
     const run = await Bun.$`sh -c ${script}`.cwd(REPO).env({ ...process.env, HOME: home }).nothrow().quiet();
     expect(run.exitCode, run.stderr.toString()).toBe(0);
 

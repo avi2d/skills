@@ -114,18 +114,18 @@ describe("the link page", () => {
     expect(page.startsWith("---\nkind: reference\n---\n# The link map\n")).toBe(true);
   });
 
-  test("leaves uninstalling to the README", () => {
+  test("leaves uninstalling to the install page", () => {
     expect(page).not.toContain("```sh");
   });
 });
 
-describe("the README's lists of what `bun run link` owns", () => {
+describe("the install page's lists of what `bun run link` owns", () => {
   const owned = "<!-- `bun run docs` writes the list below from `LINKS` and `MERGED` in `src/generate/link.ts`. -->";
   const script = "<!-- `bun run docs` writes the script below from `LINKS` and `RETIRED` in `src/generate/link.ts`. -->";
-  const readme = ["# a", owned, "- `~/.gone`", "<!-- The list above ends here. -->", "Between.", script, "<!-- The script above ends here. -->", ""].join("\n");
-  const spliced = value(withLinks(readme, LINKED, MERGED_FILES, [".a/old"]));
+  const page = ["# a", owned, "- `~/.gone`", "<!-- The list above ends here. -->", "Between.", script, "<!-- The script above ends here. -->", ""].join("\n");
+  const spliced = value(withLinks(page, LINKED, MERGED_FILES, [".a/old"]));
   const lines = spliced.split("\n");
-  const shell = /```sh\n([\s\S]*?)```/.exec(spliced)?.[1] ?? expect.unreachable("the README holds no sh block");
+  const shell = /```sh\n([\s\S]*?)```/.exec(spliced)?.[1] ?? expect.unreachable("the install page holds no sh block");
 
   test("install every mapped path in map order, then each written file, none retired and nothing the map no longer holds", () => {
     expect(lines.slice(1, 6)).toEqual([
@@ -148,8 +148,8 @@ describe("the README's lists of what `bun run link` owns", () => {
     expect(spliced).toEndWith("```\n<!-- The script above ends here. -->\n");
   });
 
-  test("are refused when the README has lost the markers around one, rather than left stale", () => {
-    expect(said(withLinks(readme.replace(script, ""), LINKED, MERGED_FILES, []))).toContain("README.md has lost the markers around its uninstall script");
+  test("are refused when the install page has lost the markers around one, rather than left stale", () => {
+    expect(said(withLinks(page.replace(script, ""), LINKED, MERGED_FILES, []))).toContain("docs/install.md has lost the markers around its uninstall script");
   });
 });
 
