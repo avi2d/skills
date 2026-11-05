@@ -33,5 +33,5 @@ export const codexHooks = decodeCodexHooks(await Bun.file(`${REPO}harness/codex/
 
 export const HERDR_OWNED: Record<string, { id: string; version: string }> = {
   ".pi/agent/extensions/herdr-agent-state.ts": { id: "pi", version: "9" },
-  ".claude/hooks/herdr-agent-state.sh": { id: "claude", version: "10" },
+  ".claude/hooks/herdr-agent-state.sh": { id: "claude", version: "11" },
 };
