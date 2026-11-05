@@ -59,13 +59,7 @@ To see what fired:
 
 ## Read opening context
 
-To inspect the stored opening requests without running a new agent session:
-
-1. Run `bun run context-index` to update the local index.
-1. Run `bun run context-report` to write the report and offline explorer under `$XDG_STATE_HOME/skills/`, or `~/.local/state/skills/` when that is unset.
-
-The [session reader guide](docs/context-sessions.md) names what each tool stores and what its records cannot measure.
-The generated [Profile context parts](docs/context-profiles.md) page lists character sizes from this tree and contains no machine-local measurements.
+[Read stored session context](docs/context-sessions.md) says how to index and read stored opening requests.
 
 ## Where things are
 
