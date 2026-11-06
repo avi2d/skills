@@ -14,7 +14,7 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: avi2d/workflows/setup@v1
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v7
         with:
           node-version-file: .node-version
       - run: bunx checks-advisories --all
