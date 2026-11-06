@@ -46,16 +46,16 @@ const familyOf = (model: string | undefined): string => /muse|haiku|opus/.exec(m
 test.each([...MACHINES])("on the %s machine, the trivial and small tiers prefer Muse, then Haiku, then Opus, in array order", async (machine) => {
   const dispatch = await dispatchOn(machine);
   expect(dispatch.array_order, "without preference order firstmate ranks the candidates by spendPriority").toBe("preference");
-  const workhorse = dispatch.rules.filter(({ when }) => /^(Trivial|Well-scoped small)/.test(when));
+  const workhorse = dispatch.rules.filter(({ when }) => /^(Mechanical|Clearly specified implementation work of ordinary size)/.test(when));
   expect(workhorse.length).toBe(2);
   for (const { when, use } of workhorse) expect(listed(use).map(({ model }) => familyOf(model)), when.slice(0, 60)).toEqual(["muse", "haiku", "opus"]);
 });
 
 test.each([...MACHINES])("on the %s machine, Haiku sits only in the trivial and small tiers, at low and high effort", async (machine) => {
   const haiku = naming(/haiku/i)(await profilesOn(machine));
-  expect(haiku.map(({ at, profile }) => [/^(Trivial|Well-scoped small)/.exec(at)?.[0] ?? at, profile.effort])).toEqual([
-    ["Trivial", "low"],
-    ["Well-scoped small", "high"],
+  expect(haiku.map(({ at, profile }) => [/^(Mechanical|Clearly specified implementation work of ordinary size)/.exec(at)?.[0] ?? at, profile.effort])).toEqual([
+    ["Mechanical", "low"],
+    ["Clearly specified implementation work of ordinary size", "high"],
   ]);
 });
 
@@ -126,13 +126,13 @@ test.each([...MACHINES])("on the %s machine, pi runs every dispatched effort as 
   expect(held.flatMap(misrun)).toEqual([]);
 });
 
-test("on the mac machine, an ambiguous or cross-system investigation dispatches Opus 5.5 at high, after the narrower shared rules", async () => {
+test("on the mac machine, a code change whose cause is not yet known dispatches Opus 5.5 at high, after the narrower shared rules", async () => {
   const dispatch = await dispatchOn("mac");
-  const found = dispatch.rules.filter(({ when }) => when.includes("Ambiguous or cross-system investigation"));
-  expect(found, "the mac dispatch carries no investigation rule, so one falls to the default").toHaveLength(1);
+  const found = dispatch.rules.filter(({ when }) => when.includes("A code change whose cause or scope is not yet known"));
+  expect(found, "the mac dispatch carries no unknown-cause rule, so one falls to the default").toHaveLength(1);
   const [rule] = found;
   if (rule === undefined) return expect.unreachable("the filter above found one rule");
-  const narrow = dispatch.rules.slice(0, dispatch.rules.indexOf(rule)).filter(({ when }) => /^(Trivial|Well-scoped small)/.test(when));
+  const narrow = dispatch.rules.slice(0, dispatch.rules.indexOf(rule)).filter(({ when }) => /^(Mechanical|Clearly specified implementation work of ordinary size)/.test(when));
   expect(narrow.length, "a narrower shared rule must still win over the investigation rule").toBe(2);
   expect(listed(rule.use)).toEqual([{ harness: "pi", model: "claude-bridge/claude-opus-5-5", effort: "high", provider: "claude" }]);
 });
