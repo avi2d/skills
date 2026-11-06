@@ -18,13 +18,13 @@ const TRIVIAL_EFFORTS = { muse: "low", haiku: "low", opus: "low" } as const;
 const SMALL_EFFORTS = { muse: "high", haiku: "high", opus: "medium" } as const;
 
 const unknownCause: OwnRule = {
-  description: "An unexplained cause needs the strongest reasoning, so it bypasses the bounded-investigation default.",
+  description: "An unexplained cause needs the strongest reasoning class.",
   when: "A code change whose cause or scope is not yet known: a bug, flaky check, environment-only failure, or unexplained regression that must first be diagnosed across systems, processes or machines before the fix is clear. A fix the brief already locates takes a smaller rule.",
   use: [opus("high")],
 };
 
 const macOnly: OwnRule = {
-  description: "Live Mac configuration needs work on that machine, so it bypasses the shared size rules.",
+  description: "Live Mac configuration needs work on that machine.",
   when: "Work that must run on this Mac against its live configuration (terminal, Herdr, WezTerm, pi setup or home network) and changes or proves that live state. A repository change that only targets Mac software and is proved in its isolated copy takes the size rules.",
   use: [opus("high")],
 };
