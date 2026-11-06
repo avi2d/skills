@@ -24,7 +24,7 @@ export const TASK_KINDS: Readonly<Record<Kind, { readonly when: string; readonly
   },
   investigation: {
     when: "Bounded investigation, audit, diagnosis, triage, reproduction, or planning that produces a report rather than a code change: a scout, a survey of issues, a root-cause hunt, an evaluation of options.",
-    description: "A bounded report goes to a cheaper reasoner first, while an open-ended one keeps the strongest class.",
+    description: "A report shapes later work, so it keeps the strongest reasoning class.",
   },
 };
 

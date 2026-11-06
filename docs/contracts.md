@@ -65,8 +65,8 @@ Codex trusts a hook by its hash, so installing or changing the file also needs o
 
 | File | Holds |
 | --- | --- |
-| `harness/firstmate/crew-dispatch.json` | firstmate's dispatch rules on the Windows machine, which takes the heavy work |
-| `harness/firstmate/crew-dispatch.mac.json` | firstmate's dispatch rules on the Mac, which takes small work, open-ended investigations and work only the Mac can reach |
+| `harness/firstmate/crew-dispatch.json` | firstmate's dispatch rules on the Windows machine, which holds the shared rules and the unknown cause rule |
+| `harness/firstmate/crew-dispatch.mac.json` | firstmate's dispatch rules on the Mac, which holds the shared rules with the unknown cause rule and the live configuration rule |
 | `harness/firstmate/secondmate-harness` | firstmate's secondmate harness, model and effort pin on the Mac |
 | `harness/firstmate/supervision-branch-model` | firstmate's supervision branch model pin on the Mac |
 | `harness/firstmate/supervision-branch-effort` | firstmate's supervision branch effort pin on the Mac |
@@ -80,7 +80,7 @@ A shared rule names only its kind and its candidates, and a machine's own rule, 
 A description says what a rule is for and why, names no model or effort, and stays out of the written file.
 Change a rule there and regenerate, because `tests/unit/machine-files.test.ts` and `bun run generate --check` fail on a committed file that differs from what the source writes.
 Both files set `array_order` to `preference`, so firstmate takes the first candidate that quota-axi shows usable.
-A Haiku 5.5 candidate carries a `floor` on the Claude `all_models` scope, so firstmate skips it while either Claude window holds under 15%.
+A Haiku 5.5 candidate and a Muse candidate each carry a `floor` on the `all_models` scope of their provider, so firstmate skips each while that scope holds under 15%.
 `bun run link` links the Mac's file on macOS and the other one on every other platform.
 It links the three pins on macOS only.
 `tests/unit/crew-dispatch.test.ts` fails on a profile whose effort pi would run at another level.

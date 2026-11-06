@@ -133,6 +133,6 @@ test("on the mac machine, a code change whose cause is not yet known dispatches 
   const [rule] = found;
   if (rule === undefined) return expect.unreachable("the filter above found one rule");
   const narrow = dispatch.rules.slice(0, dispatch.rules.indexOf(rule)).filter(({ when }) => /^(Mechanical|Clearly specified implementation work of ordinary size)/.test(when));
-  expect(narrow.length, "a narrower shared rule must still win over the investigation rule").toBe(2);
+  expect(narrow.length, "a narrower shared rule must still win over the unknown cause rule").toBe(2);
   expect(listed(rule.use)).toEqual([{ harness: "pi", model: "claude-bridge/claude-opus-5-5", effort: "high", provider: "claude" }]);
 });

@@ -24,7 +24,7 @@ const unknownCause: OwnRule = {
 };
 
 const macOnly: OwnRule = {
-  description: "Heavy work belongs on the Windows machine, so the Mac takes only what the Mac alone can reach.",
+  description: "Live Mac configuration needs work on that machine, so it bypasses the shared size rules.",
   when: "Work that must run on this Mac against its live configuration (terminal, Herdr, WezTerm, pi setup or home network) and changes or proves that live state. A repository change that only targets Mac software and is proved in its isolated copy takes the size rules.",
   use: [opus("high")],
 };
