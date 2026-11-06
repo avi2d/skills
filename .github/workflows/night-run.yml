@@ -22,7 +22,7 @@ jobs:
           node-version-file: .node-version
       - run: bun run generate
       - run: time bunx stryker run
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: night-run-mutation
           path: reports/mutation/mutation.json
@@ -55,7 +55,7 @@ jobs:
         run: bunx checks-test --tier=unit --junit=reports/night-run-tests/unit.xml
       - continue-on-error: true
         run: bunx checks-test --tier=e2e --junit=reports/night-run-tests/e2e.xml
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: night-run-tests
           path: reports/night-run-tests/
@@ -85,7 +85,7 @@ jobs:
       - env:
           GH_TOKEN: ${{ github.token }}
         run: bunx checks-night-run --mutation reports/mutation/mutation.json ${{ needs.tests.result == 'success' && '--tests reports/night-run-tests/unit.xml --tests reports/night-run-tests/e2e.xml' || '' }}
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: night-run
           path: reports/night-run.json
