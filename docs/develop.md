@@ -119,8 +119,8 @@ The score is advisory, because the preset's `thresholds.break` is null, so no pu
 Mutation runs only in the night run, and no workflow runs it on a pull request or a push.
 `.github/workflows/night-run.yml` runs a full `bunx stryker run` when you start it by hand.
 It runs the unit tier and the e2e tier, and keeps a JUnit report for each.
-It runs `checks-lint --night`.
 It hands each report to `bunx checks-night-run`.
+Its gates job runs `checks-lint --night` on the whole history, and its result reaches no issue.
 Its tests job installs `claude` and the pinned `sqlite3`, and checks out the whole history, as `ci.yml` does.
 The tests that skip locally without those run at night.
 A tier that fails, or holds an undeclared skip, marks its step failed.
