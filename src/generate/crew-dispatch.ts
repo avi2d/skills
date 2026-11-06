@@ -7,24 +7,24 @@ type Kind = typeof Kind.Type;
 
 export const TASK_KINDS: Readonly<Record<Kind, { readonly when: string; readonly description: string }>> = {
   trivial: {
-    when: "Trivial or mechanical work whose outcome is fully specified: a rote rename, formatting sweep, typo fix, config or selection flip, deleting or moving named files and sections, removing leftovers a tool generated, or gathering files; multi-file is fine as long as no design choice is left to make.",
+    when: "Mechanical work whose every edit the brief dictates, with no judgment left: a rename, formatting sweep, typo fix, version or pin bump, single setting flip, deleting or moving named files or sections, copying an existing file verbatim, removing tool-generated leftovers, or gathering files. Any number of files fits.",
     description: "Narrow work with no design choice left, so it goes to the cheapest candidate that can do it.",
   },
   small: {
-    when: "Well-scoped small implementation work expected to change about 150 lines or fewer: a clearly specified feature, an ordinary bug fix with a clear pointer to the cause, writing tests for existing behavior, or a routine refactor following an existing pattern.",
+    when: "Clearly specified implementation work of ordinary size, about 150 changed lines or fewer of new or rewritten logic: a specified feature, a bug fix whose cause the brief points to, tests for existing behavior, or applying a pattern the brief names (a worked example, a pilot pull request, a sibling repository) to more places. The worker makes only local choices. Repeating one known change across many files or workflows, deleting the code it replaces, and running proof or CI checks to confirm it all stay here.",
     description: "Small well-scoped work leaves little to decide, so a cheap workhorse takes it before the main model does.",
   },
   large: {
-    when: "Well-scoped large implementation work expected to change more than about 150 lines: a clearly specified feature, an ordinary bug fix with a clear pointer to the cause, writing tests for existing behavior, or a routine refactor following an existing pattern at that size.",
+    when: "Clearly specified implementation work above about 150 changed lines of new or rewritten logic, staying within one program, where the brief already settles the design: a new feature, option, check or command carried through code, schema, docs and tests, a fix that first needs a new reproduction harness, or a refactor across several modules along a design the brief states. An upstream sync into a fork is sized by the conflicts it must resolve, not by the incoming diff.",
     description: "Large well-scoped work is long but leaves little to decide, so it needs the main model more than its deepest reasoning.",
   },
   ambiguous: {
-    when: "Big or ambiguous multi-file feature, risky refactor, orchestration of several workers, or implementation work that requires holding many moving parts in mind.",
+    when: "Implementation that needs real design judgment or must keep many interacting parts consistent: design decisions the brief leaves open, a feature spanning several processes, machines or services, new code that stores, passes or guards secrets or credentials, a risky refactor of shared state, concurrency or migration logic, coordinating several workers, visual or interaction design without a settled target, or a large rebuild an earlier attempt failed at. File count, proof runs and CI edits alone do not qualify; a known change applied by a named pattern takes a smaller rule.",
     description: "Ambiguous work needs the strongest reasoning class, so a tight window stops and reports rather than downgrading to a weaker one.",
   },
   investigation: {
-    when: "Bounded investigation, audit, diagnosis, triage, reproduction, or planning that produces a report rather than a code change: a scout, a survey of issues, a root-cause hunt, an evaluation of options. An ambiguous or cross-system investigation takes the stronger rule below instead.",
-    description: "A bounded report goes to a cheaper reasoner first, while an open-ended one keeps the strongest class.",
+    when: "Bounded investigation, audit, diagnosis, triage, reproduction, or planning that produces a report rather than a code change: a scout, a survey of issues, a root-cause hunt, an evaluation of options.",
+    description: "A report shapes later work, so it keeps the strongest reasoning class.",
   },
 };
 
@@ -52,7 +52,9 @@ const Profile = Schema.Union([
   Schema.Struct({ ...profileOf("claude-bridge/claude-haiku-5-5", "claude").fields, floor: Floor }).annotate({
     description: "Haiku 5.5 spends the Claude windows the main firstmate and Opus crews share, so it always carries a floor",
   }),
-  profileOf("opencode-go/muse-spark-1.3-contributor", "opencode-go"),
+  Schema.Struct({ ...profileOf("opencode-go/muse-spark-1.3-contributor", "opencode-go").fields, floor: Floor }).annotate({
+    description: "Muse always carries a floor, as Haiku 5.5 does",
+  }),
 ]);
 
 export type Profile = typeof Profile.Type;

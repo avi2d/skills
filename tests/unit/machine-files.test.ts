@@ -97,9 +97,12 @@ test.each([
   expect(await saidBy(crewDispatchJson(withFirstProfile(() => profile)))).toMatch(named);
 });
 
-test("generation refuses a floor on a profile other than Haiku 5.5", async () => {
-  const source = withFirstProfile((profile) => ({ ...profile, floor: { scope: "all_models", min_percent: 15 } }));
-  expect(await saidBy(crewDispatchJson(source))).toMatch(/floor/);
+test("generation refuses a floor on a profile other than Haiku 5.5 and Muse", async () => {
+  const source = crewDispatchOf("windows");
+  const [first, ...rest] = source.rules;
+  if (first === undefined) return expect.unreachable("the source holds no rule");
+  const use = first.use.map((profile) => (profile.model.startsWith("claude-bridge/claude-opus") ? { ...profile, floor: { scope: "all_models", min_percent: 15 } } : profile));
+  expect(await saidBy(crewDispatchJson({ ...source, rules: [{ ...first, use }, ...rest] }))).toMatch(/floor/);
 });
 
 test("generation refuses a rule that names no profile", async () => {
@@ -112,7 +115,7 @@ const kindRule = (rule: Record<string, unknown>) => {
   return { ...source, rules: [rule, ...source.rules.slice(1)] };
 };
 
-const muse = { harness: "pi", model: "opencode-go/muse-spark-1.3-contributor", effort: "low", provider: "opencode-go" };
+const muse = { harness: "pi", model: "opencode-go/muse-spark-1.3-contributor", effort: "low", provider: "opencode-go", floor: { scope: "all_models", min_percent: 15 } };
 
 test.each([
   ["a kind the table does not name", { kind: "tiny", use: [muse] }, /Expected "trivial" \| "small" \| "large" \| "ambiguous" \| "investigation"\n {2}at \["rules"\]\[0\]\["kind"\]/],
