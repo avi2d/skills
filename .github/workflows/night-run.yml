@@ -73,12 +73,12 @@ jobs:
     steps:
       - uses: avi2d/workflows/setup@v1
       - if: needs.mutation.result == 'success'
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: night-run-mutation
           path: reports/mutation
       - if: needs.tests.result == 'success'
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: night-run-tests
           path: reports/night-run-tests
