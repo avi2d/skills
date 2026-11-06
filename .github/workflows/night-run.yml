@@ -35,13 +35,7 @@ jobs:
       - uses: avi2d/workflows/setup@v1
         with:
           fetch-depth: 0
-      # A failing gate becomes an issue, so its exit leaves the job going on to the upload.
-      - run: mkdir -p reports/night-run-gates && bunx checks-lint --night > reports/night-run-gates/gates.log 2>&1 || true
-      - uses: actions/upload-artifact@v4
-        with:
-          name: night-run-gates
-          path: reports/night-run-gates/
-          retention-days: 1
+      - run: bunx checks-lint --night
 
   tests:
     runs-on: ubuntu-latest
@@ -68,7 +62,7 @@ jobs:
           retention-days: 1
 
   report:
-    needs: [mutation, gates, tests]
+    needs: [mutation, tests]
     if: ${{ !cancelled() }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -88,14 +82,9 @@ jobs:
         with:
           name: night-run-tests
           path: reports/night-run-tests
-      - if: needs.gates.result == 'success'
-        uses: actions/download-artifact@v4
-        with:
-          name: night-run-gates
-          path: reports/night-run-gates
       - env:
           GH_TOKEN: ${{ github.token }}
-        run: bunx checks-night-run --mutation reports/mutation/mutation.json ${{ needs.tests.result == 'success' && '--tests reports/night-run-tests/unit.xml --tests reports/night-run-tests/e2e.xml' || '' }} ${{ needs.gates.result == 'success' && '--gates reports/night-run-gates/gates.log' || '' }}
+        run: bunx checks-night-run --mutation reports/mutation/mutation.json ${{ needs.tests.result == 'success' && '--tests reports/night-run-tests/unit.xml --tests reports/night-run-tests/e2e.xml' || '' }}
       - uses: actions/upload-artifact@v4
         with:
           name: night-run

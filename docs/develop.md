@@ -24,7 +24,7 @@ To run the checks before a push:
 `bun run build` writes `CHANGELOG.md` from the conventional commits since the last release, and the Effect scope in `tsconfig.json`.
 
 `.github/workflows/ci.yml` runs the same steps on every pull request and every push to main, on a clone, with the full `bun run test` in place of `bun run test:fast`.
-Every job checks out, installs the Bun that `.bun-version` names and runs `bun install --frozen-lockfile` through the shared `avi2d/workflows/setup@v1` action, and `.github/dependabot.yml` moves that pin and every other action pin weekly.
+Every job checks out, installs the Bun that `.bun-version` names and runs `bun install --frozen-lockfile` through the shared `avi2d/workflows/setup@v1` action, and `.github/dependabot.yml` moves the `setup@v1` action pin and every other action pin weekly.
 It installs `claude` and a pinned `sqlite3` before `bun run test`.
 It runs `bun run test` with `TMPDIR` set to an empty directory under the runner's per-job temp, then `scripts/check-tmp-clean.sh`, which fails the job naming anything the suite left there.
 Every job runs on `ubuntu-latest`.
@@ -119,14 +119,14 @@ The score is advisory, because the preset's `thresholds.break` is null, so no pu
 Mutation runs only in the night run, and no workflow runs it on a pull request or a push.
 `.github/workflows/night-run.yml` runs a full `bunx stryker run` when you start it by hand.
 It runs the unit tier and the e2e tier, and keeps a JUnit report for each.
-It runs `checks-lint --night` and keeps its log.
-It hands each report and the log to `bunx checks-night-run`.
+It runs `checks-lint --night`.
+It hands each report to `bunx checks-night-run`.
 Its tests job installs `claude` and the pinned `sqlite3`, and checks out the whole history, as `ci.yml` does.
 The tests that skip locally without those run at night.
 A tier that fails, or holds an undeclared skip, marks its step failed.
 The job goes on, so the report job still files each failing test.
 `checks-night-run` compares each file's score with the previous run's.
-It opens or updates one issue labelled `night-run` for each file whose score fell, each failing test and each failing nightly gate.
+It opens or updates one issue labelled `night-run` for each file whose score fell and each failing test.
 Agents fix each issue as its own task.
 The night run gives a per-file score only, and restores, saves and refreshes no incremental state or baseline.
 The night run starts only when you run `gh workflow run night-run`.
