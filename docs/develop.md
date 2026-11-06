@@ -27,10 +27,11 @@ To run the checks before a push:
 It installs `claude` and a pinned `sqlite3` before `bun run test`.
 It runs `bun run test` with `TMPDIR` set to an empty directory under the runner's per-job temp, then `scripts/check-tmp-clean.sh`, which fails the job naming anything the suite left there.
 Every job runs on `ubuntu-latest`.
+Every job checks out, installs the Bun that `.bun-version` names and runs `bun install --frozen-lockfile` through the shared `avi2d/workflows/setup@v1` action, and `.github/dependabot.yml` moves the `setup@v1` action pin and every other action pin weekly.
 Each workflow in `.github/workflows/` is owned by this repository, and `checks-ci-wiring` fails naming a required command the pull request workflows no longer run.
-It also fails an `oven-sh/setup-bun` step whose Bun is not the kit's fleet version, so `.bun-version` moves only with a kit release that moves the fleet.
+It also fails a setup step whose Bun is not the kit's fleet version, so `.bun-version` moves only with a kit release that moves the fleet.
 `ci.yml` also lints a pull request's title as a conventional commit, because a squash merge makes the title the commit subject.
-It reports that result as the `commitlint` status.
+It reports that result as the `commitlint` status through the shared `commitlint-status` action, and a dispatched run reports its result on the head commit through the shared `head-status` action.
 A pull request that touches only top-level Markdown and Markdown under `docs/` skips `bun run typecheck`, `bun run test` and their setup, and still lints its title, builds, lints and reports.
 
 `bun run test` is the kit's `checks-test`, which runs `bun test --randomize` with one worker per machine core and prints the seed that reproduces a failure.
@@ -119,6 +120,7 @@ Mutation runs only in the night run, and no workflow runs it on a pull request o
 `.github/workflows/night-run.yml` runs a full `bunx stryker run` when you start it by hand.
 It runs the unit tier and the e2e tier, and keeps a JUnit report for each.
 It hands each report to `bunx checks-night-run`.
+Its gates job runs `checks-lint --night` on the whole history, and its result reaches no issue.
 Its tests job installs `claude` and the pinned `sqlite3`, and checks out the whole history, as `ci.yml` does.
 The tests that skip locally without those run at night.
 A tier that fails, or holds an undeclared skip, marks its step failed.

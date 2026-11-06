@@ -13,19 +13,15 @@ jobs:
     steps:
       - run: echo "TMPDIR=$RUNNER_TEMP" >> "$GITHUB_ENV"
       # The whole history, since the sweep-record tests find where the head branched from main.
-      - uses: actions/checkout@v5
-        with:
-          fetch-depth: 0
       # ci.yml's toolchain, pinned the same, so a failing seed here is one
       # ci.yml can meet.
-      - uses: oven-sh/setup-bun@v2
+      - uses: avi2d/workflows/setup@v1
         with:
-          bun-version-file: .bun-version
+          fetch-depth: 0
       - uses: actions/setup-node@v5
         with:
           node-version-file: .node-version
       - run: npm install -g @anthropic-ai/claude-code@2.1.280
-      - run: bun install --frozen-lockfile
       - run: bunx checks-flake --runs 10 --report flake-report.json
       - uses: actions/upload-artifact@v4
         if: failure()
