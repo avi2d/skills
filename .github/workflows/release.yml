@@ -13,15 +13,11 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v5
-        with:
-          fetch-depth: 0
       - name: ref is a tag
         run: test "$GITHUB_REF_TYPE" = tag
-      - uses: oven-sh/setup-bun@v2
+      - uses: avi2d/workflows/setup@v1
         with:
-          bun-version-file: .bun-version
-      - run: bun install --frozen-lockfile
+          fetch-depth: 0
       - run: bun run build
       - run: git diff --exit-code
       - name: tag matches package version
