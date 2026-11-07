@@ -113,25 +113,11 @@ To run the mutation tests:
 
 Outside CI the kit's preset refuses a run with neither `--mutate` nor `--incremental`, and refuses `bun run mutate:incremental` without `--mutate` while `reports/stryker-incremental.json` does not exist.
 `bun run mutate:incremental -- --mutate <glob>` writes that file locally, and the same command run again tests only the mutants changed since.
-A run over the whole of `src/**`, which is what Stryker's default `mutate` selects here, goes to the night run described below.
+A run over the whole of `src/**` is what Stryker's default `mutate` selects here.
 `stryker.conf.mjs` spreads the kit's `stryker.preset.js` and then sets only the keys this repository needs differently.
 The score is advisory, because the preset's `thresholds.break` is null, so no pull request waits on mutation.
-Mutation runs only in the night run, and no workflow runs it on a pull request or a push.
-`.github/workflows/night-run.yml` runs a full `bunx stryker run` when you start it by hand.
-It runs the unit tier and the e2e tier, and keeps a JUnit report for each.
-It hands each report to `bunx checks-night-run`.
-Its gates job runs `checks-lint --night` on the whole history, and its result reaches no issue.
-Its tests job installs `claude` and the pinned `sqlite3`, and checks out the whole history, as `ci.yml` does.
-The tests that skip locally without those run at night.
-A tier that fails, or holds an undeclared skip, marks its step failed.
-The job goes on, so the report job still files each failing test.
-`checks-night-run` compares each file's score with the previous run's.
-It opens or updates one issue labelled `night-run` for each file whose score fell and each failing test.
-Agents fix each issue as its own task.
-The night run gives a per-file score only, and restores, saves and refreshes no incremental state or baseline.
-The night run starts only when you run `gh workflow run night-run`.
-It queues behind itself, so two runs never file the same finding twice.
-The report job always passes `--mutation`, so a mutation run that times out still files an issue.
+No workflow runs it on a pull request or a push.
+Run a full `bunx stryker run` by hand for the whole tree.
 The runner hands `bun.testFiles` to `bun test` verbatim and expands no glob.
 `stryker.conf.mjs` sets it to the preset's `unitTestFiles()`, every test file under `tests/unit/`, so a covered, non-static mutant loads only the files that cover it.
 The out-of-process tests under `tests/e2e/` and everything under `tests/quarantine/` stay out.
