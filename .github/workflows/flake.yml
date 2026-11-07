@@ -15,15 +15,15 @@ jobs:
       # The whole history, since the sweep-record tests find where the head branched from main.
       # ci.yml's toolchain, pinned the same, so a failing seed here is one
       # ci.yml can meet.
-      - uses: avi2d/workflows/setup@v1
+      - uses: avi2d/workflows/setup@ec7221448380177b37ddba9a159ea9ceb09c1781
         with:
           fetch-depth: 0
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version-file: .node-version
       - run: npm install -g @anthropic-ai/claude-code@2.1.280
       - run: bunx checks-flake --runs 10 --report flake-report.json
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: failure()
         with:
           name: flake-report

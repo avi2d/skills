@@ -27,7 +27,9 @@ To run the checks before a push:
 It installs `claude` and a pinned `sqlite3` before `bun run test`.
 It runs `bun run test` with `TMPDIR` set to an empty directory under the runner's per-job temp, then `scripts/check-tmp-clean.sh`, which fails the job naming anything the suite left there.
 Every job runs on `ubuntu-latest`.
-Every job checks out, installs the Bun that `.bun-version` names and runs `bun install --frozen-lockfile` through the shared `avi2d/workflows/setup@v1` action, and `.github/dependabot.yml` moves the `setup@v1` action pin and every other action pin weekly.
+Every job checks out, installs the Bun that `.bun-version` names and runs `bun install --frozen-lockfile` through the shared `avi2d/workflows/setup` action.
+Every action a workflow uses is pinned to a full commit SHA, so a moved tag cannot change what a job runs.
+`.github/dependabot.yml` moves each pin to the newest release weekly.
 Each workflow in `.github/workflows/` is owned by this repository, and `checks-ci-wiring` fails naming a required command the pull request workflows no longer run.
 It also fails a setup step whose Bun is not the kit's fleet version, so `.bun-version` moves only with a kit release that moves the fleet.
 `ci.yml` also lints a pull request's title as a conventional commit, because a squash merge makes the title the commit subject.

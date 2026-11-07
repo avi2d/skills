@@ -13,8 +13,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: avi2d/workflows/setup@v1
-      - uses: actions/setup-node@v5
+      - uses: avi2d/workflows/setup@ec7221448380177b37ddba9a159ea9ceb09c1781
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version-file: .node-version
       - run: bunx checks-advisories --all

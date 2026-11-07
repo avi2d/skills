@@ -18,11 +18,11 @@ jobs:
       - run: echo "TMPDIR=$RUNNER_TEMP" >> "$GITHUB_ENV"
       # The head, not GitHub's merge ref, so the tree the gates read is the commit the range ends at.
       # The whole history, since the range starts where the head branched from the base branch.
-      - uses: avi2d/workflows/setup@v1
+      - uses: avi2d/workflows/setup@ec7221448380177b37ddba9a159ea9ceb09c1781
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version-file: .node-version
       - id: title
@@ -33,7 +33,7 @@ jobs:
         run: bunx checks-commit-title
       - name: report the title as commitlint
         if: always()
-        uses: avi2d/workflows/commitlint-status@v1
+        uses: avi2d/workflows/commitlint-status@ec7221448380177b37ddba9a159ea9ceb09c1781
         with:
           outcome: ${{ steps.title.outcome }}
       - id: filter
@@ -68,6 +68,6 @@ jobs:
       # GitHub keeps a dispatched run's check off the pull request, so the job reports its result there as a commit status.
       - name: report the result on the head commit
         if: always() && github.event_name == 'workflow_dispatch'
-        uses: avi2d/workflows/head-status@v1
+        uses: avi2d/workflows/head-status@ec7221448380177b37ddba9a159ea9ceb09c1781
         with:
           job-status: ${{ job.status }}

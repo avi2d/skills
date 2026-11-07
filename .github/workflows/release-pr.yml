@@ -18,7 +18,7 @@ jobs:
       pull-requests: write
       actions: write
     steps:
-      - uses: avi2d/workflows/setup@v1
+      - uses: avi2d/workflows/setup@ec7221448380177b37ddba9a159ea9ceb09c1781
         with:
           fetch-depth: 0
       - name: open or refresh the release pull request
@@ -33,7 +33,7 @@ jobs:
       contents: write
       actions: write
     steps:
-      - uses: avi2d/workflows/setup@v1
+      - uses: avi2d/workflows/setup@ec7221448380177b37ddba9a159ea9ceb09c1781
         with:
           fetch-depth: 0
       - name: tag the release

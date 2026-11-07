@@ -15,7 +15,7 @@ jobs:
     steps:
       - name: ref is a tag
         run: test "$GITHUB_REF_TYPE" = tag
-      - uses: avi2d/workflows/setup@v1
+      - uses: avi2d/workflows/setup@ec7221448380177b37ddba9a159ea9ceb09c1781
         with:
           fetch-depth: 0
       - run: bun run build
