@@ -79,16 +79,16 @@ describe("retentionOf", () => {
   });
   test("alpha is not kept by alpha.beta", () => {
     const source = "state/alpha.status state/alpha.beta.status";
-    const recorded = ["## Goal", "- Task alpha."].join("\n");
-    const candidate = ["## Goal", "- Task alpha.beta."].join("\n");
+    const recorded = ["## Goal", "- Task fm/alpha."].join("\n");
+    const candidate = ["## Goal", "- Task fm/alpha.beta."].join("\n");
     const retention = retentionOf(recorded, candidate, source);
     expect(byKind(retention).get("taskId")).toEqual({ pooled: 2, recorded: 1, candidate: 1 });
     expect(retention.lost).toEqual([{ kind: "taskId", value: "alpha" }]);
   });
   test("fix-3 is not kept by fix-3.1", () => {
     const source = "state/fix-3.inbox state/fix-3.1.inbox";
-    const recorded = ["## Goal", "- Task fix-3."].join("\n");
-    const candidate = ["## Goal", "- Task fix-3.1."].join("\n");
+    const recorded = ["## Goal", "- Task fm/fix-3."].join("\n");
+    const candidate = ["## Goal", "- Task fm/fix-3.1."].join("\n");
     const retention = retentionOf(recorded, candidate, source);
     expect(byKind(retention).get("taskId")).toEqual({ pooled: 2, recorded: 1, candidate: 1 });
     expect(retention.lost).toEqual([{ kind: "taskId", value: "fix-3" }]);
@@ -103,20 +103,35 @@ describe("retentionOf", () => {
   });
   test("alpha is not kept by alpha.beta when only alpha is known", () => {
     const source = "state/alpha.status";
-    const recorded = ["## Goal", "- Task alpha."].join("\n");
-    const candidate = ["## Goal", "- Task alpha.beta."].join("\n");
+    const recorded = ["## Goal", "- Task fm/alpha."].join("\n");
+    const candidate = ["## Goal", "- Task fm/alpha.beta."].join("\n");
     const retention = retentionOf(recorded, candidate, source);
     expect(byKind(retention).get("taskId")).toEqual({ pooled: 1, recorded: 1, candidate: 0 });
     expect(retention.lost).toEqual([{ kind: "taskId", value: "alpha" }]);
   });
-  test("a session id with a file suffix is lost when dropped", () => {
-    const id = "01ARZ3NDEKTSV4RRFFQ69G5FAV";
-    const source = "user: resumed " + id;
-    const recorded = ["## Goal", "- Session " + id + ".jsonl"].join("\n");
-    const candidate = ["## Goal", "- Dropped it."].join("\n");
+  test("alpha.log does not keep alpha from state/alpha.status", () => {
+    const source = "state/alpha.status";
+    const recorded = ["## Goal", "- Task fm/alpha."].join("\n");
+    const candidate = ["## Goal", "- See alpha.log."].join("\n");
     const retention = retentionOf(recorded, candidate, source);
     expect(byKind(retention).get("taskId")).toEqual({ pooled: 1, recorded: 1, candidate: 0 });
-    expect(retention.lost).toEqual([{ kind: "taskId", value: id }]);
+    expect(retention.lost).toEqual([{ kind: "taskId", value: "alpha" }]);
+  });
+  test("prose review does not keep task review", () => {
+    const source = "state/review.status";
+    const recorded = ["## Goal", "- Task fm/review."].join("\n");
+    const candidate = ["## Goal", "- Next: review the PR."].join("\n");
+    const retention = retentionOf(recorded, candidate, source);
+    expect(byKind(retention).get("taskId")).toEqual({ pooled: 1, recorded: 1, candidate: 0 });
+    expect(retention.lost).toEqual([{ kind: "taskId", value: "review" }]);
+  });
+  test("prose alpha does not keep task alpha", () => {
+    const source = "state/alpha.status";
+    const recorded = ["## Goal", "- Task fm/alpha."].join("\n");
+    const candidate = ["## Goal", "- Next: alpha work continues."].join("\n");
+    const retention = retentionOf(recorded, candidate, source);
+    expect(byKind(retention).get("taskId")).toEqual({ pooled: 1, recorded: 1, candidate: 0 });
+    expect(retention.lost).toEqual([{ kind: "taskId", value: "alpha" }]);
   });
   test("a trailing period does not hide a dropped decision key", () => {
     const source = "user: set key=deploy.v1";
@@ -163,29 +178,29 @@ describe("retentionOf", () => {
     expect(byKind(retention).get("path")).toEqual({ pooled: 1, recorded: 1, candidate: 0 });
     expect(retention.lost).toEqual([{ kind: "path", value: "/home/u/repo/src/foo.ts" }]);
   });
-  test("a repo-relative path grounded by an absolute source path is lost when dropped", () => {
+  test("a relative spelling is not grounded by an absolute source path", () => {
     const source = "tool: wrote /home/u/repo/src/foo.ts ok";
     const recorded = ["## Goal", "- Edited `src/foo.ts`."].join("\n");
     const candidate = ["## Goal", "- Edited it."].join("\n");
     const retention = retentionOf(recorded, candidate, source);
-    expect(byKind(retention).get("path")).toEqual({ pooled: 1, recorded: 1, candidate: 0 });
-    expect(retention.lost).toEqual([{ kind: "path", value: "src/foo.ts" }]);
+    expect(byKind(retention).get("path")).toEqual({ pooled: 0, recorded: 0, candidate: 0 });
+    expect(retention.lost).toEqual([]);
   });
-  test("a relative source path grounds an absolute summary spelling", () => {
+  test("an absolute spelling is not grounded by a relative source path", () => {
     const source = "tool: wrote src/foo.ts ok";
     const recorded = ["## Goal", "- Edited /home/u/repo/src/foo.ts."].join("\n");
     const candidate = ["## Goal", "- Edited it."].join("\n");
     const retention = retentionOf(recorded, candidate, source);
-    expect(byKind(retention).get("path")).toEqual({ pooled: 1, recorded: 1, candidate: 0 });
-    expect(retention.lost).toEqual([{ kind: "path", value: "/home/u/repo/src/foo.ts" }]);
+    expect(byKind(retention).get("path")).toEqual({ pooled: 0, recorded: 0, candidate: 0 });
+    expect(retention.lost).toEqual([]);
   });
-  test("an absolute candidate spelling keeps a relative recorded path", () => {
-    const source = "tool: wrote /home/u/repo/src/foo.ts ok";
+  test("a differently spelled candidate does not keep the recorded path", () => {
+    const source = "tool: wrote src/foo.ts and /home/u/repo/src/foo.ts ok";
     const recorded = ["## Goal", "- Edited src/foo.ts."].join("\n");
     const candidate = ["## Goal", "- Edited /home/u/repo/src/foo.ts."].join("\n");
     const retention = retentionOf(recorded, candidate, source);
-    expect(byKind(retention).get("path")).toEqual({ pooled: 2, recorded: 2, candidate: 2 });
-    expect(retention.lost).toEqual([]);
+    expect(byKind(retention).get("path")).toEqual({ pooled: 2, recorded: 1, candidate: 1 });
+    expect(retention.lost).toEqual([{ kind: "path", value: "src/foo.ts" }]);
   });
   test("a key without its marker is not a fact", () => {
     const source = "user: set key=deploy.v1_old";

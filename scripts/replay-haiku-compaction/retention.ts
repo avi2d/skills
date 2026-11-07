@@ -3,13 +3,11 @@ const PATH = /(?<![\w@.~/-])(?:~\/|\.{1,2}\/|\/)?[\w.@+-]+(?:\/[\w.@+-]+)+\/?/g;
 const EXTENSION = /\.[A-Za-z][A-Za-z0-9]{0,5}$/;
 const TASK_ID_SOURCES = [
   /state\/([a-z0-9][a-z0-9.-]*[a-z0-9])\.(?:status|inbox)\b/g,
-  /\bfm\/([a-z0-9][a-z0-9-]*[a-z0-9])/g,
-  /\/tmp\/fm-([a-z0-9][a-z0-9-]*[a-z0-9])\//g,
-  /\b(01[0-9A-HJKMNP-TV-Z]{24})\b/g,
+  /\bfm\/([a-z0-9][a-z0-9.-]*[a-z0-9])/g,
+  /\/tmp\/fm-([a-z0-9][a-z0-9.-]*[a-z0-9])\//g,
+  /(?<![0-9A-Za-z.-])(01[0-9A-HJKMNP-TV-Z]{24})(?![0-9A-Za-z-])(?!\.[A-Za-z0-9])/g,
 ];
-const DECISION_KEY_SOURCES = [/\bkey=([A-Za-z0-9][\w.:-]*[A-Za-z0-9])/g, /\bcorr[= ]([0-9a-f]{8,})\b/g];
-const TASK_ID_SUFFIX = /\.(?:status|inbox|jsonl|log)$/;
-const UNESCAPE = /\\(?:["\\/bfnrt]|u[0-9a-fA-F]{4})/g;
+const DECISION_KEY_SOURCES = [/(?<![\w-])key=([A-Za-z0-9][\w.:-]*[A-Za-z0-9])/g, /\bcorr[= ]([0-9a-f]{8,})\b/g];
 const FACT_KINDS = ["url", "path", "taskId", "decisionKey"] as const;
 
 export type FactKind = (typeof FACT_KINDS)[number];
@@ -33,7 +31,11 @@ export type Retention = {
 };
 
 function cleaned(text: string): string {
-  return text.replace(UNESCAPE, " ");
+  return text.replace(/\\(\/|u[0-9a-fA-F]{4}|["bfnrt\\])/g, (match, esc: string) => {
+    if (esc === "/") return "/";
+    if (esc.startsWith("u")) return String.fromCharCode(Number.parseInt(esc.slice(1), 16));
+    return " ";
+  });
 }
 
 function trimTail(text: string): string {
@@ -52,16 +54,13 @@ export function pathsIn(text: string): string[] {
   const normalized = cleaned(text);
   return matchesOf(normalized.replace(URL, " "), PATH)
     .map(trimTail)
+    .map((path) => path.replace(/\/$/, ""))
     .filter((path) => path.length >= 4)
     .filter((path) => /^(?:\/|~\/|\.{1,2}\/)/.test(path) || EXTENSION.test(path));
 }
 
 function known(text: string, patterns: readonly RegExp[]): string[] {
   return [...new Set(patterns.flatMap((pattern) => matchesOf(text, pattern)))].filter((value) => value.length >= 4);
-}
-
-function samePath(first: string, second: string): boolean {
-  return first === second || first.endsWith("/" + second) || second.endsWith("/" + first);
 }
 
 type Source = {
@@ -83,18 +82,7 @@ function sourceOf(text: string): Source {
 
 function summaryTaskIds(summary: string, taskIds: readonly string[]): string[] {
   const ids = new Set(taskIds);
-  const found = new Set<string>();
-  for (const chunk of cleaned(summary).split(/[^A-Za-z0-9.-]+/)) {
-    const token = trimTail(chunk);
-    if (token === "") continue;
-    if (ids.has(token)) {
-      found.add(token);
-      continue;
-    }
-    const base = token.replace(TASK_ID_SUFFIX, "");
-    if (base !== token && ids.has(base)) found.add(base);
-  }
-  return [...found];
+  return [...new Set(known(cleaned(summary), TASK_ID_SOURCES))].filter((id) => ids.has(id));
 }
 
 function summaryDecisionKeys(summary: string, decisionKeys: readonly string[]): string[] {
@@ -104,7 +92,7 @@ function summaryDecisionKeys(summary: string, decisionKeys: readonly string[]): 
 
 function factsOf(summary: string, source: Source): Fact[] {
   const urls = [...new Set(urlsIn(summary))].filter((url) => source.urls.includes(url));
-  const paths = [...new Set(pathsIn(summary))].filter((path) => source.paths.some((other) => samePath(other, path)));
+  const paths = [...new Set(pathsIn(summary))].filter((path) => source.paths.includes(path));
   const taskIds = summaryTaskIds(summary, source.taskIds);
   const decisionKeys = summaryDecisionKeys(summary, source.decisionKeys);
   const facts: Fact[] = [
@@ -117,8 +105,7 @@ function factsOf(summary: string, source: Source): Fact[] {
 }
 
 function keptBy(fact: Fact, others: readonly Fact[]): boolean {
-  if (fact.kind !== "path") return others.some((other) => other.kind === fact.kind && other.value === fact.value);
-  return others.some((other) => other.kind === "path" && samePath(other.value, fact.value));
+  return others.some((other) => other.kind === fact.kind && other.value === fact.value);
 }
 
 function poolOf(recordedFacts: readonly Fact[], candidateFacts: readonly Fact[]): Fact[] {
