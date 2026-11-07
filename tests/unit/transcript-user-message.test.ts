@@ -2,9 +2,9 @@ import { beforeAll, describe, expect, test } from "bun:test";
 import { stripVTControlCharacters } from "node:util";
 import { type ExtensionAPI, initTheme, UserMessageComponent } from "@earendil-works/pi-coding-agent";
 import type { TuiMouseEvent } from "@earendil-works/pi-tui";
-import { theme } from "../../node_modules/@earendil-works/pi-coding-agent/dist/modes/interactive/theme/theme.js";
 import { moreLines } from "../../harness/pi/extensions/transcript-style/fold";
 import { foldRows, foldUserMessages, MESSAGE_FOLD_ROWS, MESSAGE_PREVIEW_ROWS, type MessageLook, type Patchable, patchUserMessages, type Pi, type SessionUi } from "../../harness/pi/extensions/transcript-style/user-message";
+import { theme } from "../lib/pi-ui";
 
 beforeAll(() => initTheme("dark", false));
 

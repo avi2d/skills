@@ -2,12 +2,10 @@ import { beforeAll, describe, expect, test } from "bun:test";
 import { stripVTControlCharacters } from "node:util";
 import { initTheme, type ToolRenderers } from "@earendil-works/pi-coding-agent";
 import { type Component, resetCapabilitiesCache, setCapabilities } from "@earendil-works/pi-tui";
-import { createAllToolRenderers } from "../../node_modules/@earendil-works/pi-coding-agent/dist/core/tools/renderers/index.js";
-import { codemodeRenderers } from "../../node_modules/@earendil-works/pi-coding-agent/dist/extensions/codemode/renderer.js";
-import { theme } from "../../node_modules/@earendil-works/pi-coding-agent/dist/modes/interactive/theme/theme.js";
 import { editDigest, foldRenderers, shellDigest, summaryLine, textDigest, toolDigest, writeDigest, type Digest } from "../../harness/pi/extensions/transcript-style/fold";
 import { transcriptRenderer } from "../../harness/pi/extensions/transcript-style/index";
 import { classifyOutput, cleanOutput, paintOutput, type Scheme } from "../../harness/pi/extensions/transcript-style/output";
+import { builtInRenderers, codemodeRenderers, theme } from "../lib/pi-ui";
 
 beforeAll(() => initTheme("dark", false));
 
@@ -191,8 +189,8 @@ const rows = (component: Component): string[] => component.render(80).map((row) 
 const textResult = (text: string, details?: unknown): Result => ({ content: [{ type: "text", text }], details });
 
 describe("transcriptRenderer over pi's own renderers", () => {
-  const piRenderers: Readonly<Record<string, ToolRenderers>> = createAllToolRenderers();
-  const definitions: Readonly<Record<string, ToolRenderers>> = { ...piRenderers, edit: { ...piRenderers.edit, renderShell: "self" }, codemode: codemodeRenderers };
+  const piRenderers = builtInRenderers;
+  const definitions: Readonly<Record<string, ToolRenderers>> = { ...piRenderers, codemode: codemodeRenderers };
   const folded = (tool: string): Required<Pick<ToolRenderers, "renderCall" | "renderResult">> => {
     const renderers = transcriptRenderer(() => "ctrl+o")(tool, () => definitions[tool]);
     if (!renderers?.renderCall || !renderers.renderResult) throw new Error(`no renderers for ${tool}`);

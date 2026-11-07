@@ -2,9 +2,9 @@ import { afterAll, beforeAll, describe, expect, setSystemTime, test } from "bun:
 import { stripVTControlCharacters } from "node:util";
 import { initTheme, UserMessageComponent, type SessionEntry } from "@earendil-works/pi-coding-agent";
 import { visibleWidth } from "@earendil-works/pi-tui";
-import { theme } from "../../node_modules/@earendil-works/pi-coding-agent/dist/modes/interactive/theme/theme.js";
 import { formatTime } from "../../harness/pi/extensions/transcript-style/time";
 import { foldUserMessages, type Pi, type Session, type SessionCtx, shownUserText, stampBook, userStamps, userTextOf } from "../../harness/pi/extensions/transcript-style/user-message";
+import { theme } from "../lib/pi-ui";
 
 const NOW = new Date(2026, 9, 7, 15, 0).getTime();
 
