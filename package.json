@@ -20,9 +20,7 @@
     "dispatch-report": "bun run src/report/dispatch-report.ts",
     "context-index": "bun run src/context/context-index.ts",
     "context-report": "bun run src/context/context-report.ts",
-    "eval": "vitest run --config evals/vitest.config.ts --configLoader runner",
-    "mutate": "scripts/clean-tree.sh && stryker run",
-    "mutate:incremental": "bun run mutate --incremental"
+    "eval": "vitest run --config evals/vitest.config.ts --configLoader runner"
   },
   "devDependencies": {
     "@earendil-works/pi-ai": "1.2.0",
