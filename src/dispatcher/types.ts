@@ -1,7 +1,7 @@
 import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, mkdtempSync, rmSync, rmdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { basename, dirname, extname, join, relative, sep } from "node:path";
+import { basename, dirname, extname, isAbsolute, join, relative, sep } from "node:path";
 import type { Verdict } from "./forbid";
 
 export const LINT_SECONDS = 5;
@@ -52,7 +52,7 @@ const isDiagnostic = (value: unknown): value is Diagnostic =>
 const because = (e: unknown): string => (e instanceof Error ? e.message : String(e));
 
 export function linterOf(file: string): string | undefined {
-  if (!TYPED.has(extname(file))) return undefined;
+  if (!isAbsolute(file) || !TYPED.has(extname(file))) return undefined;
   for (let dir = dirname(file); ; dir = dirname(dir)) {
     if (existsSync(join(dir, ...OXLINT)) && existsSync(join(dir, ...DATA_SHAPE))) return dir;
     if (dirname(dir) === dir) return undefined;
