@@ -28,7 +28,7 @@ to say so. The cost has been paid ever since by everything that reads a green
 suite as a starting condition.
 
 **Red in a worktree.** `"@avi2d/checks": "file:../checks"` resolves beside the
-checkout. It is there in `~/Projects/skills` and in nothing else, so
+checkout. It is there in `~/skills` and in nothing else, so
 `bun install` reported `Failed to install 1 package` and the six
 `tests/effect-channel.test.ts` tests went red on a missing plugin. Two of them
 are the ones that expect no findings, so they did not go red; they passed
@@ -106,7 +106,7 @@ locally with one flag.
   fresh clone. They still fire for a tree the generator would write differently,
   which is the failure they were really for.
 - **Re-pinning the checks is an edit to one line and a `bun install`.** Nothing
-  reads the sibling checkout any more, so a stale `~/Projects/checks` no longer
+  reads the sibling checkout any more, so a stale `~/checks` no longer
   changes what the suite proves.
 - **A red CI names a seed.** Reproducing an order failure is
   `bun test --randomize --seed=<n>`.

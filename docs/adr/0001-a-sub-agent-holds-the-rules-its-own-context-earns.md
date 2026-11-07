@@ -21,14 +21,14 @@ and this is every event that reached them:
 
 ```
 pid=99854 loaded extension instance
-pid=99854 before_agent_start cwd=~/Projects/skills             sessionFile=undefined
-pid=99854 agent_settled       cwd=~/Projects/skills             sessionFile=undefined
+pid=99854 before_agent_start cwd=~/skills             sessionFile=undefined
+pid=99854 agent_settled       cwd=~/skills             sessionFile=undefined
 pid=99854 loaded extension instance
 pid=99854 before_agent_start cwd=/tmp                          sessionFile=undefined
 pid=99854 loaded extension instance
-pid=99854 before_agent_start cwd=~/Projects/skills             sessionFile=undefined
+pid=99854 before_agent_start cwd=~/skills             sessionFile=undefined
 pid=99854 agent_settled       cwd=/tmp                          sessionFile=undefined
-pid=99854 agent_settled       cwd=~/Projects/skills             sessionFile=undefined
+pid=99854 agent_settled       cwd=~/skills             sessionFile=undefined
 ```
 
 Four facts, and the whole decision rests on them:

@@ -57,7 +57,7 @@ whose integration suite never runs in CI.
 
 **The work lands on the fork, and pi runs the fork.**
 
-`avi2d/pi-subagentura`, cloned to `~/Projects/pi-subagentura`, is where #35, #36
+`avi2d/pi-subagentura`, cloned to `~/pi-subagentura`, is where #35, #36
 and #37 are built. pi reaches it through its own local-path package source:
 `~/.pi/agent/settings.json` carries `../../Projects/pi-subagentura` in
 `packages` where it carried `npm:pi-subagentura@3.3.1`. No ticket waits on a
@@ -114,7 +114,7 @@ it.
 ## Consequences
 
 - **pi's behaviour now tracks a working tree.** A broken edit in
-  `~/Projects/pi-subagentura` breaks every pi session on this machine, not one
+  `~/pi-subagentura` breaks every pi session on this machine, not one
   test run. The check is cheap, and it is the one #34 asked for: `pi -p` with
   `-t subagent_interactive` in a herdr terminal prints the resolver's own error
   text, so a marker put into `NoMultiplexerAvailableError` comes back out of a
