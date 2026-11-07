@@ -8,6 +8,7 @@ Accepted.
 Records the write-time half of D2 and all of D4 of the documentation decisions of 2026-09-24, which took every recommendation.
 Amends 0051: `forbid` takes `prose` beside `comments`, and a change's `before` is the file as it stands rather than a reader of its text.
 Amended by 0071: `writing-for-people` is switched off, and its refusal stands because a Rule the Selection leaves off keeps its refusal.
+Amended by 0106: a change's `before` also carries the file's absolute path.
 
 ## Context
 

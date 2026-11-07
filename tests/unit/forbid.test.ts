@@ -27,7 +27,7 @@ type Written = { path: string; before?: string; inRepository?: string | null } &
 const lazily = (written: Written): Change => {
   const { before, inRepository, ...change } = written;
   const located = inRepository === null ? undefined : (inRepository ?? change.path);
-  return { ...change, before: { text: () => before, inRepository: () => located } };
+  return { ...change, before: { onDisk: change.path, text: () => before, inRepository: () => located } };
 };
 
 const writing = (...written: Written[]): Event => ({
@@ -449,6 +449,7 @@ describe("the file a write lands in", () => {
     const at = (path: string): Change => ({
       path,
       before: {
+        onDisk: path,
         text: () => {
           reads.push(path);
           return "run();\n";

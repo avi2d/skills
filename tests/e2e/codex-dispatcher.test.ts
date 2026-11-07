@@ -24,6 +24,7 @@ setDefaultTimeout(HOOK_TEST_MS);
 const { install, indexWith, scratchRepo, temporary } = RIG;
 
 const ALWAYS = alwaysOn(RIG);
+const repo = new URL("../../", import.meta.url).pathname;
 
 const patch = (...files: string[]): Record<string, unknown> => ({
   tool_name: "apply_patch",
@@ -232,6 +233,28 @@ describe("a patch carrying a comment a Rule forbids", () => {
 
     const pointing = await driven.fire("PreToolUse", { ...apply("*** Update File: src/b.ts", "@@", " one();", "+// see #9110"), cwd });
     expect(carried(pointing.reply)).toContain('src/b.ts:3 points at a record or a ticket ("#9110")');
+  });
+});
+
+describe("a patch carrying a type a Rule forbids", () => {
+  const FORBIDDING = indexWith({
+    rules: [{ name: "typescript-best-practices", triggers: [{ predicate: "always" }], text: RULE_TEXT, forbid: "types" }],
+  });
+
+  test("an update adding an assertion on outside data is denied on the line it adds, not for the one the file held", async () => {
+    const cwd = temporary("skills-codex-linted-");
+    mkdirSync(join(cwd, "src"));
+    writeFileSync(join(cwd, "tsconfig.json"), JSON.stringify({ compilerOptions: { strict: true, module: "preserve", moduleResolution: "bundler" }, include: ["src"] }));
+    symlinkSync(join(repo, "node_modules"), join(cwd, "node_modules"));
+    writeFileSync(join(cwd, "src/config.ts"), "type Config = { port: number };\nexport const load = (raw: string): Config => JSON.parse(raw) as Config;\n");
+    const driven = await install(FORBIDDING);
+    await driven.fire("SessionStart", { source: "startup", cwd });
+    const added = "+export const again = (raw: string): Config => JSON.parse(raw) as Config;";
+    const command = ["*** Begin Patch", "*** Update File: src/config.ts", "@@", " type Config = { port: number };", added, "*** End Patch"].join("\n");
+    const { reply } = await driven.fire("PreToolUse", { tool_name: "apply_patch", tool_input: { command }, cwd });
+    expect(reply?.hookSpecificOutput?.permissionDecision, "the patch landed carrying the assertion").toBe("deny");
+    expect(carried(reply)).toContain("src/config.ts:2 `typescript/no-unsafe-type-assertion`");
+    expect(carried(reply)).not.toContain("src/config.ts:3");
   });
 });
 

@@ -28,6 +28,7 @@ setDefaultTimeout(HOOK_TEST_MS);
 const { install, indexWith, scratchRepo, temporary } = RIG;
 
 const ALWAYS = alwaysOn(RIG);
+const repo = new URL("../../", import.meta.url).pathname;
 
 describe("a Rule reaching the model", () => {
   let driven: Driven;
@@ -345,6 +346,41 @@ describe("a write carrying a separator a Rule forbids in a doc", () => {
     const driven = await install(FORBIDDING);
     await driven.fire("SessionStart", { source: "startup", cwd });
     const { reply } = await driven.fire("PreToolUse", { tool_name: "Write", tool_input: { file_path: path, content: DASHED }, cwd });
+    expect(reply).toBeUndefined();
+  });
+});
+
+describe("a write carrying a type a Rule forbids", () => {
+  const FORBIDDING = indexWith({
+    rules: [{ name: "typescript-best-practices", triggers: [{ predicate: "always" }], text: RULE_TEXT, forbid: "types" }],
+  });
+  const SCHEMA = 'import { Schema } from "effect";\nexport const User = Schema.Struct({ id: Schema.String, age: Schema.Number });\n';
+
+  const linted = (): string => {
+    const dir = temporary("skills-cc-linted-");
+    writeFileSync(join(dir, "tsconfig.json"), JSON.stringify({ compilerOptions: { strict: true, module: "preserve", moduleResolution: "bundler" }, include: ["src"] }));
+    symlinkSync(join(repo, "node_modules"), join(dir, "node_modules"));
+    return dir;
+  };
+
+  test("a Write declaring a schema's twin is denied, and the reason names the finding and says to derive the type", async () => {
+    const cwd = linted();
+    const driven = await install(FORBIDDING);
+    await driven.fire("SessionStart", { source: "startup", cwd });
+    const content = `${SCHEMA}export type UserShape = { id: string; age: number };\n`;
+    const { reply, log } = await driven.fire("PreToolUse", { tool_name: "Write", tool_input: { file_path: join(cwd, "src/user.ts"), content }, cwd });
+    expect(reply?.hookSpecificOutput?.permissionDecision, "the write landed carrying the twin").toBe("deny");
+    expect(carried(reply)).toContain("src/user.ts:3 `data-shape/schema-twin`");
+    expect(carried(reply)).toContain("Derive it as `typeof User.Type` instead of writing both.");
+    expect(log.some((line) => line.includes("refuse typescript-best-practices: src/user.ts:3")), log.join("\n")).toBe(true);
+  });
+
+  test("a Write of a domain union and a branded id is let through", async () => {
+    const cwd = linted();
+    const driven = await install(FORBIDDING);
+    await driven.fire("SessionStart", { source: "startup", cwd });
+    const content = 'export type Status = { status: "loading" } | { status: "ready"; data: string };\nexport type UserId = string & { readonly brand: unique symbol };\n';
+    const { reply } = await driven.fire("PreToolUse", { tool_name: "Write", tool_input: { file_path: join(cwd, "src/domain.ts"), content }, cwd });
     expect(reply).toBeUndefined();
   });
 });

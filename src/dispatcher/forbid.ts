@@ -1,8 +1,9 @@
 import { SYNTAXES, refused } from "./comments";
 import type { Harness } from "./harness";
 import { proseRefused, readerOf } from "./prose";
+import { linterOf, typesRefused } from "./types";
 
-export const FORBIDS = ["comments", "prose"] as const;
+export const FORBIDS = ["comments", "prose", "types"] as const;
 export type Forbid = (typeof FORBIDS)[number];
 
 export const isForbid = (value: unknown): value is Forbid => FORBIDS.some((forbid) => forbid === value);
@@ -13,33 +14,40 @@ export type CodexHunk = { old: string; new: string; atEnd?: boolean; context?: s
 
 export type Replacement = ClaudeEdit | CodexHunk;
 
-// `text` gives nothing when there was no file to read, and `inRepository` gives the file's path from
-// the root of the repository holding it, and nothing when none does.
-export type Standing = { text: () => string | undefined; inRepository: () => string | undefined };
+// `onDisk` is the file's absolute path, `text` gives nothing when there was no file to read, and
+// `inRepository` gives the file's path from the root of the repository holding it, and nothing when none does.
+export type Standing = { onDisk: string; text: () => string | undefined; inRepository: () => string | undefined };
 
 export type Change = { path: string; before: Standing } & ({ content: string } | { edits: readonly Replacement[] });
 
 export type Located = Pick<Change, "path" | "before">;
 
-export type Verdict = { refusals: string[] } | { unplaced: string };
+export type Verdict = { refusals: string[] } | { unread: string };
 
 type Matcher = {
   // Nothing when the matchers do not read the file.
   namedAs: (file: Located) => string | undefined;
-  refuses: (path: string, after: string, added: ReadonlySet<number>) => string[];
+  refuses: (path: string, after: string, added: ReadonlySet<number>) => Verdict;
 };
 
 const MATCHERS: Record<Forbid, Matcher> = {
   comments: {
     namedAs: ({ path }) => (Object.hasOwn(SYNTAXES, path.slice(path.lastIndexOf(".") + 1)) ? path : undefined),
-    refuses: refused,
+    refuses: (path, after, added) => ({ refusals: refused(path, after, added) }),
   },
   prose: {
     namedAs: ({ before }) => {
       const path = before.inRepository();
       return path !== undefined && readerOf(path) !== undefined ? path : undefined;
     },
-    refuses: proseRefused,
+    refuses: (path, after, added) => ({ refusals: proseRefused(path, after, added) }),
+  },
+  types: {
+    namedAs: ({ before }) => (linterOf(before.onDisk) === undefined ? undefined : before.onDisk),
+    refuses: (path, after, added) => {
+      const found = typesRefused(path, after, added);
+      return Array.isArray(found) ? { refusals: found } : found;
+    },
   },
 };
 
@@ -378,6 +386,6 @@ export function judged(forbid: Forbid, harness: Harness, change: Change): Verdic
   const named = matcher.namedAs(change);
   if (named === undefined) return { refusals: [] };
   const write = placed(change, harness);
-  if ("unplaced" in write) return write;
-  return { refusals: matcher.refuses(named, write.after, write.added) };
+  if ("unplaced" in write) return { unread: write.unplaced };
+  return matcher.refuses(named, write.after, write.added);
 }

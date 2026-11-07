@@ -6,6 +6,7 @@ source: https://github.com/cursor/plugins@fd6dd6f7276956a532bb78a748a8d2818b6eb5
 trigger:
   predicate: repo-contains
   glob: "**/*.{ts,tsx,mts,cts}"
+forbid: types
 ---
 
 # TypeScript best practices

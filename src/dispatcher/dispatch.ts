@@ -352,8 +352,8 @@ function forbidding(rule: IndexedRule, harness: Harness, changes: readonly Chang
   const refusals: string[] = [];
   for (const change of changes) {
     const verdict = judged(rule.forbid, harness, change);
-    if ("unplaced" in verdict) {
-      actions.push({ type: "unjudged", rule: rule.name, why: `${verdict.unplaced}, so what it adds went unread` });
+    if ("unread" in verdict) {
+      actions.push({ type: "unjudged", rule: rule.name, why: `${verdict.unread}, so what it adds went unread` });
     } else refusals.push(...verdict.refusals);
   }
   if (refusals.length === 0) return actions;

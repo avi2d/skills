@@ -140,7 +140,7 @@ test("no seed repository already holds a comment the comment judge refuses, so e
   let checked = 0;
   for (const c of CASES) {
     for (const [path, text] of Object.entries(c.files)) {
-      if (reads("comments", { path, before: { text: () => text, inRepository: () => path } })) {
+      if (reads("comments", { path, before: { onDisk: path, text: () => text, inRepository: () => path } })) {
         checked += 1;
         expect(refused(path, text), `${c.rule}/${c.id}: ${path}`).toEqual([]);
       }

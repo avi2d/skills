@@ -15,7 +15,7 @@ export type Judgement = { passed: boolean; evidence: string[] } | { unjudged: st
 export type ProgramJudge = { name: string; judge: (run: AgentRun) => Judgement };
 
 // A change's path is its path in the seeded repository.
-const standingOf = (change: Change): Standing => ({ text: () => change.before, inRepository: () => change.path });
+const standingOf = (change: Change): Standing => ({ onDisk: change.path, text: () => change.before, inRepository: () => change.path });
 
 export function verdictOf(judge: ProgramJudge, run: AgentRun): Verdict {
   const judgement = judge.judge(run);
@@ -71,7 +71,7 @@ export const noRefusedComment: ProgramJudge = {
     if (code.length === 0) return { unjudged: "the agent changed no code file, so there was no comment to judge" };
     const refusals = code.flatMap((change) => {
       const verdict = judged("comments", "pi", { path: change.path, before: standingOf(change), content: change.after });
-      return "refusals" in verdict ? verdict.refusals : [`${change.path}: ${verdict.unplaced}`];
+      return "refusals" in verdict ? verdict.refusals : [`${change.path}: ${verdict.unread}`];
     });
     if (refusals.length > 0) return { passed: false, evidence: refusals };
     return { passed: true, evidence: [`${code.length} changed code file(s) add no refused comment: ${code.map((c) => c.path).join(", ")}`] };
