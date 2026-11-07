@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { Type } from "@earendil-works/pi-ai";
+import { Type } from "typebox";
 import { createSyntheticSourceInfo } from "@earendil-works/pi-coding-agent";
 import {
   emitsQwenToolCalls,
