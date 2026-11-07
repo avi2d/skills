@@ -8,7 +8,7 @@ Accepted. The decision #34 asks for, and the ground #35, #36 and #37 are built
 on.
 
 One consequence of it was open, and #53 settled it. This ADR put
-`../../Projects/pi-subagentura` into `harness/pi/settings.json`, and
+`../../pi-subagentura` into `harness/pi/settings.json`, and
 `bun run link` hands that file to pi, so a clone got a package path only this
 machine had. #8 asked for a repository publishable on its own with no
 machine-specific configuration in it, and `7ba2105` closes that gap by removing
@@ -59,7 +59,7 @@ whose integration suite never runs in CI.
 
 `avi2d/pi-subagentura`, cloned to `~/pi-subagentura`, is where #35, #36
 and #37 are built. pi reaches it through its own local-path package source:
-`~/.pi/agent/settings.json` carries `../../Projects/pi-subagentura` in
+`~/.pi/agent/settings.json` carries `../../pi-subagentura` in
 `packages` where it carried `npm:pi-subagentura@3.3.1`. No ticket waits on a
 review by someone who is not in this session.
 
@@ -122,7 +122,7 @@ it.
 - **Going back is a `pi remove` of the path and a `pi install` of
   `npm:pi-subagentura@3.3.1`.**
 - **The Contract named a path outside every repository involved, and #53
-  settled it.** pi wrote `../../Projects/pi-subagentura` into
+  settled it.** pi wrote `../../pi-subagentura` into
   `harness/pi/settings.json`, resolved against the settings file, so on a fresh
   machine the fork had to be cloned to that exact place before pi would start
   with sub-agents. 0004 made this file a live symlink so a harness's own writes
