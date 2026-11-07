@@ -8,6 +8,7 @@ Accepted. Supersedes 0027 on how the fetched tree reaches a checkout, and on
 both Effect Bodies opening with the instruction to fetch it. Superseded by 0070
 on how `repos/effect` is fetched: `checks-vendor` replaces `src/vendor.ts`.
 Applies 0024.
+Superseded in part by 0105: no `ignorePatterns` leaves the fetched trees out of a sandbox, because Stryker runs in place.
 
 ## Context
 
