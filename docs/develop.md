@@ -58,7 +58,8 @@ A file nothing imports and no tool names goes in the `entry` list of `knip.confi
 The `exports-baseline.json` stays empty, so an unused export is deleted or unexported, not listed.
 The kit's size rules in `oxlint.config.ts` fail any production or test file over budget, whether or not the branch touched it.
 The suite fails on any entry in `oxlint-suppressions.json`, so the file is absent or empty.
-Four gates run only at night through `checks-lint --night`, namely `checks-lint-coverage`, `checks-repetition`, `checks-suppressions-ratchet` and `checks-quarantine-clock`.
+Four gates run only when someone starts `checks-lint --whole-tree` by hand, namely `checks-lint-coverage`, `checks-repetition`, `checks-suppressions-ratchet` and `checks-quarantine-clock`.
+No schedule or workflow runs them.
 `checks-advisories` holds `advisory-acks.json` to its rules on every run and defers its scan to the scheduled run, so the pull request run fetches no advisory database.
 `.github/workflows/advisories.yml` runs it with `--all` every Monday over the whole of `bun.lock`, which finds an advisory published after its package landed and an advisory a `bun.lock` change adds.
 
@@ -113,25 +114,10 @@ To run the mutation tests:
 
 Outside CI the kit's preset refuses a run with neither `--mutate` nor `--incremental`, and refuses `bun run mutate:incremental` without `--mutate` while `reports/stryker-incremental.json` does not exist.
 `bun run mutate:incremental -- --mutate <glob>` writes that file locally, and the same command run again tests only the mutants changed since.
-A run over the whole of `src/**`, which is what Stryker's default `mutate` selects here, goes to the night run described below.
+A run over the whole of `src/**` is what Stryker's default `mutate` selects here.
 `stryker.conf.mjs` spreads the kit's `stryker.preset.js` and then sets only the keys this repository needs differently.
 The score is advisory, because the preset's `thresholds.break` is null, so no pull request waits on mutation.
-Mutation runs only in the night run, and no workflow runs it on a pull request or a push.
-`.github/workflows/night-run.yml` runs a full `bunx stryker run` when you start it by hand.
-It runs the unit tier and the e2e tier, and keeps a JUnit report for each.
-It hands each report to `bunx checks-night-run`.
-Its gates job runs `checks-lint --night` on the whole history, and its result reaches no issue.
-Its tests job installs `claude` and the pinned `sqlite3`, and checks out the whole history, as `ci.yml` does.
-The tests that skip locally without those run at night.
-A tier that fails, or holds an undeclared skip, marks its step failed.
-The job goes on, so the report job still files each failing test.
-`checks-night-run` compares each file's score with the previous run's.
-It opens or updates one issue labelled `night-run` for each file whose score fell and each failing test.
-Agents fix each issue as its own task.
-The night run gives a per-file score only, and restores, saves and refreshes no incremental state or baseline.
-The night run starts only when you run `gh workflow run night-run`.
-It queues behind itself, so two runs never file the same finding twice.
-The report job always passes `--mutation`, so a mutation run that times out still files an issue.
+No workflow runs it.
 The runner hands `bun.testFiles` to `bun test` verbatim and expands no glob.
 `stryker.conf.mjs` sets it to the preset's `unitTestFiles()`, every test file under `tests/unit/`, so a covered, non-static mutant loads only the files that cover it.
 The out-of-process tests under `tests/e2e/` and everything under `tests/quarantine/` stay out.
@@ -160,7 +146,7 @@ To replay a test that failed on one seed:
 `.github/workflows/flake.yml` runs the suite on ten seeds with `checks-flake` when you start it by hand.
 It keeps the seeds each failing test failed with.
 A test found flaky moves to `tests/quarantine/unit/`, which a default run skips.
-`checks-quarantine-clock` runs at night and fails a test left there more than 30 days.
+`checks-quarantine-clock` fails a test left there more than 30 days when someone runs it by hand.
 Fix the test and move it back, or delete it.
 
 ## Re-pin a library
@@ -206,7 +192,7 @@ A patch to a provider behaviour belongs here rather than in `src/`, as [record 0
 ### The lint suggests `oxlint --suppress-all`
 
 A lint rule found a new site.
-Fix the site instead, because the suite and `checks-suppressions-ratchet` refuse suppression counts.
+Fix the site instead, because the suite refuses suppression counts and `checks-suppressions-ratchet` refuses them when someone runs it by hand.
 In a test, a value that has to exist is `?? expect.unreachable(...)`, and parsed data is a `Schema` decode.
 
 ### `bun install` fails with `repos/effect is not a link`
