@@ -303,6 +303,24 @@ describe("retentionOf", () => {
     expect(byKind(retention).get("taskId")).toEqual({ pooled: 1, recorded: 1, candidate: 0 });
     expect(retention.lost).toContainEqual({ kind: "taskId", value: "alpha" });
   });
+  test("origin/fm/alpha does not silently drop its task", () => {
+    for (const branch of ["origin/fm/alpha.", "refs/heads/fm/alpha."]) {
+      const source = "git log " + branch;
+      const recorded = ["## Goal", "- Pushed " + branch].join("\n");
+      const candidate = ["## Goal", "- Pushed it."].join("\n");
+      const retention = retentionOf(recorded, candidate, source);
+      expect(byKind(retention).get("taskId")).toEqual({ pooled: 1, recorded: 1, candidate: 0 });
+      expect(retention.lost).toContainEqual({ kind: "taskId", value: "alpha" });
+    }
+  });
+  test("docs/fm/notes.md does not ground a task id", () => {
+    const source = "tool: read docs/fm/notes.md ok";
+    const recorded = ["## Goal", "- Read docs/fm/notes.md."].join("\n");
+    const candidate = ["## Goal", "- Read it."].join("\n");
+    const retention = retentionOf(recorded, candidate, source);
+    expect(byKind(retention).get("taskId")).toEqual({ pooled: 0, recorded: 0, candidate: 0 });
+    expect(retention.lost.filter((fact) => fact.kind === "taskId")).toEqual([]);
+  });
   test("a key without its marker is not a fact", () => {
     const source = "user: set key=deploy.v1_old";
     const recorded = ["## Goal", "- Use deploy.v1_old."].join("\n");

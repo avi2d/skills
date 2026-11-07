@@ -4,6 +4,7 @@ const EXTENSION = /\.[A-Za-z][A-Za-z0-9]{0,5}$/;
 const TASK_ID_SOURCES = [
   /(?<![\w.-])state\/([a-z0-9][a-z0-9.-]*[a-z0-9])\.(?:status|inbox)(?![A-Za-z0-9_+/-])(?!\.[A-Za-z0-9])/g,
   /(?<![\w./-])fm\/([a-z0-9][a-z0-9.-]*[a-z0-9])(?![A-Za-z0-9_+/-])(?!\.[A-Za-z0-9])/g,
+  /(?<![\w.-])(?:origin\/|heads\/|remotes\/[^\s/]+\/)fm\/([a-z0-9][a-z0-9.-]*[a-z0-9])(?![A-Za-z0-9_+/-])(?!\.[A-Za-z0-9])/g,
   /\/tmp\/fm-([a-z0-9][a-z0-9.-]*[a-z0-9])\//g,
   /(?<![0-9A-Za-z.-])(01[0-9A-HJKMNP-TV-Z]{24})(?![A-Za-z0-9_+-])(?!\.[A-Za-z0-9])/g,
 ];
