@@ -75,7 +75,7 @@ To see what fired:
 | `src/eval/` | what `bun run eval` runs to measure a Rule |
 | `src/context/` | what `bun run context-index` and `bun run context-report` run to read the opening context of stored sessions |
 | `src/docs/`, `src/report/` | what `bun run docs` and `bun run dispatch-report` run |
-| `src/platform/` | the Effect layer, file access and failures the rest of `src/` shares |
+| `src/platform/` | the Effect layer, file access, frontmatter field readers and failures the rest of `src/` shares |
 | `tests/` | the suite, run with `bun run test:fast` |
 | `evals/` | the ablation that measures what a Rule or a Reference changes |
 | `evals/sweeps/` | one committed record per sweep, and the page `bun run docs` writes from them |

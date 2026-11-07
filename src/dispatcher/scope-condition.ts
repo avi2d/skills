@@ -1,7 +1,7 @@
 import { Effect } from "effect";
 import { compileGlob } from "./glob";
 import { MalformedBody } from "../platform/failures";
-import { requireBlock, requireString, unknownFields } from "../bodies/fields";
+import { requireBlock, requireString, unknownFields } from "../platform/fields";
 import { DECLARATIONS, type Declaration } from "./project";
 
 export const PREDICATES = ["always", "repo-contains", "declares", "file-matches", "tool-call"] as const;
