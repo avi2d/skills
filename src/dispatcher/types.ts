@@ -2,11 +2,10 @@ import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, mkdtempSync, rmSync, rmdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { basename, dirname, extname, isAbsolute, join, relative, sep } from "node:path";
-import type { Verdict } from "./forbid";
 
 export const LINT_SECONDS = 5;
 
-export const TYPES_BUDGET_MS = 20_000;
+const TYPES_BUDGET_MS = 20_000;
 
 export type TypesBudget = { remainingMs: number };
 
@@ -89,6 +88,23 @@ function findingsOf(report: string, after: string): Finding[] | undefined {
   });
 }
 
+function pruneMadeDirs(dir: string, made: string): void {
+  for (let at = dir; ; at = dirname(at)) {
+    try {
+      rmdirSync(at);
+    } catch {
+      break;
+    }
+    if (at === made) break;
+  }
+}
+
+function discardLintFiles(copy: string, dir: string, made: string | undefined, scratch: string): void {
+  rmSync(copy, { force: true });
+  if (made !== undefined) pruneMadeDirs(dir, made);
+  rmSync(scratch, { recursive: true, force: true });
+}
+
 // oxlint reads no stdin, and a copy outside the project would resolve none of the file's imports.
 function linted(root: string, file: string, after: string, budget: TypesBudget): Finding[] | string {
   if (budget.remainingMs < LINT_SECONDS * 1000) return `types budget of ${TYPES_BUDGET_MS / 1000}s spent`;
@@ -111,22 +127,11 @@ function linted(root: string, file: string, after: string, budget: TypesBudget):
   } catch (e) {
     return because(e);
   } finally {
-    rmSync(copy, { force: true });
-    if (made !== undefined) {
-      for (let at = dir; ; at = dirname(at)) {
-        try {
-          rmdirSync(at);
-        } catch {
-          break;
-        }
-        if (at === made) break;
-      }
-    }
-    rmSync(scratch, { recursive: true, force: true });
+    discardLintFiles(copy, dir, made, scratch);
   }
 }
 
-export function typesRefused(file: string, after: string, added: ReadonlySet<number>, budget: TypesBudget): Verdict {
+export function typesRefused(file: string, after: string, added: ReadonlySet<number>, budget: TypesBudget): { refusals: string[] } | { unread: string } {
   const root = linterOf(file);
   if (root === undefined || added.size === 0) return { refusals: [] };
   const named = relative(root, file).split(sep).join("/");
