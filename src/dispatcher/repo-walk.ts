@@ -55,6 +55,7 @@ function resolved(path: string): string {
 const inRepository = (path: string): string | undefined => lexically(path) ?? lexically(resolved(path));
 
 export const standing = (path: string): Standing => ({
+  onDisk: path,
   text: () => {
     try {
       return readFileSync(path, "utf8");

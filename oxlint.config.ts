@@ -28,6 +28,7 @@ export default defineConfig({
       "src/dispatcher/run-state.ts",
       "src/dispatcher/shell-words.ts",
       "src/dispatcher/transcript.ts",
+      "src/dispatcher/types.ts",
       "src/dispatcher/verdict.ts",
     ],
   },

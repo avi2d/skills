@@ -39,6 +39,7 @@ const CORE_FILES = {
   "src/dispatcher/forbid.ts": "forbid.ts",
   [KIT_COMMENTS]: "comments.ts",
   [KIT_PROSE]: "prose.ts",
+  "src/dispatcher/types.ts": "types.ts",
   "src/dispatcher/glob.ts": "glob.ts",
   "src/dispatcher/project.ts": "project.ts",
   "src/dispatcher/repo-walk.ts": "repo-walk.ts",

@@ -151,7 +151,8 @@ describe("the dispatch index", () => {
     }
     expect(index.rules.find((r) => r.name === "comment-discipline")?.forbid).toBe("comments");
     expect(index.rules.find((r) => r.name === "writing-for-people")?.forbid).toBe("prose");
-    expect(index.rules.filter((r) => "forbid" in r).map((r) => r.name)).toEqual(["comment-discipline", "writing-for-people"]);
+    expect(index.rules.find((r) => r.name === "typescript-best-practices")?.forbid).toBe("types");
+    expect(index.rules.filter((r) => "forbid" in r).map((r) => r.name)).toEqual(["comment-discipline", "typescript-best-practices", "writing-for-people"]);
   });
 
   test("it carries each Rule's whole text, so injection cannot hold a pointer", () => {

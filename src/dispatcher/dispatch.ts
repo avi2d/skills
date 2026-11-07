@@ -1,4 +1,5 @@
 import { judged, type Change, type Forbid } from "./forbid";
+import { createTypesBudget } from "./types";
 import { compileGlob, matchesGlob } from "./glob";
 import type { Harness } from "./harness";
 import type { Project } from "./project";
@@ -350,11 +351,11 @@ function forbidding(rule: IndexedRule, harness: Harness, changes: readonly Chang
   if (rule.forbid === undefined) return [];
   const actions: Action[] = [];
   const refusals: string[] = [];
+  const budget = createTypesBudget();
   for (const change of changes) {
-    const verdict = judged(rule.forbid, harness, change);
-    if ("unplaced" in verdict) {
-      actions.push({ type: "unjudged", rule: rule.name, why: `${verdict.unplaced}, so what it adds went unread` });
-    } else refusals.push(...verdict.refusals);
+    const verdict = judged(rule.forbid, harness, change, budget);
+    if ("unread" in verdict) actions.push({ type: "unjudged", rule: rule.name, why: `${verdict.unread}, so what it adds went unread` });
+    else refusals.push(...verdict.refusals);
   }
   if (refusals.length === 0) return actions;
   const text = [`${rule.name} refused this write before it landed:`, ...refusals.map((one) => `  ${one}`)].join("\n");
