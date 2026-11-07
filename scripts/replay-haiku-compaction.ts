@@ -3,7 +3,7 @@ import { Config, Console, Effect, FileSystem, Path } from "effect";
 import type { ModelRegistry } from "@earendil-works/pi-coding-agent";
 import { NO_PRIOR_HISTORY, conversationOf, historyPromptOf, isMuseSession, turnPrefixPromptOf } from "../harness/pi/extensions/haiku-compaction";
 import { registryOf, resolveModel, runArm, type Model } from "./replay-haiku-compaction/models";
-import { runMain } from "../node_modules/@avi2dg/checks/src/core/main.ts";
+import { runMain } from "@avi2dg/checks/core/main.ts";
 import {
   ArgsError,
   ModelError,

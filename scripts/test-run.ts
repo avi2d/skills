@@ -1,8 +1,8 @@
 import { Config, Console, Effect, FileSystem, Path } from "effect";
 import { ChildProcess, ChildProcessSpawner } from "effect/process";
-import { parseReport, reporterArgs, ReportError } from "../node_modules/@avi2dg/checks/src/testing/test-report.ts";
-import { judgeSkips, passes, report, SkipGateError, workerCount } from "../node_modules/@avi2dg/checks/src/testing/test.ts";
-import { readSkipDeclarations, type Environment } from "../node_modules/@avi2dg/checks/src/testing/test-skips.ts";
+import { parseReport, reporterArgs, ReportError } from "@avi2dg/checks/testing/test-report.ts";
+import { judgeSkips, passes, report, SkipGateError, workerCount } from "@avi2dg/checks/testing/test.ts";
+import { readSkipDeclarations, type Environment } from "@avi2dg/checks/scripts/test-skips.ts";
 
 export const environmentOf = Config.Boolean("CI").pipe(
   Config.withDefault(false),
