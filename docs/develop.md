@@ -71,7 +71,7 @@ Outside the tests, `evals/`, `harness/` and the modules a Dispatcher bundles, th
 `checks-effect-scope` writes the `tsconfig.json` one from `oxlint.config.ts` in `bun run build`, and fails the lint when the two differ.
 That scope allows no throw, no catch, no IO of its own, no `node:fs` or `node:child_process`, and no read of a variable off `process.env`, so file and process access goes through Effect's services and the layer in `src/platform/platform.ts`, and an environment variable through `Config`.
 The kit ships the rule blocks in `src/quality/presets/`, and `tests/unit/bundle.test.ts` holds the oxlint override to exactly the files a Dispatcher bundles.
-`tests/e2e/effect-scope.test.ts` holds the `tsconfig.json` one, because the mutation sandbox leaves `tsconfig.json` out of its copy.
+`tests/e2e/effect-scope.test.ts` holds the `tsconfig.json` one.
 Across all of `src/`, bundled modules included, `oxlint.config.ts` bans the `Bun` globals for files and processes.
 
 ## Write source code
@@ -98,7 +98,7 @@ To add a test:
 1. Remove every temporary directory the test creates, and point the `TMPDIR` of a process it spawns into one of them, because CI fails a run that leaves anything in its temp directory.
 
 A test under `tests/e2e/` runs out of process, so mutation testing cannot see through it, and it stays out of the mutation scope.
-Stryker's runners share the one sandbox tree it copies to `../.stryker-tmp`, so nothing a test process writes may be shared.
+Stryker's runners share the one working tree they mutate in place, so nothing a test process writes may be shared.
 The preload sets `SKILLS_GENERATED_ROOT` to the process's own `generated-<pid>`.
 `readGeneratedRoot` in `src/generate/bundle.ts` reads it through `Config` wherever the source writes or reads the emitted tree, and `GENERATED_ROOT` runs the same read for a test.
 
@@ -107,27 +107,23 @@ A check that walks the filesystem excludes the fetched tree under `repos/`, and 
 
 ## Run the mutation tests
 
-To run the mutation tests:
+To run the mutation tests, run `bunx stryker run --mutate <glob>` to mutate the files the glob names, and add `--incremental` to reuse the results of the last run.
 
-1. Commit your work, because `bun run mutate` refuses a dirty tree.
-1. Run `bun run mutate -- --mutate <glob>` to mutate the files the glob names, or `bun run mutate:incremental` to reuse the results of the last run.
-
-Outside CI the kit's preset refuses a run with neither `--mutate` nor `--incremental`, and refuses `bun run mutate:incremental` without `--mutate` while `reports/stryker-incremental.json` does not exist.
-`bun run mutate:incremental -- --mutate <glob>` writes that file locally, and the same command run again tests only the mutants changed since.
+Outside CI the kit's preset refuses a run with neither `--mutate` nor `--incremental`, and refuses `--incremental` without `--mutate` while `reports/stryker-incremental.json` does not exist.
+`bunx stryker run --incremental --mutate <glob>` writes that file locally, and the same command run again tests only the mutants changed since.
 A run over the whole of `src/**` is what Stryker's default `mutate` selects here.
-`stryker.conf.mjs` spreads the kit's `stryker.preset.js` and then sets only the keys this repository needs differently.
+`stryker.conf.mjs` spreads the kit's `stryker.preset.js` and sets only `bun.testFiles`.
 The score is advisory, because the preset's `thresholds.break` is null, so no pull request waits on mutation.
 No workflow runs it.
 The runner hands `bun.testFiles` to `bun test` verbatim and expands no glob.
 `stryker.conf.mjs` sets it to the preset's `unitTestFiles()`, every test file under `tests/unit/`, so a covered, non-static mutant loads only the files that cover it.
 The out-of-process tests under `tests/e2e/` and everything under `tests/quarantine/` stay out.
 
-`inPlace` is false where the preset has true, so Stryker mutates a sandbox copy in `../.stryker-tmp`.
+`inPlace` is the preset's true, so Stryker mutates the working tree, keeps a backup in `../.stryker-tmp` and restores the files from it when the run ends.
 Each test process's preload generates into its own `generated-<pid>`, and generates nothing when the source resolves any other root.
 It sweeps a dead process's root by renaming it into its own root and removing it there, so no remove runs inside a directory another process reads.
 A unit test that writes, reconciles or checks a generated tree does it in a temporary repository of its own, and the one that checks the preload's output reads `generated-<pid>` by name rather than through the root the source resolves.
-A mutant that makes `generatedRoot` in `src/generate/bundle.ts` fall back to `generated` therefore finds that directory absent from the sandbox, and fails the same way at any concurrency rather than racing other test processes over it.
-The sandbox's `ignorePatterns` leave every `generated*` directory, the vendored `repos/*` links and `tsconfig.json` out of the copy.
+A mutant that makes `generatedRoot` in `src/generate/bundle.ts` fall back to `generated` writes into the `generated/` tree the harnesses load, and Stryker does not restore that tree, so `bun run generate` rebuilds it after a run.
 
 `concurrency` is the preset's half of the cores the machine reports, so `stryker.conf.mjs` does not set it.
 
