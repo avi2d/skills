@@ -1,5 +1,5 @@
 const URL = /https?:\/\/[\w[][^\s<>"'`)\]}|]*/g;
-const PATH = /(?<![\w@.~/-])(?:~\/|\.{1,2}\/|\/)?[\w.@+-]+(?:\/[\w.@+-]+)+\/?(?![~=/?&#%])/g;
+const PATH = /(?<![\w@.~/-])(?:~\/|\.{1,2}\/|\/)?[\w.@+-]+(?:\/[\w.@+-]+)+\/?(?![\w.@+-]*(?:[~=/]|[?&#%]\S))/g;
 const EXTENSION = /\.[A-Za-z][A-Za-z0-9]{0,5}$/;
 const TASK_ID_SOURCES = [
   /(?<![\w./-])state\/([a-z0-9][a-z0-9.-]*[a-z0-9])\.(?:status|inbox)(?![A-Za-z0-9_+/-])(?!\.[A-Za-z0-9])/g,
@@ -7,7 +7,7 @@ const TASK_ID_SOURCES = [
   /\/tmp\/fm-([a-z0-9][a-z0-9.-]*[a-z0-9])\//g,
   /(?<![0-9A-Za-z.-])(01[0-9A-HJKMNP-TV-Z]{24})(?![A-Za-z0-9_+-])(?!\.[A-Za-z0-9])/g,
 ];
-const DECISION_KEY_SOURCES = [/(?<![\w-])key=([A-Za-z0-9][\w.:-]*[A-Za-z0-9])(?![\w/+~=@-])/g, /(?<![\w-])corr[= ]([0-9a-f]{8,})(?![\w+-])(?!\.[A-Za-z0-9])/g];
+const DECISION_KEY_SOURCES = [/(?<![\w-])key=([A-Za-z0-9][\w.:-]*[A-Za-z0-9])(?![.:-]*[\w/+~=@-])/g, /(?<![\w-])corr[= ]([0-9a-f]{8,})(?![\w+-])(?!\.[A-Za-z0-9])/g];
 const FACT_KINDS = ["url", "path", "taskId", "decisionKey"] as const;
 
 export type FactKind = (typeof FACT_KINDS)[number];
@@ -76,18 +76,11 @@ type Source = {
 };
 
 function sourceOf(text: string): Source {
-  const plain = cleaned(text);
-  const urls = matchesOf(plain, URL).map(trimTail);
-  const paths = matchesOf(plain.replace(URL, " "), PATH)
-    .map(trimTail)
-    .map((path) => path.replace(/\/$/, ""))
-    .filter((path) => path.length >= 4)
-    .filter((path) => /^(?:\/|~\/|\.{1,2}\/)/.test(path) || EXTENSION.test(path));
   return {
-    urls,
-    paths,
-    taskIds: known(plain, TASK_ID_SOURCES),
-    decisionKeys: known(plain.replace(URL, " "), DECISION_KEY_SOURCES),
+    urls: urlsIn(text),
+    paths: pathsIn(text),
+    taskIds: known(cleaned(text), TASK_ID_SOURCES),
+    decisionKeys: known(cleaned(text).replace(URL, " "), DECISION_KEY_SOURCES),
   };
 }
 

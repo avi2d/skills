@@ -251,6 +251,41 @@ describe("retentionOf", () => {
       expect(retention.lost).toEqual([{ kind: "path", value: "/tmp/run/out" }]);
     }
   });
+  test("key=deploy.v1/next does not keep deploy", () => {
+    const source = "user: set key=deploy key=deploy.v1";
+    const recorded = ["## Goal", "- Use key=deploy."].join("\n");
+    const candidate = ["## Goal", "- Use key=deploy.v1/next."].join("\n");
+    const retention = retentionOf(recorded, candidate, source);
+    expect(byKind(retention).get("decisionKey")).toEqual({ pooled: 1, recorded: 1, candidate: 0 });
+    expect(retention.lost).toEqual([{ kind: "decisionKey", value: "deploy" }]);
+  });
+  test("key=deploy:prod~ does not keep deploy", () => {
+    const source = "user: set key=deploy key=deploy:prod";
+    const recorded = ["## Goal", "- Use key=deploy."].join("\n");
+    const candidate = ["## Goal", "- Use key=deploy:prod~."].join("\n");
+    const retention = retentionOf(recorded, candidate, source);
+    expect(byKind(retention).get("decisionKey")).toEqual({ pooled: 1, recorded: 1, candidate: 0 });
+    expect(retention.lost).toEqual([{ kind: "decisionKey", value: "deploy" }]);
+  });
+  test("src/a does not keep src", () => {
+    const source = "tool: wrote /home/u/repo/src and /home/u/repo/src/a ok";
+    const recorded = ["## Goal", "- Edited /home/u/repo/src."].join("\n");
+    const candidate = ["## Goal", "- Did you edit /home/u/repo/src/a?"].join("\n");
+    const retention = retentionOf(recorded, candidate, source);
+    expect(byKind(retention).get("path")).toEqual({ pooled: 2, recorded: 1, candidate: 1 });
+    expect(retention.lost).toEqual([{ kind: "path", value: "/home/u/repo/src" }]);
+  });
+  test("a sentence-final ? keeps the path", () => {
+    const source = "tool: wrote /tmp/run/out ok";
+    const recorded = ["## Goal", "- Keep /tmp/run/out?"].join("\n");
+    const candidate = ["## Goal", "- Is it /tmp/run/out?"].join("\n");
+    const retention = retentionOf(recorded, candidate, source);
+    expect(byKind(retention).get("path")).toEqual({ pooled: 1, recorded: 1, candidate: 1 });
+    expect(retention.lost).toEqual([]);
+  });
+  test("a path is not truncated before ? # ~", () => {
+    expect(pathsIn("is it src/foo.ts? see docs/guide.md#install and /tmp/run/out~")).toEqual(["src/foo.ts"]);
+  });
   test("a key without its marker is not a fact", () => {
     const source = "user: set key=deploy.v1_old";
     const recorded = ["## Goal", "- Use deploy.v1_old."].join("\n");
