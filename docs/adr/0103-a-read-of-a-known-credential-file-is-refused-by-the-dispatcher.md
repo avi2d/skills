@@ -20,7 +20,7 @@ A path tool, such as `read`, `edit` or `grep`, is refused on the file location, 
 `~/.npmrc` and `.credentials.json` match in any directory, since a project `.npmrc` holds a token and the dot name has no project use.
 `~/.pi/agent/auth.json`, `~/.codex/auth.json` and `~/.config/gh/hosts.yml` match at the default location and at the location the owning directory variable names, so a set variable adds a location and never replaces one.
 The owning variables are `PI_CODING_AGENT_DIR`, `CODEX_HOME` and `GH_CONFIG_DIR`.
-A file under `/etc/wireguard` or `/etc/amneziawg` is refused on its directory name, since only root can stat it.
+A file below a `wireguard` or `amneziawg` directory that sits below an `etc` directory is refused on its directory name, since only root can stat it.
 Under any other directory named `wireguard` or `amneziawg`, only `privatekey` and `*.key` match on the file name.
 Any other `.conf` is refused when it holds an `[Interface]` with a `PrivateKey`.
 A shell command is refused when a word in it, a redirect target or a piece of a quoted script names a credential file that exists, relative to the working directory or a directory the command reaches with `cd` or `pushd`, with `~`, `$HOME`, symlinks and globs resolved.

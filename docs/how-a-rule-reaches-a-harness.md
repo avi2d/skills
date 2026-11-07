@@ -172,7 +172,7 @@ Each queued or refused call is a `job-queue` line in the dispatch log naming its
 ## A credential file is not read
 
 What a tool prints stays in the session transcript, so every Dispatcher refuses a call that reads a known credential file before anything else it does at that call.
-`~/.npmrc` and `.credentials.json` match in any directory, `~/.pi/agent/auth.json`, `~/.codex/auth.json` and `~/.config/gh/hosts.yml` match at the default location and at the location the owning directory variable names, a file under `/etc/wireguard` or `/etc/amneziawg` matches on its directory name, only `privatekey` and `*.key` match under any other directory named `wireguard` or `amneziawg`, and any other `.conf` holding an `[Interface]` with a `PrivateKey` matches on its text.
+`~/.npmrc` and `.credentials.json` match in any directory, `~/.pi/agent/auth.json`, `~/.codex/auth.json` and `~/.config/gh/hosts.yml` match at the default location and at the location the owning directory variable names, a file below a `wireguard` or `amneziawg` directory that sits below an `etc` directory matches on its directory name, only `privatekey` and `*.key` match under any other directory named `wireguard` or `amneziawg`, and any other `.conf` holding an `[Interface]` with a `PrivateKey` matches on its text.
 A set owning directory variable adds a location and never replaces one.
 A project file named `auth.json` or `hosts.yml` passes, while a project `.npmrc` is refused.
 A path tool, such as `read`, `edit` or `grep`, is refused on the file location.

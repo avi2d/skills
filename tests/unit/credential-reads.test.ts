@@ -66,17 +66,25 @@ describe("a path tool", () => {
     expect(read("read", { path: "hosts.yml" })).toBeUndefined();
   });
 
-  test("a GH_CONFIG_DIR hosts.yml is refused at its moved location, not at the default one", () => {
+  test("a GH_CONFIG_DIR hosts.yml is refused at the moved location as well as the default one, not replaced", () => {
     const moved = join(home, "elsewhere/gh");
     mkdirSync(moved, { recursive: true });
     writeFileSync(join(moved, "hosts.yml"), "github.com:\n");
     expect(read("read", { path: join(moved, "hosts.yml") }, { GH_CONFIG_DIR: moved })).toBe(join(moved, "hosts.yml"));
-    expect(read("read", { path: join(moved, "hosts.yml") })).toBeUndefined();
+    expect(read("read", { path: join(home, ".config/gh/hosts.yml") }, { GH_CONFIG_DIR: moved })).toBe(join(home, ".config/gh/hosts.yml"));
   });
 
   test("a file under /etc/wireguard is refused without reading it, since only root can", () => {
     expect(read("read", { path: "/etc/wireguard/wg0.conf" })).toBe("/etc/wireguard/wg0.conf");
     expect(read("read", { path: "/etc/amneziawg/awg0.conf" })).toBe("/etc/amneziawg/awg0.conf");
+  });
+
+  test("a nested amnezia path is refused, not let through for sitting below amnezia", () => {
+    expect(read("read", { path: "/etc/amnezia/amneziawg/awg0.conf" })).toBe("/etc/amnezia/amneziawg/awg0.conf");
+  });
+
+  test("a homebrew etc tunnel path is refused, not let through for the prefix before etc", () => {
+    expect(read("read", { path: "/opt/homebrew/etc/wireguard/wg0.conf" })).toBe("/opt/homebrew/etc/wireguard/wg0.conf");
   });
 
   test("a project role under a wireguard directory is allowed, not refused for the directory name", () => {
@@ -124,6 +132,16 @@ describe("a shell command", () => {
 
   test("cat on a tunnel private key is refused without stat, not let through for missing conf suffix", () => {
     expect(bash("cat /etc/wireguard/privatekey")).toBe("/etc/wireguard/privatekey");
+  });
+
+  test("cat on a nested amnezia config is refused, not let through for sitting below amnezia", () => {
+    expect(bash("cat /etc/amnezia/amneziawg/awg0.conf")).toBe("/etc/amnezia/amneziawg/awg0.conf");
+  });
+
+  test("a recursive glob over the tree returns fast, not stalled walking node_modules", () => {
+    const started = Date.now();
+    expect(bash("rg -g '**/*.ts' foo")).toBeUndefined();
+    expect(Date.now() - started).toBeLessThan(500);
   });
 
   test("commands inside a wireguard directory pass, not refused for the directory name", () => {

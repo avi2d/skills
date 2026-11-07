@@ -1,6 +1,6 @@
 import { globSync, readFileSync, realpathSync, statSync } from "node:fs";
 import { homedir } from "node:os";
-import { basename, join, resolve, sep } from "node:path";
+import { basename, join, matchesGlob, resolve, sep } from "node:path";
 import { simpleCommands } from "./job-queue";
 import { segments } from "./shell-words";
 
@@ -53,7 +53,10 @@ const isFile = (path: string): boolean => {
 function tunnelByName(path: string): boolean {
   const parts = path.split(sep);
   const lower = parts.map((part) => part.toLowerCase());
-  if (lower[1] === "etc" && TUNNEL_DIRS.includes(lower[2] ?? "") && parts.length > 3) return true;
+  const anchored = lower.some(
+    (part, at) => part === "etc" && lower.slice(at + 1, -1).some((later) => TUNNEL_DIRS.includes(later)),
+  );
+  if (anchored) return true;
   const last = lower.at(-1) ?? "";
   const key = last === "privatekey" || last.endsWith(".key");
   return key && lower.slice(0, -1).some((part) => TUNNEL_DIRS.includes(part));
@@ -117,11 +120,24 @@ function candidates(word: string): string[] {
   return [word, ...(value === undefined ? [] : [value]), ...pieces].filter((piece) => piece !== "");
 }
 
+const REFUSED_SAMPLES = [".npmrc", ".credentials.json", "auth.json", "hosts.yml", "privatekey", "sample.key", "sample.conf"];
+
+function globMayRefuse(pattern: string): boolean {
+  const last = pattern.split(/[\\/]/).at(-1) ?? pattern;
+  return REFUSED_SAMPLES.some((sample) => {
+    try {
+      return matchesGlob(sample, last);
+    } catch {
+      return true;
+    }
+  });
+}
+
 function namedPaths(word: string, dirs: readonly string[], home: string): string[] {
   const path = expanded(word, home);
   return dirs.flatMap((dir) => {
     const at = resolve(dir, path);
-    if (!GLOB.test(path)) return [at];
+    if (!GLOB.test(path) || !globMayRefuse(path)) return [at];
     try {
       const matched = globSync(path, { cwd: dir }).map((found) => resolve(dir, found));
       return matched.length > 0 ? matched : [at];

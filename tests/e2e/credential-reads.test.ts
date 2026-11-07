@@ -1,4 +1,4 @@
-import { afterAll, describe, expect, setDefaultTimeout, test } from "bun:test";
+import { afterAll, afterEach, beforeEach, describe, expect, setDefaultTimeout, test } from "bun:test";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { CLAUDE_BUNDLE, CODEX_BUNDLE } from "../../src/generate/bundle";
@@ -65,42 +65,33 @@ hookHarness("Codex", CODEX);
 describe("pi's tool_call event", () => {
   const bare: Index = { harness: "pi", rules: [], profiles: [], hub: [] };
 
-  test("a read of auth.json is blocked with the key-names-only word", async () => {
-    const saved = { PI_CODING_AGENT_DIR: process.env.PI_CODING_AGENT_DIR, CODEX_HOME: process.env.CODEX_HOME, GH_CONFIG_DIR: process.env.GH_CONFIG_DIR, CLAUDE_CONFIG_DIR: process.env.CLAUDE_CONFIG_DIR };
-    delete process.env.PI_CODING_AGENT_DIR;
-    delete process.env.CODEX_HOME;
-    delete process.env.GH_CONFIG_DIR;
-    delete process.env.CLAUDE_CONFIG_DIR;
-    try {
-      const dispatcher = await load(bare);
-      const path = planted(dispatcher.home);
-      expect(await dispatcher.call("read", { path: "~/.pi/agent/auth.json" })).toEqual({ block: true, reason: refusedText(path) });
-    } finally {
-      for (const [name, value] of Object.entries(saved)) {
-        if (value === undefined) delete process.env[name];
-        else process.env[name] = value;
-      }
+  let saved: Record<string, string | undefined> = {};
+  beforeEach(() => {
+    saved = {};
+    for (const name of Object.keys(CLEAR)) {
+      saved[name] = process.env[name];
+      delete process.env[name];
+    }
+  });
+  afterEach(() => {
+    for (const [name, value] of Object.entries(saved)) {
+      if (value === undefined) delete process.env[name];
+      else process.env[name] = value;
     }
   });
 
+  test("a read of auth.json is blocked with the key-names-only word", async () => {
+    const dispatcher = await load(bare);
+    const path = planted(dispatcher.home);
+    expect(await dispatcher.call("read", { path: "~/.pi/agent/auth.json" })).toEqual({ block: true, reason: refusedText(path) });
+  });
+
   test("a bash cat of auth.json is blocked, not rewritten and run", async () => {
-    const saved = { PI_CODING_AGENT_DIR: process.env.PI_CODING_AGENT_DIR, CODEX_HOME: process.env.CODEX_HOME, GH_CONFIG_DIR: process.env.GH_CONFIG_DIR, CLAUDE_CONFIG_DIR: process.env.CLAUDE_CONFIG_DIR };
-    delete process.env.PI_CODING_AGENT_DIR;
-    delete process.env.CODEX_HOME;
-    delete process.env.GH_CONFIG_DIR;
-    delete process.env.CLAUDE_CONFIG_DIR;
-    try {
-      const dispatcher = await load(bare);
-      const path = planted(dispatcher.home);
-      const input = { command: "cat ~/.pi/agent/auth.json" };
-      expect(await dispatcher.call("bash", input)).toEqual({ block: true, reason: refusedText(path) });
-      expect(input.command).toBe("cat ~/.pi/agent/auth.json");
-    } finally {
-      for (const [name, value] of Object.entries(saved)) {
-        if (value === undefined) delete process.env[name];
-        else process.env[name] = value;
-      }
-    }
+    const dispatcher = await load(bare);
+    const path = planted(dispatcher.home);
+    const input = { command: "cat ~/.pi/agent/auth.json" };
+    expect(await dispatcher.call("bash", input)).toEqual({ block: true, reason: refusedText(path) });
+    expect(input.command).toBe("cat ~/.pi/agent/auth.json");
   });
 
   test("a read of another file is let through, not blocked with the credential reads", async () => {
