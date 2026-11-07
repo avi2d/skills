@@ -18,6 +18,7 @@ What each Rule's eval cases measure, and each Reference's measured on its own, l
 | `git-hygiene` | `changelog`, `generated-routes` | it left `CHANGELOG.md` and any file `.gitattributes` marks as generated as the tool that writes them would, from the sources the run left |
 | `git-hygiene-co-author` | `co-author` | no commit it made carries a `Co-Authored-By` trailer |
 | `guard-the-context-window` | `build-log`, `lockfile` | it found the answer with less tool output entering its context than the case's byte budget |
+| `inspect-credentials-by-key` | none | the Rule has no case yet, as Unmeasured Rules says |
 | `readme-front-door` | none | the Rule has no case yet, as Unmeasured Rules says |
 | `prove-it-works` | `verify-the-fix`, `reproduce-first`, `git-ignored`, `cron-next` | a test command ran after its last write, or a command run on the reported input printed its wrong value before its first fix, or, for an outcome case, its hidden verifier passes |
 | `right-size-the-work` | `csv-migration`, `fixture-rename` | it did a one-off migration and left no new script behind, as a file or as a `package.json` script |
@@ -99,6 +100,10 @@ The judge passes an opening shape it does not recognise and leaves it to a reade
 
 The Rule only sends a session that wrote a SKILL.md to the `writing-for-agents` reference, and no judge measures that delivery.
 The guidance itself is measured where it lands, under the `writing-for-agents` reference.
+
+### `inspect-credentials-by-key`
+
+No case seeds a credential file, so no judge yet reads whether the agent looked at its key names rather than its values.
 
 ### `readme-front-door`
 
