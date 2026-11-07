@@ -25,7 +25,7 @@ Rules for the parts of TypeScript no lint rule and no compiler flag decides for 
 
 ## Boundaries
 
-- Types are erased at runtime. Parse incoming data with a schema and derive the static type from it. A hand guard checks every field its type declares. Where Effect cannot load, a hand guard is the parse.
+- **Derive, never write twice; never assert outside data.** Types are erased at runtime, so parse outside data with a schema and derive the static type from it. Never write a second declaration of a shape a schema already declares. Never give outside data a type by assertion. Where Effect cannot load, a hand guard is the parse, and it checks every field its type declares.
 
 ## Generics
 
