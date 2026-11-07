@@ -58,7 +58,7 @@ A file nothing imports and no tool names goes in the `entry` list of `knip.confi
 The `exports-baseline.json` stays empty, so an unused export is deleted or unexported, not listed.
 The kit's size rules in `oxlint.config.ts` fail any production or test file over budget, whether or not the branch touched it.
 The suite fails on any entry in `oxlint-suppressions.json`, so the file is absent or empty.
-Four gates run only at night through `checks-lint --night`, namely `checks-lint-coverage`, `checks-repetition`, `checks-suppressions-ratchet` and `checks-quarantine-clock`.
+Four gates run only through `checks-lint --whole-tree`, namely `checks-lint-coverage`, `checks-repetition`, `checks-suppressions-ratchet` and `checks-quarantine-clock`.
 `checks-advisories` holds `advisory-acks.json` to its rules on every run and defers its scan to the scheduled run, so the pull request run fetches no advisory database.
 `.github/workflows/advisories.yml` runs it with `--all` every Monday over the whole of `bun.lock`, which finds an advisory published after its package landed and an advisory a `bun.lock` change adds.
 
@@ -116,8 +116,7 @@ Outside CI the kit's preset refuses a run with neither `--mutate` nor `--increme
 A run over the whole of `src/**` is what Stryker's default `mutate` selects here.
 `stryker.conf.mjs` spreads the kit's `stryker.preset.js` and then sets only the keys this repository needs differently.
 The score is advisory, because the preset's `thresholds.break` is null, so no pull request waits on mutation.
-No workflow runs it on a pull request or a push.
-Run a full `bunx stryker run` by hand for the whole tree.
+No workflow runs it.
 The runner hands `bun.testFiles` to `bun test` verbatim and expands no glob.
 `stryker.conf.mjs` sets it to the preset's `unitTestFiles()`, every test file under `tests/unit/`, so a covered, non-static mutant loads only the files that cover it.
 The out-of-process tests under `tests/e2e/` and everything under `tests/quarantine/` stay out.
@@ -146,7 +145,7 @@ To replay a test that failed on one seed:
 `.github/workflows/flake.yml` runs the suite on ten seeds with `checks-flake` when you start it by hand.
 It keeps the seeds each failing test failed with.
 A test found flaky moves to `tests/quarantine/unit/`, which a default run skips.
-`checks-quarantine-clock` runs at night and fails a test left there more than 30 days.
+`checks-quarantine-clock` fails a test left there more than 30 days.
 Fix the test and move it back, or delete it.
 
 ## Re-pin a library
