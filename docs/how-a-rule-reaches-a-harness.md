@@ -74,6 +74,7 @@ Reading a hook's reply back from a harness's transcript is translation the two h
 The rest the two hook adapters share is `src/dispatcher/hook-harness.ts`, also bundled into both, so an adapter hands it a `HookAdapter` holding only what its harness does differently.
 The index check all three adapters share is `src/dispatcher/read-index.ts`.
 Which shell command goes to the job queue is decided in `src/dispatcher/job-queue.ts`, which reads a command's words through `src/dispatcher/shell-words.ts`, and each adapter hands it the command and applies what it returns, as [Heavy commands go to the job queue](#heavy-commands-go-to-the-job-queue) describes.
+Whether a call reads a credential file is decided in `src/dispatcher/credential-reads.ts`, and each adapter refuses the call it names, as [A credential file is not read](#a-credential-file-is-not-read) describes.
 `src/dispatcher/gate.ts` is I/O the three adapters share for the verdict gate, reading `.no-mistakes.yaml` through `src/dispatcher/gate-config.ts`, and whether a settle is checked, held or let go is decided in `src/dispatcher/verdict.ts`, as [record 0048](adr/0048-a-session-that-changed-the-tree-settles-past-the-checks-its-push-gate-runs.md) records.
 
 A Profile is declared in `selection.toml` and nowhere else.
@@ -167,6 +168,17 @@ When `pueue` is not installed, its daemon is down, or it lacks a group the comma
 A queued job runs under the pueue daemon, outside any sandbox, so Codex queues or refuses a command only in a full-access turn and never overrides a restricted sandbox, whatever its network setting.
 The Dispatcher reads that sandbox from the latest `turn_context` in the rollout, and runs the command as it is under any other sandbox or a rollout it cannot read.
 Each queued or refused call is a `job-queue` line in the dispatch log naming its groups, and never the command, which can carry a credential.
+
+## A credential file is not read
+
+What a tool prints stays in the session transcript, so every Dispatcher refuses a call that reads a known credential file before anything else it does at that call.
+The files are `~/.npmrc`, any `auth.json`, `hosts.yml` or `.credentials.json`, any file under a `wireguard` or `amneziawg` directory, and any other `.conf` holding an `[Interface]` with a `PrivateKey`.
+A path tool, such as `read`, `edit` or `grep`, is refused by the file's name.
+A shell command is refused when a word in it, a redirect's target or a piece of a quoted script names one of those files that exists, with `~`, `$HOME`, symlinks, globs and a `cd` earlier in the command resolved.
+`jq 'keys'`, `yq 'keys'` and a command that reads only metadata, such as `ls`, `stat` or `test`, pass, unless a substitution runs inside them.
+pi blocks the call at `tool_call`, and Claude Code and Codex get a `deny` in their PreToolUse reply, which tells the model to read the file by its key names only.
+Each refusal is a `credential-read` line in the dispatch log naming the path.
+A path built at run time, a recursive grep over a directory and a script that opens the file itself are not seen, and the `credential-files` Rule covers them and every other file that holds a secret.
 
 ## The dispatch log
 

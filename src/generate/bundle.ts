@@ -45,6 +45,7 @@ const CORE_FILES = {
   "src/dispatcher/gate-config.ts": "gate-config.ts",
   "src/dispatcher/read-index.ts": "read-index.ts",
   "src/dispatcher/job-queue.ts": "job-queue.ts",
+  "src/dispatcher/credential-reads.ts": "credential-reads.ts",
   "src/dispatcher/shell-words.ts": "shell-words.ts",
 };
 
