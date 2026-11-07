@@ -20,6 +20,8 @@ afterAll(async () => {
 
 const AUTH = ".pi/agent/auth.json";
 
+const CLEAR: Record<string, string> = { PI_CODING_AGENT_DIR: "", CODEX_HOME: "", GH_CONFIG_DIR: "", CLAUDE_CONFIG_DIR: "" };
+
 function planted(home: string): string {
   const path = join(home, AUTH);
   mkdirSync(dirname(path), { recursive: true });
@@ -34,7 +36,7 @@ function hookHarness(name: string, rig: Rig): void {
     test("a Read of auth.json is denied with the key-names-only word, and the refusal is logged", async () => {
       const driven = await rig.install(index);
       const path = planted(driven.home);
-      const { reply, log } = await driven.fire("PreToolUse", { tool_name: "Read", tool_input: { file_path: path } });
+      const { reply, log } = await driven.fire("PreToolUse", { tool_name: "Read", tool_input: { file_path: path } }, undefined, CLEAR);
       expect(reply?.hookSpecificOutput?.permissionDecision).toBe("deny");
       expect(reply?.hookSpecificOutput?.permissionDecisionReason).toBe(refusedText(path));
       expect(log).toContainEqual(expect.stringContaining(`credential-read: refused a read of ${path}`));
@@ -43,7 +45,7 @@ function hookHarness(name: string, rig: Rig): void {
     test("a cat of auth.json through Bash is denied, not let through by the shell", async () => {
       const driven = await rig.install(index);
       const path = planted(driven.home);
-      const { reply } = await driven.fire("PreToolUse", { tool_name: "Bash", tool_input: { command: "cat ~/.pi/agent/auth.json" } });
+      const { reply } = await driven.fire("PreToolUse", { tool_name: "Bash", tool_input: { command: "cat ~/.pi/agent/auth.json" } }, undefined, CLEAR);
       expect(reply?.hookSpecificOutput?.permissionDecision).toBe("deny");
       expect(reply?.hookSpecificOutput?.permissionDecisionReason).toBe(refusedText(path));
     });
@@ -51,7 +53,7 @@ function hookHarness(name: string, rig: Rig): void {
     test("jq 'keys' on auth.json is let through, not denied with the reads", async () => {
       const driven = await rig.install(index);
       planted(driven.home);
-      const { reply } = await driven.fire("PreToolUse", { tool_name: "Bash", tool_input: { command: "jq 'keys' ~/.pi/agent/auth.json" } });
+      const { reply } = await driven.fire("PreToolUse", { tool_name: "Bash", tool_input: { command: "jq 'keys' ~/.pi/agent/auth.json" } }, undefined, CLEAR);
       expect(reply?.hookSpecificOutput?.permissionDecision).toBeUndefined();
     });
   });
@@ -64,17 +66,41 @@ describe("pi's tool_call event", () => {
   const bare: Index = { harness: "pi", rules: [], profiles: [], hub: [] };
 
   test("a read of auth.json is blocked with the key-names-only word", async () => {
-    const dispatcher = await load(bare);
-    const path = planted(dispatcher.home);
-    expect(await dispatcher.call("read", { path: "~/.pi/agent/auth.json" })).toEqual({ block: true, reason: refusedText(path) });
+    const saved = { PI_CODING_AGENT_DIR: process.env.PI_CODING_AGENT_DIR, CODEX_HOME: process.env.CODEX_HOME, GH_CONFIG_DIR: process.env.GH_CONFIG_DIR, CLAUDE_CONFIG_DIR: process.env.CLAUDE_CONFIG_DIR };
+    delete process.env.PI_CODING_AGENT_DIR;
+    delete process.env.CODEX_HOME;
+    delete process.env.GH_CONFIG_DIR;
+    delete process.env.CLAUDE_CONFIG_DIR;
+    try {
+      const dispatcher = await load(bare);
+      const path = planted(dispatcher.home);
+      expect(await dispatcher.call("read", { path: "~/.pi/agent/auth.json" })).toEqual({ block: true, reason: refusedText(path) });
+    } finally {
+      for (const [name, value] of Object.entries(saved)) {
+        if (value === undefined) delete process.env[name];
+        else process.env[name] = value;
+      }
+    }
   });
 
   test("a bash cat of auth.json is blocked, not rewritten and run", async () => {
-    const dispatcher = await load(bare);
-    const path = planted(dispatcher.home);
-    const input = { command: "cat ~/.pi/agent/auth.json" };
-    expect(await dispatcher.call("bash", input)).toEqual({ block: true, reason: refusedText(path) });
-    expect(input.command).toBe("cat ~/.pi/agent/auth.json");
+    const saved = { PI_CODING_AGENT_DIR: process.env.PI_CODING_AGENT_DIR, CODEX_HOME: process.env.CODEX_HOME, GH_CONFIG_DIR: process.env.GH_CONFIG_DIR, CLAUDE_CONFIG_DIR: process.env.CLAUDE_CONFIG_DIR };
+    delete process.env.PI_CODING_AGENT_DIR;
+    delete process.env.CODEX_HOME;
+    delete process.env.GH_CONFIG_DIR;
+    delete process.env.CLAUDE_CONFIG_DIR;
+    try {
+      const dispatcher = await load(bare);
+      const path = planted(dispatcher.home);
+      const input = { command: "cat ~/.pi/agent/auth.json" };
+      expect(await dispatcher.call("bash", input)).toEqual({ block: true, reason: refusedText(path) });
+      expect(input.command).toBe("cat ~/.pi/agent/auth.json");
+    } finally {
+      for (const [name, value] of Object.entries(saved)) {
+        if (value === undefined) delete process.env[name];
+        else process.env[name] = value;
+      }
+    }
   });
 
   test("a read of another file is let through, not blocked with the credential reads", async () => {

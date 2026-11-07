@@ -8,12 +8,12 @@ const HOME = process.env.HOME ?? homedir();
 
 type Env = Record<string, string | undefined>;
 
-const ownedPaths = (home: string, env: Env): readonly string[] => {
-  const piDir = env.PI_CODING_AGENT_DIR || join(home, ".pi/agent");
-  const codexHome = env.CODEX_HOME || join(home, ".codex");
-  const ghDir = env.GH_CONFIG_DIR || join(home, ".config/gh");
-  const claudeDir = env.CLAUDE_CONFIG_DIR || join(home, ".claude");
-  return [join(piDir, "auth.json"), join(codexHome, "auth.json"), join(ghDir, "hosts.yml"), join(claudeDir, ".credentials.json")];
+const ownedAuthHosts = (home: string, env: Env): readonly string[] => {
+  const owned = [join(home, ".pi/agent/auth.json"), join(home, ".codex/auth.json"), join(home, ".config/gh/hosts.yml")];
+  if (env.PI_CODING_AGENT_DIR) owned.push(join(env.PI_CODING_AGENT_DIR, "auth.json"));
+  if (env.CODEX_HOME) owned.push(join(env.CODEX_HOME, "auth.json"));
+  if (env.GH_CONFIG_DIR) owned.push(join(env.GH_CONFIG_DIR, "hosts.yml"));
+  return owned;
 };
 
 const TUNNEL_DIRS = ["wireguard", "amneziawg"];
@@ -50,9 +50,13 @@ const isFile = (path: string): boolean => {
   }
 };
 
-function inTunnelDir(path: string): boolean {
+function tunnelByName(path: string): boolean {
   const parts = path.split(sep);
-  return parts.slice(0, -1).some((part) => TUNNEL_DIRS.includes(part.toLowerCase()));
+  const lower = parts.map((part) => part.toLowerCase());
+  if (lower[1] === "etc" && TUNNEL_DIRS.includes(lower[2] ?? "") && parts.length > 3) return true;
+  const last = lower.at(-1) ?? "";
+  const key = last === "privatekey" || last.endsWith(".key");
+  return key && lower.slice(0, -1).some((part) => TUNNEL_DIRS.includes(part));
 }
 
 function wireguardConfig(path: string): boolean {
@@ -67,16 +71,19 @@ function wireguardConfig(path: string): boolean {
 }
 
 function credentialPath(path: string, home: string, env: Env): boolean {
-  if (inTunnelDir(path)) return true;
+  if (tunnelByName(path)) return true;
   const seen = [path, real(path) ?? path];
-  if (seen.some((candidate) => basename(candidate) === ".npmrc")) return true;
-  const targets = ownedPaths(home, env).flatMap((owned) => [owned, real(owned) ?? owned]);
+  if (seen.some((candidate) => {
+    const base = basename(candidate).toLowerCase();
+    return base === ".npmrc" || base === ".credentials.json";
+  })) return true;
+  const targets = ownedAuthHosts(home, env).flatMap((owned) => [owned, real(owned) ?? owned]);
   if (seen.some((candidate) => targets.includes(candidate))) return true;
   return seen.some(wireguardConfig);
 }
 
 const namedInShell = (path: string, home: string, env: Env): boolean =>
-  inTunnelDir(path) || (isFile(path) && credentialPath(path, home, env));
+  isFile(path) && credentialPath(path, home, env);
 
 const KEYS_FILTER = /^\s*(?:(?:\.[A-Za-z_][\w-]*)+\s*\|\s*)?keys(?:_unsorted)?\s*$/;
 
@@ -138,6 +145,11 @@ function inCommand(command: string, cwd: string, home: string, env: Env): string
   const words = segments(command).flatMap((segment, at) => (printsNoValue(commands[at] ?? []) ? [] : segment.map(({ text }) => text)));
   for (const word of [...words, ...redirected(command)]) {
     for (const piece of candidates(word)) {
+      const bare = expanded(piece, home);
+      if (bare.includes(sep) || bare.includes("/")) {
+        const direct = dirs.map((dir) => resolve(dir, bare)).find((path) => tunnelByName(path));
+        if (direct !== undefined) return direct;
+      }
       const found = namedPaths(piece, dirs, home).find((path) => namedInShell(path, home, env));
       if (found !== undefined) return found;
     }

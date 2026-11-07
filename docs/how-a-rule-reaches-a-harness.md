@@ -172,11 +172,12 @@ Each queued or refused call is a `job-queue` line in the dispatch log naming its
 ## A credential file is not read
 
 What a tool prints stays in the session transcript, so every Dispatcher refuses a call that reads a known credential file before anything else it does at that call.
-The files are `~/.npmrc` in any directory, `~/.pi/agent/auth.json`, `~/.codex/auth.json`, `~/.config/gh/hosts.yml` and `~/.claude/.credentials.json`, any file under a `wireguard` or `amneziawg` directory, and any other `.conf` holding an `[Interface]` with a `PrivateKey`.
-Each owning tool moves its own location with its own directory variable, namely `PI_CODING_AGENT_DIR`, `CODEX_HOME`, `GH_CONFIG_DIR` and `CLAUDE_CONFIG_DIR`.
+`~/.npmrc` and `.credentials.json` match in any directory, `~/.pi/agent/auth.json`, `~/.codex/auth.json` and `~/.config/gh/hosts.yml` match at the default location and at the location the owning directory variable names, a file under `/etc/wireguard` or `/etc/amneziawg` matches on its directory name, only `privatekey` and `*.key` match under any other directory named `wireguard` or `amneziawg`, and any other `.conf` holding an `[Interface]` with a `PrivateKey` matches on its text.
+A set owning directory variable adds a location and never replaces one.
 A project file named `auth.json` or `hosts.yml` passes, while a project `.npmrc` is refused.
 A path tool, such as `read`, `edit` or `grep`, is refused on the file location.
 A shell command is refused when a word in it, a redirect target or a piece of a quoted script names one of those files that exists, with `~`, `$HOME`, symlinks, globs and each `cd` and `pushd` in the command resolved against the directory the previous one left, where a bare `cd` resolves to the home directory.
+A word that holds a slash after expansion and names a tunnel file in this way is refused without a stat, while a bare word resolved against the working directory or a `cd` target still needs a stat.
 `jq keys`, `yq keys` and a command that reads only metadata, such as `ls`, `stat` or `test`, pass, unless a substitution runs inside them.
 pi blocks the call at `tool_call`, and Claude Code and Codex get a `deny` in their PreToolUse reply, which tells the model to read the file with its key names only.
 Each refusal is a `credential-read` line in the dispatch log naming the path.

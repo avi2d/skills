@@ -22,6 +22,7 @@ const files: Record<string, string> = {
   "work/README.md": "",
   "work/.npmrc": "//registry.npmjs.org/:_authToken=fixture\n",
   "work/hosts.yml": "all:\n",
+  "work/roles/wireguard/tasks/main.yml": "name: fixture\n",
 };
 for (const [file, text] of Object.entries(files)) {
   mkdirSync(dirname(join(home, file)), { recursive: true });
@@ -32,6 +33,10 @@ symlinkSync(join(home, ".npmrc"), join(work, "npmrc-link"));
 const read = (tool: string, input: Record<string, unknown>, env: Record<string, string | undefined> = {}): string | undefined =>
   credentialRead(tool, input, work, home, env);
 const bash = (command: string, env: Record<string, string | undefined> = {}): string | undefined => read("Bash", { command }, env);
+const readIn = (cwd: string, tool: string, input: Record<string, unknown>, env: Record<string, string | undefined> = {}): string | undefined =>
+  credentialRead(tool, input, cwd, home, env);
+const bashIn = (cwd: string, command: string, env: Record<string, string | undefined> = {}): string | undefined =>
+  readIn(cwd, "Bash", { command }, env);
 
 describe("a path tool", () => {
   test.each([
@@ -74,6 +79,10 @@ describe("a path tool", () => {
     expect(read("read", { path: "/etc/amneziawg/awg0.conf" })).toBe("/etc/amneziawg/awg0.conf");
   });
 
+  test("a project role under a wireguard directory is allowed, not refused for the directory name", () => {
+    expect(read("read", { path: "roles/wireguard/tasks/main.yml" })).toBeUndefined();
+  });
+
   test.each([
     ["read", { path: "nginx.conf" }],
     ["read", { path: "README.md" }],
@@ -99,7 +108,7 @@ describe("a shell command", () => {
     ["cat .npmrc", "work/.npmrc"],
     ["cat ~/wireguard/privatekey", "wireguard/privatekey"],
     ["cd ~/.config && cd gh && cat hosts.yml", ".config/gh/hosts.yml"],
-    ["cd && cat .npmrc", "work/.npmrc"],
+    ["cd && cat .codex/auth.json", ".codex/auth.json"],
     ["pushd ~/.config/gh && cat hosts.yml", ".config/gh/hosts.yml"],
     ["cp ~/.pi/agent/auth.json /tmp/a && cat /tmp/a", ".pi/agent/auth.json"],
     ['ls "$(cat ~/.npmrc)"', ".npmrc"],
@@ -115,6 +124,28 @@ describe("a shell command", () => {
 
   test("cat on a tunnel private key is refused without stat, not let through for missing conf suffix", () => {
     expect(bash("cat /etc/wireguard/privatekey")).toBe("/etc/wireguard/privatekey");
+  });
+
+  test("commands inside a wireguard directory pass, not refused for the directory name", () => {
+    const cwd = join(home, "wireguard");
+    expect(bashIn(cwd, "git status")).toBeUndefined();
+    expect(bashIn(cwd, "bun test")).toBeUndefined();
+  });
+
+  test("ls after cd into a tunnel directory passes, not refused for naming no file", () => {
+    expect(bash("cd /etc/wireguard && ls")).toBeUndefined();
+  });
+
+  test("a moved and a default credentials file are both refused, not replaced by the move", () => {
+    const main = join(home, ".claude-accounts/main");
+    mkdirSync(main, { recursive: true });
+    writeFileSync(join(main, ".credentials.json"), "{}");
+    expect(bash("cat ~/.claude/.credentials.json", { CLAUDE_CONFIG_DIR: main })).toBe(join(home, ".claude/.credentials.json"));
+    expect(bash(`cat ${main}/.credentials.json`, { CLAUDE_CONFIG_DIR: main })).toBe(join(main, ".credentials.json"));
+  });
+
+  test("a default codex auth is refused while CODEX_HOME points elsewhere, not replaced", () => {
+    expect(bash("cat ~/.codex/auth.json", { CODEX_HOME: join(home, "elsewhere/codex") })).toBe(join(home, ".codex/auth.json"));
   });
 
   test.each([
