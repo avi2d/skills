@@ -5,7 +5,7 @@ Date: 2026-11-07
 ## Status
 
 Accepted.
-Supersedes the decision of 0047 that Stryker mutates a sandbox copy, and the parts of 0049 and 0070 on `ignorePatterns`.
+Supersedes the decision of 0047 that Stryker mutates a sandbox copy, the parts of 0049 and 0070 on `ignorePatterns`, and the consequence of 0075 that the sandbox copy keeps a sweep off the checkout's `generated/` tree.
 
 ## Context
 

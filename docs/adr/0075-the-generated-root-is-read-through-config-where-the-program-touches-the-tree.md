@@ -6,6 +6,7 @@ Date: 2026-09-27
 
 Accepted.
 Amends 0047: `src/bundle.ts` reads `SKILLS_GENERATED_ROOT` through Effect's `Config` inside each Effect that writes or reads the emitted tree, and no longer resolves it into a `GENERATED_ROOT` constant when the module loads.
+Superseded in part by 0105: Stryker runs in place, so no sandbox copy keeps a sweep off the checkout's `generated/` tree and `bun run generate` rebuilds it after a run.
 
 ## Context
 
