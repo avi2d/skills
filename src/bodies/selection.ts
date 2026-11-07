@@ -2,7 +2,7 @@ import { Effect, type FileSystem } from "effect";
 import { kindAndName, type Body } from "./bodies";
 import type { IndexedProfile } from "../dispatcher/dispatch";
 import { MalformedSelection, type FileFailure } from "../platform/failures";
-import { isRecord } from "./fields";
+import { isRecord } from "../platform/fields";
 import { attempt } from "../platform/files";
 
 export const SELECTION_PATH = "selection.toml";
