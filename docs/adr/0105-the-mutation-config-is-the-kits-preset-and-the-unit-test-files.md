@@ -25,4 +25,4 @@ With it, `stryker run --mutate src/dispatcher/glob.ts` scored 94.51, the same sc
 
 - Stryker mutates the working tree in place, as the preset sets, and restores the files it mutated from its backup when the run ends.
 - A mutant can write into the `generated/` tree the harnesses load, and Stryker does not restore that tree, so `bun run generate` rebuilds it after a run.
-- `disableTypeChecks` is Stryker's default, so the files it instruments carry `// @ts-nocheck` while the run lasts.
+- `disableTypeChecks` is Stryker's default, so every file under `src/` carries `// @ts-nocheck` while the run lasts.
