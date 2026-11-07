@@ -88,7 +88,11 @@ describe("the redact hook on Claude Code's PostToolUse", () => {
     expect(JSON.stringify(reply)).not.toContain(key);
     expect(reply?.hookSpecificOutput?.updatedToolOutput).toEqual({
       type: "text",
-      file: { ...response.file, filePath: expect.stringContaining("[tool output withheld: "), content: "" },
+      file: {
+        ...response.file,
+        filePath: expect.stringContaining("[tool output withheld: "),
+        content: expect.stringContaining("[tool output withheld: "),
+      },
     });
   });
 });

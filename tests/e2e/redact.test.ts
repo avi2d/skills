@@ -65,16 +65,17 @@ describe("a credential in tool output", () => {
 });
 
 describe("a scan that cannot run", () => {
-  test("the output is withheld whole, so a credential is not passed through unscanned", async () => {
+  test("the output is withheld in every field but its shape markers, so a credential is not passed through unscanned", async () => {
     const token = githubToken();
     const was = process.env.HOME;
     process.env.HOME = temporary();
     try {
-      const scrubbed = await scrub([`GH_TOKEN=${token}`, "second"], BUNDLE);
+      const scrubbed = await scrub([`GH_TOKEN=${token}`, "text", "more output, unscanned"], BUNDLE);
       if (scrubbed.type !== "withheld") throw new Error(`the output came back ${scrubbed.type}`);
       expect(scrubbed.texts.join("")).not.toContain(token);
-      expect(scrubbed.texts[0]).toContain("gitleaks 8.30.1 is not installed");
-      expect(scrubbed.texts[1]).toBe("");
+      expect(scrubbed.texts[0]).toMatch(/gitleaks \S+ is not installed/);
+      expect(scrubbed.texts[1]).toBe("text");
+      expect(scrubbed.texts[2]).toMatch(/gitleaks \S+ is not installed/);
     } finally {
       process.env.HOME = was;
     }
