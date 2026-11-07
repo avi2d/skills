@@ -5,7 +5,7 @@
     "": {
       "name": "skills",
       "dependencies": {
-        "@avi2dg/checks": "0.71.0",
+        "@avi2dg/checks": "^0.71.0",
         "@effect/platform-bun": "4.0.0",
         "effect": "4.0.0",
       },
