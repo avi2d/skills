@@ -11,7 +11,7 @@ const TASK_ID_SOURCES = [
 const DECISION_KEY_SOURCES = [/(?<![\w-])key=([A-Za-z0-9][\w.:-]*[A-Za-z0-9])(?![.:-]*[\w/+~=@-])/g, /(?<![\w-])corr[= ]([0-9a-f]{8,})(?![\w+-])(?!\.[A-Za-z0-9])/g];
 const FACT_KINDS = ["url", "path", "taskId", "decisionKey"] as const;
 
-export type FactKind = (typeof FACT_KINDS)[number];
+type FactKind = (typeof FACT_KINDS)[number];
 
 export type ClassRetention = {
   readonly kind: FactKind;
