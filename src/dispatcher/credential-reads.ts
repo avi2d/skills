@@ -6,7 +6,15 @@ import { segments } from "./shell-words";
 
 const HOME = process.env.HOME ?? homedir();
 
-const NAMED = ["auth.json", "hosts.yml", ".credentials.json"];
+type Env = Record<string, string | undefined>;
+
+const ownedPaths = (home: string, env: Env): readonly string[] => {
+  const piDir = env.PI_CODING_AGENT_DIR || join(home, ".pi/agent");
+  const codexHome = env.CODEX_HOME || join(home, ".codex");
+  const ghDir = env.GH_CONFIG_DIR || join(home, ".config/gh");
+  const claudeDir = env.CLAUDE_CONFIG_DIR || join(home, ".claude");
+  return [join(piDir, "auth.json"), join(codexHome, "auth.json"), join(ghDir, "hosts.yml"), join(claudeDir, ".credentials.json")];
+};
 
 const TUNNEL_DIRS = ["wireguard", "amneziawg"];
 
@@ -34,12 +42,16 @@ function real(path: string): string | undefined {
   }
 }
 
-const isFile = (path: string): boolean => statSync(path, { throwIfNoEntry: false })?.isFile() ?? false;
+const isFile = (path: string): boolean => {
+  try {
+    return statSync(path, { throwIfNoEntry: false })?.isFile() ?? false;
+  } catch {
+    return false;
+  }
+};
 
 function inTunnelDir(path: string): boolean {
   const parts = path.split(sep);
-  const last = parts.at(-1) ?? "";
-  if (!last.toLowerCase().endsWith(".conf") && !GLOB.test(last)) return false;
   return parts.slice(0, -1).some((part) => TUNNEL_DIRS.includes(part.toLowerCase()));
 }
 
@@ -54,16 +66,17 @@ function wireguardConfig(path: string): boolean {
   }
 }
 
-function credentialPath(path: string, home: string): boolean {
+function credentialPath(path: string, home: string, env: Env): boolean {
   if (inTunnelDir(path)) return true;
-  const npmrc = join(home, ".npmrc");
-  return [path, real(path) ?? path].some(
-    (seen) => NAMED.includes(basename(seen)) || seen === npmrc || seen === real(npmrc) || wireguardConfig(seen),
-  );
+  const seen = [path, real(path) ?? path];
+  if (seen.some((candidate) => basename(candidate) === ".npmrc")) return true;
+  const targets = ownedPaths(home, env).flatMap((owned) => [owned, real(owned) ?? owned]);
+  if (seen.some((candidate) => targets.includes(candidate))) return true;
+  return seen.some(wireguardConfig);
 }
 
-// A shell word is as often a pattern or a message as a path, and only root can stat a file in a tunnel directory.
-const namedInShell = (path: string, home: string): boolean => inTunnelDir(path) || (isFile(path) && credentialPath(path, home));
+const namedInShell = (path: string, home: string, env: Env): boolean =>
+  inTunnelDir(path) || (isFile(path) && credentialPath(path, home, env));
 
 const KEYS_FILTER = /^\s*(?:(?:\.[A-Za-z_][\w-]*)+\s*\|\s*)?keys(?:_unsorted)?\s*$/;
 
@@ -111,34 +124,42 @@ function namedPaths(word: string, dirs: readonly string[], home: string): string
   });
 }
 
-function inCommand(command: string, cwd: string, home: string): string | undefined {
+function inCommand(command: string, cwd: string, home: string, env: Env): string | undefined {
   const commands = simpleCommands(command);
-  const dirs = [cwd, ...commands.flatMap(([program, target]) => (program === "cd" && target !== undefined ? [resolve(cwd, expanded(target, home))] : []))];
+  let current = cwd;
+  const dirs = [cwd];
+  for (const [program, ...rest] of commands) {
+    if (program === "cd" || program === "pushd") {
+      const target = rest.find((word) => !word.startsWith("-"));
+      current = target === undefined ? home : resolve(current, expanded(target, home));
+      dirs.push(current);
+    }
+  }
   const words = segments(command).flatMap((segment, at) => (printsNoValue(commands[at] ?? []) ? [] : segment.map(({ text }) => text)));
   for (const word of [...words, ...redirected(command)]) {
     for (const piece of candidates(word)) {
-      const found = namedPaths(piece, dirs, home).find((path) => namedInShell(path, home));
+      const found = namedPaths(piece, dirs, home).find((path) => namedInShell(path, home, env));
       if (found !== undefined) return found;
     }
   }
   return undefined;
 }
 
-function inPaths(paths: readonly string[], cwd: string, home: string): string | undefined {
+function inPaths(paths: readonly string[], cwd: string, home: string, env: Env): string | undefined {
   return paths
     .map((path) => resolve(cwd, expanded(path.startsWith("@") ? path.slice(1) : path, home)))
-    .find((path) => credentialPath(path, home));
+    .find((path) => credentialPath(path, home, env));
 }
 
-export function credentialRead(tool: string, input: Record<string, unknown>, cwd: string, home = HOME): string | undefined {
+export function credentialRead(tool: string, input: Record<string, unknown>, cwd: string, home = HOME, env: Env = process.env): string | undefined {
   const name = tool.toLowerCase();
-  if (name === "bash") return typeof input.command === "string" ? inCommand(input.command, cwd, home) : undefined;
+  if (name === "bash") return typeof input.command === "string" ? inCommand(input.command, cwd, home, env) : undefined;
   const keys = PATH_TOOLS[name] ?? [];
   const paths = keys.flatMap((key) => {
     const value = input[key];
     return typeof value === "string" ? [value] : [];
   });
-  return inPaths(paths, cwd, home);
+  return inPaths(paths, cwd, home, env);
 }
 
 export const refusedText = (path: string): string =>

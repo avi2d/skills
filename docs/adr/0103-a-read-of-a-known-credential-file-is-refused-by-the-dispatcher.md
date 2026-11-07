@@ -16,16 +16,20 @@ All three harnesses let a hook refuse a call before it runs: pi through the `too
 ## Decision
 
 `src/dispatcher/credential-reads.ts` decides whether a call reads a known credential file, and every Dispatcher bundles it and refuses that call before anything else it does at the call.
-A path tool, such as `read`, `edit` or `grep`, is refused by the file's name, whether or not the file exists, since the tool reports what it finds.
-A shell command is refused when a word in it, a redirect's target or a piece of a quoted script names a credential file that exists, relative to the working directory or a directory the command `cd`s to, with `~`, `$HOME`, symlinks and globs resolved.
-A file under a `wireguard` or `amneziawg` directory is refused by name, since only root can stat it, and any other `.conf` is refused when it holds an `[Interface]` with a `PrivateKey`.
-A command that prints no value of the file passes: `jq 'keys'` and `yq 'keys'`, and a command that reads only metadata, such as `ls`, `stat` or `test`, unless a substitution runs inside it.
-The refusal tells the model to read a credential file by its key names only, or to ask the tool that owns it, and the dispatch log records the path, never the file's text.
+A path tool, such as `read`, `edit` or `grep`, is refused on the file location, whether or not the file exists, since the tool reports what it finds.
+The locations are `~/.npmrc` in any directory, `~/.pi/agent/auth.json`, `~/.codex/auth.json`, `~/.config/gh/hosts.yml` and `~/.claude/.credentials.json`.
+Each owning tool moves its own location with its own directory variable, namely `PI_CODING_AGENT_DIR`, `CODEX_HOME`, `GH_CONFIG_DIR` and `CLAUDE_CONFIG_DIR`.
+A file under a `wireguard` or `amneziawg` directory is refused on its name, since only root can stat it, and any other `.conf` is refused when it holds an `[Interface]` with a `PrivateKey`.
+A shell command is refused when a word in it, a redirect target or a piece of a quoted script names a credential file that exists, relative to the working directory or a directory the command reaches with `cd` or `pushd`, with `~`, `$HOME`, symlinks and globs resolved.
+Each `cd` and `pushd` target resolves against the directory the previous one left, and a bare `cd` resolves to the home directory.
+A command that prints no value of the file passes, such as `jq keys` and `yq keys`, and a command that reads only metadata, such as `ls`, `stat` or `test`, unless a substitution runs inside it.
+The refusal tells the model to read a credential file with its key names only, or to ask the tool that owns it, and the dispatch log records the path, never the file text.
 The `credential-files` Rule says the same in every session, for every file that carries a secret and that the program does not name.
-The check is a guard over ordinary agent commands, not a shell parser, so a path built at run time, a recursive grep over a directory and a script that opens the file itself run as they would without the hook.
+The check guards ordinary agent commands, not a shell parser, so a path built at run time, a recursive grep over a directory and a script that opens the file itself run as they would without the hook.
 
 ## Consequences
 
 The listed files no longer reach a transcript through an ordinary read, and a test pins each shape refused and each let through.
-Redacting a value that reaches a tool's output some other way, and sweeping transcripts already written, are separate work.
-A project file named `auth.json` or `hosts.yml` is refused too, and is read by its keys or outside the session.
+Redacting a value that reaches a tool output some other way, and sweeping transcripts already written, are separate work.
+A project file named `auth.json` or `hosts.yml` passes, and is read outside the session.
+A project `.npmrc` is refused, since it holds a token.
