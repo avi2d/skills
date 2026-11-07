@@ -1,7 +1,7 @@
 import { SYNTAXES, refused } from "./comments";
 import type { Harness } from "./harness";
 import { proseRefused, readerOf } from "./prose";
-import { linterOf, typesRefused } from "./types";
+import { createTypesBudget, linterOf, typesRefused, type TypesBudget } from "./types";
 
 export const FORBIDS = ["comments", "prose", "types"] as const;
 export type Forbid = (typeof FORBIDS)[number];
@@ -27,7 +27,7 @@ export type Verdict = { refusals: string[] } | { unread: string };
 type Matcher = {
   // Nothing when the matchers do not read the file.
   namedAs: (file: Located) => string | undefined;
-  refuses: (path: string, after: string, added: ReadonlySet<number>) => Verdict;
+  refuses: (path: string, after: string, added: ReadonlySet<number>, budget: TypesBudget) => Verdict;
 };
 
 const MATCHERS: Record<Forbid, Matcher> = {
@@ -44,10 +44,7 @@ const MATCHERS: Record<Forbid, Matcher> = {
   },
   types: {
     namedAs: ({ before }) => (linterOf(before.onDisk) === undefined ? undefined : before.onDisk),
-    refuses: (path, after, added) => {
-      const found = typesRefused(path, after, added);
-      return Array.isArray(found) ? { refusals: found } : found;
-    },
+    refuses: (path, after, added, budget) => typesRefused(path, after, added, budget),
   },
 };
 
@@ -381,11 +378,11 @@ export function addedLines(before: string | undefined, after: string): Set<numbe
   return new Set(uncovered(before?.split(/\r?\n/) ?? [], numbered));
 }
 
-export function judged(forbid: Forbid, harness: Harness, change: Change): Verdict {
+export function judged(forbid: Forbid, harness: Harness, change: Change, budget: TypesBudget = createTypesBudget()): Verdict {
   const matcher = MATCHERS[forbid];
   const named = matcher.namedAs(change);
   if (named === undefined) return { refusals: [] };
   const write = placed(change, harness);
   if ("unplaced" in write) return { unread: write.unplaced };
-  return matcher.refuses(named, write.after, write.added);
+  return matcher.refuses(named, write.after, write.added, budget);
 }

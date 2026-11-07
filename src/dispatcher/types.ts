@@ -1,9 +1,15 @@
 import { spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, rmSync, rmdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { basename, dirname, extname, join, relative, sep } from "node:path";
 
 export const LINT_SECONDS = 5;
+
+export const TYPES_BUDGET_MS = 20_000;
+
+export type TypesBudget = { remainingMs: number };
+
+export const createTypesBudget = (): TypesBudget => ({ remainingMs: TYPES_BUDGET_MS });
 
 const TYPED = new Set([".ts", ".tsx"]);
 
@@ -44,12 +50,21 @@ const isDiagnostic = (value: unknown): value is Diagnostic =>
 
 const because = (e: unknown): string => (e instanceof Error ? e.message : String(e));
 
-export function linterOf(file: string): string | undefined {
+const rootsOf = new Map<string, string | undefined>();
+
+const rootOf = (file: string): string | undefined => {
   if (!TYPED.has(extname(file))) return undefined;
   for (let dir = dirname(file); ; dir = dirname(dir)) {
     if (existsSync(join(dir, ...OXLINT)) && existsSync(join(dir, ...DATA_SHAPE))) return dir;
     if (dirname(dir) === dir) return undefined;
   }
+};
+
+export function linterOf(file: string): string | undefined {
+  if (rootsOf.has(file)) return rootsOf.get(file);
+  const root = rootOf(file);
+  rootsOf.set(file, root);
+  return root;
 }
 
 const configFor = (root: string): object => ({
@@ -83,7 +98,8 @@ function findingsOf(report: string, after: string): Finding[] | undefined {
 }
 
 // oxlint reads no stdin, and a copy outside the project would resolve none of the file's imports.
-function linted(root: string, file: string, after: string): Finding[] | string {
+function linted(root: string, file: string, after: string, budget: TypesBudget): Finding[] | string {
+  if (budget.remainingMs < LINT_SECONDS * 1000) return `types budget of ${TYPES_BUDGET_MS / 1000}s spent`;
   const dir = dirname(file);
   const copy = join(dir, `${basename(file, extname(file))}.skills-types-${process.pid}${extname(file)}`);
   const scratch = mkdtempSync(join(tmpdir(), "skills-types-"));
@@ -94,7 +110,9 @@ function linted(root: string, file: string, after: string): Finding[] | string {
     made = mkdirSync(dir, { recursive: true });
     writeFileSync(copy, after);
     const args = ["-c", config, "--type-aware", "--disable-nested-config", "--no-ignore", "--format", "json", copy];
+    const started = Date.now();
     const run = spawnSync(join(root, ...OXLINT), args, { cwd: root, encoding: "utf8", timeout: LINT_SECONDS * 1000, killSignal: "SIGKILL" });
+    budget.remainingMs -= Date.now() - started;
     if (run.error !== undefined) return "code" in run.error && run.error.code === "ETIMEDOUT" ? `oxlint ran past ${LINT_SECONDS}s` : `cannot run oxlint: ${run.error.message}`;
     const said = (run.stderr.trim() || run.stdout.trim()).split("\n")[0] || `exit code ${run.status}`;
     return findingsOf(run.stdout, after) ?? `oxlint failed: ${said}`;
@@ -102,18 +120,34 @@ function linted(root: string, file: string, after: string): Finding[] | string {
     return because(e);
   } finally {
     rmSync(copy, { force: true });
-    if (made !== undefined) rmSync(made, { recursive: true, force: true });
+    if (made !== undefined) {
+      for (let at = dir; ; at = dirname(at)) {
+        try {
+          rmdirSync(at);
+        } catch {
+          break;
+        }
+        if (at === made) break;
+      }
+    }
     rmSync(scratch, { recursive: true, force: true });
   }
 }
 
-export function typesRefused(file: string, after: string, added: ReadonlySet<number>): string[] | { unread: string } {
+export function typesRefused(
+  file: string,
+  after: string,
+  added: ReadonlySet<number>,
+  budget: TypesBudget = createTypesBudget(),
+): { refusals: string[] } | { unread: string } {
   const root = linterOf(file);
-  if (root === undefined || added.size === 0) return [];
+  if (root === undefined || added.size === 0) return { refusals: [] };
   const named = relative(root, file).split(sep).join("/");
-  const found = linted(root, file, after);
+  const found = linted(root, file, after, budget);
   if (typeof found === "string") return { unread: `${found} on ${named}` };
-  return found
-    .filter(({ first, last }) => [...added].some((line) => line >= first && line <= last))
-    .map(({ rule, message, first }) => `${named}:${first} \`${rule}\`: ${message}${INSTEAD[rule]}`);
+  return {
+    refusals: found
+      .filter(({ first, last }) => [...added].some((line) => line >= first && line <= last))
+      .map(({ rule, message, first }) => `${named}:${first} \`${rule}\`: ${message}${INSTEAD[rule]}`),
+  };
 }
