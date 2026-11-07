@@ -110,3 +110,4 @@ Read those before acting on the record they revise.
 | [0100](0100-codex-reviewer-ruling-moved.md) | Codex reviewer ruling moved | Retired | [0102](0102-the-main-account-reviews-first-codex-second-and-the-second-account-last-with-no-floor.md) |
 | [0101](0101-claude-reviewer-ruling-moved.md) | Claude reviewer ruling moved | Retired | [0102](0102-the-main-account-reviews-first-codex-second-and-the-second-account-last-with-no-floor.md) |
 | [0102](0102-the-main-account-reviews-first-codex-second-and-the-second-account-last-with-no-floor.md) | The main account reviews first, Codex second, and the second account last with no floor | Accepted |  |
+| [0103](0103-a-read-of-a-known-credential-file-is-refused-by-the-dispatcher.md) | A read of a known credential file is refused by the Dispatcher | Accepted |  |

@@ -31,6 +31,7 @@ import { START, type RunState } from "./run-state";
 import { logLine } from "./dispatch-log";
 import { releasedText } from "./verdict";
 import { VERIFY_BUDGET_SECONDS, fingerprint, sight, unreadableNote, verify } from "./gate";
+import { credentialRead, refusedLine, refusedText } from "./credential-reads";
 import type { Change, ClaudeEdit } from "./forbid";
 import { steer, steeredLine } from "./job-queue";
 import { readProject } from "./project";
@@ -237,6 +238,11 @@ function onContext(dispatcher: Dispatcher, event: ContextEvent): ContextEventRes
 }
 
 function onToolCall(dispatcher: Dispatcher, event: ToolCallEvent, ctx: ExtensionContext): ToolCallEventResult | undefined {
+  const credential = credentialRead(event.toolName, event.input, ctx.cwd);
+  if (credential !== undefined) {
+    note(dispatcher, refusedLine(credential));
+    return { block: true, reason: refusedText(credential) };
+  }
   const writing = isToolCallEventType("write", event) || isToolCallEventType("edit", event);
   const changes: Change[] = [];
   if (isToolCallEventType("write", event)) {

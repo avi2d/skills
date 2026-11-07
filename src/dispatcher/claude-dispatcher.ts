@@ -14,6 +14,7 @@ import {
   named,
   note,
   readPayload,
+  refusedRead,
   sessionOf,
   type Hook,
   type HookAdapter,
@@ -186,7 +187,9 @@ if (import.meta.main) {
   const slot = Number(part);
   const carrier = name === "UserPromptSubmit" && slot >= 2;
   if (isHook(name)) {
-    await answer(payload, () => (carrier ? carry(payload, slot) : handle(CLAUDE, readIndex(INDEX_PATH, "claude-code"), name, payload)));
+    await answer(payload, async () =>
+      carrier ? carry(payload, slot) : (refusedRead(name, payload) ?? handle(CLAUDE, readIndex(INDEX_PATH, "claude-code"), name, payload)),
+    );
     if (name === "UserPromptSubmit" && !carrier) release(payload);
   }
 }

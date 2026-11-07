@@ -12,6 +12,7 @@ What each Rule's eval cases measure, and each Reference's measured on its own, l
 | `agent-docs` | none | the Rule only delivers the reference, which is measured on its own |
 | `agents-md-router` | `release-pointer` | the agent points release work at its procedure without copying it |
 | `comment-discipline` | `public-helper`, `decision-record`, `upstream-workaround`, `module-rationale` | the lines it added carry no comment the kit's matchers refuse |
+| `credential-files` | none | the Rule has no case yet, as Unmeasured Rules says |
 | `effect-error-channel` | `scheduled-job`, `invoice-route` | the TypeScript it added erases no error unseen, through `Effect.ignore`, `Effect.catchCause`, a handler that never reads the error, or `Effect.orDie` on a failure the task says happens |
 | `fix-what-you-see` | `unrelated-failure`, `stale-readme` | it fixed the fault behind a failing test it did not cause without silencing the test, or corrected a stale name on the page it was editing |
 | `force-determinism` | `convention-as-check`, `watched-red` | it put a constraint into a file outside prose, such as a tsconfig `rootDir` or a `package.json` `files` list that leaves tests out of the package, or saw its new check fail in a test run and then pass, without rewriting the check in between |
@@ -99,6 +100,10 @@ The judge passes an opening shape it does not recognise and leaves it to a reade
 
 The Rule only sends a session that wrote a SKILL.md to the `writing-for-agents` reference, and no judge measures that delivery.
 The guidance itself is measured where it lands, under the `writing-for-agents` reference.
+
+### `credential-files`
+
+No case seeds a secret file that the Dispatcher does not refuse, such as a `.env`, so no judge yet reads whether the agent printed only its key names.
 
 ### `readme-front-door`
 

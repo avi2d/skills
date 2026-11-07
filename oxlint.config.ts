@@ -9,6 +9,7 @@ export default defineConfig({
       // A Dispatcher bundles these for a host that runs without Effect.
       "src/dispatcher/claude-dispatcher.ts",
       "src/dispatcher/codex-dispatcher.ts",
+      "src/dispatcher/credential-reads.ts",
       "src/dispatcher/dispatch-log.ts",
       "src/dispatcher/dispatch.ts",
       "src/dispatcher/forbid.ts",
