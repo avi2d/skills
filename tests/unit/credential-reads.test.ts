@@ -16,7 +16,9 @@ const files: Record<string, string> = {
   ".config/gh/hosts.yml": "github.com:\n",
   ".claude/.credentials.json": "{}",
   "vpn/office.conf": TUNNEL,
+  "vpn/wg0.conf": TUNNEL,
   "wireguard/privatekey": "fixture\n",
+  "wireguard/wg0.key": "fixture\n",
   "work/nginx.conf": "server {}\n",
   "work/notes.md": "auth.json is where pi keeps its token\n",
   "work/README.md": "",
@@ -138,10 +140,20 @@ describe("a shell command", () => {
     expect(bash("cat /etc/amnezia/amneziawg/awg0.conf")).toBe("/etc/amnezia/amneziawg/awg0.conf");
   });
 
-  test("a recursive glob over the tree returns fast, not stalled walking node_modules", () => {
-    const started = Date.now();
-    expect(bash("rg -g '**/*.ts' foo")).toBeUndefined();
-    expect(Date.now() - started).toBeLessThan(500);
+  test("cat on a tunnel config named by glob is refused, not let through for the star", () => {
+    expect(bash("cat ~/vpn/wg*.conf")).toBe(join(home, "vpn/wg0.conf"));
+  });
+
+  test("cat on a tunnel config named by single-character glob is refused, not let through for the mark", () => {
+    expect(bash("cat ~/vpn/w?0.conf")).toBe(join(home, "vpn/wg0.conf"));
+  });
+
+  test("cat on tunnel configs named by braces is refused, not let through for the list", () => {
+    expect(bash("cat ~/vpn/{wg0,wg1}.conf")).toBe(join(home, "vpn/wg0.conf"));
+  });
+
+  test("cat on a tunnel key named by glob is refused, not let through for the mark", () => {
+    expect(bashIn(join(home, "wireguard"), "cat wg0.k?y")).toBe(join(home, "wireguard/wg0.key"));
   });
 
   test("commands inside a wireguard directory pass, not refused for the directory name", () => {

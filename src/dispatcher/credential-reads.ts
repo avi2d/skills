@@ -1,6 +1,6 @@
 import { globSync, readFileSync, realpathSync, statSync } from "node:fs";
 import { homedir } from "node:os";
-import { basename, join, matchesGlob, resolve, sep } from "node:path";
+import { basename, join, resolve, sep } from "node:path";
 import { simpleCommands } from "./job-queue";
 import { segments } from "./shell-words";
 
@@ -120,24 +120,11 @@ function candidates(word: string): string[] {
   return [word, ...(value === undefined ? [] : [value]), ...pieces].filter((piece) => piece !== "");
 }
 
-const REFUSED_SAMPLES = [".npmrc", ".credentials.json", "auth.json", "hosts.yml", "privatekey", "sample.key", "sample.conf"];
-
-function globMayRefuse(pattern: string): boolean {
-  const last = pattern.split(/[\\/]/).at(-1) ?? pattern;
-  return REFUSED_SAMPLES.some((sample) => {
-    try {
-      return matchesGlob(sample, last);
-    } catch {
-      return true;
-    }
-  });
-}
-
 function namedPaths(word: string, dirs: readonly string[], home: string): string[] {
   const path = expanded(word, home);
   return dirs.flatMap((dir) => {
     const at = resolve(dir, path);
-    if (!GLOB.test(path) || !globMayRefuse(path)) return [at];
+    if (!GLOB.test(path)) return [at];
     try {
       const matched = globSync(path, { cwd: dir }).map((found) => resolve(dir, found));
       return matched.length > 0 ? matched : [at];

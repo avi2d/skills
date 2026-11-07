@@ -23,7 +23,7 @@ The owning variables are `PI_CODING_AGENT_DIR`, `CODEX_HOME` and `GH_CONFIG_DIR`
 A file below a `wireguard` or `amneziawg` directory that sits below an `etc` directory is refused on its directory name, since only root can stat it.
 Under any other directory named `wireguard` or `amneziawg`, only `privatekey` and `*.key` match on the file name.
 Any other `.conf` is refused when it holds an `[Interface]` with a `PrivateKey`.
-A shell command is refused when a word in it, a redirect target or a piece of a quoted script names a credential file that exists, relative to the working directory or a directory the command reaches with `cd` or `pushd`, with `~`, `$HOME`, symlinks and globs resolved.
+A shell command is refused when a word in it, a redirect target or a piece of a quoted script names a credential file that exists, relative to the working directory or a directory the command reaches with `cd` or `pushd`, with `~`, `$HOME` and symlinks resolved and every glob expanded.
 A word that holds a slash after `~` and `$HOME` expansion and names a tunnel file in this way is refused without a stat, while a bare word resolved against the working directory or a `cd` target still needs a stat.
 Each `cd` and `pushd` target resolves against the directory the previous one left, and a bare `cd` resolves to the home directory.
 A command that prints no value of the file passes, such as `jq keys` and `yq keys`, and a command that reads only metadata, such as `ls`, `stat` or `test`, unless a substitution runs inside it.
@@ -38,3 +38,4 @@ Redacting a value that reaches a tool output some other way, and sweeping transc
 A project file named `auth.json` or `hosts.yml` passes, and is read outside the session.
 A project `.npmrc` is refused, since it holds a token.
 Commands such as `git add`, `git rm` and `echo` that name a project `.npmrc` are refused too, and the captain runs those.
+A recursive glob is expanded in full before the command runs, so its check costs time in proportion to the tree it walks.
