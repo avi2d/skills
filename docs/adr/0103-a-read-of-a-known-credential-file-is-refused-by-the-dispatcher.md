@@ -39,3 +39,4 @@ A project file named `auth.json` or `hosts.yml` passes, and is read outside the 
 A project `.npmrc` is refused, since it holds a token.
 Commands such as `git add`, `git rm` and `echo` that name a project `.npmrc` are refused too, and the captain runs those.
 A recursive glob is expanded in full before the command runs, so its check costs time in proportion to the tree it walks.
+When a tunnel path sits inside a quoted string that holds whitespace, the refusal and the dispatch log name the whole string resolved against the working directory instead of the tunnel path itself.

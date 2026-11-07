@@ -134,8 +134,7 @@ function namedPaths(word: string, dirs: readonly string[], home: string): string
   });
 }
 
-function inCommand(command: string, cwd: string, home: string, env: Env): string | undefined {
-  const commands = simpleCommands(command);
+function visitedDirs(commands: readonly (readonly string[])[], cwd: string, home: string): string[] {
   let current = cwd;
   const dirs = [cwd];
   for (const [program, ...rest] of commands) {
@@ -145,15 +144,25 @@ function inCommand(command: string, cwd: string, home: string, env: Env): string
       dirs.push(current);
     }
   }
+  return dirs;
+}
+
+function refusalForPiece(piece: string, dirs: readonly string[], home: string, env: Env): string | undefined {
+  const bare = expanded(piece, home);
+  if (bare.includes(sep) || bare.includes("/")) {
+    const direct = dirs.map((dir) => resolve(dir, bare)).find((path) => tunnelByName(path));
+    if (direct !== undefined) return direct;
+  }
+  return namedPaths(piece, dirs, home).find((path) => namedInShell(path, home, env));
+}
+
+function inCommand(command: string, cwd: string, home: string, env: Env): string | undefined {
+  const commands = simpleCommands(command);
+  const dirs = visitedDirs(commands, cwd, home);
   const words = segments(command).flatMap((segment, at) => (printsNoValue(commands[at] ?? []) ? [] : segment.map(({ text }) => text)));
   for (const word of [...words, ...redirected(command)]) {
     for (const piece of candidates(word)) {
-      const bare = expanded(piece, home);
-      if (bare.includes(sep) || bare.includes("/")) {
-        const direct = dirs.map((dir) => resolve(dir, bare)).find((path) => tunnelByName(path));
-        if (direct !== undefined) return direct;
-      }
-      const found = namedPaths(piece, dirs, home).find((path) => namedInShell(path, home, env));
+      const found = refusalForPiece(piece, dirs, home, env);
       if (found !== undefined) return found;
     }
   }
