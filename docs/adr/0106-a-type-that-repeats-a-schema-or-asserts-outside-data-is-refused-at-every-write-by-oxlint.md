@@ -28,6 +28,7 @@ A finding is refused when its span covers a line the write adds, so an assertion
 The refusal names the file, the line and the rule, then gives oxlint's message and what to do instead.
 
 oxlint runs for 5 s at most.
+The matcher spends 20 s on oxlint at most across the changes of one tool call, and a file reached after that is logged `unjudged`.
 Judging one file measured 0.26 s to 0.46 s, inside the hook's 10 s budget.
 
 ## What was considered and rejected

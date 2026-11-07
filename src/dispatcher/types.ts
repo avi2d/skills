@@ -2,6 +2,7 @@ import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, mkdtempSync, rmSync, rmdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { basename, dirname, extname, join, relative, sep } from "node:path";
+import type { Verdict } from "./forbid";
 
 export const LINT_SECONDS = 5;
 
@@ -50,21 +51,12 @@ const isDiagnostic = (value: unknown): value is Diagnostic =>
 
 const because = (e: unknown): string => (e instanceof Error ? e.message : String(e));
 
-const rootsOf = new Map<string, string | undefined>();
-
-const rootOf = (file: string): string | undefined => {
+export function linterOf(file: string): string | undefined {
   if (!TYPED.has(extname(file))) return undefined;
   for (let dir = dirname(file); ; dir = dirname(dir)) {
     if (existsSync(join(dir, ...OXLINT)) && existsSync(join(dir, ...DATA_SHAPE))) return dir;
     if (dirname(dir) === dir) return undefined;
   }
-};
-
-export function linterOf(file: string): string | undefined {
-  if (rootsOf.has(file)) return rootsOf.get(file);
-  const root = rootOf(file);
-  rootsOf.set(file, root);
-  return root;
 }
 
 const configFor = (root: string): object => ({
@@ -134,12 +126,7 @@ function linted(root: string, file: string, after: string, budget: TypesBudget):
   }
 }
 
-export function typesRefused(
-  file: string,
-  after: string,
-  added: ReadonlySet<number>,
-  budget: TypesBudget = createTypesBudget(),
-): { refusals: string[] } | { unread: string } {
+export function typesRefused(file: string, after: string, added: ReadonlySet<number>, budget: TypesBudget): Verdict {
   const root = linterOf(file);
   if (root === undefined || added.size === 0) return { refusals: [] };
   const named = relative(root, file).split(sep).join("/");

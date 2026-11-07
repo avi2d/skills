@@ -59,6 +59,7 @@ When no repository holds a doc at the path a write names, the doc is judged at i
 `typescript-best-practices` carries it.
 A `.ts` or `.tsx` file is judged only when a directory above it holds oxlint and the kit, and a finding is refused when it covers a line the write adds.
 An oxlint that fails or runs past 5 s lets the write through, logged `unjudged`, as docs/adr/0106 records.
+The matcher spends 20 s on oxlint at most across the changes of one tool call, and a file reached after that is logged `unjudged`.
 
 ## `consults`
 

@@ -44,7 +44,7 @@ const MATCHERS: Record<Forbid, Matcher> = {
   },
   types: {
     namedAs: ({ before }) => (linterOf(before.onDisk) === undefined ? undefined : before.onDisk),
-    refuses: (path, after, added, budget) => typesRefused(path, after, added, budget),
+    refuses: typesRefused,
   },
 };
 
