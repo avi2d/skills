@@ -1,13 +1,13 @@
 const URL = /https?:\/\/[\w[][^\s<>"'`)\]}|]*/g;
-const PATH = /(?<![\w@.~/-])(?:~\/|\.{1,2}\/|\/)?[\w.@+-]+(?:\/[\w.@+-]+)+\/?/g;
+const PATH = /(?<![\w@.~/-])(?:~\/|\.{1,2}\/|\/)?[\w.@+-]+(?:\/[\w.@+-]+)+\/?(?![~=/?&#%])/g;
 const EXTENSION = /\.[A-Za-z][A-Za-z0-9]{0,5}$/;
 const TASK_ID_SOURCES = [
-  /state\/([a-z0-9][a-z0-9.-]*[a-z0-9])\.(?:status|inbox)\b/g,
-  /\bfm\/([a-z0-9][a-z0-9.-]*[a-z0-9])/g,
+  /(?<![\w./-])state\/([a-z0-9][a-z0-9.-]*[a-z0-9])\.(?:status|inbox)(?![A-Za-z0-9_+/-])(?!\.[A-Za-z0-9])/g,
+  /(?<![\w./-])fm\/([a-z0-9][a-z0-9.-]*[a-z0-9])(?![A-Za-z0-9_+/-])(?!\.[A-Za-z0-9])/g,
   /\/tmp\/fm-([a-z0-9][a-z0-9.-]*[a-z0-9])\//g,
-  /(?<![0-9A-Za-z.-])(01[0-9A-HJKMNP-TV-Z]{24})(?![0-9A-Za-z-])(?!\.[A-Za-z0-9])/g,
+  /(?<![0-9A-Za-z.-])(01[0-9A-HJKMNP-TV-Z]{24})(?![A-Za-z0-9_+-])(?!\.[A-Za-z0-9])/g,
 ];
-const DECISION_KEY_SOURCES = [/(?<![\w-])key=([A-Za-z0-9][\w.:-]*[A-Za-z0-9])/g, /\bcorr[= ]([0-9a-f]{8,})\b/g];
+const DECISION_KEY_SOURCES = [/(?<![\w-])key=([A-Za-z0-9][\w.:-]*[A-Za-z0-9])(?![\w/+~=@-])/g, /(?<![\w-])corr[= ]([0-9a-f]{8,})(?![\w+-])(?!\.[A-Za-z0-9])/g];
 const FACT_KINDS = ["url", "path", "taskId", "decisionKey"] as const;
 
 export type FactKind = (typeof FACT_KINDS)[number];
@@ -63,6 +63,11 @@ function known(text: string, patterns: readonly RegExp[]): string[] {
   return [...new Set(patterns.flatMap((pattern) => matchesOf(text, pattern)))].filter((value) => value.length >= 4);
 }
 
+function groundedIn(cleanedSummary: string, patterns: readonly RegExp[], ids: readonly string[]): string[] {
+  const wanted = new Set(ids);
+  return known(cleanedSummary, patterns).filter((id) => wanted.has(id));
+}
+
 type Source = {
   readonly urls: readonly string[];
   readonly paths: readonly string[];
@@ -72,22 +77,26 @@ type Source = {
 
 function sourceOf(text: string): Source {
   const plain = cleaned(text);
+  const urls = matchesOf(plain, URL).map(trimTail);
+  const paths = matchesOf(plain.replace(URL, " "), PATH)
+    .map(trimTail)
+    .map((path) => path.replace(/\/$/, ""))
+    .filter((path) => path.length >= 4)
+    .filter((path) => /^(?:\/|~\/|\.{1,2}\/)/.test(path) || EXTENSION.test(path));
   return {
-    urls: urlsIn(plain),
-    paths: pathsIn(plain),
+    urls,
+    paths,
     taskIds: known(plain, TASK_ID_SOURCES),
-    decisionKeys: known(plain, DECISION_KEY_SOURCES),
+    decisionKeys: known(plain.replace(URL, " "), DECISION_KEY_SOURCES),
   };
 }
 
 function summaryTaskIds(summary: string, taskIds: readonly string[]): string[] {
-  const ids = new Set(taskIds);
-  return [...new Set(known(cleaned(summary), TASK_ID_SOURCES))].filter((id) => ids.has(id));
+  return groundedIn(cleaned(summary), TASK_ID_SOURCES, taskIds);
 }
 
 function summaryDecisionKeys(summary: string, decisionKeys: readonly string[]): string[] {
-  const ids = new Set(decisionKeys);
-  return [...new Set(known(cleaned(summary), DECISION_KEY_SOURCES))].filter((key) => ids.has(key));
+  return groundedIn(cleaned(summary).replace(URL, " "), DECISION_KEY_SOURCES, decisionKeys);
 }
 
 function factsOf(summary: string, source: Source): Fact[] {
@@ -95,13 +104,12 @@ function factsOf(summary: string, source: Source): Fact[] {
   const paths = [...new Set(pathsIn(summary))].filter((path) => source.paths.includes(path));
   const taskIds = summaryTaskIds(summary, source.taskIds);
   const decisionKeys = summaryDecisionKeys(summary, source.decisionKeys);
-  const facts: Fact[] = [
+  return [
     ...urls.map((value) => ({ kind: "url" as const, value })),
     ...paths.map((value) => ({ kind: "path" as const, value })),
     ...taskIds.map((value) => ({ kind: "taskId" as const, value })),
     ...decisionKeys.map((value) => ({ kind: "decisionKey" as const, value })),
   ];
-  return [...new Map(facts.map((fact) => [fact.kind + "\0" + fact.value, fact])).values()];
 }
 
 function keptBy(fact: Fact, others: readonly Fact[]): boolean {
@@ -111,7 +119,7 @@ function keptBy(fact: Fact, others: readonly Fact[]): boolean {
 function poolOf(recordedFacts: readonly Fact[], candidateFacts: readonly Fact[]): Fact[] {
   const pool = [...recordedFacts];
   for (const fact of candidateFacts) {
-    if (!pool.some((other) => other.kind === fact.kind && other.value === fact.value)) pool.push(fact);
+    if (!keptBy(fact, pool)) pool.push(fact);
   }
   return pool;
 }

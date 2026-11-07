@@ -202,6 +202,55 @@ describe("retentionOf", () => {
     expect(byKind(retention).get("path")).toEqual({ pooled: 2, recorded: 1, candidate: 1 });
     expect(retention.lost).toEqual([{ kind: "path", value: "src/foo.ts" }]);
   });
+  test("fm/alpha_beta does not keep alpha", () => {
+    const source = "state/alpha.status";
+    const recorded = ["## Goal", "- Task fm/alpha."].join("\n");
+    for (const longer of ["fm/alpha_beta.", "fm/alphaV2.", "fm/alpha+fix."]) {
+      const candidate = ["## Goal", "- Task " + longer].join("\n");
+      const retention = retentionOf(recorded, candidate, source);
+      expect(byKind(retention).get("taskId")).toEqual({ pooled: 1, recorded: 1, candidate: 0 });
+      expect(retention.lost).toEqual([{ kind: "taskId", value: "alpha" }]);
+    }
+  });
+  test("key=deploy.v1/next does not keep deploy.v1", () => {
+    const source = "user: set key=deploy.v1";
+    const recorded = ["## Goal", "- Use key=deploy.v1."].join("\n");
+    for (const longer of ["key=deploy.v1/next.", "key=deploy.v1+next."]) {
+      const candidate = ["## Goal", "- Use " + longer].join("\n");
+      const retention = retentionOf(recorded, candidate, source);
+      expect(byKind(retention).get("decisionKey")).toEqual({ pooled: 1, recorded: 1, candidate: 0 });
+      expect(retention.lost).toEqual([{ kind: "decisionKey", value: "deploy.v1" }]);
+    }
+  });
+  test("corr=abcdef12-retry does not keep abcdef12", () => {
+    const source = "user: corr=abcdef12";
+    const recorded = ["## Goal", "- Use corr=abcdef12."].join("\n");
+    for (const longer of ["corr=abcdef12-retry.", "corr=abcdef12.5."]) {
+      const candidate = ["## Goal", "- Use " + longer].join("\n");
+      const retention = retentionOf(recorded, candidate, source);
+      expect(byKind(retention).get("decisionKey")).toEqual({ pooled: 1, recorded: 1, candidate: 0 });
+      expect(retention.lost).toEqual([{ kind: "decisionKey", value: "abcdef12" }]);
+    }
+  });
+  test("ULID_2 does not keep the ULID", () => {
+    const id = "01ARZ3NDEKTSV4RRFFQ69G5FAV";
+    const source = "user: resumed " + id;
+    const recorded = ["## Goal", "- Session " + id + "."].join("\n");
+    const candidate = ["## Goal", "- Session " + id + "_2."].join("\n");
+    const retention = retentionOf(recorded, candidate, source);
+    expect(byKind(retention).get("taskId")).toEqual({ pooled: 1, recorded: 1, candidate: 0 });
+    expect(retention.lost).toEqual([{ kind: "taskId", value: id }]);
+  });
+  test("/tmp/run/out~ does not keep /tmp/run/out", () => {
+    const source = "tool: wrote /tmp/run/out ok";
+    const recorded = ["## Goal", "- Edited /tmp/run/out."].join("\n");
+    for (const longer of ["/tmp/run/out~.", "/tmp/run/out=2."]) {
+      const candidate = ["## Goal", "- Edited " + longer].join("\n");
+      const retention = retentionOf(recorded, candidate, source);
+      expect(byKind(retention).get("path")).toEqual({ pooled: 1, recorded: 1, candidate: 0 });
+      expect(retention.lost).toEqual([{ kind: "path", value: "/tmp/run/out" }]);
+    }
+  });
   test("a key without its marker is not a fact", () => {
     const source = "user: set key=deploy.v1_old";
     const recorded = ["## Goal", "- Use deploy.v1_old."].join("\n");
