@@ -182,6 +182,8 @@ const contextFor = (overrides: Partial<Context>): Context => ({
   isError: false,
   durationMs: undefined,
   outputPad: 1,
+  keyText: () => "ctrl+o",
+  keyHint: (_keybinding, description) => `ctrl+o ${description}`,
   ...overrides,
 });
 
