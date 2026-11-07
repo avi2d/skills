@@ -22,7 +22,7 @@ To install skills:
    It writes `generated/` and checks that pi loads the checkout's extensions in a temporary home.
    Then it links each path below to the checkout, or writes it from the checkout where the list says so.
 
-`bun run link` prints the version and path of the pi it checked, such as `pi 1.2.0 at /usr/local/bin/pi loaded every extension in a temporary $HOME first`.
+`bun run link` prints the version and path of the pi it checked, such as `pi 1.5.0 at /usr/local/bin/pi loaded every extension in a temporary $HOME first`.
 It then ends with one line per path, such as `linked   ~/.claude/settings.json`, and exits 0.
 On a machine without pi, the line about pi reads `pi is not on $PATH, so no pi extension was load-checked`.
 These paths in $HOME then belong to the checkout:
