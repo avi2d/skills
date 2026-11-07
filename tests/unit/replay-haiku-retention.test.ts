@@ -286,6 +286,23 @@ describe("retentionOf", () => {
   test("a path is not truncated before ? # ~", () => {
     expect(pathsIn("is it src/foo.ts? see docs/guide.md#install and /tmp/run/out~")).toEqual(["src/foo.ts"]);
   });
+  test("an absolute inbox path does not silently drop its task", () => {
+    const inbox = "/Users/someone/Projects/firstmate/state/pi-session-names.inbox";
+    const source = "steering inbox " + inbox;
+    const recorded = ["## Goal", "- Worker for " + inbox + ", task fm/pi-session-names."].join("\n");
+    const candidate = ["## Goal", "- Worker for the inbox."].join("\n");
+    const retention = retentionOf(recorded, candidate, source);
+    expect(byKind(retention).get("taskId")).toEqual({ pooled: 1, recorded: 1, candidate: 0 });
+    expect(retention.lost).toContainEqual({ kind: "taskId", value: "pi-session-names" });
+  });
+  test("a ./state path does not silently drop its task", () => {
+    const source = "tool: cat ./state/alpha.status ok";
+    const recorded = ["## Goal", "- Task fm/alpha from ./state/alpha.status."].join("\n");
+    const candidate = ["## Goal", "- Task done."].join("\n");
+    const retention = retentionOf(recorded, candidate, source);
+    expect(byKind(retention).get("taskId")).toEqual({ pooled: 1, recorded: 1, candidate: 0 });
+    expect(retention.lost).toContainEqual({ kind: "taskId", value: "alpha" });
+  });
   test("a key without its marker is not a fact", () => {
     const source = "user: set key=deploy.v1_old";
     const recorded = ["## Goal", "- Use deploy.v1_old."].join("\n");
