@@ -56,7 +56,7 @@ Codex's is `generated/codex/dispatcher`, linked at `~/.codex/skills-dispatch` an
 Each bundle is a directory because pi loads extensions with jiti, which resolves a relative import from the path it was handed rather than from what that path points at.
 A single linked file cannot see its own siblings, so the generator gathers the adapter, the dispatch core and the index of Rules into one flat directory, and the suite fails if any module in it reaches outside.
 `src/dispatcher/pi-dispatcher.ts` sits beside `src/dispatcher/dispatch.ts` for the same reason, because a source laid out the way the bundle is needs no rewriting when it is copied.
-The two modules not taken from `src/` are `comments.ts` and `prose.ts`, the checks kit's own files under the names `src/dispatcher/comments.ts` and `src/dispatcher/prose.ts` re-export them by, so a Dispatcher refuses exactly what the kit's comment and docs gates refuse.
+The two modules not taken from `src/` are `comments.ts` and `prose.ts`, the checks kit's own files under the names `src/dispatcher/comments.ts` and `src/dispatcher/prose.ts` re-export them by, so a Dispatcher refuses what the kit's comment and docs gates refuse and `types.ts` runs the project's own oxlint as [Frontmatter fields](frontmatter.md#forbid) describes.
 
 ## Where dispatch logic goes
 
