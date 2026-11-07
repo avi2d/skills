@@ -1,4 +1,4 @@
-# 103. Tool output is scrubbed at the harness with the checks kit's gitleaks rules
+# 104. Tool output is scrubbed at the harness with the checks kit's gitleaks rules
 
 Date: 2026-11-07
 
