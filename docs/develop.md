@@ -120,6 +120,7 @@ The runner hands `bun.testFiles` to `bun test` verbatim and expands no glob.
 The out-of-process tests under `tests/e2e/` and everything under `tests/quarantine/` stay out.
 
 `inPlace` is the preset's true, so Stryker mutates the working tree, keeps a backup in `../.stryker-tmp` and restores the files from it when the run ends.
+Leave `src/` untouched until the run ends, since the restore overwrites an edit made during the run and a commit made during the run records mutated files.
 Each test process's preload generates into its own `generated-<pid>`, and generates nothing when the source resolves any other root.
 It sweeps a dead process's root by renaming it into its own root and removing it there, so no remove runs inside a directory another process reads.
 A unit test that writes, reconciles or checks a generated tree does it in a temporary repository of its own, and the one that checks the preload's output reads `generated-<pid>` by name rather than through the root the source resolves.
