@@ -42,8 +42,10 @@ export type Driven = {
   quit: () => Promise<void>;
   carried: () => Promise<string | undefined>;
   call: (tool: string, input: Record<string, unknown>) => Promise<unknown>;
-  result: (tool: string, input: Record<string, unknown>, isError?: boolean) => Promise<void>;
+  result: (tool: string, input: Record<string, unknown>, isError?: boolean, produced?: Produced) => Promise<unknown>;
 };
+
+type Produced = { content: readonly unknown[]; details?: unknown; structuredContent?: unknown };
 
 const sessions: Array<() => Promise<void>> = [];
 
@@ -172,8 +174,12 @@ export async function loadRaw(contents: string, options: LoadOptions = {}): Prom
       for (const handler of listeners.get("tool_call") ?? []) out = await handler({ type: "tool_call", toolName, toolCallId: "t1", input }, ctx);
       return out;
     },
-    result: async (toolName, input, isError = false) => {
-      await emit("tool_result", { type: "tool_result", toolName, toolCallId: "t1", input, content: [], isError, details: undefined });
+    result: async (toolName, input, isError = false, produced = { content: [] }) => {
+      let out: unknown;
+      for (const handler of listeners.get("tool_result") ?? []) {
+        out = await handler({ type: "tool_result", toolName, toolCallId: "t1", input, isError, details: undefined, ...produced }, ctx);
+      }
+      return out;
     },
     carried: async () => {
       await emit("before_agent_start", {});

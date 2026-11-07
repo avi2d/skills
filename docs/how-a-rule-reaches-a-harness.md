@@ -168,6 +168,30 @@ A queued job runs under the pueue daemon, outside any sandbox, so Codex queues o
 The Dispatcher reads that sandbox from the latest `turn_context` in the rollout, and runs the command as it is under any other sandbox or a rollout it cannot read.
 Each queued or refused call is a `job-queue` line in the dispatch log naming its groups, and never the command, which can carry a credential.
 
+## Tool output is scrubbed for credentials
+
+Every tool result is scanned with gitleaks against the checks kit's rules before the model or the transcript holds it.
+pi scans at `tool_result`, and Claude Code at `PostToolUse`, through the `redact` entry whose matcher is `*` in `harness/claude-code/settings.json`.
+`bun run generate` copies the kit's `gitleaks.toml` and the gitleaks version the kit pins into the pi and Claude Code bundles.
+`bun run link` installs that version where the kit's `checks-secrets` keeps it, under `~/.cache/avi2dg-checks/gitleaks/`.
+
+Each match becomes `[redacted: <rule>]`, and a match found under base64, hex or percent encoding takes the whole encoded run with it.
+A read also has its file scanned, so a rule that matches on a path redacts what the read returned.
+pi's result is rewritten in its content, details and structured content, so a codemode script gets the redacted result back.
+A result with nothing to redact is left as it was, and Claude Code gets no reply for it.
+Claude Code runs its `PostToolUse` hooks in parallel on the original output, so a reply that rewrote nothing could undo another's redaction.
+
+The scan fails closed.
+When gitleaks is missing, fails, or runs past 15 seconds, the result is replaced with a message saying it was withheld and why.
+
+Each redaction is a `redact <tool>: <rules>` line in the dispatch log, and each withheld result a `withhold <tool>: <why>` line, and neither holds the secret.
+
+Claude Code hands a failed call, such as a Bash command that exits non-zero, to `PostToolUseFailure`, which can add context but cannot rewrite the error text.
+So a credential in the output of a failed Claude Code call reaches the model and the transcript as it was.
+pi scans a failed call like any other.
+Codex output is not scanned.
+The `inspect-credentials-by-key` rule asks every session to look at a credential by its key names, which covers what the scan misses.
+
 ## The dispatch log
 
 Everything a Dispatcher does is appended to `~/.local/state/skills/dispatch.log`, including a Rule whose predicate could not be asked.

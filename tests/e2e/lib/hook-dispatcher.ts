@@ -4,6 +4,7 @@ import { tmpdir } from "node:os";
 import { basename, join } from "node:path";
 import { ENTRY, INDEX, bundle, type Bundle } from "../../../src/generate/bundle";
 import type { Index } from "../../../src/dispatcher/dispatch";
+import type { REDACT } from "../../../src/dispatcher/claude-dispatcher";
 import type { Hook } from "../../../src/dispatcher/hook-harness";
 import { valueOf } from "../../lib/effect";
 import { declaringRepo, scratchRepo, type Scratch } from "../gated-repo";
@@ -15,7 +16,7 @@ export type Fired = { reply: Reply | undefined; log: string[]; stderr: string };
 
 export type Driven = {
   home: string;
-  fire: (hook: Hook, payload: Record<string, unknown>, slot?: number, env?: Record<string, string>) => Promise<Fired>;
+  fire: (hook: Hook | typeof REDACT, payload: Record<string, unknown>, slot?: number, env?: Record<string, string>) => Promise<Fired>;
   log: () => string[];
 };
 
