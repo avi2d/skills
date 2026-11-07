@@ -31,8 +31,8 @@ no pull request on it, and both branches died on their first command.
 ### The finding
 
 Session `01a0471d-6f88-79a7-be26-d0facd35666c`. The pi session ran in
-`~/Projects/skills` on `main` while the work for #22 lived in
-`~/Projects/skills-22-probe-claude-bridge`. The branches reached
+`~/skills` on `main` while the work for #22 lived in
+`~/skills-22-probe-claude-bridge`. The branches reached
 PR #23 only because they were hand-spawned with the worktree as their working
 directory and the number written into the prompt. The generated script did
 neither.

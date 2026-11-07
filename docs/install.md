@@ -13,7 +13,9 @@ Install skills once on each machine whose harnesses should take their instructio
 
 To install skills:
 
-1. Clone `https://github.com/avi2d/skills` to `~/Projects/skills`, because every link the install makes points into the checkout, and `bun run link` links your own home only from there.
+1. Clone `https://github.com/avi2d/skills` to a checkout, because every link the install makes points into the checkout.
+   `bun run link` links your own home only from the checkout the guard in `src/generate/link.ts` names.
+   From any other copy it stops before it writes, so a worktree cannot repoint your harnesses into itself.
 1. From the root of the checkout, run `bun install`.
    It installs the dependencies and links the declared library sources under `repos/`.
 1. Run `bun run link`.

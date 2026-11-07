@@ -84,7 +84,7 @@ a `CHANGELOG.md` write, on all three.
 `global/AGENTS.md` is emptied to a one-line pointer once these three Rules are
 in the generated index for pi, Claude Code and Codex. It is emptied, not
 deleted: the links from `~/.pi/agent/AGENTS.md` and the harness config that
-reaches Claude Code and Codex live in `avi2d/dotfiles`, outside this
+reaches Claude Code and Codex live in the captain's dotfiles, outside this
 repository, and removing the file would dangle them.
 
 opencode reached no Body through the old mechanism either, has no Dispatcher,
