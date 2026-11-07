@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 import { Console, Effect, FileSystem, Path, Schema } from "effect";
-import { changedPaths, defaultBranch, git, rangeEnds, type Change } from "../node_modules/@avi2dg/checks/src/core/git.ts";
-import { runMain, Usage } from "../node_modules/@avi2dg/checks/src/core/main.ts";
+import { changedPaths, defaultBranch, git, rangeEnds, type Change } from "@avi2dg/checks/core/git.ts";
+import { runMain, Usage } from "@avi2dg/checks/core/main.ts";
 import { environmentOf, runFiles } from "./test-run.ts";
 
 const NAME = "test-fast";

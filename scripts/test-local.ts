@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 import { Effect } from "effect";
-import { git } from "../node_modules/@avi2dg/checks/src/core/git.ts";
-import { runMain, Usage } from "../node_modules/@avi2dg/checks/src/core/main.ts";
+import { git } from "@avi2dg/checks/core/git.ts";
+import { runMain, Usage } from "@avi2dg/checks/core/main.ts";
 import { environmentOf, runFiles } from "./test-run.ts";
 
 const NAME = "test-local";
