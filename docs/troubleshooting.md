@@ -33,7 +33,8 @@ Otherwise, fix the extension, or remove it from `harness/pi/settings.json`, or m
 
 ### `refusing to link the account's own home`
 
-`bun run link` links the home your account owns only from the checkout the guard in `src/generate/link.ts` names, so a worktree or a second clone cannot repoint your harnesses into itself.
+`bun run link` links your own home only from the checkout the guard in `src/generate/link.ts` names.
+From any other copy it stops before it writes, so a worktree cannot repoint your harnesses into itself.
 Run it from that checkout, or, to try a copy, give it a temporary home: `HOME=$(mktemp -d) bun run link`.
 
 ### Codex does not run the hooks
