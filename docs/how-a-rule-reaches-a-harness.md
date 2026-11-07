@@ -190,7 +190,6 @@ Claude Code hands a failed call, such as a Bash command that exits non-zero, to 
 So a credential in the output of a failed Claude Code call reaches the model and the transcript as it was.
 pi scans a failed call like any other.
 Codex output is not scanned.
-The `inspect-credentials-by-key` rule asks every session to look at a credential by its key names, which covers what the scan misses.
 
 ## The dispatch log
 

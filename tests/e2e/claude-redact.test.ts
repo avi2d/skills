@@ -73,4 +73,22 @@ describe("the redact hook on Claude Code's PostToolUse", () => {
     expect(JSON.stringify(reply)).not.toContain(token);
     expect(reply?.hookSpecificOutput?.updatedToolOutput).toEqual({ stdout: expect.stringContaining("[tool output withheld: "), stderr: "" });
   });
+
+  test("a withheld Read keeps its shape, so Claude Code keeps the rewrite", async () => {
+    const driven = await RIG.install(RIG.indexWith());
+    const key = wireguardKey();
+    const file = wireguardKeyFile(RIG.temporary("skills-cc-redact-withheld-"), key);
+    const response = { type: "text", file: { filePath: file, content: key, numLines: 1, startLine: 1, totalLines: 1 } };
+    const { reply } = await driven.fire(REDACT, {
+      hook_event_name: "PostToolUse",
+      tool_name: "Read",
+      tool_input: { file_path: file },
+      tool_response: response,
+    });
+    expect(JSON.stringify(reply)).not.toContain(key);
+    expect(reply?.hookSpecificOutput?.updatedToolOutput).toEqual({
+      type: "text",
+      file: { ...response.file, filePath: expect.stringContaining("[tool output withheld: "), content: "" },
+    });
+  });
 });

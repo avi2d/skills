@@ -110,8 +110,8 @@ describe("profile selection", () => {
 
   test("every configured profile resolves to the Rules it declared before", () => {
     const resolved = new Map(selection.profiles.map((profile) => [profile.name, profile.rules]));
-    expect(resolved.get("default")).toEqual(["comment-discipline", "fix-what-you-see", "prove-it-works", "typescript-best-practices", "agents-md-router", "readme-front-door", "inspect-credentials-by-key"]);
-    expect(resolved.get("muse-spark")).toEqual(["comment-discipline", "fix-what-you-see", "guard-the-context-window", "prove-it-works", "typescript-best-practices", "agents-md-router", "readme-front-door", "inspect-credentials-by-key", "writing-for-people"]);
+    expect(resolved.get("default")).toEqual(["comment-discipline", "fix-what-you-see", "prove-it-works", "typescript-best-practices", "agents-md-router", "readme-front-door"]);
+    expect(resolved.get("muse-spark")).toEqual(["comment-discipline", "fix-what-you-see", "guard-the-context-window", "prove-it-works", "typescript-best-practices", "agents-md-router", "readme-front-door", "writing-for-people"]);
     expect(resolved.get("gpt-6")).toEqual([
       "comment-discipline",
       "fix-what-you-see",
@@ -121,7 +121,6 @@ describe("profile selection", () => {
       "typescript-best-practices",
       "agents-md-router",
       "readme-front-door",
-      "inspect-credentials-by-key",
     ]);
     expect(resolved.get("claude-opus-5-5")).toEqual([
       "comment-discipline",
@@ -131,9 +130,8 @@ describe("profile selection", () => {
       "typescript-best-practices",
       "agents-md-router",
       "readme-front-door",
-      "inspect-credentials-by-key",
     ]);
-    expect(resolved.get("ollama-qwen")).toEqual(["guard-the-context-window", "prove-it-works", "agents-md-router", "readme-front-door", "inspect-credentials-by-key"]);
+    expect(resolved.get("ollama-qwen")).toEqual(["guard-the-context-window", "prove-it-works", "agents-md-router", "readme-front-door"]);
     expect(selection.profiles.find((profile) => profile.name === "gpt-6")?.models).toEqual([
       "openai-codex/gpt-6-luna",
       "openai/gpt-6-luna",

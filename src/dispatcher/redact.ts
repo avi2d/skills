@@ -181,11 +181,21 @@ function cut(texts: readonly string[], spans: readonly Span[]): string[] {
   });
 }
 
-const withheld = (texts: readonly string[], why: string): Scrubbed => ({
-  type: "withheld",
-  texts: texts.map((_, at) => (at === 0 ? `[tool output withheld: the secret scan could not run, so this output may hold a credential: ${why}]` : "")),
-  why,
-});
+const SHAPE = /^[a-z_]{1,24}$/;
+
+const withheld = (texts: readonly string[], why: string): Scrubbed => {
+  const message = `[tool output withheld: the secret scan could not run, so this output may hold a credential: ${why}]`;
+  let placed = false;
+  const kept = texts.map((text) => {
+    if (SHAPE.test(text)) return text;
+    if (!placed) {
+      placed = true;
+      return message;
+    }
+    return "";
+  });
+  return { type: "withheld", texts: placed ? kept : [message, ...kept.slice(1)], why };
+};
 
 // The texts are scanned as one, joined by newlines, so a finding's line numbers count across all of them.
 export async function scrub(texts: readonly string[], bundle: string, file?: string): Promise<Scrubbed> {

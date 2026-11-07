@@ -27,12 +27,17 @@ An unscanned result may hold the credential the scan exists to stop.
 A result with nothing to redact gets no reply in Claude Code.
 Claude Code runs its `PostToolUse` hooks in parallel on the original output, so an identity rewrite from this hook could undo a redaction made by another.
 
-Agent conduct stays a written rule beside the program: `inspect-credentials-by-key` asks a session to look at a credential by its key names, such as `jq 'keys'` or `gh auth status`.
-
 ## Consequences
 
 Claude Code's `PostToolUseFailure` can only add context, so the output of a failed call, such as a Bash command that exits non-zero, reaches the model and the transcript unscanned.
+This is a platform limit, and this change accepts it.
 Wrapping every Bash command so it exits zero would close that gap, but Claude Code checks permissions on the rewritten command, so an allowlist entry such as `Bash(git status:*)` would stop matching.
+
+The scan redacts what matches the rules.
+A bare key printed through Bash matches no rule without its file path, so `cat` of a key file passes through.
+The credential-read denial stops that read, and this scan stays on what matches the rules.
+
+A read is scanned as the whole file behind it, so a partial read of a very large file can run past the scan time limit and be withheld.
 
 Codex output is not scanned.
 

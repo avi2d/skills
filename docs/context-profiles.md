@@ -15,13 +15,12 @@ Tool definitions are absent from this repository and have no character size in t
 
 | Part | Characters | Share of Rules by characters |
 | --- | ---: | ---: |
-| rule: `comment-discipline` | 2671 | 30.7% |
-| rule: `fix-what-you-see` | 328 | 3.8% |
-| rule: `prove-it-works` | 2760 | 31.8% |
-| rule: `typescript-best-practices` | 1598 | 18.4% |
-| rule: `agents-md-router` | 311 | 3.6% |
-| rule: `readme-front-door` | 678 | 7.8% |
-| rule: `inspect-credentials-by-key` | 341 | 3.9% |
+| rule: `comment-discipline` | 2671 | 32.0% |
+| rule: `fix-what-you-see` | 328 | 3.9% |
+| rule: `prove-it-works` | 2760 | 33.1% |
+| rule: `typescript-best-practices` | 1598 | 19.1% |
+| rule: `agents-md-router` | 311 | 3.7% |
+| rule: `readme-front-door` | 678 | 8.1% |
 | skill: `build-and-review-motion` | 5794 |  |
 | skill: `develop-a-website` | 8421 |  |
 | skill: `grilling` | 3528 |  |
@@ -52,15 +51,14 @@ Tool definitions are absent from this repository and have no character size in t
 
 | Part | Characters | Share of Rules by characters |
 | --- | ---: | ---: |
-| rule: `comment-discipline` | 2671 | 27.0% |
-| rule: `fix-what-you-see` | 328 | 3.3% |
-| rule: `guard-the-context-window` | 353 | 3.6% |
-| rule: `prove-it-works` | 2760 | 27.9% |
-| rule: `typescript-best-practices` | 1598 | 16.1% |
-| rule: `agents-md-router` | 311 | 3.1% |
-| rule: `readme-front-door` | 678 | 6.8% |
-| rule: `inspect-credentials-by-key` | 341 | 3.4% |
-| rule: `writing-for-people` | 861 | 8.7% |
+| rule: `comment-discipline` | 2671 | 27.9% |
+| rule: `fix-what-you-see` | 328 | 3.4% |
+| rule: `guard-the-context-window` | 353 | 3.7% |
+| rule: `prove-it-works` | 2760 | 28.9% |
+| rule: `typescript-best-practices` | 1598 | 16.7% |
+| rule: `agents-md-router` | 311 | 3.3% |
+| rule: `readme-front-door` | 678 | 7.1% |
+| rule: `writing-for-people` | 861 | 9.0% |
 | skill: `build-and-review-motion` | 5794 |  |
 | skill: `develop-a-website` | 8421 |  |
 | skill: `grilling` | 3528 |  |
@@ -91,15 +89,14 @@ Tool definitions are absent from this repository and have no character size in t
 
 | Part | Characters | Share of Rules by characters |
 | --- | ---: | ---: |
-| rule: `comment-discipline` | 2671 | 28.3% |
-| rule: `fix-what-you-see` | 328 | 3.5% |
-| rule: `force-determinism` | 647 | 6.9% |
+| rule: `comment-discipline` | 2671 | 29.4% |
+| rule: `fix-what-you-see` | 328 | 3.6% |
+| rule: `force-determinism` | 647 | 7.1% |
 | rule: `git-hygiene` | 100 | 1.1% |
-| rule: `prove-it-works` | 2760 | 29.3% |
-| rule: `typescript-best-practices` | 1598 | 16.9% |
-| rule: `agents-md-router` | 311 | 3.3% |
-| rule: `readme-front-door` | 678 | 7.2% |
-| rule: `inspect-credentials-by-key` | 341 | 3.6% |
+| rule: `prove-it-works` | 2760 | 30.4% |
+| rule: `typescript-best-practices` | 1598 | 17.6% |
+| rule: `agents-md-router` | 311 | 3.4% |
+| rule: `readme-front-door` | 678 | 7.5% |
 | skill: `build-and-review-motion` | 5794 |  |
 | skill: `develop-a-website` | 8421 |  |
 | skill: `grilling` | 3528 |  |
@@ -130,14 +127,13 @@ Tool definitions are absent from this repository and have no character size in t
 
 | Part | Characters | Share of Rules by characters |
 | --- | ---: | ---: |
-| rule: `comment-discipline` | 2671 | 30.4% |
-| rule: `fix-what-you-see` | 328 | 3.7% |
+| rule: `comment-discipline` | 2671 | 31.6% |
+| rule: `fix-what-you-see` | 328 | 3.9% |
 | rule: `git-hygiene-co-author` | 112 | 1.3% |
-| rule: `prove-it-works` | 2760 | 31.4% |
-| rule: `typescript-best-practices` | 1598 | 18.2% |
-| rule: `agents-md-router` | 311 | 3.5% |
-| rule: `readme-front-door` | 678 | 7.7% |
-| rule: `inspect-credentials-by-key` | 341 | 3.9% |
+| rule: `prove-it-works` | 2760 | 32.6% |
+| rule: `typescript-best-practices` | 1598 | 18.9% |
+| rule: `agents-md-router` | 311 | 3.7% |
+| rule: `readme-front-door` | 678 | 8.0% |
 | skill: `build-and-review-motion` | 5794 |  |
 | skill: `develop-a-website` | 8421 |  |
 | skill: `grilling` | 3528 |  |
@@ -168,11 +164,10 @@ Tool definitions are absent from this repository and have no character size in t
 
 | Part | Characters | Share of Rules by characters |
 | --- | ---: | ---: |
-| rule: `guard-the-context-window` | 353 | 7.9% |
-| rule: `prove-it-works` | 2760 | 62.1% |
-| rule: `agents-md-router` | 311 | 7.0% |
-| rule: `readme-front-door` | 678 | 15.3% |
-| rule: `inspect-credentials-by-key` | 341 | 7.7% |
+| rule: `guard-the-context-window` | 353 | 8.6% |
+| rule: `prove-it-works` | 2760 | 67.3% |
+| rule: `agents-md-router` | 311 | 7.6% |
+| rule: `readme-front-door` | 678 | 16.5% |
 | skill: `build-and-review-motion` | 5794 |  |
 | skill: `develop-a-website` | 8421 |  |
 | skill: `grilling` | 3528 |  |
