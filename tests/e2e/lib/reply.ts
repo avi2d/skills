@@ -11,6 +11,7 @@ const Reply = Schema.Struct({
       permissionDecision: Schema.optionalKey(Schema.String),
       permissionDecisionReason: Schema.optionalKey(Schema.String),
       updatedInput: Schema.optionalKey(Schema.Record(Schema.String, Schema.Unknown)),
+      updatedToolOutput: Schema.optionalKey(Schema.Unknown),
     }),
   ),
 });

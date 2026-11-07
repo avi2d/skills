@@ -11,6 +11,7 @@ import { CREW_DISPATCH } from "./machine-files";
 import { noMistakesConfigUnder } from "./no-mistakes-config";
 import { machineOn, type Machine } from "./machine";
 import { piLoads, type PiLoad } from "./preflight";
+import { installScanner } from "./secret-scanner";
 import { main } from "../platform/platform";
 
 // Bun's userInfo().homedir reads $HOME, so only the passwd record names the home a temporary $HOME cannot stand in for.
@@ -282,6 +283,7 @@ if (import.meta.main) {
         return;
       }
       const { load, outcomes } = installed;
+      console.log(`gitleaks at ${yield* installScanner}, which the Dispatchers scan tool output with`);
       console.log(
         load.state === "loaded"
           ? `pi ${load.pi.version} at ${load.pi.path} loaded every extension in a temporary $HOME first`

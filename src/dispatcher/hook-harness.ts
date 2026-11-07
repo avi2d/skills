@@ -128,7 +128,7 @@ const PAYLOAD_TEXT = [
   "to_model",
 ] as const;
 
-export type Payload = { [K in (typeof PAYLOAD_TEXT)[number]]?: string } & { tool_input?: Record<string, unknown> };
+export type Payload = { [K in (typeof PAYLOAD_TEXT)[number]]?: string } & { tool_input?: Record<string, unknown>; tool_response?: unknown };
 
 export function readPayload(raw: string): Payload {
   let parsed: unknown;
@@ -144,6 +144,7 @@ export function readPayload(raw: string): Payload {
     if (typeof value === "string") payload[key] = value;
   }
   if (isRecord(parsed.tool_input)) payload.tool_input = parsed.tool_input;
+  if (parsed.tool_response !== undefined) payload.tool_response = parsed.tool_response;
   return payload;
 }
 
@@ -210,7 +211,7 @@ function promptEvent(payload: Payload, { files, gate, project }: Lookups): Event
   };
 }
 
-function readOf(payload: Payload): string[] {
+export function readOf(payload: Payload): string[] {
   const path = payload.tool_input?.file_path;
   if (payload.tool_name !== "Read" || typeof path !== "string") return [];
   try {

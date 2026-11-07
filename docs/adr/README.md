@@ -111,3 +111,4 @@ Read those before acting on the record they revise.
 | [0101](0101-claude-reviewer-ruling-moved.md) | Claude reviewer ruling moved | Retired | [0102](0102-the-main-account-reviews-first-codex-second-and-the-second-account-last-with-no-floor.md) |
 | [0102](0102-the-main-account-reviews-first-codex-second-and-the-second-account-last-with-no-floor.md) | The main account reviews first, Codex second, and the second account last with no floor | Accepted |  |
 | [0103](0103-a-read-of-a-known-credential-file-is-refused-by-the-dispatcher.md) | A read of a known credential file is refused by the Dispatcher | Accepted |  |
+| [0104](0104-tool-output-is-scrubbed-at-the-harness-with-the-checks-kits-gitleaks-rules.md) | Tool output is scrubbed at the harness with the checks kit's gitleaks rules | Accepted |  |
