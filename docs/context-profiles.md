@@ -85,7 +85,7 @@ Tool definitions are absent from this repository and have no character size in t
 
 ## gpt-6
 
-Models: `openai-codex/gpt-6-luna`, `openai/gpt-6-luna`, `openai-codex/gpt-6.1-sol`, `openai/gpt-6.1-sol`.
+Models: `openai-codex/gpt-6-luna`, `openai/gpt-6-luna`, `openai-codex/gpt-6.1-sol`, `openai/gpt-6.1-sol`, `openai/gpt-6-astra`, `openai/gpt-6.1-terra`.
 Tools: set by the harness.
 Tool definitions are absent from this repository and have no character size in this table.
 

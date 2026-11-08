@@ -47,7 +47,7 @@ const malformed = (file: string, problem: string) => new MalformedRecord({ messa
 
 const FENCE = "---";
 
-const afterFrontMatter = (lines: readonly string[]): readonly string[] => {
+export const afterFrontMatter = (lines: readonly string[]): readonly string[] => {
   if (lines[0] !== FENCE) return lines;
   const closed = lines.indexOf(FENCE, 1);
   return closed === -1 ? lines : lines.slice(closed + 1);
