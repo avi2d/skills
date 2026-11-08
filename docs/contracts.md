@@ -74,7 +74,7 @@ Codex trusts a hook by its hash, so installing or changing the file also needs o
 firstmate is not a harness this repository serves, and the files are kept here only so that a file git-ignored in firstmate's own checkout has a history.
 `bun run generate` writes each dispatch file from `src/generate/crew-dispatch-config.ts`, which holds each machine's rules.
 It writes the three pins from `src/generate/firstmate-pins.ts`.
-`src/generate/crew-dispatch.ts` holds the schema, which keeps every harness, model, effort and provider to the values firstmate can run.
+`src/generate/crew-dispatch.ts` holds the schema, which keeps every harness, model, effort, provider and `claude_account` to the values firstmate can run.
 It also holds the five task kinds both machines share, each with one fixed `when` and one fixed description.
 A shared rule names only its kind and its candidates, and a machine's own rule, such as the Mac's, carries its own `when` and description.
 A description says what a rule is for and why, names no model or effort, and stays out of the written file.
