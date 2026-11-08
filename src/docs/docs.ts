@@ -45,6 +45,14 @@ const CITED = /(?<![\w#])\d{4}(?!\d)/g;
 
 const malformed = (file: string, problem: string) => new MalformedRecord({ message: `${RECORDS}/${file} ${problem}` });
 
+const FENCE = "---";
+
+const afterFrontMatter = (lines: readonly string[]): readonly string[] => {
+  if (lines[0] !== FENCE) return lines;
+  const closed = lines.indexOf(FENCE, 1);
+  return closed === -1 ? lines : lines.slice(closed + 1);
+};
+
 const statusOf = (lines: readonly string[]): string | undefined => {
   const start = lines.indexOf("## Status");
   if (start === -1) return undefined;
@@ -59,7 +67,7 @@ export const parseRecord = Effect.fnUntraced(function* (
 ): Effect.fn.Return<DecisionRecord, MalformedRecord> {
   const filed = FILED.exec(file)?.[1];
   if (filed === undefined) return yield* malformed(file, "is not named as a four-digit number and a kebab-case title");
-  const lines = text.split("\n");
+  const lines = afterFrontMatter(text.split("\n"));
   const title = HEADING.exec(lines[0] ?? "")?.[1];
   if (title === undefined) return yield* malformed(file, "does not open with a `# <number>. <title>` heading");
   const status = statusOf(lines);

@@ -1,3 +1,6 @@
+---
+governs: [src/generate/no-mistakes-config.ts, tests/unit/machine-files.test.ts]
+---
 # 102. The main account reviews first, Codex second, and the second account last with no floor
 
 Date: 2026-11-03
