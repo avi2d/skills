@@ -34,7 +34,7 @@ It also fails a setup step whose Bun is not the kit's fleet version, so `.bun-ve
 It reports that result as the `commitlint` status through the shared `commitlint-status` action, and a dispatched run reports its result on the head commit through the shared `head-status` action.
 A pull request that touches only top-level Markdown and Markdown under `docs/` skips `bun run typecheck`, `bun run test` and their setup, and still lints its title, builds, lints, runs `tests/e2e/fleet-names.test.ts` and reports.
 Any other change runs `tests/e2e/fleet-names.test.ts` only inside `bun run test`.
-A push to main starts no `ci.yml` run, and the release pull request dispatched run is the first run to check the merged tree.
+A push to main starts no `ci.yml` run, and the release pull request's dispatched run is the first run to check the merged tree.
 
 `bun run test` is the kit's `checks-test`, which runs `bun test --randomize` with one worker per machine core and prints the seed that reproduces a failure.
 `bun run test:local` runs the whole unit and e2e tiers through `scripts/test-local.ts`, with the same worker count.
