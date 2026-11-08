@@ -61,6 +61,24 @@ describe("the account's own home", () => {
     }
   });
 
+  test("is refused to a linked worktree of a bare repository without naming the bare directory", async () => {
+    const { home, discard } = await account();
+    const bareRoot = await mkdtemp(join(tmpdir(), "skills-bare-"));
+    try {
+      const bare = join(bareRoot, "bare.git");
+      const wt = join(bareRoot, "wt");
+      await Bun.$`git clone --quiet --bare ${clone} ${bare}`.quiet();
+      await Bun.$`git -C ${bare} worktree add --quiet --detach ${wt}`.quiet();
+      const said = await saidBy(asAccount(home, link(`${wt}/`, home)));
+      expect(said).toMatch(/linked worktree of a bare repository/);
+      expect(said).not.toContain(bare);
+      expect(await readdir(home)).toEqual([]);
+    } finally {
+      await rm(bareRoot, { recursive: true, force: true });
+      await discard();
+    }
+  });
+
   test("is refused to a copy git does not check out before it generates, when it is installed", async () => {
     const { home, discard } = await account();
     try {

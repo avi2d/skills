@@ -146,11 +146,14 @@ const refuseAccountHomeFromWorktree = Effect.fnUntraced(function* (
     return yield* notCheckedOut;
   }
   const listed = yield* git(repo, ["worktree", "list", "--porcelain"]);
-  const mainCheckout = Option.match(listed, {
-    onNone: () => commonDir,
-    onSome: (ran) => ran.stdout.split("\n")[0]?.replace(/^worktree /, "") ?? commonDir,
-  });
-  return yield* refused(`a linked worktree; run it from the main checkout \`${mainCheckout}\``);
+  const lines = Option.isSome(listed) ? listed.value.stdout.split("\n") : [];
+  const end = lines.indexOf("");
+  const firstRecord = end === -1 ? lines : lines.slice(0, end);
+  const first = firstRecord[0];
+  const mainCheckout = first?.startsWith("worktree ") ? first.replace(/^worktree /, "") : undefined;
+  if (mainCheckout && !firstRecord.includes("bare"))
+    return yield* refused(`a linked worktree; run it from the main checkout \`${mainCheckout}\``);
+  return yield* refused("a linked worktree of a bare repository; clone the repository and run it from the clone");
 });
 
 const linked = Effect.fnUntraced(function* (dest: string, to: string): Effect.fn.Return<LinkState, FileFailure, FileSystem.FileSystem> {
