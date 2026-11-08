@@ -1,7 +1,7 @@
 import * as BunCrypto from "@effect/platform-bun/BunCrypto";
 import { Effect, type FileSystem } from "effect";
-import { cacheRoot } from "../../node_modules/@avi2dg/checks/src/dependencies/cache-root.ts";
-import { pinnedGitleaks } from "../../node_modules/@avi2dg/checks/src/delivery/gitleaks.ts";
+import { cacheRoot } from "@avi2dg/checks/dependencies/cache-root.ts";
+import { pinnedGitleaks } from "@avi2dg/checks/delivery/gitleaks.ts";
 import { SCANNER_CONFIG, SCANNER_PIN } from "../dispatcher/redact";
 import { UnloadableBundle, type FileFailure } from "../platform/failures";
 import { attempt } from "../platform/files";
