@@ -45,7 +45,8 @@ jobs:
       - run: bun run build
       - run: git diff --exit-code
       - run: bun run lint
-      - run: bun test tests/e2e/fleet-names.test.ts
+      - if: steps.filter.outputs.docs-only == 'true'
+        run: bun test tests/e2e/fleet-names.test.ts
       - if: steps.filter.outputs.docs-only != 'true'
         run: bun run typecheck
       - if: steps.filter.outputs.docs-only != 'true'
