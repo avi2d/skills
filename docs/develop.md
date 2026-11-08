@@ -32,7 +32,7 @@ Each workflow in `.github/workflows/` is owned by this repository, and `checks-c
 It also fails a setup step whose Bun is not the kit's fleet version, so `.bun-version` moves only with a kit release that moves the fleet.
 `ci.yml` also lints a pull request's title as a conventional commit, because a squash merge makes the title the commit subject.
 It reports that result as the `commitlint` status through the shared `commitlint-status` action, and a dispatched run reports its result on the head commit through the shared `head-status` action.
-A pull request that touches only top-level Markdown and Markdown under `docs/` skips `bun run typecheck`, `bun run test` and their setup, and still lints its title, builds, lints and reports.
+A pull request that touches only top-level Markdown and Markdown under `docs/` skips `bun run typecheck`, `bun run test` and their setup, and still lints its title, builds, lints, runs `tests/e2e/fleet-names.test.ts` and reports.
 
 `bun run test` is the kit's `checks-test`, which runs `bun test --randomize` with one worker per machine core and prints the seed that reproduces a failure.
 `bun run test:local` runs the whole unit and e2e tiers through `scripts/test-local.ts`, with the same worker count.
@@ -65,6 +65,11 @@ No schedule or workflow runs them.
 
 `@avi2dg/checks` comes from the public npm registry by semver range, so a clone, a worktree and CI all install the same tree with nothing beside them.
 `tests/e2e/toolchain.test.ts` refuses a `file:` dependency, and a repository dependency that names anything but a commit.
+
+`tests/e2e/fleet-names.test.ts` fails a tracked file that names a machine, an account, a fleet tool or a generic setup path more often than `tests/fixtures/fleet-names.json` allows.
+That file holds each file's count today, and a change that removes a name lowers its count, because the test also fails a count above what the file holds.
+A private names file adds owner-specific names to the same scan with counts in `fleet-names-allow.json` beside it, and the suite scans only the public names when the default names file is absent and fails naming the path when `$SKILLS_FLEET_NAMES_FILE` names a file that does not exist.
+The suite reads that file from `$SKILLS_FLEET_NAMES_FILE` when that variable names it, else from `skills/fleet-names.txt` under `$XDG_CONFIG_HOME` or `~/.config`.
 
 `bun run typecheck` is `tsc --noEmit` plus the Effect language service's diagnostics, configured in `tsconfig.json`.
 Outside the tests, `evals/`, `harness/` and the modules a Dispatcher bundles, the Effect overrides in `oxlint.config.ts` and `tsconfig.json` hold the code to Effect.
