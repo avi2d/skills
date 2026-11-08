@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, test } from "bun:test";
 import { AssistantMessageComponent, initTheme, Theme, type ToolRenderers } from "@earendil-works/pi-coding-agent";
-import { type Component, type TUI, TuiAltScreen, TuiMainScreen } from "@earendil-works/pi-tui";
+import { type Component, type TUI, TuiAltScreen, TuiMainScreen, visibleWidth } from "@earendil-works/pi-tui";
 import {
   bashRenderer,
   commandHeader,
@@ -321,6 +321,29 @@ describe("styleReply", () => {
   test("leaves a message that goes on to call a tool as pi draws it", () => {
     const toolTurn = message([{ type: "text", text: "Checking." }, { type: "toolCall", id: "1", name: "bash", arguments: { command: "ls" } }], "toolUse");
     expect(rendered(toolTurn, false).styled).toBe(false);
+  });
+
+  test("keeps one edge and one lost column, without throwing at a narrow width, however often pi refreshes a styled reply", () => {
+    const restore = patchReplies(AssistantMessageComponent.prototype, (component) => styleReply(component, terminalDefaultTheme));
+    try {
+      const component = new AssistantMessageComponent(undefined, true);
+      component.updateContent(reply, false);
+      for (let refresh = 0; refresh < 50; refresh++) {
+        styleReply(component, terminalDefaultTheme);
+        component.updateContent(reply, false);
+        component.invalidate();
+      }
+      const banded = (width: number): string[] => component.render(width).filter((line) => line.includes(EDGE));
+      expect(banded(40)).toHaveLength(3);
+      for (const width of [40, 8]) {
+        for (const line of banded(width)) {
+          expect(line.split(EDGE)).toHaveLength(2);
+          expect(visibleWidth(line)).toBe(width);
+        }
+      }
+    } finally {
+      restore?.();
+    }
   });
 
   test("falls back to pi's look, without throwing, when the component's shape changes", () => {
