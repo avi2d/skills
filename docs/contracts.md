@@ -74,13 +74,14 @@ Codex trusts a hook by its hash, so installing or changing the file also needs o
 firstmate is not a harness this repository serves, and the files are kept here only so that a file git-ignored in firstmate's own checkout has a history.
 `bun run generate` writes each dispatch file from `src/generate/crew-dispatch-config.ts`, which holds each machine's rules.
 It writes the three pins from `src/generate/firstmate-pins.ts`.
-`src/generate/crew-dispatch.ts` holds the schema, which keeps every harness, model, effort and provider to the values firstmate can run.
+`src/generate/crew-dispatch.ts` holds the schema, which keeps every harness, model, effort, provider and `claude_account` to the values firstmate can run.
 It also holds the five task kinds both machines share, each with one fixed `when` and one fixed description.
 A shared rule names only its kind and its candidates, and a machine's own rule, such as the Mac's, carries its own `when` and description.
 A description says what a rule is for and why, names no model or effort, and stays out of the written file.
 Change a rule there and regenerate, because `tests/unit/machine-files.test.ts` and `bun run generate --check` fail on a committed file that differs from what the source writes.
 Both files set `array_order` to `preference`, so firstmate takes the first candidate that quota-axi shows usable.
 A Haiku 5.5 candidate and a Muse candidate each carry a `floor` on the `all_models` scope of their provider, so firstmate skips each while that scope holds under 15%.
+Every Claude candidate carries `main` in `claude_account`, which `src/generate/claude-accounts.ts` names `MAIN_ACCOUNT`, so firstmate launches it with `--claude-account`.
 GPT-6 Astra at high follows Opus 5.5 in the bounded investigation rule and the unknown cause rule.
 GPT-6.1 Terra at high follows Muse in the two clearly specified implementation rules.
 Both spend the `codex` provider and carry no floor.
