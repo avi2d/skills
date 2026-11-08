@@ -1,3 +1,6 @@
+---
+kind: explanation
+---
 # Vision
 
 skills holds the instructions for coding agents, written once and delivered to pi, Claude Code and Codex.
