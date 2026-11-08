@@ -56,7 +56,7 @@ test("a copy edit that keeps the subtler tells fails, and one that clears them p
   expect(judged(plainOverview, "docs/overview.md", before, "# Import ledger entries\n\nRun the import.\n")).toBe("unjudged");
 });
 
-test("a refusal recorded in the README fails, and one recorded in VISION.md passes", () => {
+test("a refusal kept only outside VISION.md fails, and a duplicated principle fails", () => {
   const vision = "# Vision\n\nLedger stays a small explicit tool.\n";
   const refusal = "Plugin support is refused: plugins hide data flow, which breaks the explicit over implicit principle.\n";
   const owned = verdictOf(whatGoesWhere, run([], [{ path: "VISION.md", before: vision, after: `${vision}${refusal}` }]));
@@ -69,6 +69,17 @@ test("a refusal recorded in the README fails, and one recorded in VISION.md pass
     ]),
   );
   expect(stray.outcome).toBe("fail");
+  expect(verdictOf(whatGoesWhere, run([], [{ path: "README.md", before: "# ledger\n", after: `# ledger\n\n${refusal}` }])).outcome).toBe("fail");
+  expect(verdictOf(whatGoesWhere, run([], [{ path: "AGENTS.md", before: "# Agent notes\n", after: `# Agent notes\n\n${refusal}` }])).outcome).toBe("fail");
+  const principle = "Explicit over implicit is our guiding principle.\n";
+  const duplicated = verdictOf(
+    whatGoesWhere,
+    run([], [
+      { path: "VISION.md", before: vision, after: `${vision}${refusal}` },
+      { path: "AGENTS.md", before: "# Agent notes\n", after: `# Agent notes\n\n${principle}` },
+    ]),
+  );
+  expect(duplicated.outcome).toBe("fail");
   expect(verdictOf(whatGoesWhere, run([], [{ path: "VISION.md", before: vision, after: vision }])).outcome).toBe("unjudged");
   expect(verdictOf(whatGoesWhere, run([], [])).outcome).toBe("unjudged");
 });
