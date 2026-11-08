@@ -38,7 +38,7 @@ function scannerIn(bundle: string): Scanner {
   const version = isRecord(pin) ? pin.gitleaks : undefined;
   if (typeof version !== "string") throw new Error(`${join(bundle, SCANNER_PIN)} names no gitleaks version: regenerate it`);
   // node's homedir() reads $HOME every time, bun's answers from what the process started with.
-  const binary = join(process.env.HOME ?? homedir(), ...KIT_CACHE, version, "gitleaks");
+  const binary = join(process.env.HOME ?? homedir(), ...KIT_CACHE, version, `${process.platform}-${process.arch}`, "gitleaks");
   if (!existsSync(binary)) throw new Error(`gitleaks ${version} is not installed at ${binary}, where the checks kit puts it when checks-secrets runs`);
   return { binary, config: join(bundle, SCANNER_CONFIG) };
 }
