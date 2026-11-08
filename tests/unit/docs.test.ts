@@ -131,7 +131,7 @@ describe("the link page", () => {
 
 describe("the install page's lists of what `bun run link` owns", () => {
   const owned = "<!-- `bun run docs` writes the list below from `LINKS`, `MERGED` and `graftsOn` in `src/generate/link.ts`. -->";
-  const script = "<!-- `bun run docs` writes the script below from `LINKS` and `RETIRED` in `src/generate/link.ts`. -->";
+  const script = "<!-- `bun run docs` writes the script below from `LINKS`, `graftsOn` and `RETIRED` in `src/generate/link.ts`. -->";
   const page = ["# a", owned, "- `~/.gone`", "<!-- The list above ends here. -->", "Between.", script, "<!-- The script above ends here. -->", ""].join("\n");
   const spliced = value(withLinks(page, LINKED, MERGED_FILES, GRAFTS, [".a/old"]));
   const lines = spliced.split("\n");
@@ -149,10 +149,12 @@ describe("the install page's lists of what `bun run link` owns", () => {
     ]);
   });
 
-  test("uninstall every path the map holds or retired, and leave each written file and account file with the machine's own keys", () => {
+  test("uninstall every linked or retired path, and take only the grafted hooks out of each account file", () => {
     expect(shell.split("\n").slice(1, 5)).toEqual(["for path in \\", "  '.a/settings.json' \\", "  'it'\\''s/here' \\", "  '.a/old'"]);
     expect(shell).not.toContain(".b/settings.json");
-    expect(shell).not.toContain(".win/settings.json");
+    expect(shell).toContain(".both/settings.json");
+    expect(shell).toContain(".win/settings.json");
+    expect(shell).toContain("hooks");
   });
 
   test("leave what lies outside their markers as it was", () => {

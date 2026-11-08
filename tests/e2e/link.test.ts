@@ -7,7 +7,7 @@ import { Schema } from "effect";
 import { skipReason } from "@avi2dg/checks/scripts/test-skips.ts";
 import { DEFAULT_GENERATED_ROOT } from "../../src/generate/bundle";
 import { INSTALL_PAGE } from "../../src/docs/docs";
-import { MERGED, REPO, link, preflight } from "../../src/generate/link";
+import { MERGED, REPO, graftsOn, link, preflight } from "../../src/generate/link";
 import { resolvedTargets, wouldDangle } from "../lib/dangling";
 import { clonePaths } from "./lib/clone";
 import { valueOf } from "../lib/effect";
@@ -210,6 +210,16 @@ test("the uninstall on the install page removes every link the linker wrote, and
     await symlink(elsewhere, join(home, ".codex/hooks.json"));
     await mkdir(join(home, ".claude"), { recursive: true });
     await writeFile(join(home, ".claude/agents"), "not a link\n");
+    const grafted = Object.keys({ ...graftsOn("mac"), ...graftsOn("windows") });
+    const [kept = expect.unreachable("no grafted account listed"), ...absent] = grafted;
+    const ownHooks = { Stop: [{ hooks: [{ type: "command", command: "checkout-hook" }] }] };
+    const ownKeys = { statusLine: { type: "command", command: "machine-statusline" }, theme: "machine-theme" };
+    await mkdir(dirname(join(home, kept)), { recursive: true });
+    await writeFile(join(home, kept), JSON.stringify({ ...ownKeys, hooks: ownHooks }));
+    for (const rel of absent) await rm(join(home, rel), { force: true });
+    const unlisted = ".claude-accounts/third/settings.json";
+    await mkdir(dirname(join(home, unlisted)), { recursive: true });
+    await writeFile(join(home, unlisted), JSON.stringify({ ...ownKeys, hooks: ownHooks }));
 
     const page = await Bun.file(`${REPO}${INSTALL_PAGE}`).text();
     const script = /```sh\n([\s\S]*?)```/.exec(page)?.[1] ?? expect.unreachable(`${INSTALL_PAGE} holds no sh block`);
@@ -223,6 +233,8 @@ test("the uninstall on the install page removes every link the linker wrote, and
     expect(left, "the uninstall left a link the linker wrote").toEqual([]);
     expect(await readlink(join(home, ".codex/hooks.json")), "the uninstall removed a link it did not write").toBe(elsewhere);
     expect(await Bun.file(join(home, ".claude/agents")).text(), "the uninstall removed a real file").toBe("not a link\n");
+    expect(await Bun.file(join(home, kept)).json(), "the uninstall kept a grafted hooks key pointing at removed files").toEqual(ownKeys);
+    expect(await Bun.file(join(home, unlisted)).json(), "the uninstall touched an account it never grafted").toEqual({ ...ownKeys, hooks: ownHooks });
   } finally {
     await rm(home, { recursive: true, force: true });
     await rm(elsewhere, { recursive: true, force: true });

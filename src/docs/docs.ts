@@ -215,8 +215,15 @@ export const linkPage = (links: MachineLinks, merged: MergeMap, grafts: MachineG
     "",
   ].join("\n");
 
-const uninstallScript = (links: LinkMap, retired: readonly string[]): string[] => {
+const uninstallScript = (links: LinkMap, grafts: MachineGrafts, retired: readonly string[]): string[] => {
   const taken = [...Object.keys(links), ...retired];
+  const grafted = Object.entries({ ...grafts.mac, ...grafts.windows });
+  const grouped = new Map<string, string[]>();
+  for (const [rel, { keys }] of grafted) {
+    const seen = grouped.get(keys.join("\0")) ?? [];
+    seen.push(rel);
+    grouped.set(keys.join("\0"), seen);
+  }
   return [
     "```sh",
     "root=$(pwd -P)",
@@ -225,6 +232,18 @@ const uninstallScript = (links: LinkMap, retired: readonly string[]): string[] =
     "do",
     '  case "$(readlink "$HOME/$path")" in "$root"/*) rm "$HOME/$path" ;; esac',
     "done",
+    ...[...grouped].flatMap(([, rels]) => {
+      const keys = grafted.find(([rel]) => rels.includes(rel))?.[1].keys ?? [];
+      const last = rels.length - 1;
+      return [
+        "for path in \\",
+        ...rels.map((rel, at) => `  ${quoted(rel)}${at < last ? " \\" : ""}`),
+        "do",
+        '  [ -f "$HOME/$path" ] || continue',
+        `  bun -e 'import fs from "node:fs";const argv=Bun.argv.slice(1);const file=argv.find((a)=>a.endsWith(".json"));if(!file){process.exit(0);}const keys=argv.filter((a)=>a!==file&&!a.includes("/")&&!a.startsWith("-"));try{const o=JSON.parse(fs.readFileSync(file,"utf8"));if(o&&typeof o==="object"&&!Array.isArray(o)){let d=false;for(const k of keys){if(k in o){delete o[k];d=true;}}if(d){fs.writeFileSync(file,JSON.stringify(o,null,2));}}}catch(e){}' "$HOME/$path" ${keys.map((key) => quoted(key)).join(" ")}`,
+        "done",
+      ];
+    }),
     "```",
   ];
 };
@@ -244,7 +263,7 @@ const OWNED_LIST: Region = {
 };
 
 const UNINSTALL_SCRIPT: Region = {
-  opens: "<!-- `bun run docs` writes the script below from `LINKS` and `RETIRED` in `src/generate/link.ts`. -->",
+  opens: "<!-- `bun run docs` writes the script below from `LINKS`, `graftsOn` and `RETIRED` in `src/generate/link.ts`. -->",
   closes: "<!-- The script above ends here. -->",
   holds: "its uninstall script",
 };
@@ -282,7 +301,7 @@ export const withLinks = Effect.fnUntraced(function* (
     ...Object.entries(merged).map(([rel, { from }]) => `- ${inHome(rel)}, written from \`${from}\` rather than linked`),
     ...graftItems(grafts),
   ]);
-  return yield* spliced(INSTALL_PAGE, owned, UNINSTALL_SCRIPT, uninstallScript(links, retired));
+  return yield* spliced(INSTALL_PAGE, owned, UNINSTALL_SCRIPT, uninstallScript(links, grafts, retired));
 });
 
 const installPageWithLinks = Effect.fnUntraced(function* (

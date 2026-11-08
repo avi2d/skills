@@ -64,7 +64,7 @@ Codex also has to trust its hooks once, as [Codex does not run the hooks](troubl
 
 To uninstall skills, run this script from the root of the checkout:
 
-<!-- `bun run docs` writes the script below from `LINKS` and `RETIRED` in `src/generate/link.ts`. -->
+<!-- `bun run docs` writes the script below from `LINKS`, `graftsOn` and `RETIRED` in `src/generate/link.ts`. -->
 ```sh
 root=$(pwd -P)
 for path in \
@@ -103,10 +103,18 @@ for path in \
 do
   case "$(readlink "$HOME/$path")" in "$root"/*) rm "$HOME/$path" ;; esac
 done
+for path in \
+  '.claude-accounts/main/settings.json' \
+  '.claude-accounts/second/settings.json'
+do
+  [ -f "$HOME/$path" ] || continue
+  bun -e 'import fs from "node:fs";const argv=Bun.argv.slice(1);const file=argv.find((a)=>a.endsWith(".json"));if(!file){process.exit(0);}const keys=argv.filter((a)=>a!==file&&!a.includes("/")&&!a.startsWith("-"));try{const o=JSON.parse(fs.readFileSync(file,"utf8"));if(o&&typeof o==="object"&&!Array.isArray(o)){let d=false;for(const k of keys){if(k in o){delete o[k];d=true;}}if(d){fs.writeFileSync(file,JSON.stringify(o,null,2));}}}catch(e){}' "$HOME/$path" 'hooks'
+done
 ```
 <!-- The script above ends here. -->
 
 The script removes each path that is still a link into this checkout, and leaves a path holding anything else alone.
+It takes the grafted `hooks` key back out of each account file, and keeps every other key that file holds.
 It leaves each file `bun run link` writes rather than links, because that file holds keys of the machine's own, such as pi's `deviceId`.
 The directories `bun run link` created to hold a link stay behind.
 
