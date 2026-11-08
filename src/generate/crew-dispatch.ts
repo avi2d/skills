@@ -54,6 +54,8 @@ const ClaudeAccount = Schema.Literal(MAIN_ACCOUNT).annotate({
 
 const Profile = Schema.Union([
   Schema.Struct({ ...profileOf("claude-bridge/claude-opus-5-5", "claude").fields, claude_account: ClaudeAccount }),
+  profileOf("openai/gpt-6-astra", "codex"),
+  profileOf("openai/gpt-6.1-terra", "codex"),
   Schema.Struct({ ...profileOf("claude-bridge/claude-haiku-5-5", "claude").fields, floor: Floor, claude_account: ClaudeAccount }).annotate({
     description: "Haiku 5.5 spends the Claude windows the main firstmate and Opus crews share, so it always carries a floor",
   }),

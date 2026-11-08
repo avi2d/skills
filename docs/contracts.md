@@ -82,6 +82,9 @@ Change a rule there and regenerate, because `tests/unit/machine-files.test.ts` a
 Both files set `array_order` to `preference`, so firstmate takes the first candidate that quota-axi shows usable.
 A Haiku 5.5 candidate and a Muse candidate each carry a `floor` on the `all_models` scope of their provider, so firstmate skips each while that scope holds under 15%.
 Every Claude candidate carries `main` in `claude_account`, which `src/generate/claude-accounts.ts` names `MAIN_ACCOUNT`, so firstmate launches it with `--claude-account`.
+GPT-6 Astra at high follows Opus 5.5 in the bounded investigation rule and the unknown cause rule.
+GPT-6.1 Terra at high follows Muse in the two clearly specified implementation rules.
+Both spend the `codex` provider and carry no floor.
 `bun run link` links the Mac's file on macOS and the other one on every other platform.
 It links the three pins on macOS only.
 `tests/unit/crew-dispatch.test.ts` fails on a profile whose effort pi would run at another level.
@@ -91,12 +94,9 @@ pi silently moves an effort a model does not support to the next level up that i
 
 `bun run generate` writes the no-mistakes global config to `generated/no-mistakes/config.yaml` from `src/generate/no-mistakes-config.ts`, for the `$HOME` it runs under, and `bun run link` links `~/.no-mistakes/config.yaml` to it.
 The schema knows only the fields no-mistakes reads, because no-mistakes refuses a config file with a field it does not know.
-In `reviewer_chain`, the review step tries Opus 5.5 on the clauth account `main` first, then GPT-6.1 Sol on the Codex $20 account, then Opus 5.5 on the clauth account `second` last.
-The first entry carries no floor, so the review step always tries it.
-The Codex entry skips while its five-hour window reads under 30%.
-The fork always tries the last entry it reaches, so it carries no floor, as [record 0102](adr/0102-the-main-account-reviews-first-codex-second-and-the-second-account-last-with-no-floor.md) records.
-The review step reaches it when `main` hits a usage limit and Sol is skipped or hits one too.
-pi names Sol `openai/gpt-6.1-sol` on both machines.
+In `reviewer_chain`, the review step tries GPT-6 Astra on the Codex sign-in first, then Opus 5.5 on the clauth account `main`, then Opus 5.5 on the clauth account `second` last.
+No entry carries a floor, so the review step moves to the next entry only after a usage limit, as [record 0108](adr/0108-astra-reviews-first-with-no-floor-and-codex-models-join-four-dispatch-rules.md) records.
+pi names Astra `openai/gpt-6-astra` on both machines.
 The login folders of `second` and `main` sit under `~/.claude-accounts/`.
 `review` holds one path instruction over every changed file that reviews added comments against comment discipline as warnings that never fix or block.
 It flags a comment that restates its line or carries a measured number that will go stale, and it keeps a comment that gives a reason the code cannot show.
