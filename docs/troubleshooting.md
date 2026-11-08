@@ -16,7 +16,7 @@ When the index is stale, run `bun run generate` and start a new session.
 
 ### `refused: a real file stands where a link belongs`
 
-`bun run link` never replaces a path that holds anything other than a link, and home-manager may still own the path.
+Where [the link map](links.md#the-links) lists a link, `bun run link` never replaces a path that holds anything other than a link, and home-manager may still own the path.
 To clear it:
 
 1. If home-manager wrote it, remove the path from the dotfiles tree and rebuild, and otherwise move the file aside.
