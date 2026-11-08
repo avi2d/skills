@@ -335,6 +335,7 @@ describe("styleReply", () => {
       }
       const banded = (width: number): string[] => component.render(width).filter((line) => line.includes(EDGE));
       expect(banded(40)).toHaveLength(3);
+      expect(banded(8).length).toBeGreaterThan(0);
       for (const width of [40, 8]) {
         for (const line of banded(width)) {
           expect(line.split(EDGE)).toHaveLength(2);
