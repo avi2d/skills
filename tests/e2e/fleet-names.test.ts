@@ -35,9 +35,12 @@ const decodeAllowlist = Schema.decodeUnknownSync(Schema.Record(Schema.String, Sc
 const allowlist = decodeAllowlist(await Bun.file(repo + ALLOWLIST).json());
 
 const escapeRegExp = (text: string): string => text.replaceAll(/[.*+?^${}()|[\]\\]/g, "\\$&");
+const explicitNamesFile = process.env.SKILLS_FLEET_NAMES_FILE || undefined;
+if (explicitNamesFile !== undefined && !existsSync(explicitNamesFile)) {
+  throw new Error(`SKILLS_FLEET_NAMES_FILE points at ${explicitNamesFile}, which does not exist`);
+}
 const privateNamesFile =
-  process.env.SKILLS_FLEET_NAMES_FILE ||
-  join(process.env.XDG_CONFIG_HOME || join(process.env.HOME || "", ".config"), "skills/fleet-names.txt");
+  explicitNamesFile ?? join(process.env.XDG_CONFIG_HOME || join(process.env.HOME || "", ".config"), "skills/fleet-names.txt");
 const privateAllowlistFile = join(dirname(privateNamesFile), "fleet-names-allow.json");
 const privateNames = existsSync(privateNamesFile)
   ? (await Bun.file(privateNamesFile).text()).split("\n").map((line) => line.trim()).filter(Boolean)
