@@ -116,7 +116,8 @@ fi
 <!-- The script above ends here. -->
 
 The script removes each path that is still a link into this checkout, and leaves a path holding anything else alone.
-It takes the grafted `hooks` key back out of each account file on the Windows machine and any other, and keeps every other key that file holds.
+On any machine but the Mac, it removes the grafted `hooks` key from each account file.
+It keeps every other key that file holds.
 On the Mac it leaves those files alone, because `bun run link` grafts no account there.
 It leaves each file `bun run link` writes rather than links, because that file holds keys of the machine's own, such as pi's `deviceId`.
 The directories `bun run link` created to hold a link stay behind.
