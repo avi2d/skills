@@ -133,11 +133,14 @@ const refuseAccountHomeFromWorktree = Effect.fnUntraced(function* (
       path: home,
       message: `refusing to link the account's own home \`${home}\` from \`${repo}\`, ${why}, or set HOME to a temporary directory`,
     });
-  const dirs = yield* git(repo, ["rev-parse", "--path-format=absolute", "--git-dir", "--git-common-dir"]);
+  const dirs = yield* git(repo, ["rev-parse", "--path-format=absolute", "--git-dir", "--git-common-dir", "--show-toplevel"]);
   if (Option.isNone(dirs)) return yield* refused("which git does not check out; clone the repository and run it from the clone");
   // A linked worktree keeps its own git dir apart from the common dir every worktree of the repository shares.
-  const [gitDir, commonDir] = dirs.value.stdout.trim().split("\n");
-  if (gitDir === commonDir) return;
+  const [gitDir, commonDir, topLevel] = dirs.value.stdout.trim().split("\n");
+  if (gitDir === commonDir) {
+    if (topLevel !== undefined && (yield* resolved(topLevel)) === (yield* resolved(repo))) return;
+    return yield* refused("which git does not check out; clone the repository and run it from the clone");
+  }
   const listed = yield* git(repo, ["worktree", "list", "--porcelain"]);
   const mainCheckout = Option.match(listed, {
     onNone: () => commonDir,

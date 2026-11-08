@@ -48,6 +48,19 @@ describe("the account's own home", () => {
     }
   });
 
+  test("is refused to an untracked directory inside the main checkout that git attributes to the checkout", async () => {
+    const { home, discard } = await account();
+    const nested = join(clone, "skills-nested-copy");
+    await mkdir(nested, { recursive: true });
+    try {
+      expect(await saidBy(asAccount(home, link(`${nested}/`, home)))).toMatch(/git does not check out/);
+      expect(await readdir(home)).toEqual([]);
+    } finally {
+      await rm(nested, { recursive: true, force: true });
+      await discard();
+    }
+  });
+
   test("is refused to a copy git does not check out before it generates, when it is installed", async () => {
     const { home, discard } = await account();
     try {
