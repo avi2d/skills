@@ -10,7 +10,7 @@ commands:
 
   lint: bun run lint && bun run typecheck
 
-  test: bun run test:fast
+  test: checks-test --changed
 
 review:
   path_instructions:
