@@ -204,6 +204,7 @@ test("the account's own home is read from the passwd record, which a temporary $
 test("the uninstall on the install page removes every link the linker wrote, and leaves what it did not write", async () => {
   const home = await mkdtemp(join(tmpdir(), "skills-uninstall-"));
   const elsewhere = await mkdtemp(join(tmpdir(), "skills-elsewhere-"));
+  const bin = await mkdtemp(join(tmpdir(), "skills-uninstall-linux-"));
   try {
     await valueOf(link(REPO, home));
     await rm(join(home, ".codex/hooks.json"));
@@ -221,9 +222,10 @@ test("the uninstall on the install page removes every link the linker wrote, and
     await mkdir(dirname(join(home, unlisted)), { recursive: true });
     await writeFile(join(home, unlisted), JSON.stringify({ ...ownKeys, hooks: ownHooks }));
 
+    await writeFile(join(bin, "uname"), "#!/bin/sh\necho Linux\n", { mode: 0o755 });
     const page = await Bun.file(`${REPO}${INSTALL_PAGE}`).text();
     const script = /```sh\n([\s\S]*?)```/.exec(page)?.[1] ?? expect.unreachable(`${INSTALL_PAGE} holds no sh block`);
-    const run = await Bun.$`sh -c ${script}`.cwd(REPO).env({ ...process.env, HOME: home }).nothrow().quiet();
+    const run = await Bun.$`sh -c ${script}`.cwd(REPO).env({ ...process.env, HOME: home, PATH: `${bin}:${process.env.PATH}` }).nothrow().quiet();
     expect(run.exitCode, run.stderr.toString()).toBe(0);
 
     const remaining = await Promise.all(
@@ -238,6 +240,7 @@ test("the uninstall on the install page removes every link the linker wrote, and
   } finally {
     await rm(home, { recursive: true, force: true });
     await rm(elsewhere, { recursive: true, force: true });
+    await rm(bin, { recursive: true, force: true });
   }
 });
 
