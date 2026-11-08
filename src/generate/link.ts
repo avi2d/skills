@@ -123,6 +123,17 @@ const resolved = (path: string): Effect.Effect<string, FileFailure, FileSystem.F
 const git = (repo: string, args: readonly string[]) =>
   Effect.option(outputOf(ChildProcess.make("git", args, { cwd: repo }))).pipe(Effect.map(Option.filter((ran) => ran.code === 0)));
 
+// `git worktree list --porcelain` prints the main worktree's record first, and marks it `bare` when it has no work tree.
+const mainCheckoutOf = (repo: string) =>
+  git(repo, ["worktree", "list", "--porcelain"]).pipe(
+    Effect.map(
+      Option.flatMap((ran) => {
+        const [first = "", ...rest] = (ran.stdout.split("\n\n")[0] ?? "").split("\n");
+        return first.startsWith("worktree ") && !rest.includes("bare") ? Option.some(first.slice("worktree ".length)) : Option.none();
+      }),
+    ),
+  );
+
 const refuseAccountHomeFromWorktree = Effect.fnUntraced(function* (
   repo: string,
   home: string,
@@ -135,25 +146,20 @@ const refuseAccountHomeFromWorktree = Effect.fnUntraced(function* (
     });
   const notCheckedOut = refused("which git does not check out; clone the repository and run it from the clone");
   const dirs = yield* git(repo, ["rev-parse", "--absolute-git-dir", "--git-common-dir", "--show-toplevel"]);
-  if (Option.isNone(dirs)) return yield* notCheckedOut;
+  const [gitDir, commonDir, topLevel] = Option.match(dirs, { onNone: () => [], onSome: (ran) => ran.stdout.trim().split("\n") });
+  if (gitDir === undefined || commonDir === undefined || topLevel === undefined) return yield* notCheckedOut;
   // A linked worktree keeps its own git dir apart from the common dir every worktree of the repository shares.
-  const [gitDirRaw, commonDirRaw, topLevel] = dirs.value.stdout.trim().split("\n");
-  if (gitDirRaw === undefined || commonDirRaw === undefined) return yield* notCheckedOut;
-  const gitDir = yield* resolved(gitDirRaw);
-  const commonDir = yield* resolved(commonDirRaw.startsWith("/") ? commonDirRaw : `${repo.replace(/\/+$/, "")}/${commonDirRaw}`);
-  if (gitDir === commonDir) {
-    if (topLevel !== undefined && (yield* resolved(topLevel)) === (yield* resolved(repo))) return;
-    return yield* notCheckedOut;
+  const sharedDir = commonDir.startsWith("/") ? commonDir : `${repo.replace(/\/+$/, "")}/${commonDir}`;
+  if ((yield* resolved(gitDir)) !== (yield* resolved(sharedDir))) {
+    return yield* refused(
+      Option.match(yield* mainCheckoutOf(repo), {
+        onNone: () => "a linked worktree with no main checkout; clone the repository and run it from the clone",
+        onSome: (checkoutPath) => `a linked worktree; run it from the main checkout \`${checkoutPath}\``,
+      }),
+    );
   }
-  const listed = yield* git(repo, ["worktree", "list", "--porcelain"]);
-  const lines = Option.isSome(listed) ? listed.value.stdout.split("\n") : [];
-  const end = lines.indexOf("");
-  const firstRecord = end === -1 ? lines : lines.slice(0, end);
-  const first = firstRecord[0];
-  const mainCheckout = first?.startsWith("worktree ") ? first.replace(/^worktree /, "") : undefined;
-  if (mainCheckout && !firstRecord.includes("bare"))
-    return yield* refused(`a linked worktree; run it from the main checkout \`${mainCheckout}\``);
-  return yield* refused("a linked worktree of a bare repository; clone the repository and run it from the clone");
+  // git answers for the repository of an enclosing directory, so a copy inside another checkout passes the check above.
+  if ((yield* resolved(topLevel)) !== (yield* resolved(repo))) return yield* notCheckedOut;
 });
 
 const linked = Effect.fnUntraced(function* (dest: string, to: string): Effect.fn.Return<LinkState, FileFailure, FileSystem.FileSystem> {

@@ -70,7 +70,7 @@ describe("the account's own home", () => {
       await Bun.$`git clone --quiet --bare ${clone} ${bare}`.quiet();
       await Bun.$`git -C ${bare} worktree add --quiet --detach ${wt}`.quiet();
       const said = await saidBy(asAccount(home, link(`${wt}/`, home)));
-      expect(said).toMatch(/linked worktree of a bare repository/);
+      expect(said).toMatch(/linked worktree with no main checkout/);
       expect(said).not.toContain(bare);
       expect(await readdir(home)).toEqual([]);
     } finally {
