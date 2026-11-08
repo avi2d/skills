@@ -63,7 +63,9 @@ The suite fails on any entry in `oxlint-suppressions.json`, so the file is absen
 Four gates run only when someone starts `checks-lint --whole-tree` by hand, namely `checks-lint-coverage`, `checks-repetition`, `checks-suppressions-ratchet` and `checks-quarantine-clock`.
 No schedule or workflow runs them.
 `checks-advisories` holds `advisory-acks.json` to its rules on every run and defers its scan to the scheduled run, so the pull request run fetches no advisory database.
-`.github/workflows/advisories.yml` runs it with `--all` every Monday over the whole of `bun.lock`, which finds an advisory published after its package landed and an advisory a `bun.lock` change adds.
+`.github/workflows/advisories.yml` calls the shared `avi2d/workflows` advisory scan every Monday, which runs it with `--all --issue` over the whole of `bun.lock`.
+That finds an advisory published after its package landed and an advisory a `bun.lock` change adds.
+A run on `main` files the verdict as a GitHub issue labelled `advisories`.
 
 `@avi2dg/checks` comes from the public npm registry by semver range, so a clone, a worktree and CI all install the same tree with nothing beside them.
 `tests/e2e/toolchain.test.ts` refuses a `file:` dependency, and a repository dependency that names anything but a commit.
