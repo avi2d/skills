@@ -40,6 +40,9 @@ function isMarkdownInternals(child: unknown): child is MarkdownInternals {
   return typeof child.paddingY === "number" && child instanceof Markdown;
 }
 
+// Pi reuses a reply's Markdown across every updateContent, so a second wrapper would stack a second edge and take a second column.
+const edges = new WeakMap<MarkdownInternals, { edge: string }>();
+
 export function styleReply(component: object, theme: ReplyTheme): boolean {
   if (!isReplyInternals(component) || component.hasToolCalls || component.isStreaming) return false;
   const texts = component.contentContainer.children.filter(isMarkdownInternals);
@@ -49,8 +52,15 @@ export function styleReply(component: object, theme: ReplyTheme): boolean {
   for (const text of texts) {
     text.defaultTextStyle = { ...text.defaultTextStyle, bgColor: band };
     text.paddingY = 1;
-    const render = text.render.bind(text);
-    text.render = (width) => render(width - 1).map((line) => edge + line);
+    const holder = edges.get(text);
+    if (holder === undefined) {
+      const next = { edge };
+      edges.set(text, next);
+      const render = text.render.bind(text);
+      text.render = (width) => render(width - 1).map((line) => next.edge + line);
+    } else {
+      holder.edge = edge;
+    }
     text.invalidate();
   }
   return true;
