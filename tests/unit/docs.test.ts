@@ -74,7 +74,7 @@ describe("the index", () => {
 const LINKED = { ".a/settings.json": "harness/a/settings.json", "it's/here": "generated/skills" };
 const MERGED_FILES = { ".b/settings.json": { from: "harness/b/settings.json", ownKeys: ["deviceId", "seenVersion"] } };
 const ACCOUNT_GRAFT = { from: "harness/a/settings.json", keys: ["hooks"] };
-const GRAFTS = { mac: { ".both/settings.json": ACCOUNT_GRAFT }, windows: { ".both/settings.json": ACCOUNT_GRAFT, ".win/settings.json": ACCOUNT_GRAFT } };
+const GRAFTS = { mac: { ".both/settings.json": ACCOUNT_GRAFT, ".mac/settings.json": ACCOUNT_GRAFT }, windows: { ".both/settings.json": ACCOUNT_GRAFT, ".win/settings.json": ACCOUNT_GRAFT } };
 const NO_GRAFTS = { mac: {}, windows: {} };
 
 describe("the link page", () => {
@@ -138,12 +138,13 @@ describe("the install page's lists of what `bun run link` owns", () => {
   const shell = /```sh\n([\s\S]*?)```/.exec(spliced)?.[1] ?? expect.unreachable("the install page holds no sh block");
 
   test("install every mapped path in map order, then each written file, then each account file, none retired and nothing the map no longer holds", () => {
-    expect(lines.slice(1, 8)).toEqual([
+    expect(lines.slice(1, 9)).toEqual([
       owned,
       "- `~/.a/settings.json`",
       "- `~/it's/here`",
       "- `~/.b/settings.json`, written from `harness/b/settings.json` rather than linked",
       "- `~/.both/settings.json`, given `hooks` from `harness/a/settings.json` and keeping every other key",
+      "- `~/.mac/settings.json` on the Mac, given `hooks` from `harness/a/settings.json` and keeping every other key",
       "- `~/.win/settings.json` on the Windows machine and any other, given `hooks` from `harness/a/settings.json` and keeping every other key",
       "<!-- The list above ends here. -->",
     ]);
@@ -154,6 +155,7 @@ describe("the install page's lists of what `bun run link` owns", () => {
     expect(shell).not.toContain(".b/settings.json");
     expect(shell).toContain(".both/settings.json");
     expect(shell).toContain(".win/settings.json");
+    expect(shell).not.toContain(".mac/settings.json");
     expect(shell).toContain("hooks");
   });
 

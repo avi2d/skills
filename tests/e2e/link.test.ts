@@ -241,6 +241,51 @@ test("the uninstall on the install page removes every link the linker wrote, and
   }
 });
 
+test("the uninstall on the Mac leaves an account file holding the user's own hooks alone", async () => {
+  const home = await mkdtemp(join(tmpdir(), "skills-uninstall-mac-"));
+  const bin = await mkdtemp(join(tmpdir(), "skills-uninstall-darwin-"));
+  try {
+    const ownHooks = { Stop: [{ hooks: [{ type: "command", command: "user-hook" }] }] };
+    const ownKeys = { statusLine: { type: "command", command: "user-statusline" }, theme: "user-theme" };
+    const rel = ".claude-accounts/main/settings.json";
+    await mkdir(dirname(join(home, rel)), { recursive: true });
+    await writeFile(join(home, rel), JSON.stringify({ ...ownKeys, hooks: ownHooks }));
+    await writeFile(join(bin, "uname"), "#!/bin/sh\necho Darwin\n", { mode: 0o755 });
+    const page = await Bun.file(`${REPO}${INSTALL_PAGE}`).text();
+    const script = /```sh\n([\s\S]*?)```/.exec(page)?.[1] ?? expect.unreachable(`${INSTALL_PAGE} holds no sh block`);
+    const run = await Bun.$`sh -c ${script}`.cwd(REPO).env({ ...process.env, HOME: home, PATH: `${bin}:${process.env.PATH}` }).nothrow().quiet();
+    expect(run.exitCode, run.stderr.toString()).toBe(0);
+    expect(await Bun.file(join(home, rel)).json(), "the uninstall deleted hooks link never grafted on the Mac").toEqual({ ...ownKeys, hooks: ownHooks });
+  } finally {
+    await rm(home, { recursive: true, force: true });
+    await rm(bin, { recursive: true, force: true });
+  }
+});
+
+test("the uninstall fails instead of leaving a grafted hooks key it cannot read", async () => {
+  const home = await mkdtemp(join(tmpdir(), "skills-uninstall-broken-"));
+  const bin = await mkdtemp(join(tmpdir(), "skills-uninstall-linux-"));
+  try {
+    const rels = Object.keys(graftsOn("windows"));
+    expect(rels.length, "no grafted account listed, so nothing rejects an unreadable one").toBeGreaterThan(0);
+    for (const rel of rels) {
+      await mkdir(dirname(join(home, rel)), { recursive: true });
+      await writeFile(join(home, rel), "{ not json");
+    }
+    await writeFile(join(bin, "uname"), "#!/bin/sh\necho Linux\n", { mode: 0o755 });
+    const page = await Bun.file(`${REPO}${INSTALL_PAGE}`).text();
+    const script = /```sh\n([\s\S]*?)```/.exec(page)?.[1] ?? expect.unreachable(`${INSTALL_PAGE} holds no sh block`);
+    const run = await Bun.$`sh -c ${script}`.cwd(REPO).env({ ...process.env, HOME: home, PATH: `${bin}:${process.env.PATH}` }).nothrow().quiet();
+    expect(run.exitCode, "the uninstall left hooks pointing at removed files without a word").not.toBe(0);
+    for (const rel of rels) {
+      expect(await Bun.file(join(home, rel)).text(), "the uninstall rewrote a file it could not clean").toBe("{ not json");
+    }
+  } finally {
+    await rm(home, { recursive: true, force: true });
+    await rm(bin, { recursive: true, force: true });
+  }
+});
+
 const herdr = Bun.which("herdr");
 if (!herdr) console.warn("[link] herdr is not installed - its integration files go unverified");
 

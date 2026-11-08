@@ -103,18 +103,21 @@ for path in \
 do
   case "$(readlink "$HOME/$path")" in "$root"/*) rm "$HOME/$path" ;; esac
 done
+if [ "$(uname)" != Darwin ]; then
 for path in \
   '.claude-accounts/main/settings.json' \
   '.claude-accounts/second/settings.json'
 do
   [ -f "$HOME/$path" ] || continue
-  bun -e 'import fs from "node:fs";const argv=Bun.argv.slice(1);const file=argv.find((a)=>a.endsWith(".json"));if(!file){process.exit(0);}const keys=argv.filter((a)=>a!==file&&!a.includes("/")&&!a.startsWith("-"));try{const o=JSON.parse(fs.readFileSync(file,"utf8"));if(o&&typeof o==="object"&&!Array.isArray(o)){let d=false;for(const k of keys){if(k in o){delete o[k];d=true;}}if(d){fs.writeFileSync(file,JSON.stringify(o,null,2));}}}catch(e){}' "$HOME/$path" 'hooks'
+  bun -e 'import fs from "node:fs";const [file,...keys]=Bun.argv.slice(1);const o=JSON.parse(fs.readFileSync(file,"utf8"));for(const k of keys){delete o[k];}fs.writeFileSync(file,JSON.stringify(o,null,2));' "$HOME/$path" 'hooks'
 done
+fi
 ```
 <!-- The script above ends here. -->
 
 The script removes each path that is still a link into this checkout, and leaves a path holding anything else alone.
-It takes the grafted `hooks` key back out of each account file, and keeps every other key that file holds.
+It takes the grafted `hooks` key back out of each account file on the Windows machine and any other, and keeps every other key that file holds.
+On the Mac it leaves those files alone, because `bun run link` grafts no account there.
 It leaves each file `bun run link` writes rather than links, because that file holds keys of the machine's own, such as pi's `deviceId`.
 The directories `bun run link` created to hold a link stay behind.
 

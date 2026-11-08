@@ -217,13 +217,8 @@ export const linkPage = (links: MachineLinks, merged: MergeMap, grafts: MachineG
 
 const uninstallScript = (links: LinkMap, grafts: MachineGrafts, retired: readonly string[]): string[] => {
   const taken = [...Object.keys(links), ...retired];
-  const grafted = Object.entries({ ...grafts.mac, ...grafts.windows });
-  const grouped = new Map<string, string[]>();
-  for (const [rel, { keys }] of grafted) {
-    const seen = grouped.get(keys.join("\0")) ?? [];
-    seen.push(rel);
-    grouped.set(keys.join("\0"), seen);
-  }
+  const grafted = Object.entries(grafts.windows);
+  const keys = [...new Set(grafted.flatMap(([, graft]) => graft.keys))];
   return [
     "```sh",
     "root=$(pwd -P)",
@@ -232,18 +227,18 @@ const uninstallScript = (links: LinkMap, grafts: MachineGrafts, retired: readonl
     "do",
     '  case "$(readlink "$HOME/$path")" in "$root"/*) rm "$HOME/$path" ;; esac',
     "done",
-    ...[...grouped].flatMap(([, rels]) => {
-      const keys = grafted.find(([rel]) => rels.includes(rel))?.[1].keys ?? [];
-      const last = rels.length - 1;
-      return [
-        "for path in \\",
-        ...rels.map((rel, at) => `  ${quoted(rel)}${at < last ? " \\" : ""}`),
-        "do",
-        '  [ -f "$HOME/$path" ] || continue',
-        `  bun -e 'import fs from "node:fs";const argv=Bun.argv.slice(1);const file=argv.find((a)=>a.endsWith(".json"));if(!file){process.exit(0);}const keys=argv.filter((a)=>a!==file&&!a.includes("/")&&!a.startsWith("-"));try{const o=JSON.parse(fs.readFileSync(file,"utf8"));if(o&&typeof o==="object"&&!Array.isArray(o)){let d=false;for(const k of keys){if(k in o){delete o[k];d=true;}}if(d){fs.writeFileSync(file,JSON.stringify(o,null,2));}}}catch(e){}' "$HOME/$path" ${keys.map((key) => quoted(key)).join(" ")}`,
-        "done",
-      ];
-    }),
+    ...(grafted.length === 0
+      ? []
+      : [
+          'if [ "$(uname)" != Darwin ]; then',
+          "for path in \\",
+          ...grafted.map(([rel], at) => `  ${quoted(rel)}${at < grafted.length - 1 ? " \\" : ""}`),
+          "do",
+          '  [ -f "$HOME/$path" ] || continue',
+          `  bun -e 'import fs from "node:fs";const [file,...keys]=Bun.argv.slice(1);const o=JSON.parse(fs.readFileSync(file,"utf8"));for(const k of keys){delete o[k];}fs.writeFileSync(file,JSON.stringify(o,null,2));' "$HOME/$path"${keys.map((key) => ` ${quoted(key)}`).join("")}`,
+          "done",
+          "fi",
+        ]),
     "```",
   ];
 };
