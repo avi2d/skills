@@ -8,12 +8,12 @@ import { checkout, tally } from "./generate";
 import { hubUnder } from "./hub";
 import { SECOND_MATE_HARNESS, SUPERVISION_BRANCH_EFFORT, SUPERVISION_BRANCH_MODEL } from "./firstmate-pins";
 import { CREW_DISPATCH } from "./machine-files";
-import { CLAUDE_ACCOUNTS, accountDirUnder } from "./claude-accounts";
 import { noMistakesConfigUnder } from "./no-mistakes-config";
 import { machineOn, type Machine } from "./machine";
 import { piLoads, type PiLoad } from "./preflight";
 import { installScanner } from "./secret-scanner";
 import { main } from "../platform/platform";
+import { UserConfigSource } from "./user-config";
 
 // Bun's userInfo().homedir reads $HOME, so only the passwd record names the home a temporary $HOME cannot stand in for.
 const unreadable = (detail: string) => new FileFailure({ path: "passwd", message: `cannot tell the account's own home: ${detail}` });
@@ -82,13 +82,13 @@ export type Graft = { readonly from: string; readonly keys: readonly string[] };
 
 export type GraftMap = Readonly<Record<string, Graft>>;
 
-// Claude Code writes an account's own keys, such as its statusLine, into this file, so a link would carry them into the checkout.
-export const graftsOn = (machine: Machine): GraftMap =>
-  Object.fromEntries(
-    CLAUDE_ACCOUNTS[machine].map((account) => [`${accountDirUnder(account)}/settings.json`, { from: CLAUDE_CODE_SETTINGS, keys: ["hooks"] }]),
-  );
+export const CLAUDE_CONFIG_GRAFT: Graft = { from: CLAUDE_CODE_SETTINGS, keys: ["hooks"] };
 
-export const GRAFTED = graftsOn(MACHINE);
+export const claudeSettingsIn = (dir: string): string => `${dir}/settings.json`;
+
+// Claude Code writes an account's own keys, such as its statusLine, into this file, so a link would carry them into the checkout.
+export const graftsInto = (claudeConfigDirs: readonly string[]): GraftMap =>
+  Object.fromEntries(claudeConfigDirs.map((dir) => [claudeSettingsIn(dir), CLAUDE_CONFIG_GRAFT]));
 
 export const RETIRED: readonly string[] = [
   ".pi/agent/effect-codemode",
@@ -257,11 +257,12 @@ const placed = Effect.fnUntraced(function* (repo: string, home: string): Effect.
     return yield* new FileFailure({ path: home, message: `refusing to link into \`${home}\` outside the test's temporary scope` });
   }
   yield* refuseAccountHomeFromWorktree(repo, home);
+  const { claudeConfigDirs = [] } = yield* yield* UserConfigSource;
   for (const [rel, target] of Object.entries(linksUnder(yield* readGeneratedRoot, MACHINE))) {
     outcomes.push({ home: rel, state: yield* linked(`${home}/${rel}`, `${repo}${target}`) });
   }
   for (const [rel, merge] of Object.entries(MERGED)) outcomes.push(yield* merged(repo, home, rel, merge));
-  for (const [rel, graft] of Object.entries(GRAFTED)) outcomes.push(yield* grafted(repo, home, rel, graft));
+  for (const [rel, graft] of Object.entries(graftsInto(claudeConfigDirs))) outcomes.push(yield* grafted(repo, home, rel, graft));
   for (const rel of RETIRED) {
     const state = yield* retired(repo, `${home}/${rel}`);
     if (state) outcomes.push({ home: rel, state });
