@@ -16,6 +16,7 @@ import {
   releasePointer,
   russianProse,
   unslop,
+  whatGoesWhere,
 } from "../../evals/writing-judges";
 import type { Verdict } from "../../src/eval/ablation";
 import { verdictOf, type Change, type ProgramJudge } from "../../src/eval/eval-judges";
@@ -53,6 +54,23 @@ test("a copy edit that keeps the subtler tells fails, and one that clears them p
   expect(judged(plainOverview, "docs/overview.md", before, plain)).toBe("pass");
   expect(judged(plainOverview, "docs/overview.md", before, plain.replace("# Import ledger entries", "# Import to Ledger"))).toBe("pass");
   expect(judged(plainOverview, "docs/overview.md", before, "# Import ledger entries\n\nRun the import.\n")).toBe("unjudged");
+});
+
+test("a refusal recorded in the README fails, and one recorded in VISION.md passes", () => {
+  const vision = "# Vision\n\nLedger stays a small explicit tool.\n";
+  const refusal = "Plugin support is refused: plugins hide data flow, which breaks the explicit over implicit principle.\n";
+  const owned = verdictOf(whatGoesWhere, run([], [{ path: "VISION.md", before: vision, after: `${vision}${refusal}` }]));
+  expect(owned.outcome).toBe("pass");
+  const stray = verdictOf(
+    whatGoesWhere,
+    run([], [
+      { path: "VISION.md", before: vision, after: `${vision}${refusal}` },
+      { path: "README.md", before: "# ledger\n", after: `# ledger\n\n${refusal}` },
+    ]),
+  );
+  expect(stray.outcome).toBe("fail");
+  expect(verdictOf(whatGoesWhere, run([], [{ path: "VISION.md", before: vision, after: vision }])).outcome).toBe("unjudged");
+  expect(verdictOf(whatGoesWhere, run([], [])).outcome).toBe("unjudged");
 });
 
 test("a review step without an end condition fails and a bounded one passes", () => {

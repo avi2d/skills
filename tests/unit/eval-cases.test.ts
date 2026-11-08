@@ -104,7 +104,7 @@ test("a Reference case is swept, and so pooled, under the Reference rather than 
     const sweep = sweepOf(CASES, { rules: [name], cases: "all", repeats: 1, maxRuns: 100 });
     return "refused" in sweep ? expect.unreachable(sweep.refused) : [...new Set(sweep.cells.map((cell) => cell.case))];
   };
-  expect(casesOf("agents-md-router")).toEqual(["release-pointer"]);
+  expect(casesOf("agents-md-router")).toEqual(["release-pointer", "what-goes-where"]);
   expect(casesOf("writing-for-agents")).toEqual(["writing-for-agents-reference", "positive-target", "lookup-left", "one-source"]);
   expect(casesOf("writing-for-people")).toEqual([
     "en-readme",

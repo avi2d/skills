@@ -10,7 +10,7 @@ What each Rule's eval cases measure, and each Reference's measured on its own, l
 | Rule | Cases | A run passes when |
 | --- | --- | --- |
 | `agent-docs` | none | the Rule only delivers the reference, which is measured on its own |
-| `agents-md-router` | `release-pointer` | the agent points release work at its procedure without copying it |
+| `agents-md-router` | `release-pointer`, `what-goes-where` | the agent points release work at its procedure without copying it, and records a refusal and its principle in VISION.md rather than in README.md or AGENTS.md |
 | `comment-discipline` | `public-helper`, `decision-record`, `upstream-workaround`, `module-rationale` | the lines it added carry no comment the kit's matchers refuse |
 | `credential-files` | none | the Rule has no case yet, as Unmeasured Rules says |
 | `effect-error-channel` | `scheduled-job`, `invoice-route` | the TypeScript it added erases no error unseen, through `Effect.ignore`, `Effect.catchCause`, a handler that never reads the error, or `Effect.orDie` on a failure the task says happens |
