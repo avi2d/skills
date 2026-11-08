@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test";
 import { readdir } from "node:fs/promises";
-import { RECORDS, RECORD_INDEX } from "../../src/docs/docs";
+import { RECORDS, RECORD_INDEX, afterFrontMatter } from "../../src/docs/docs";
 
 const repo = new URL("../../", import.meta.url).pathname;
 type Record = { file: string; filed: number; titled: number };
@@ -14,7 +14,7 @@ const records = async (): Promise<Record[]> => {
     .sort();
   return Promise.all(
     files.map(async (file) => {
-      const heading = (await Bun.file(`${repo}${RECORDS}/${file}`).text()).split("\n", 1)[0] ?? "";
+      const heading = afterFrontMatter((await Bun.file(`${repo}${RECORDS}/${file}`).text()).split("\n"))[0] ?? "";
       return {
         file,
         filed: Number(NUMBERED.exec(file)?.[1] ?? NaN),

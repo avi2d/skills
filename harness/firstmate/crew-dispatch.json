@@ -47,6 +47,12 @@
         },
         {
           "harness": "pi",
+          "model": "openai/gpt-6.1-terra",
+          "effort": "high",
+          "provider": "codex"
+        },
+        {
+          "harness": "pi",
           "model": "claude-bridge/claude-haiku-5-5",
           "effort": "high",
           "provider": "claude",
@@ -78,6 +84,12 @@
         },
         {
           "harness": "pi",
+          "model": "openai/gpt-6.1-terra",
+          "effort": "high",
+          "provider": "codex"
+        },
+        {
+          "harness": "pi",
           "model": "claude-bridge/claude-opus-5-5",
           "effort": "medium",
           "provider": "claude"
@@ -103,6 +115,12 @@
           "model": "claude-bridge/claude-opus-5-5",
           "effort": "high",
           "provider": "claude"
+        },
+        {
+          "harness": "pi",
+          "model": "openai/gpt-6-astra",
+          "effort": "high",
+          "provider": "codex"
         }
       ]
     },
@@ -114,6 +132,12 @@
           "model": "claude-bridge/claude-opus-5-5",
           "effort": "high",
           "provider": "claude"
+        },
+        {
+          "harness": "pi",
+          "model": "openai/gpt-6-astra",
+          "effort": "high",
+          "provider": "codex"
         }
       ]
     }
