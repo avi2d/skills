@@ -43,10 +43,11 @@ It fails on a skipped test that declares no reason with `skipReason` at its test
 A skip only a local machine meets, one without `claude` on `PATH` or without the `repos/effect` link, passes `"local"` as the third argument, so only a local run accepts it.
 A test that reads `$HOME` passes against a home nothing was installed into, or skips and says why.
 
-`bun run test:fast` is `scripts/test-fast.ts`, and `.no-mistakes.yaml` names it as the push gate's test step.
+`bun run test:fast` is `scripts/test-fast.ts`.
 It runs `tests/unit/`, then the e2e test files the branch touches since it left `origin/main`, committed, uncommitted or untracked.
 It runs as many workers as the machine has cores, and judges skips the way `bun run test` does.
 It fails before running anything when `origin/main` is missing, because then the touched files are unknown.
+`.no-mistakes.yaml` names `bunx checks-test --changed` as the push gate test step.
 
 `bun test` preloads `tests/lib/emitted.ts`, which generates into a `generated-<pid>/` of the test process's own.
 A fresh clone and a fresh worktree are green without a command anyone has to remember, parallel test processes never read each other's output, and the suite writes none of the `generated/` tree the harnesses load.
