@@ -2,6 +2,7 @@
   ".github/workflows/ci.yml": 1,
   ".no-mistakes.yaml": 1,
   "README.md": 2,
+  "bun.lock": 2,
   "docs/adr/0004-the-repo-installs-itself-and-the-contract-stays-hand-written.md": 14,
   "docs/adr/0007-the-herdr-port-lands-on-the-fork-and-the-refactors-are-offered-upstream.md": 7,
   "docs/adr/0009-a-claim-about-what-a-clone-gets-is-checked-on-one.md": 2,
