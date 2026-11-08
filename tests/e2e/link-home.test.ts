@@ -101,7 +101,7 @@ describe("the account's own home", () => {
     }
   });
 
-  test("is linked from a main checkout away from ~/Projects/skills, though its path is itself a link to the checkout", async () => {
+  test("is linked from a main checkout wherever it was cloned, though its path is itself a link to the checkout", async () => {
     const { home, discard } = await account();
     try {
       await mkdir(join(home, "code"));
