@@ -22,13 +22,15 @@
           "floor": {
             "scope": "all_models",
             "min_percent": 15
-          }
+          },
+          "claude_account": "main"
         },
         {
           "harness": "pi",
           "model": "claude-bridge/claude-opus-5-5",
           "effort": "low",
-          "provider": "claude"
+          "provider": "claude",
+          "claude_account": "main"
         }
       ]
     },
@@ -53,13 +55,15 @@
           "floor": {
             "scope": "all_models",
             "min_percent": 15
-          }
+          },
+          "claude_account": "main"
         },
         {
           "harness": "pi",
           "model": "claude-bridge/claude-opus-5-5",
           "effort": "medium",
-          "provider": "claude"
+          "provider": "claude",
+          "claude_account": "main"
         }
       ]
     },
@@ -80,7 +84,8 @@
           "harness": "pi",
           "model": "claude-bridge/claude-opus-5-5",
           "effort": "medium",
-          "provider": "claude"
+          "provider": "claude",
+          "claude_account": "main"
         }
       ]
     },
@@ -91,7 +96,8 @@
           "harness": "pi",
           "model": "claude-bridge/claude-opus-5-5",
           "effort": "high",
-          "provider": "claude"
+          "provider": "claude",
+          "claude_account": "main"
         }
       ]
     },
@@ -102,7 +108,8 @@
           "harness": "pi",
           "model": "claude-bridge/claude-opus-5-5",
           "effort": "high",
-          "provider": "claude"
+          "provider": "claude",
+          "claude_account": "main"
         }
       ]
     },
@@ -113,7 +120,8 @@
           "harness": "pi",
           "model": "claude-bridge/claude-opus-5-5",
           "effort": "high",
-          "provider": "claude"
+          "provider": "claude",
+          "claude_account": "main"
         }
       ]
     }
@@ -123,7 +131,8 @@
       "harness": "pi",
       "model": "claude-bridge/claude-opus-5-5",
       "effort": "high",
-      "provider": "claude"
+      "provider": "claude",
+      "claude_account": "main"
     }
   ]
 }

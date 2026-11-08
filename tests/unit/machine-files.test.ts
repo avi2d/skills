@@ -3,7 +3,7 @@ import { Schema } from "effect";
 import { cp, mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { TASK_KINDS, crewDispatchJson } from "../../src/generate/crew-dispatch";
+import { TASK_KINDS, crewDispatchJson, type Profile } from "../../src/generate/crew-dispatch";
 import { crewDispatchOf } from "../../src/generate/crew-dispatch-config";
 import { generated } from "../../src/generate/generate";
 import { REPO } from "../../src/generate/link";
@@ -95,6 +95,36 @@ test.each([
   ["a floor with no scope", { ...haiku, floor: { scope: "", min_percent: 15 } }, /at \["rules"\]\[0\]\["use"\]\[0\]\["floor"\]\["scope"\]$/],
 ])("generation refuses a Haiku 5.5 profile with %s", async (_, profile, named) => {
   expect(await saidBy(crewDispatchJson(withFirstProfile(() => profile)))).toMatch(named);
+});
+
+const withoutClaudeAccount = (profile: Profile): Profile | Record<string, unknown> => {
+  if (!profile.model.startsWith("claude-bridge/")) return profile;
+  const bare: Record<string, unknown> = { ...profile };
+  delete bare.claude_account;
+  return bare;
+};
+
+test("generation refuses a Claude profile with no claude_account, which leaves firstmate no login to launch", async () => {
+  const source = crewDispatchOf("windows");
+  const [first, ...rest] = source.rules;
+  if (first === undefined) return expect.unreachable("the source holds no rule");
+  const use = first.use.map(withoutClaudeAccount);
+  expect(await saidBy(crewDispatchJson({ ...source, rules: [{ ...first, use }, ...rest] }))).toMatch(/claude_account/);
+});
+
+test("generation refuses a claude_account outside the clauth profile names the resolver accepts", async () => {
+  const source = crewDispatchOf("windows");
+  const [first, ...rest] = source.rules;
+  if (first === undefined) return expect.unreachable("the source holds no rule");
+  const use = first.use.map((profile) =>
+    profile.model === "claude-bridge/claude-opus-5-5" ? { ...profile, claude_account: "Main Account!" } : profile,
+  );
+  expect(await saidBy(crewDispatchJson({ ...source, rules: [{ ...first, use }, ...rest] }))).toMatch(/claude_account/);
+});
+
+test("generation refuses a claude_account on a Muse profile, which spends OpenCode Go rather than Claude", async () => {
+  const source = withFirstProfile((profile) => ({ ...profile, claude_account: "main" }));
+  expect(await saidBy(crewDispatchJson(source))).toMatch(/Expected no excess property\n {2}at \["rules"\]\[0\]\["use"\]\[0\]\["claude_account"\]/);
 });
 
 test("generation refuses a floor on a profile other than Haiku 5.5 and Muse", async () => {

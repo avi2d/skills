@@ -47,9 +47,13 @@ const Floor = Schema.Struct({
   min_percent: Schema.Int.check(Schema.isBetween({ minimum: 0, maximum: 100 })),
 }).annotate({ description: "firstmate skips the candidate while the scope reads below min_percent" });
 
+const ClaudeAccount = Schema.String.check(Schema.isPattern(/^[A-Za-z0-9][A-Za-z0-9._-]*$/)).annotate({
+  description: "The clauth profile name firstmate launches this profile on",
+});
+
 const Profile = Schema.Union([
-  profileOf("claude-bridge/claude-opus-5-5", "claude"),
-  Schema.Struct({ ...profileOf("claude-bridge/claude-haiku-5-5", "claude").fields, floor: Floor }).annotate({
+  Schema.Struct({ ...profileOf("claude-bridge/claude-opus-5-5", "claude").fields, claude_account: ClaudeAccount }),
+  Schema.Struct({ ...profileOf("claude-bridge/claude-haiku-5-5", "claude").fields, floor: Floor, claude_account: ClaudeAccount }).annotate({
     description: "Haiku 5.5 spends the Claude windows the main firstmate and Opus crews share, so it always carries a floor",
   }),
   Schema.Struct({ ...profileOf("opencode-go/muse-spark-1.3-contributor", "opencode-go").fields, floor: Floor }).annotate({

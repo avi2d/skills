@@ -11,6 +11,7 @@ const Profile = Schema.Struct({
   model: Schema.optionalKey(Schema.String),
   effort: Schema.optionalKey(Schema.String),
   provider: Schema.optionalKey(Schema.String),
+  claude_account: Schema.optionalKey(Schema.String),
   floor: Schema.optionalKey(Schema.Struct({ scope: Schema.String, min_percent: Schema.Int })),
 });
 type Profile = typeof Profile.Type;
@@ -57,6 +58,14 @@ test.each([...MACHINES])("on the %s machine, Haiku sits only in the trivial and 
     ["Mechanical", "low"],
     ["Clearly specified implementation work of ordinary size", "high"],
   ]);
+});
+
+test.each([...MACHINES])("on the %s machine, every Claude profile launches on the main clauth account and no other profile names one", async (machine) => {
+  const placed = await profilesOn(machine);
+  const claude = placed.filter(({ profile }) => profile.model?.startsWith("claude-bridge/"));
+  expect(claude.length, "no rule names a Claude profile, so this checks nothing").toBeGreaterThan(0);
+  for (const { profile } of claude) expect(profile).toMatchObject({ provider: "claude", claude_account: "main" });
+  expect(placed.filter(({ profile }) => profile.claude_account !== undefined && !profile.model?.startsWith("claude-bridge/"))).toEqual([]);
 });
 
 test.each([...MACHINES])("on the %s machine, every Haiku profile is skipped while either Claude window holds under 15 percent", async (machine) => {
@@ -134,5 +143,5 @@ test("on the mac machine, a code change whose cause is not yet known dispatches 
   if (rule === undefined) return expect.unreachable("the filter above found one rule");
   const narrow = dispatch.rules.slice(0, dispatch.rules.indexOf(rule)).filter(({ when }) => /^(Mechanical|Clearly specified implementation work of ordinary size)/.test(when));
   expect(narrow.length, "a narrower shared rule must still win over the unknown cause rule").toBe(2);
-  expect(listed(rule.use)).toEqual([{ harness: "pi", model: "claude-bridge/claude-opus-5-5", effort: "high", provider: "claude" }]);
+  expect(listed(rule.use)).toEqual([{ harness: "pi", model: "claude-bridge/claude-opus-5-5", effort: "high", provider: "claude", claude_account: "main" }]);
 });
