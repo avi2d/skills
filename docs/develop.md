@@ -68,7 +68,7 @@ No schedule or workflow runs them.
 
 `tests/e2e/fleet-names.test.ts` fails a tracked file that names a machine, an account, a fleet tool or a generic setup path more often than `tests/fixtures/fleet-names.json` allows.
 That file holds each file's count today, and a change that removes a name lowers its count, because the test also fails a count above what the file holds.
-A private names file adds owner-specific names to the same scan with its own allowlist beside it, and the suite scans only the public names when that file is absent.
+A private names file adds owner-specific names to the same scan with counts in `fleet-names-allow.json` beside it, and the suite scans only the public names when that file is absent.
 The suite reads that file from `$SKILLS_FLEET_NAMES_FILE` when that variable names it, else from `skills/fleet-names.txt` under `$XDG_CONFIG_HOME` or `~/.config`.
 
 `bun run typecheck` is `tsc --noEmit` plus the Effect language service's diagnostics, configured in `tsconfig.json`.

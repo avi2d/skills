@@ -36,8 +36,8 @@ const allowlist = decodeAllowlist(await Bun.file(repo + ALLOWLIST).json());
 
 const escapeRegExp = (text: string): string => text.replaceAll(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const privateNamesFile =
-  process.env.SKILLS_FLEET_NAMES_FILE ??
-  join(process.env.XDG_CONFIG_HOME ?? join(process.env.HOME ?? "", ".config"), "skills/fleet-names.txt");
+  process.env.SKILLS_FLEET_NAMES_FILE ||
+  join(process.env.XDG_CONFIG_HOME || join(process.env.HOME || "", ".config"), "skills/fleet-names.txt");
 const privateAllowlistFile = join(dirname(privateNamesFile), "fleet-names-allow.json");
 const privateNames = existsSync(privateNamesFile)
   ? (await Bun.file(privateNamesFile).text()).split("\n").map((line) => line.trim()).filter(Boolean)
@@ -114,7 +114,7 @@ test.skipIf(privateNames === undefined)(
     const over = [...privateNamed]
       .filter(([path, names]) => names.length > (privateAllowlist[path] ?? 0))
       .map(([path, names]) => `${path}: ${names.length} > ${privateAllowlist[path] ?? 0} (${[...new Set(names)].join(", ")})`);
-    expect(over, `a file names an owner-specific name; take it from user config instead`).toEqual([]);
+    expect(over, `a file names an owner-specific name; allow it in ${privateAllowlistFile}`).toEqual([]);
   },
 );
 
