@@ -109,7 +109,7 @@ for path in \
   '.claude-accounts/second/settings.json'
 do
   [ -f "$HOME/$path" ] || continue
-  bun -e 'import fs from "node:fs";const [file,...keys]=Bun.argv.slice(1);const o=JSON.parse(fs.readFileSync(file,"utf8"));for(const k of keys){delete o[k];}fs.writeFileSync(file,JSON.stringify(o,null,2));' "$HOME/$path" 'hooks'
+  bun -e 'import fs from "node:fs";const [file,...keys]=Bun.argv.slice(1);const o=JSON.parse(fs.readFileSync(file,"utf8"));for(const k of keys){delete o[k];}fs.writeFileSync(file,JSON.stringify(o,null,2));' "$HOME/$path" 'hooks' || exit 1
 done
 fi
 ```

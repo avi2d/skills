@@ -270,18 +270,24 @@ test("the uninstall fails instead of leaving a grafted hooks key it cannot read"
   const bin = await mkdtemp(join(tmpdir(), "skills-uninstall-linux-"));
   try {
     const rels = Object.keys(graftsOn("windows"));
-    expect(rels.length, "no grafted account listed, so nothing rejects an unreadable one").toBeGreaterThan(0);
-    for (const rel of rels) {
+    expect(rels.length, "no grafted account listed, so nothing rejects an unreadable one").toBeGreaterThan(1);
+    const [broken = expect.unreachable("no grafted account listed"), ...rest] = rels;
+    const ownKeys = { statusLine: { type: "command", command: "machine-statusline" }, theme: "machine-theme" };
+    const ownHooks = { Stop: [{ hooks: [{ type: "command", command: "checkout-hook" }] }] };
+    await mkdir(dirname(join(home, broken)), { recursive: true });
+    await writeFile(join(home, broken), "{ not json");
+    for (const rel of rest) {
       await mkdir(dirname(join(home, rel)), { recursive: true });
-      await writeFile(join(home, rel), "{ not json");
+      await writeFile(join(home, rel), JSON.stringify({ ...ownKeys, hooks: ownHooks }));
     }
     await writeFile(join(bin, "uname"), "#!/bin/sh\necho Linux\n", { mode: 0o755 });
     const page = await Bun.file(`${REPO}${INSTALL_PAGE}`).text();
     const script = /```sh\n([\s\S]*?)```/.exec(page)?.[1] ?? expect.unreachable(`${INSTALL_PAGE} holds no sh block`);
     const run = await Bun.$`sh -c ${script}`.cwd(REPO).env({ ...process.env, HOME: home, PATH: `${bin}:${process.env.PATH}` }).nothrow().quiet();
     expect(run.exitCode, "the uninstall left hooks pointing at removed files without a word").not.toBe(0);
-    for (const rel of rels) {
-      expect(await Bun.file(join(home, rel)).text(), "the uninstall rewrote a file it could not clean").toBe("{ not json");
+    expect(await Bun.file(join(home, broken)).text(), "the uninstall rewrote a file it could not clean").toBe("{ not json");
+    for (const rel of rest) {
+      expect(await Bun.file(join(home, rel)).json(), "the uninstall cleaned past a file it could not clean").toEqual({ ...ownKeys, hooks: ownHooks });
     }
   } finally {
     await rm(home, { recursive: true, force: true });
