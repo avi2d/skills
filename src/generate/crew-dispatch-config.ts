@@ -3,6 +3,10 @@ import type { Machine } from "./machine";
 
 const opus = (effort: Effort) => ({ harness: "pi", model: "claude-bridge/claude-opus-5-5", effort, provider: "claude" }) as const satisfies Profile;
 
+const astra = (effort: Effort) => ({ harness: "pi", model: "openai/gpt-6-astra", effort, provider: "codex" }) as const satisfies Profile;
+
+const terra = (effort: Effort) => ({ harness: "pi", model: "openai/gpt-6.1-terra", effort, provider: "codex" }) as const satisfies Profile;
+
 const muse = (effort: Effort) =>
   ({ harness: "pi", model: "opencode-go/muse-spark-1.3-contributor", effort, provider: "opencode-go", floor: FLOOR }) as const satisfies Profile;
 
@@ -20,7 +24,7 @@ const SMALL_EFFORTS = { muse: "high", haiku: "high", opus: "medium" } as const;
 const unknownCause: OwnRule = {
   description: "An unexplained cause needs the strongest reasoning class.",
   when: "A code change whose cause or scope is not yet known: a bug, flaky check, environment-only failure, or unexplained regression that must first be diagnosed across systems, processes or machines before the fix is clear. A fix the brief already locates takes a smaller rule.",
-  use: [opus("high")],
+  use: [opus("high"), astra("high")],
 };
 
 const macOnly: OwnRule = {
@@ -31,10 +35,10 @@ const macOnly: OwnRule = {
 
 const shared: CrewDispatch["rules"] = [
   { kind: "trivial", use: workhorse(TRIVIAL_EFFORTS) },
-  { kind: "small", use: workhorse(SMALL_EFFORTS) },
-  { kind: "large", use: [muse("high"), opus("medium")] },
+  { kind: "small", use: [muse(SMALL_EFFORTS.muse), terra("high"), haiku(SMALL_EFFORTS.haiku), opus(SMALL_EFFORTS.opus)] },
+  { kind: "large", use: [muse("high"), terra("high"), opus("medium")] },
   { kind: "ambiguous", use: [opus("high")] },
-  { kind: "investigation", use: [opus("high")] },
+  { kind: "investigation", use: [opus("high"), astra("high")] },
 ];
 
 const windows: CrewDispatch = {

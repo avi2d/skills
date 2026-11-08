@@ -49,6 +49,8 @@ const Floor = Schema.Struct({
 
 const Profile = Schema.Union([
   profileOf("claude-bridge/claude-opus-5-5", "claude"),
+  profileOf("openai/gpt-6-astra", "codex"),
+  profileOf("openai/gpt-6.1-terra", "codex"),
   Schema.Struct({ ...profileOf("claude-bridge/claude-haiku-5-5", "claude").fields, floor: Floor }).annotate({
     description: "Haiku 5.5 spends the Claude windows the main firstmate and Opus crews share, so it always carries a floor",
   }),

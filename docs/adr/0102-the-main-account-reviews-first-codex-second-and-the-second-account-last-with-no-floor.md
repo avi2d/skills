@@ -5,6 +5,7 @@ Date: 2026-11-03
 ## Status
 
 Accepted. Amends 0083, 0100 and 0101: the reviewer chain runs Opus on main first, Sol on Codex second behind its five-hour floor, and Opus on second last with no floor.
+Amended by 0108: Astra on Codex reviews first with no floor, and Sol leaves the chain.
 
 ## Context
 
