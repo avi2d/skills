@@ -1,6 +1,7 @@
 # Project agent memory
 
 This repository builds agent instructions into a Hub and one Dispatcher per harness, and `README.md` holds what a person reads.
+`docs/vision.md` holds what skills is for and what it will not do, so read it before adding scope.
 `docs/glossary.md` is the vocabulary.
 
 ## Before you change a part
