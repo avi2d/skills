@@ -31,4 +31,4 @@ It carries no Workflows and holds no path into another repository: its edge is `
 `generated/` and `repos/` are written by commands and never committed.
 
 A change aligns when it delivers an instruction closer to the moment its work comes up, removes a Body nothing invokes, turns a decidable clause into a check, measures a Rule, or keeps the bundle dependency-free.
-A change should be resisted when it leaves a Rule for a model to remember, forks an instruction per harness, states in prose what a program could decide, commits what a command writes, carries a Workflow, or reaches past `$HOME` into another repository.
+A change should be resisted when it leaves a Rule for a model to remember, forks an instruction per harness, states in prose what a program could decide, commits `generated/` or `repos/`, carries a Workflow, or reaches past `$HOME` into another repository.
