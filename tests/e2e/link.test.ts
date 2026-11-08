@@ -7,7 +7,7 @@ import { Schema } from "effect";
 import { skipReason } from "@avi2dg/checks/scripts/test-skips.ts";
 import { DEFAULT_GENERATED_ROOT } from "../../src/generate/bundle";
 import { INSTALL_PAGE } from "../../src/docs/docs";
-import { MERGED, REPO, link, preflight } from "../../src/generate/link";
+import { MERGED, REPO, graftsOn, link, preflight } from "../../src/generate/link";
 import { resolvedTargets, wouldDangle } from "../lib/dangling";
 import { clonePaths } from "./lib/clone";
 import { valueOf } from "../lib/effect";
@@ -38,8 +38,7 @@ describe("a checkout whose pi settings pi wrote into through the old link", () =
     const root = await mkdtemp(join(tmpdir(), "skills-pi-dirtied-"));
     const repo = `${root}/repo/`;
     const home = `${root}/home`;
-    await mkdir(`${repo}harness/pi`, { recursive: true });
-    await cp(`${REPO}${FROM}`, `${repo}${FROM}`);
+    await cp(`${REPO}harness`, `${repo}harness`, { recursive: true });
     await Bun.$`git init -q && git add -A && git -c user.name=test -c user.email=test@example.invalid commit -q -m base`.cwd(repo).quiet();
     await writeFile(`${repo}${FROM}`, JSON.stringify({ ...piSettingsFile, ...changes }, null, 2));
     await mkdir(`${home}/.pi/agent`, { recursive: true });
@@ -119,8 +118,7 @@ exit 1`;
       const repo = `${root}/repo/`;
       const home = `${root}/home`;
       try {
-        await mkdir(`${repo}harness/pi`, { recursive: true });
-        await cp(`${REPO}${FROM}`, `${repo}${FROM}`);
+        await cp(`${REPO}harness`, `${repo}harness`, { recursive: true });
         await mkdir(`${home}/.pi/agent`, { recursive: true });
         await writeFile(
           `${home}/${SETTINGS}`,
@@ -206,16 +204,28 @@ test("the account's own home is read from the passwd record, which a temporary $
 test("the uninstall on the install page removes every link the linker wrote, and leaves what it did not write", async () => {
   const home = await mkdtemp(join(tmpdir(), "skills-uninstall-"));
   const elsewhere = await mkdtemp(join(tmpdir(), "skills-elsewhere-"));
+  const bin = await mkdtemp(join(tmpdir(), "skills-uninstall-linux-"));
   try {
     await valueOf(link(REPO, home));
     await rm(join(home, ".codex/hooks.json"));
     await symlink(elsewhere, join(home, ".codex/hooks.json"));
     await mkdir(join(home, ".claude"), { recursive: true });
     await writeFile(join(home, ".claude/agents"), "not a link\n");
+    const grafted = Object.keys({ ...graftsOn("mac"), ...graftsOn("windows") });
+    const [kept = expect.unreachable("no grafted account listed"), ...absent] = grafted;
+    const ownHooks = { Stop: [{ hooks: [{ type: "command", command: "checkout-hook" }] }] };
+    const ownKeys = { statusLine: { type: "command", command: "machine-statusline" }, theme: "machine-theme" };
+    await mkdir(dirname(join(home, kept)), { recursive: true });
+    await writeFile(join(home, kept), JSON.stringify({ ...ownKeys, hooks: ownHooks }));
+    for (const rel of absent) await rm(join(home, rel), { force: true });
+    const unlisted = ".claude-accounts/third/settings.json";
+    await mkdir(dirname(join(home, unlisted)), { recursive: true });
+    await writeFile(join(home, unlisted), JSON.stringify({ ...ownKeys, hooks: ownHooks }));
 
+    await writeFile(join(bin, "uname"), "#!/bin/sh\necho Linux\n", { mode: 0o755 });
     const page = await Bun.file(`${REPO}${INSTALL_PAGE}`).text();
     const script = /```sh\n([\s\S]*?)```/.exec(page)?.[1] ?? expect.unreachable(`${INSTALL_PAGE} holds no sh block`);
-    const run = await Bun.$`sh -c ${script}`.cwd(REPO).env({ ...process.env, HOME: home }).nothrow().quiet();
+    const run = await Bun.$`sh -c ${script}`.cwd(REPO).env({ ...process.env, HOME: home, PATH: `${bin}:${process.env.PATH}` }).nothrow().quiet();
     expect(run.exitCode, run.stderr.toString()).toBe(0);
 
     const remaining = await Promise.all(
@@ -225,9 +235,63 @@ test("the uninstall on the install page removes every link the linker wrote, and
     expect(left, "the uninstall left a link the linker wrote").toEqual([]);
     expect(await readlink(join(home, ".codex/hooks.json")), "the uninstall removed a link it did not write").toBe(elsewhere);
     expect(await Bun.file(join(home, ".claude/agents")).text(), "the uninstall removed a real file").toBe("not a link\n");
+    expect(await Bun.file(join(home, kept)).json(), "the uninstall kept a grafted hooks key pointing at removed files").toEqual(ownKeys);
+    expect(await Bun.file(join(home, unlisted)).json(), "the uninstall touched an account it never grafted").toEqual({ ...ownKeys, hooks: ownHooks });
   } finally {
     await rm(home, { recursive: true, force: true });
     await rm(elsewhere, { recursive: true, force: true });
+    await rm(bin, { recursive: true, force: true });
+  }
+});
+
+test("the uninstall on the Mac leaves an account file holding the user's own hooks alone", async () => {
+  const home = await mkdtemp(join(tmpdir(), "skills-uninstall-mac-"));
+  const bin = await mkdtemp(join(tmpdir(), "skills-uninstall-darwin-"));
+  try {
+    const ownHooks = { Stop: [{ hooks: [{ type: "command", command: "user-hook" }] }] };
+    const ownKeys = { statusLine: { type: "command", command: "user-statusline" }, theme: "user-theme" };
+    const rel = ".claude-accounts/main/settings.json";
+    await mkdir(dirname(join(home, rel)), { recursive: true });
+    await writeFile(join(home, rel), JSON.stringify({ ...ownKeys, hooks: ownHooks }));
+    await writeFile(join(bin, "uname"), "#!/bin/sh\necho Darwin\n", { mode: 0o755 });
+    const page = await Bun.file(`${REPO}${INSTALL_PAGE}`).text();
+    const script = /```sh\n([\s\S]*?)```/.exec(page)?.[1] ?? expect.unreachable(`${INSTALL_PAGE} holds no sh block`);
+    const run = await Bun.$`sh -c ${script}`.cwd(REPO).env({ ...process.env, HOME: home, PATH: `${bin}:${process.env.PATH}` }).nothrow().quiet();
+    expect(run.exitCode, run.stderr.toString()).toBe(0);
+    expect(await Bun.file(join(home, rel)).json(), "the uninstall deleted hooks link never grafted on the Mac").toEqual({ ...ownKeys, hooks: ownHooks });
+  } finally {
+    await rm(home, { recursive: true, force: true });
+    await rm(bin, { recursive: true, force: true });
+  }
+});
+
+test("the uninstall fails instead of leaving a grafted hooks key it cannot read", async () => {
+  const home = await mkdtemp(join(tmpdir(), "skills-uninstall-broken-"));
+  const bin = await mkdtemp(join(tmpdir(), "skills-uninstall-linux-"));
+  try {
+    const rels = Object.keys(graftsOn("windows"));
+    expect(rels.length, "no grafted account listed, so nothing rejects an unreadable one").toBeGreaterThan(1);
+    const [broken = expect.unreachable("no grafted account listed"), ...rest] = rels;
+    const ownKeys = { statusLine: { type: "command", command: "machine-statusline" }, theme: "machine-theme" };
+    const ownHooks = { Stop: [{ hooks: [{ type: "command", command: "checkout-hook" }] }] };
+    await mkdir(dirname(join(home, broken)), { recursive: true });
+    await writeFile(join(home, broken), "{ not json");
+    for (const rel of rest) {
+      await mkdir(dirname(join(home, rel)), { recursive: true });
+      await writeFile(join(home, rel), JSON.stringify({ ...ownKeys, hooks: ownHooks }));
+    }
+    await writeFile(join(bin, "uname"), "#!/bin/sh\necho Linux\n", { mode: 0o755 });
+    const page = await Bun.file(`${REPO}${INSTALL_PAGE}`).text();
+    const script = /```sh\n([\s\S]*?)```/.exec(page)?.[1] ?? expect.unreachable(`${INSTALL_PAGE} holds no sh block`);
+    const run = await Bun.$`sh -c ${script}`.cwd(REPO).env({ ...process.env, HOME: home, PATH: `${bin}:${process.env.PATH}` }).nothrow().quiet();
+    expect(run.exitCode, "the uninstall left hooks pointing at removed files without a word").not.toBe(0);
+    expect(await Bun.file(join(home, broken)).text(), "the uninstall rewrote a file it could not clean").toBe("{ not json");
+    for (const rel of rest) {
+      expect(await Bun.file(join(home, rel)).json(), "the uninstall cleaned past a file it could not clean").toEqual({ ...ownKeys, hooks: ownHooks });
+    }
+  } finally {
+    await rm(home, { recursive: true, force: true });
+    await rm(bin, { recursive: true, force: true });
   }
 });
 

@@ -22,8 +22,7 @@ describe("pi's settings file", () => {
     const root = await mkdtemp(join(tmpdir(), "skills-pi-settings-"));
     const repo = `${root}/repo/`;
     const home = `${root}/home`;
-    await mkdir(`${repo}harness/pi`, { recursive: true });
-    await cp(`${REPO}harness/pi/settings.json`, `${repo}harness/pi/settings.json`);
+    await cp(`${REPO}harness`, `${repo}harness`, { recursive: true });
     const tracked = `${repo}harness/pi/settings.json`;
     return { repo, home, live: `${home}/${SETTINGS}`, tracked, discard: () => rm(root, { recursive: true, force: true }) };
   };

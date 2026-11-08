@@ -25,8 +25,8 @@ The links it leaves still point into the checkout, so the bundles it wrote and a
 A run whose $HOME is the account's own home, as its passwd record names it, installs only from the checkout the guard in `src/generate/link.ts` names.
 From any other copy it stops before it writes, so a worktree cannot repoint the live harnesses into itself.
 
-The linker repoints links and refuses real files.
-The one exception is `~/.pi/agent/settings.json`, which it writes from the checkout as a file of the machine's own, so a change to `harness/pi/settings.json` reaches pi only at the next `bun run link`, as [the link map](links.md#the-files-it-writes) says.
+The linker repoints links and refuses real files, except where [the link map](links.md) says it writes.
+A change to `harness/pi/settings.json` reaches pi only at the next `bun run link`.
 On a machine where home-manager still owns these paths, the previous owner has to let go before the new one takes hold, as [record 0004](adr/0004-the-repo-installs-itself-and-the-contract-stays-hand-written.md) records.
 The linker removes only the paths `RETIRED` in `src/generate/link.ts` names, each one only while it is still a link into this checkout.
 Dropping an entry from the map says nothing to any machine, so a path leaves the map by moving to `RETIRED`, and every machine that runs the linker again lets go of it, as [record 0020](adr/0020-a-path-home-took-from-here-is-retired-rather-than-forgotten.md) records.

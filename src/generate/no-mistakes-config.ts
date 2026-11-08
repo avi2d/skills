@@ -1,5 +1,6 @@
 import { Config, Effect, Schema } from "effect";
 import { FileFailure, MalformedMachineConfig } from "../platform/failures";
+import { MAIN_ACCOUNT, SECOND_ACCOUNT, accountDirUnder, type ClaudeAccount } from "./claude-accounts";
 
 const Duration = Schema.TemplateLiteral([Schema.Finite, Schema.Literals(["ms", "s", "m", "h"])]);
 
@@ -13,10 +14,6 @@ const OPUS = "claude-bridge/claude-opus-5-5";
 
 const SPARK = "opencode-go/muse-spark-1.3-contributor";
 
-const SECOND_ACCOUNT = "second";
-
-const MAIN_ACCOUNT = "main";
-
 const Floor = Schema.Struct({
   command: Schema.NonEmptyString.annotate({
     description: "A shell command printing JSON with the allowance left; a command that fails or prints no JSON skips the entry",
@@ -25,10 +22,8 @@ const Floor = Schema.Struct({
   minimum: Schema.Int.check(Schema.isBetween({ minimum: 0, maximum: 100 })),
 });
 
-const ACCOUNTS_DIR = "/.claude-accounts";
-
-const accountDirOf = (account: string) =>
-  Schema.String.check(Schema.isStartingWith("/")).check(Schema.isEndingWith(`${ACCOUNTS_DIR}/${account}`)).annotate({
+const accountDirOf = (account: ClaudeAccount) =>
+  Schema.String.check(Schema.isStartingWith("/")).check(Schema.isEndingWith(`/${accountDirUnder(account)}`)).annotate({
     description: "no-mistakes hands an entry's env to the agent unexpanded, so a tilde would never reach a home",
   });
 
@@ -57,7 +52,7 @@ const CODEX_REMAINING = `{remaining_percent: ([.providers[] | select(.provider =
 
 const SOL_FLOOR_MINIMUM = 30;
 
-const loginDir = (home: string, account: string) => `${home}${ACCOUNTS_DIR}/${account}`;
+const loginDir = (home: string, account: ClaudeAccount) => `${home}/${accountDirUnder(account)}`;
 
 // The base review prompt skips style, so the instruction says comments are wanted.
 const COMMENT_REVIEW = [
