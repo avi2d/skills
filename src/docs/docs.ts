@@ -5,7 +5,7 @@ import { SWEEP_PAGE, SWEEPS, sweepPage, sweepRecords } from "../eval/eval-sweeps
 import { MalformedBody, MalformedRecord, fileFailure, type FileFailure, type MalformedSelection, type UncomposableBodies } from "../platform/failures";
 import { attempt } from "../platform/files";
 import { active } from "../generate/generate";
-import { MERGED, REPO, RETIRED, graftsOn, linksUnder, type GraftMap, type LinkMap, type Merge } from "../generate/link";
+import { CLAUDE_CONFIG_GRAFT, MERGED, REPO, RETIRED, claudeSettingsIn, linksUnder, type Graft, type LinkMap, type Merge } from "../generate/link";
 import { MACHINES, type Machine } from "../generate/machine";
 import { main } from "../platform/platform";
 
@@ -116,8 +116,6 @@ type MergeMap = Readonly<Record<string, Merge>>;
 
 type MachineLinks = Readonly<Record<Machine, LinkMap>>;
 
-type MachineGrafts = Readonly<Record<Machine, GraftMap>>;
-
 const ON_MACHINE: Readonly<Record<Machine, string>> = {
   mac: "on the Mac",
   windows: "on the Windows machine and any other",
@@ -125,24 +123,14 @@ const ON_MACHINE: Readonly<Record<Machine, string>> = {
 
 const linksOnEveryMachine = (root: string): MachineLinks => ({ mac: linksUnder(root, "mac"), windows: linksUnder(root, "windows") });
 
-const graftsOnEveryMachine = (): MachineGrafts => ({ mac: graftsOn("mac"), windows: graftsOn("windows") });
-
-const onlyOn = (grafts: MachineGrafts, rel: string): string => {
-  const machines = MACHINES.filter((machine) => rel in grafts[machine]);
-  return machines.length === MACHINES.length ? "" : ` ${machines.map((machine) => ON_MACHINE[machine]).join(", ")}`;
-};
-
 const codeList = (keys: readonly string[]): string => keys.map((key) => `\`${key}\``).join(", ");
 
-const graftRows = (grafts: MachineGrafts): readonly string[] =>
-  Object.entries({ ...grafts.mac, ...grafts.windows }).map(
-    ([rel, { from, keys }]) => `| ${inHome(rel)}${onlyOn(grafts, rel)} | \`${from}\` | ${codeList(keys)} |`,
-  );
+const CONFIG_DIR = "<dir>";
 
-const graftItems = (grafts: MachineGrafts): readonly string[] =>
-  Object.entries({ ...grafts.mac, ...grafts.windows }).map(
-    ([rel, { from, keys }]) => `- ${inHome(rel)}${onlyOn(grafts, rel)}, given ${codeList(keys)} from \`${from}\` and keeping every other key`,
-  );
+const graftedFile = inHome(claudeSettingsIn(CONFIG_DIR));
+
+const graftItem = ({ from, keys }: Graft): string =>
+  `- ${graftedFile} for each \`${CONFIG_DIR}\` in the config's \`claudeConfigDirs\`, given ${codeList(keys)} from \`${from}\` and keeping every other key`;
 
 const pointsAt = (links: MachineLinks, rel: string): string => {
   if (links.mac[rel] === links.windows[rel]) return `\`${links.windows[rel]}\``;
@@ -157,7 +145,7 @@ const everyRel = (links: MachineLinks): readonly string[] => [
   ...Object.keys(links.mac).filter((rel) => !(rel in links.windows)),
 ];
 
-export const linkPage = (links: MachineLinks, merged: MergeMap, grafts: MachineGrafts, retired: readonly string[]): string =>
+export const linkPage = (links: MachineLinks, merged: MergeMap, graft: Graft, retired: readonly string[]): string =>
   [
     "---",
     "kind: reference",
@@ -165,7 +153,7 @@ export const linkPage = (links: MachineLinks, merged: MergeMap, grafts: MachineG
     "# The link map",
     "",
     "The link map is every path in $HOME that `bun run link` writes or takes back, and what each one points at in this checkout.",
-    "`bun run docs` writes this page from `LINKS`, `MERGED`, `graftsOn` and `RETIRED` in `src/generate/link.ts`, and `bun run test` fails when the two disagree.",
+    "`bun run docs` writes this page from `LINKS`, `MERGED`, `CLAUDE_CONFIG_GRAFT` and `RETIRED` in `src/generate/link.ts`, and `bun run test` fails when the two disagree.",
     "",
     "## The links",
     "",
@@ -190,16 +178,17 @@ export const linkPage = (links: MachineLinks, merged: MergeMap, grafts: MachineG
     "| --- | --- | --- |",
     ...Object.entries(merged).map(([rel, { from, ownKeys }]) => `| ${inHome(rel)} | \`${from}\` | ${ownKeys.map((key) => `\`${key}\``).join(", ")} |`),
     "",
-    "## The keys it adds to a Claude account",
+    "## The keys it adds to a Claude config directory",
     "",
-    "Claude Code started with `CLAUDE_CONFIG_DIR` naming an account's directory reads that directory's `settings.json`, and never `~/.claude/settings.json`.",
-    "`bun run link` writes each key the last column names into each path below, and keeps every other key the file already holds.",
+    "Claude Code started with `CLAUDE_CONFIG_DIR` set reads `settings.json` from the directory it names, and never `~/.claude/settings.json`.",
+    `For each \`${CONFIG_DIR}\` in the \`claudeConfigDirs\` of [the skills config](config.md), \`bun run link\` writes each key the last column names into the path below.`,
+    "It keeps every other key the file already holds.",
     "It names each key it replaces, with the value the file held.",
-    "`CLAUDE_ACCOUNTS` in `src/generate/claude-accounts.ts` lists each machine's accounts.",
+    "With no `claudeConfigDirs`, it writes no such file.",
     "",
     "| In $HOME | Taken from, in this checkout | Keys it writes |",
     "| --- | --- | --- |",
-    ...graftRows(grafts),
+    `| ${graftedFile} | \`${graft.from}\` | ${codeList(graft.keys)} |`,
     "",
     "## The paths it takes back",
     "",
@@ -215,10 +204,14 @@ export const linkPage = (links: MachineLinks, merged: MergeMap, grafts: MachineG
     "",
   ].join("\n");
 
-const uninstallScript = (links: LinkMap, grafts: MachineGrafts, retired: readonly string[]): string[] => {
+const UNGRAFT =
+  'import fs from "node:fs";const e=process.env;const config=e.SKILLS_CONFIG||(e.XDG_CONFIG_HOME||e.HOME+"/.config")+"/skills/config.json";' +
+  'if(!fs.existsSync(config))process.exit(0);const keys=Bun.argv.slice(1);' +
+  'for(const dir of JSON.parse(fs.readFileSync(config,"utf8")).claudeConfigDirs??[]){const file=e.HOME+"/"+dir+"/settings.json";if(!fs.existsSync(file))continue;' +
+  'const o=JSON.parse(fs.readFileSync(file,"utf8"));for(const k of keys){delete o[k];}fs.writeFileSync(file,JSON.stringify(o,null,2));}';
+
+const uninstallScript = (links: LinkMap, graft: Graft, retired: readonly string[]): string[] => {
   const taken = [...Object.keys(links), ...retired];
-  const grafted = Object.entries(grafts.windows);
-  const keys = [...new Set(grafted.flatMap(([, graft]) => graft.keys))];
   return [
     "```sh",
     "root=$(pwd -P)",
@@ -227,18 +220,7 @@ const uninstallScript = (links: LinkMap, grafts: MachineGrafts, retired: readonl
     "do",
     '  case "$(readlink "$HOME/$path")" in "$root"/*) rm "$HOME/$path" ;; esac',
     "done",
-    ...(grafted.length === 0
-      ? []
-      : [
-          'if [ "$(uname)" != Darwin ]; then',
-          "for path in \\",
-          ...grafted.map(([rel], at) => `  ${quoted(rel)}${at < grafted.length - 1 ? " \\" : ""}`),
-          "do",
-          '  [ -f "$HOME/$path" ] || continue',
-          `  bun -e 'import fs from "node:fs";const [file,...keys]=Bun.argv.slice(1);const o=JSON.parse(fs.readFileSync(file,"utf8"));for(const k of keys){delete o[k];}fs.writeFileSync(file,JSON.stringify(o,null,2));' "$HOME/$path"${keys.map((key) => ` ${quoted(key)}`).join("")} || exit 1`,
-          "done",
-          "fi",
-        ]),
+    `bun -e ${quoted(UNGRAFT)}${graft.keys.map((key) => ` ${quoted(key)}`).join("")} || exit 1`,
     "```",
   ];
 };
@@ -252,13 +234,13 @@ const TEMPLATE_LIST: Region = {
 };
 
 const OWNED_LIST: Region = {
-  opens: "<!-- `bun run docs` writes the list below from `LINKS`, `MERGED` and `graftsOn` in `src/generate/link.ts`. -->",
+  opens: "<!-- `bun run docs` writes the list below from `LINKS`, `MERGED` and `CLAUDE_CONFIG_GRAFT` in `src/generate/link.ts`. -->",
   closes: "<!-- The list above ends here. -->",
   holds: "its list of the paths `bun run link` owns",
 };
 
 const UNINSTALL_SCRIPT: Region = {
-  opens: "<!-- `bun run docs` writes the script below from `LINKS`, `graftsOn` and `RETIRED` in `src/generate/link.ts`. -->",
+  opens: "<!-- `bun run docs` writes the script below from `LINKS`, `CLAUDE_CONFIG_GRAFT` and `RETIRED` in `src/generate/link.ts`. -->",
   closes: "<!-- The script above ends here. -->",
   holds: "its uninstall script",
 };
@@ -288,15 +270,15 @@ export const withLinks = Effect.fnUntraced(function* (
   page: string,
   links: LinkMap,
   merged: MergeMap,
-  grafts: MachineGrafts,
+  graft: Graft,
   retired: readonly string[],
 ): Effect.fn.Return<string, MalformedBody> {
   const owned = yield* spliced(INSTALL_PAGE, page, OWNED_LIST, [
     ...Object.keys(links).map((rel) => `- ${inHome(rel)}`),
     ...Object.entries(merged).map(([rel, { from }]) => `- ${inHome(rel)}, written from \`${from}\` rather than linked`),
-    ...graftItems(grafts),
+    graftItem(graft),
   ]);
-  return yield* spliced(INSTALL_PAGE, owned, UNINSTALL_SCRIPT, uninstallScript(links, grafts, retired));
+  return yield* spliced(INSTALL_PAGE, owned, UNINSTALL_SCRIPT, uninstallScript(links, graft, retired));
 });
 
 const installPageWithLinks = Effect.fnUntraced(function* (
@@ -308,7 +290,7 @@ const installPageWithLinks = Effect.fnUntraced(function* (
   for (const [rel, target] of Object.entries(linksUnder(DEFAULT_GENERATED_ROOT, "mac"))) {
     if (!(rel in links)) links[rel] = target;
   }
-  return yield* withLinks(yield* attempt(path, (fs) => fs.readFileString(path)), links, MERGED, graftsOnEveryMachine(), RETIRED);
+  return yield* withLinks(yield* attempt(path, (fs) => fs.readFileString(path)), links, MERGED, CLAUDE_CONFIG_GRAFT, RETIRED);
 });
 
 const writingReference = Effect.fnUntraced(function* (
@@ -341,7 +323,7 @@ export const pages = Effect.fnUntraced(function* (
   const { bodies, profiles } = yield* active(repo);
   return [
     { path: RECORD_INDEX, text: recordIndex(yield* records(repo)) },
-    { path: LINK_PAGE, text: linkPage(linksOnEveryMachine(DEFAULT_GENERATED_ROOT), MERGED, graftsOnEveryMachine(), RETIRED) },
+    { path: LINK_PAGE, text: linkPage(linksOnEveryMachine(DEFAULT_GENERATED_ROOT), MERGED, CLAUDE_CONFIG_GRAFT, RETIRED) },
     { path: INSTALL_PAGE, text: yield* installPageWithLinks(repo) },
     { path: WRITING_REFERENCE, text: yield* writingReference(repo) },
     { path: SWEEP_PAGE, text: sweepPage(yield* sweepRecords(`${repo}${SWEEPS}`)) },

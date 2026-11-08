@@ -95,6 +95,7 @@ To see what fired:
 - [Frontmatter fields](docs/frontmatter.md)
 - [Trigger predicates](docs/triggers.md)
 - [The link map](docs/links.md)
+- [The skills config](docs/config.md)
 - [Eval variables](docs/eval-variables.md)
 - [Eval cases](docs/eval-cases.md)
 - [The harness Contracts](docs/contracts.md)
