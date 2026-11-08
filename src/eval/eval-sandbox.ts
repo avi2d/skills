@@ -3,11 +3,11 @@ import { ChildProcess, ChildProcessSpawner } from "effect/process";
 import type { Change, Verification } from "./eval-judges";
 import { FileFailure, fileFailure } from "../platform/failures";
 import { attempt, outputOf, type Ran } from "../platform/files";
-import { LINKS, MERGED } from "../generate/link";
+import { GRAFTED, LINKS, MERGED } from "../generate/link";
 
 const AGENT_CONFIG = [".claude", ".pi/agent", ".codex", ".config/opencode", ".agents"];
 
-export const LIVE_ROOTS: readonly string[] = [...new Set([...AGENT_CONFIG, ...Object.keys(LINKS), ...Object.keys(MERGED)])]
+export const LIVE_ROOTS: readonly string[] = [...new Set([...AGENT_CONFIG, ...Object.keys(LINKS), ...Object.keys(MERGED), ...Object.keys(GRAFTED)])]
   .filter((root, _, all) => !all.some((other) => root.startsWith(`${other}/`)))
   .toSorted();
 

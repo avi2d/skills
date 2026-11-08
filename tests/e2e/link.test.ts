@@ -38,8 +38,7 @@ describe("a checkout whose pi settings pi wrote into through the old link", () =
     const root = await mkdtemp(join(tmpdir(), "skills-pi-dirtied-"));
     const repo = `${root}/repo/`;
     const home = `${root}/home`;
-    await mkdir(`${repo}harness/pi`, { recursive: true });
-    await cp(`${REPO}${FROM}`, `${repo}${FROM}`);
+    await cp(`${REPO}harness`, `${repo}harness`, { recursive: true });
     await Bun.$`git init -q && git add -A && git -c user.name=test -c user.email=test@example.invalid commit -q -m base`.cwd(repo).quiet();
     await writeFile(`${repo}${FROM}`, JSON.stringify({ ...piSettingsFile, ...changes }, null, 2));
     await mkdir(`${home}/.pi/agent`, { recursive: true });
@@ -119,8 +118,7 @@ exit 1`;
       const repo = `${root}/repo/`;
       const home = `${root}/home`;
       try {
-        await mkdir(`${repo}harness/pi`, { recursive: true });
-        await cp(`${REPO}${FROM}`, `${repo}${FROM}`);
+        await cp(`${REPO}harness`, `${repo}harness`, { recursive: true });
         await mkdir(`${home}/.pi/agent`, { recursive: true });
         await writeFile(
           `${home}/${SETTINGS}`,

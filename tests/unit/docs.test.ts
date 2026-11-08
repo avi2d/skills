@@ -73,11 +73,15 @@ describe("the index", () => {
 
 const LINKED = { ".a/settings.json": "harness/a/settings.json", "it's/here": "generated/skills" };
 const MERGED_FILES = { ".b/settings.json": { from: "harness/b/settings.json", ownKeys: ["deviceId", "seenVersion"] } };
+const ACCOUNT_GRAFT = { from: "harness/a/settings.json", keys: ["hooks"] };
+const GRAFTS = { mac: { ".both/settings.json": ACCOUNT_GRAFT }, windows: { ".both/settings.json": ACCOUNT_GRAFT, ".win/settings.json": ACCOUNT_GRAFT } };
+const NO_GRAFTS = { mac: {}, windows: {} };
 
 describe("the link page", () => {
   const page = linkPage(
     { mac: { ...LINKED, ".b/rules.json": "harness/b/rules.mac.json" }, windows: { ...LINKED, ".b/rules.json": "harness/b/rules.json" } },
     MERGED_FILES,
+    GRAFTS,
     [".a/old"],
   );
 
@@ -90,6 +94,7 @@ describe("the link page", () => {
     const macOnly = linkPage(
       { mac: { ...LINKED, "only/mac": "harness/only/mac" }, windows: { ...LINKED } },
       MERGED_FILES,
+      NO_GRAFTS,
       [],
     );
     expect(macOnly).toContain("| `~/only/mac` | `harness/only/mac` on the Mac |");
@@ -103,6 +108,11 @@ describe("the link page", () => {
 
   test("pairs each file the linker writes with its source in this checkout and the keys it keeps from the file there", () => {
     expect(page).toContain("| `~/.b/settings.json` | `harness/b/settings.json` | `deviceId`, `seenVersion` |");
+  });
+
+  test("pairs each account file with the keys it is given, naming the machines only for a file not every machine lists", () => {
+    expect(page).toContain("| `~/.both/settings.json` | `harness/a/settings.json` | `hooks` |");
+    expect(page).toContain("| `~/.win/settings.json` on the Windows machine and any other | `harness/a/settings.json` | `hooks` |");
   });
 
   test("lists each retired path among the ones the linker takes back, and not among the links", () => {
@@ -120,26 +130,29 @@ describe("the link page", () => {
 });
 
 describe("the install page's lists of what `bun run link` owns", () => {
-  const owned = "<!-- `bun run docs` writes the list below from `LINKS` and `MERGED` in `src/generate/link.ts`. -->";
+  const owned = "<!-- `bun run docs` writes the list below from `LINKS`, `MERGED` and `graftsOn` in `src/generate/link.ts`. -->";
   const script = "<!-- `bun run docs` writes the script below from `LINKS` and `RETIRED` in `src/generate/link.ts`. -->";
   const page = ["# a", owned, "- `~/.gone`", "<!-- The list above ends here. -->", "Between.", script, "<!-- The script above ends here. -->", ""].join("\n");
-  const spliced = value(withLinks(page, LINKED, MERGED_FILES, [".a/old"]));
+  const spliced = value(withLinks(page, LINKED, MERGED_FILES, GRAFTS, [".a/old"]));
   const lines = spliced.split("\n");
   const shell = /```sh\n([\s\S]*?)```/.exec(spliced)?.[1] ?? expect.unreachable("the install page holds no sh block");
 
-  test("install every mapped path in map order, then each written file, none retired and nothing the map no longer holds", () => {
-    expect(lines.slice(1, 6)).toEqual([
+  test("install every mapped path in map order, then each written file, then each account file, none retired and nothing the map no longer holds", () => {
+    expect(lines.slice(1, 8)).toEqual([
       owned,
       "- `~/.a/settings.json`",
       "- `~/it's/here`",
       "- `~/.b/settings.json`, written from `harness/b/settings.json` rather than linked",
+      "- `~/.both/settings.json`, given `hooks` from `harness/a/settings.json` and keeping every other key",
+      "- `~/.win/settings.json` on the Windows machine and any other, given `hooks` from `harness/a/settings.json` and keeping every other key",
       "<!-- The list above ends here. -->",
     ]);
   });
 
-  test("uninstall every path the map holds or retired, and leave each written file with the machine's own keys", () => {
+  test("uninstall every path the map holds or retired, and leave each written file and account file with the machine's own keys", () => {
     expect(shell.split("\n").slice(1, 5)).toEqual(["for path in \\", "  '.a/settings.json' \\", "  'it'\\''s/here' \\", "  '.a/old'"]);
     expect(shell).not.toContain(".b/settings.json");
+    expect(shell).not.toContain(".win/settings.json");
   });
 
   test("leave what lies outside their markers as it was", () => {
@@ -149,7 +162,7 @@ describe("the install page's lists of what `bun run link` owns", () => {
   });
 
   test("are refused when the install page has lost the markers around one, rather than left stale", () => {
-    expect(said(withLinks(page.replace(script, ""), LINKED, MERGED_FILES, []))).toContain("docs/install.md has lost the markers around its uninstall script");
+    expect(said(withLinks(page.replace(script, ""), LINKED, MERGED_FILES, NO_GRAFTS, []))).toContain("docs/install.md has lost the markers around its uninstall script");
   });
 });
 

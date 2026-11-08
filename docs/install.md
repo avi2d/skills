@@ -27,7 +27,7 @@ It then ends with one line per path, such as `linked   ~/.claude/settings.json`,
 On a machine without pi, the line about pi reads `pi is not on $PATH, so no pi extension was load-checked`.
 These paths in $HOME then belong to the checkout:
 
-<!-- `bun run docs` writes the list below from `LINKS` and `MERGED` in `src/generate/link.ts`. -->
+<!-- `bun run docs` writes the list below from `LINKS`, `MERGED` and `graftsOn` in `src/generate/link.ts`. -->
 - `~/.claude/settings.json`
 - `~/.codex/hooks.json`
 - `~/.pi/agent/claude-bridge.json`
@@ -53,6 +53,8 @@ These paths in $HOME then belong to the checkout:
 - `~/Projects/firstmate/config/supervision-branch-model`
 - `~/Projects/firstmate/config/supervision-branch-effort`
 - `~/.pi/agent/settings.json`, written from `harness/pi/settings.json` rather than linked
+- `~/.claude-accounts/main/settings.json` on the Windows machine and any other, given `hooks` from `harness/claude-code/settings.json` and keeping every other key
+- `~/.claude-accounts/second/settings.json` on the Windows machine and any other, given `hooks` from `harness/claude-code/settings.json` and keeping every other key
 <!-- The list above ends here. -->
 
 [The link map](links.md) says what each one points at.

@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test";
 import { CARRIAGE_VARIABLE, LIVE_ROOTS, isolatedEnv, liveRootHolding, type Sandbox } from "../../src/eval/eval-sandbox";
-import { LINKS, MERGED } from "../../src/generate/link";
+import { GRAFTED, LINKS, MERGED } from "../../src/generate/link";
 
 const home = "/Users/someone";
 
@@ -14,7 +14,7 @@ const sandbox: Sandbox = {
 };
 
 test("every path the linker manages, and every agent config root, is a live root or under one", () => {
-  for (const rel of [...Object.keys(LINKS), ...Object.keys(MERGED), ".claude", ".pi/agent", ".codex", ".config/opencode", ".agents"]) {
+  for (const rel of [...Object.keys(LINKS), ...Object.keys(MERGED), ...Object.keys(GRAFTED), ".claude", ".pi/agent", ".codex", ".config/opencode", ".agents"]) {
     expect(liveRootHolding(`${home}/${rel}`, home), `~/${rel} is not held by any live root`).toBeDefined();
   }
   expect(LIVE_ROOTS.filter((root) => LIVE_ROOTS.some((other) => root.startsWith(`${other}/`))), "a live root is listed under another").toEqual([]);

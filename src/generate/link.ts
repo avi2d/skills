@@ -8,6 +8,7 @@ import { checkout, tally } from "./generate";
 import { hubUnder } from "./hub";
 import { SECOND_MATE_HARNESS, SUPERVISION_BRANCH_EFFORT, SUPERVISION_BRANCH_MODEL } from "./firstmate-pins";
 import { CREW_DISPATCH } from "./machine-files";
+import { CLAUDE_ACCOUNTS, accountDirUnder } from "./claude-accounts";
 import { noMistakesConfigUnder } from "./no-mistakes-config";
 import { machineOn, type Machine } from "./machine";
 import { piLoads, type PiLoad } from "./preflight";
@@ -32,8 +33,10 @@ export const AccountHome = Context.Reference("skills/AccountHome", { defaultValu
 
 export type LinkMap = Readonly<Record<string, string>>;
 
+const CLAUDE_CODE_SETTINGS = "harness/claude-code/settings.json";
+
 export const linksUnder = (root: string, machine: Machine): LinkMap => ({
-  ".claude/settings.json": "harness/claude-code/settings.json",
+  ".claude/settings.json": CLAUDE_CODE_SETTINGS,
   ".codex/hooks.json": "harness/codex/hooks.json",
   ".pi/agent/claude-bridge.json": "harness/pi/claude-bridge.json",
   ".pi/agent/keybindings.json": "harness/pi/keybindings.json",
@@ -74,6 +77,18 @@ export type Merge = { readonly from: string; readonly ownKeys: readonly string[]
 export const MERGED: Readonly<Record<string, Merge>> = {
   ".pi/agent/settings.json": { from: "harness/pi/settings.json", ownKeys: ["deviceId", "lastChangelogVersion", "trackingId"] },
 };
+
+export type Graft = { readonly from: string; readonly keys: readonly string[] };
+
+export type GraftMap = Readonly<Record<string, Graft>>;
+
+// Claude Code writes an account's own keys, such as its statusLine, into this file, so a link would carry them into the checkout.
+export const graftsOn = (machine: Machine): GraftMap =>
+  Object.fromEntries(
+    CLAUDE_ACCOUNTS[machine].map((account) => [`${accountDirUnder(account)}/settings.json`, { from: CLAUDE_CODE_SETTINGS, keys: ["hooks"] }]),
+  );
+
+export const GRAFTED = graftsOn(MACHINE);
 
 export const RETIRED: readonly string[] = [
   ".pi/agent/effect-codemode",
@@ -158,14 +173,14 @@ const settingsAt = Effect.fnUntraced(function* (path: string): Effect.fn.Return<
 const keysOf = (settings: Settings, keep: (key: string) => boolean): Settings =>
   Object.fromEntries(Object.entries(settings).filter(([key]) => keep(key)));
 
-const merged = Effect.fnUntraced(function* (
+const written = Effect.fnUntraced(function* (
   repo: string,
   home: string,
   rel: string,
-  { from, ownKeys }: Merge,
+  from: string,
+  isOwn: (key: string) => boolean,
 ): Effect.fn.Return<Outcome, FileFailure, FileSystem.FileSystem> {
   const dest = `${home}/${rel}`;
-  const isOwn = (key: string) => ownKeys.includes(key);
   const found = Option.getOrUndefined(yield* unlessAbsent(entryAt(dest)));
   const live = Option.getOrElse(yield* settingsAt(dest), (): Settings => ({}));
   const source = `${repo}${from}`;
@@ -181,6 +196,10 @@ const merged = Effect.fnUntraced(function* (
   yield* attempt(dest, (fs) => fs.writeFileString(dest, JSON.stringify(wanted, null, 2)));
   return { home: rel, state: "written", replaced };
 });
+
+const merged = (repo: string, home: string, rel: string, { from, ownKeys }: Merge) => written(repo, home, rel, from, (key) => ownKeys.includes(key));
+
+const grafted = (repo: string, home: string, rel: string, { from, keys }: Graft) => written(repo, home, rel, from, (key) => !keys.includes(key));
 
 const git = (repo: string, args: readonly string[]) =>
   Effect.option(outputOf(ChildProcess.make("git", args, { cwd: repo }))).pipe(Effect.map(Option.filter((ran) => ran.code === 0)));
@@ -219,6 +238,7 @@ const placed = Effect.fnUntraced(function* (repo: string, home: string): Effect.
     outcomes.push({ home: rel, state: yield* linked(`${home}/${rel}`, `${repo}${target}`) });
   }
   for (const [rel, merge] of Object.entries(MERGED)) outcomes.push(yield* merged(repo, home, rel, merge));
+  for (const [rel, graft] of Object.entries(GRAFTED)) outcomes.push(yield* grafted(repo, home, rel, graft));
   for (const rel of RETIRED) {
     const state = yield* retired(repo, `${home}/${rel}`);
     if (state) outcomes.push({ home: rel, state });
