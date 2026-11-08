@@ -3,9 +3,9 @@ import { lstatSync } from "node:fs";
 import { cp, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
-import { Schema } from "effect";
-import { skipReason } from "@avi2dg/checks/scripts/test-skips.ts";
-import { GRAFTED, REPO, graftsOn, link } from "../../src/generate/link";
+import { Effect, Schema } from "effect";
+import { REPO, graftsInto, link } from "../../src/generate/link";
+import { UserConfigSource, type UserConfig } from "../../src/generate/user-config";
 import { saidBy, valueOf } from "../lib/effect";
 
 // Each test links into a fresh $HOME, which a loaded machine slows past bun's 5s default.
@@ -13,18 +13,21 @@ setDefaultTimeout(30_000);
 
 const FROM = "harness/claude-code/settings.json";
 
-test("the Windows machine gives the checkout's hooks to its main and second accounts, and the Mac to none", () => {
-  expect(graftsOn("windows")).toEqual({
-    ".claude-accounts/main/settings.json": { from: FROM, keys: ["hooks"] },
-    ".claude-accounts/second/settings.json": { from: FROM, keys: ["hooks"] },
+const CONFIG_DIRS = [".claude-work", ".config/claude-other"];
+
+const linkWith = (config: UserConfig, repo: string, home: string) =>
+  link(repo, home).pipe(Effect.provideService(UserConfigSource, Effect.succeed(config)));
+
+test("each Claude config dir the config names is given the checkout's hooks in its settings.json, and only those", () => {
+  expect(graftsInto(CONFIG_DIRS)).toEqual({
+    ".claude-work/settings.json": { from: FROM, keys: ["hooks"] },
+    ".config/claude-other/settings.json": { from: FROM, keys: ["hooks"] },
   });
-  expect(graftsOn("mac")).toEqual({});
+  expect(graftsInto([])).toEqual({});
 });
 
-const noAccount = Object.keys(GRAFTED).length === 0;
-
-describe("a Claude account's settings file", () => {
-  const accounts = Object.keys(GRAFTED);
+describe("a Claude config dir's settings file", () => {
+  const accounts = Object.keys(graftsInto(CONFIG_DIRS));
   const decodeObject = Schema.decodeUnknownSync(Schema.fromJsonString(Schema.Record(Schema.String, Schema.Unknown)));
   const parsed = async (path: string) => decodeObject(await readFile(path, "utf8"));
   const ACCOUNT_OWN = { statusLine: { type: "command", command: "account-statusline", refreshInterval: 30 }, theme: "account-theme" };
@@ -43,15 +46,10 @@ describe("a Claude account's settings file", () => {
     const tracked = await parsed(`${repo}${FROM}`);
     return { repo, home, tracked, discard: () => rm(root, { recursive: true, force: true }) };
   };
-  const outcomesOf = async (repo: string, home: string) => (await valueOf(link(repo, home))).filter((o) => accounts.includes(o.home));
+  const outcomesOf = async (repo: string, home: string, config: UserConfig = { claudeConfigDirs: CONFIG_DIRS }) =>
+    (await valueOf(linkWith(config, repo, home))).filter((o) => accounts.includes(o.home));
 
-  test.skipIf(noAccount)(
-    skipReason(
-      "this machine lists no Claude account, so link writes no account file to check",
-      "gains the checkout's hooks and keeps the account's own statusLine and theme, not the checkout's",
-      "local",
-    ),
-    async () => {
+  test("gains the checkout's hooks and keeps the account's own statusLine and theme, not the checkout's", async () => {
     const { repo, home, tracked, discard } = await seeded(JSON.stringify(ACCOUNT_OWN));
     try {
       expect(tracked.statusLine, "the checkout's statusLine matches the account's, so this proves nothing").not.toEqual(ACCOUNT_OWN.statusLine);
@@ -65,45 +63,27 @@ describe("a Claude account's settings file", () => {
     }
   });
 
-  test.skipIf(noAccount)(
-    skipReason(
-      "this machine lists no Claude account, so link writes no account file to check",
-      "is kept as it is on the next link, so running it again changes nothing",
-      "local",
-    ),
-    async () => {
+  test("is kept as it is on the next link, so running it again changes nothing", async () => {
     const { repo, home, discard } = await seeded(JSON.stringify(ACCOUNT_OWN));
     try {
-      await valueOf(link(repo, home));
+      await outcomesOf(repo, home);
       expect(await outcomesOf(repo, home)).toEqual(accounts.map((rel) => ({ home: rel, state: "kept" })));
     } finally {
       await discard();
     }
   });
 
-  test.skipIf(noAccount)(
-    skipReason(
-      "this machine lists no Claude account, so link writes no account file to check",
-      "is written holding only the hooks for an account not yet logged into, rather than the checkout's whole settings",
-      "local",
-    ),
-    async () => {
+  test("is written holding only the hooks for an account not yet logged into, rather than the checkout's whole settings", async () => {
     const { repo, home, tracked, discard } = await seeded(undefined);
     try {
-      await valueOf(link(repo, home));
+      await outcomesOf(repo, home);
       for (const rel of accounts) expect(await parsed(`${home}/${rel}`)).toEqual({ hooks: tracked.hooks });
     } finally {
       await discard();
     }
   });
 
-  test.skipIf(noAccount)(
-    skipReason(
-      "this machine lists no Claude account, so link writes no account file to check",
-      "has hooks of its own replaced with the checkout's, naming each with the value the account held",
-      "local",
-    ),
-    async () => {
+  test("has hooks of its own replaced with the checkout's, naming each with the value the account held", async () => {
     const ownHooks = { Stop: [{ hooks: [{ type: "command", command: "account-hook" }] }] };
     const { repo, home, tracked, discard } = await seeded(JSON.stringify({ ...ACCOUNT_OWN, hooks: ownHooks }));
     try {
@@ -114,18 +94,22 @@ describe("a Claude account's settings file", () => {
     }
   });
 
-  test.skipIf(noAccount)(
-    skipReason(
-      "this machine lists no Claude account, so link writes no account file to check",
-      "is refused when it holds no JSON object, naming it, and left as it was",
-      "local",
-    ),
-    async () => {
+  test("is refused when it holds no JSON object, naming it, and left as it was", async () => {
     const { repo, home, discard } = await seeded("{ not json");
     try {
       const [first = expect.unreachable("no account listed")] = accounts;
-      expect(await saidBy(link(repo, home))).toContain(`${home}/${first}`);
+      expect(await saidBy(linkWith({ claudeConfigDirs: CONFIG_DIRS }, repo, home))).toContain(`${home}/${first}`);
       for (const rel of accounts) expect(await readFile(`${home}/${rel}`, "utf8")).toBe("{ not json");
+    } finally {
+      await discard();
+    }
+  });
+
+  test("is left unwritten when the config names no Claude config dir, rather than grafted where no harness reads it", async () => {
+    const { repo, home, discard } = await seeded(undefined);
+    try {
+      expect(await outcomesOf(repo, home, {})).toEqual([]);
+      for (const rel of accounts) expect(lstatSync(`${home}/${rel}`, { throwIfNoEntry: false })).toBeUndefined();
     } finally {
       await discard();
     }
