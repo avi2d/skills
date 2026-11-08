@@ -33,9 +33,9 @@ Otherwise, fix the extension, or remove it from `harness/pi/settings.json`, or m
 
 ### `refusing to link the account's own home`
 
-`bun run link` links your own home only from the checkout the guard in `src/generate/link.ts` names.
-From any other copy it stops before it writes, so a worktree cannot repoint your harnesses into itself.
-Run it from that checkout, or, to try a copy, give it a temporary home: `HOME=$(mktemp -d) bun run link`.
+`bun run link` links your own home only from a main checkout.
+From a linked git worktree, or a copy git does not check out, it stops before it writes, so a worktree cannot repoint your harnesses into itself.
+Follow the refusal: run it from the checkout it names, or from a fresh clone, or, to try a copy, give it a temporary home: `HOME=$(mktemp -d) bun run link`.
 
 ### `[tool output withheld: the secret scan could not run ...]`
 

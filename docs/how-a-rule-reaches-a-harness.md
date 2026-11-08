@@ -22,8 +22,8 @@ Five of the links point into directories a clone does not have, so linking first
 A run that stops on a bad Body installs nothing at all.
 A run where the installed pi fails to load an extension the map links installs nothing either, as [record 0082](adr/0082-a-link-waits-until-pi-loads-every-extension-in-a-temporary-home.md) records.
 The links it leaves still point into the checkout, so the bundles it wrote and an extension already linked reach the harnesses all the same.
-A run whose $HOME is the account's own home, as its passwd record names it, installs only from the checkout the guard in `src/generate/link.ts` names.
-From any other copy it stops before it writes, so a worktree cannot repoint the live harnesses into itself.
+A run whose $HOME is the account's own home, as its passwd record names it, installs only from a main checkout.
+From a linked git worktree, or a copy git does not check out, it stops before it writes, so a worktree cannot repoint the live harnesses into itself.
 
 The linker repoints links and refuses real files, except where [the link map](links.md) says it writes.
 A change to `harness/pi/settings.json` reaches pi only at the next `bun run link`.
