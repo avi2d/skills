@@ -17,7 +17,7 @@ The agents in those harnesses, which get each Rule when its trigger matches rath
 ## Owns
 
 The Bodies under `library/`, and the generator that builds them into a Hub and one Dispatcher per harness.
-Its edge is `$HOME`: it links its Hub, Dispatchers and Contracts there, and holds no path into the dotfiles repository.
+Its edge is `$HOME`: it links its Hub, Dispatchers and Contracts there, and holds no path into another repository.
 
 ## Non-goals
 
