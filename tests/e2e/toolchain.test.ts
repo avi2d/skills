@@ -36,7 +36,9 @@ const Step = Schema.StructWithRest(
 );
 type WorkflowStep = typeof Step.Type;
 const Job = Schema.StructWithRest(Schema.Struct({ steps: Schema.Array(Step) }), [Anything]);
-const decodeWorkflow = Schema.decodeUnknownSync(Schema.StructWithRest(Schema.Struct({ jobs: Schema.Record(Schema.String, Job) }), [Anything]));
+const decodeWorkflow = Schema.decodeUnknownSync(
+  Schema.StructWithRest(Schema.Struct({ on: Anything, jobs: Schema.Record(Schema.String, Job) }), [Anything]),
+);
 const decodeDiagnostics = Schema.decodeUnknownSync(
   Schema.fromJsonString(Schema.Struct({ summary: Schema.Struct({ filesChecked: Schema.Int, totalFiles: Schema.Int }) })),
 );
@@ -203,7 +205,7 @@ const gitIn = (dir: string, args: ReadonlyArray<string>): string => {
   return ran.stdout.toString().trim();
 };
 
-const contextAfterChange = (steps: ReadonlyArray<WorkflowStep>, changed: string, event: "pull_request" | "push"): Context => {
+const contextAfterChange = (steps: ReadonlyArray<WorkflowStep>, changed: string, event: "pull_request" | "workflow_dispatch"): Context => {
   const referenced = new Set(steps.flatMap((step) => [...String(step.if ?? "").matchAll(/steps\.([\w-]+)\.outputs\./g)].map((match) => match[1])));
   const dir = scratchRepo();
   try {
@@ -237,7 +239,7 @@ const contextAfterChange = (steps: ReadonlyArray<WorkflowStep>, changed: string,
   }
 };
 
-test("a code change and a push run the suite with its temp setup and leftover check, and a docs-only change skips them and still lints and builds", () => {
+test("a code change and a dispatched run run the suite with its temp setup and leftover check, and a docs-only change skips them and still lints and builds", () => {
   const [job = expect.unreachable("the ci workflow declares no job")] = Object.values(workflow.jobs);
   const suiteTmp = job.steps.find((step) => step.run === "bun run test")?.env?.TMPDIR ?? expect.unreachable("the suite runs in the job's shared temp directory");
   const suiteSteps = job.steps.filter((step) => step.env?.TMPDIR === suiteTmp);
@@ -250,11 +252,24 @@ test("a code change and a push run the suite with its temp setup and leftover ch
 
   const code = contextAfterChange(job.steps, "src/feature.ts", "pull_request");
   const docs = contextAfterChange(job.steps, "docs/guide.md", "pull_request");
-  const push = contextAfterChange(job.steps, "docs/guide.md", "push");
+  const dispatched = contextAfterChange(job.steps, "docs/guide.md", "workflow_dispatch");
   expect(scheduled(suiteSteps, code), "a code change skips part of the suite").toEqual(every(suiteSteps, true));
-  expect(scheduled(suiteSteps, push), "a push to main skips part of the suite").toEqual(every(suiteSteps, true));
+  expect(scheduled(suiteSteps, dispatched), "the release pull request's dispatched run skips part of the suite").toEqual(every(suiteSteps, true));
   expect(scheduled(suiteSteps, docs), "a docs-only change still runs part of the suite").toEqual(every(suiteSteps, false));
   expect(scheduled(keptSteps, docs), "a docs-only change skips a check that holds its docs and title").toEqual(every(keptSteps, true));
+}, { timeout: 3 * spawnStartupMs });
+
+test("a push to main starts no ci run, so a merged change does not rerun the full suite", () => {
+  expect(Object.keys(workflow.on)).not.toContain("push");
+  expect(Object.keys(workflow.on)).toContain("workflow_dispatch");
+});
+
+test("the fleet-names scan runs alone only where the suite is skipped, so a code change does not run it twice", () => {
+  const [job = expect.unreachable("the ci workflow declares no job")] = Object.values(workflow.jobs);
+  const scan = job.steps.find((step) => step.run === "bun test tests/e2e/fleet-names.test.ts") ?? expect.unreachable("no step scans for fleet names alone");
+  const condition = String(scan.if ?? "success()");
+  expect(runs(condition, contextAfterChange(job.steps, "src/feature.ts", "pull_request")), "a code change runs the scan twice").toBe(false);
+  expect(runs(condition, contextAfterChange(job.steps, "docs/guide.md", "pull_request")), "a docs-only change skips the scan").toBe(true);
 }, { timeout: 3 * spawnStartupMs });
 
 test("no dependency is a path only one checkout has, so a clone and a worktree install the same tree", () => {

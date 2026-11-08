@@ -23,7 +23,7 @@ To run the checks before a push:
 
 `bun run build` writes `CHANGELOG.md` from the conventional commits since the last release, and the Effect scope in `tsconfig.json`.
 
-`.github/workflows/ci.yml` runs the same steps on every pull request and every push to main, on a clone, with the full `bun run test` in place of `bun run test:fast`.
+`.github/workflows/ci.yml` runs the same steps on every pull request and on the release pull request's dispatched run, on a clone, with the full `bun run test` in place of `bun run test:fast`.
 It installs `claude` and a pinned `sqlite3` before `bun run test`.
 It runs `bun run test` with `TMPDIR` set to an empty directory under the runner's per-job temp, then `scripts/check-tmp-clean.sh`, which fails the job naming anything the suite left there.
 Every job runs on `ubuntu-latest`.
@@ -33,6 +33,8 @@ It also fails a setup step whose Bun is not the kit's fleet version, so `.bun-ve
 `ci.yml` also lints a pull request's title as a conventional commit, because a squash merge makes the title the commit subject.
 It reports that result as the `commitlint` status through the shared `commitlint-status` action, and a dispatched run reports its result on the head commit through the shared `head-status` action.
 A pull request that touches only top-level Markdown and Markdown under `docs/` skips `bun run typecheck`, `bun run test` and their setup, and still lints its title, builds, lints, runs `tests/e2e/fleet-names.test.ts` and reports.
+Any other change runs `tests/e2e/fleet-names.test.ts` only inside `bun run test`.
+A push to main starts no `ci.yml` run, and the release pull request's dispatched run is the first run to check the merged tree.
 
 `bun run test` is the kit's `checks-test`, which runs `bun test --randomize` with one worker per machine core and prints the seed that reproduces a failure.
 `bun run test:local` runs the whole unit and e2e tiers through `scripts/test-local.ts`, with the same worker count.
