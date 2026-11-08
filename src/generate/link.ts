@@ -120,20 +120,30 @@ const temporary = (home: string): boolean => {
 const resolved = (path: string): Effect.Effect<string, FileFailure, FileSystem.FileSystem> =>
   unlessAbsent(attempt(path, (fs) => fs.realPath(path))).pipe(Effect.map(Option.getOrElse(() => path.replace(/\/+$/, ""))));
 
-const refuseAccountHomeOutsideCheckout = Effect.fnUntraced(function* (
+const git = (repo: string, args: readonly string[]) =>
+  Effect.option(outputOf(ChildProcess.make("git", args, { cwd: repo }))).pipe(Effect.map(Option.filter((ran) => ran.code === 0)));
+
+const refuseAccountHomeFromWorktree = Effect.fnUntraced(function* (
   repo: string,
   home: string,
 ): Effect.fn.Return<void, FileFailure, FileSystem.FileSystem | ChildProcessSpawner.ChildProcessSpawner> {
-  const accountHome = yield* resolved(yield* yield* AccountHome);
-  if ((yield* resolved(home)) !== accountHome) return;
-  const ownCheckout = `${accountHome}/Projects/skills`;
-  if ((yield* resolved(repo)) === (yield* resolved(ownCheckout))) return;
-  return yield* new FileFailure({
-    path: home,
-    message:
-      `refusing to link the account's own home \`${home}\` from \`${repo}\`, which is not the \`${ownCheckout}\` checkout;` +
-      ` run it from that checkout, or set HOME to a temporary directory`,
+  if ((yield* resolved(home)) !== (yield* resolved(yield* yield* AccountHome))) return;
+  const refused = (why: string) =>
+    new FileFailure({
+      path: home,
+      message: `refusing to link the account's own home \`${home}\` from \`${repo}\`, ${why}, or set HOME to a temporary directory`,
+    });
+  const dirs = yield* git(repo, ["rev-parse", "--path-format=absolute", "--git-dir", "--git-common-dir"]);
+  if (Option.isNone(dirs)) return yield* refused("which git does not check out; clone the repository and run it from the clone");
+  // A linked worktree keeps its own git dir apart from the common dir every worktree of the repository shares.
+  const [gitDir, commonDir] = dirs.value.stdout.trim().split("\n");
+  if (gitDir === commonDir) return;
+  const listed = yield* git(repo, ["worktree", "list", "--porcelain"]);
+  const mainCheckout = Option.match(listed, {
+    onNone: () => commonDir,
+    onSome: (ran) => ran.stdout.split("\n")[0]?.replace(/^worktree /, "") ?? commonDir,
   });
+  return yield* refused(`a linked worktree; run it from the main checkout \`${mainCheckout}\``);
 });
 
 const linked = Effect.fnUntraced(function* (dest: string, to: string): Effect.fn.Return<LinkState, FileFailure, FileSystem.FileSystem> {
@@ -201,9 +211,6 @@ const merged = (repo: string, home: string, rel: string, { from, ownKeys }: Merg
 
 const grafted = (repo: string, home: string, rel: string, { from, keys }: Graft) => written(repo, home, rel, from, (key) => !keys.includes(key));
 
-const git = (repo: string, args: readonly string[]) =>
-  Effect.option(outputOf(ChildProcess.make("git", args, { cwd: repo }))).pipe(Effect.map(Option.filter((ran) => ran.code === 0)));
-
 const restored = Effect.fnUntraced(function* (
   repo: string,
   rel: string,
@@ -233,7 +240,7 @@ const placed = Effect.fnUntraced(function* (repo: string, home: string): Effect.
   if (underTest === "1" && !temporary(home)) {
     return yield* new FileFailure({ path: home, message: `refusing to link into \`${home}\` outside the test's temporary scope` });
   }
-  yield* refuseAccountHomeOutsideCheckout(repo, home);
+  yield* refuseAccountHomeFromWorktree(repo, home);
   for (const [rel, target] of Object.entries(linksUnder(yield* readGeneratedRoot, MACHINE))) {
     outcomes.push({ home: rel, state: yield* linked(`${home}/${rel}`, `${repo}${target}`) });
   }
@@ -278,7 +285,7 @@ type Refused = Extract<PiLoad, { readonly state: "refused" }>;
 type Linked = Refused | { readonly state: "linked"; readonly load: Exclude<PiLoad, Refused>; readonly outcomes: readonly Outcome[] };
 
 export const install = Effect.fnUntraced(function* (repo: string, home: string, pi: string) {
-  yield* refuseAccountHomeOutsideCheckout(repo, home);
+  yield* refuseAccountHomeFromWorktree(repo, home);
   const { wrote, hubs } = yield* checkout(repo);
   const load = yield* preflight(repo, pi);
   const linking: Linked = load.state === "refused" ? load : { state: "linked", load, outcomes: yield* link(repo, home) };
