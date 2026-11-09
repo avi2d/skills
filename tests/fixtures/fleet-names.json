@@ -58,7 +58,7 @@
   "docs/adr/0103-a-read-of-a-known-credential-file-is-refused-by-the-dispatcher.md": 1,
   "docs/adr/0108-astra-reviews-first-with-no-floor-and-codex-models-join-four-dispatch-rules.md": 4,
   "docs/adr/README.md": 9,
-  "docs/contracts.md": 31,
+  "docs/contracts.md": 29,
   "docs/develop.md": 1,
   "docs/glossary.md": 5,
   "docs/how-a-rule-reaches-a-harness.md": 5,
