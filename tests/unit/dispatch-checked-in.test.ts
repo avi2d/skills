@@ -40,9 +40,12 @@ describe("the checked-in Rules", () => {
     for (const event of governed) expect(delivered(run(index, [start, promptAt(on), event]).actions)).not.toContain("writing-for-people");
   });
 
-  test("`agents-md-router` is selected for an AGENTS.md or CLAUDE.md write, and for no unrelated file", () => {
+  test("`agents-md-router` is selected for an agent file, README, VISION or ADR write, and for no unrelated file", () => {
     for (const path of ROUTER_DOCS) expect(delivered(run(index, [start, wrote(path)]).actions), path).toEqual(["agents-md-router"]);
-    for (const path of ["README.md", "src/a.ts", ...SKILL_DOCS]) {
+    for (const path of ["README.md", "packages/tool/README.md", "VISION.md", "/work/VISION.md", "docs/adr/0001-a-record.md"]) {
+      expect(delivered(run(index, [start, wrote(path)]).actions), path).toContain("agents-md-router");
+    }
+    for (const path of ["src/a.ts", "docs/guide.md", ...SKILL_DOCS]) {
       expect(delivered(run(index, [start, wrote(path)]).actions), path).not.toContain("agents-md-router");
     }
   });
