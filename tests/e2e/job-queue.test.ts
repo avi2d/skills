@@ -1,4 +1,4 @@
-import { afterAll, describe, expect, setDefaultTimeout, test } from "bun:test";
+import { afterAll, afterEach, beforeEach, describe, expect, setDefaultTimeout, test } from "bun:test";
 import { execFileSync, spawnSync } from "node:child_process";
 import { chmodSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -15,6 +15,21 @@ import { HOOK_TEST_MS, rigFor, type Rig } from "./lib/hook-dispatcher";
 setDefaultTimeout(HOOK_TEST_MS);
 
 const repo = new URL("../../", import.meta.url).pathname;
+
+const savedGroup = process.env.PUEUE_GROUP;
+const savedWorker = process.env.PUEUE_WORKER_ID;
+
+beforeEach(() => {
+  delete process.env.PUEUE_GROUP;
+  delete process.env.PUEUE_WORKER_ID;
+});
+
+afterEach(() => {
+  if (savedGroup === undefined) delete process.env.PUEUE_GROUP;
+  else process.env.PUEUE_GROUP = savedGroup;
+  if (savedWorker === undefined) delete process.env.PUEUE_WORKER_ID;
+  else process.env.PUEUE_WORKER_ID = savedWorker;
+});
 
 const roots: string[] = [];
 const temporary = (prefix: string): string => {
@@ -74,7 +89,7 @@ function hookHarness(name: string, rig: Rig, decision: string | undefined): void
       const driven = await rig.install(index);
       const { reply, log } = await driven.fire("PreToolUse", bash("bun run test"), undefined, { PATH: path });
       expect(reply?.hookSpecificOutput?.permissionDecision).toBe(decision);
-      expect(reply?.hookSpecificOutput?.updatedInput).toEqual({ command: queued("bun run test", "tests"), description: "run it" });
+      expect(reply?.hookSpecificOutput?.updatedInput).toEqual({ command: queued("bun run test", "tests", 1), description: "run it" });
       expect(log).toContainEqual(expect.stringContaining("job-queue tests: queued the command through pueue"));
     });
 
@@ -103,25 +118,29 @@ function hookHarness(name: string, rig: Rig, decision: string | undefined): void
       expect(log).toContainEqual(expect.stringContaining("job-queue tests and gpu: refused a call that mixes groups"));
     });
 
-    test("a quick targeted test passes through untouched", async () => {
+    test("a targeted test queues with priority in the tests group", async () => {
       const { path } = stubPueue(["default", "tests", "gpu"]);
       const driven = await rig.install(index);
       const { reply, log } = await driven.fire("PreToolUse", { ...bash("bun test tests/unit/glob.test.ts"), cwd: repo }, undefined, { PATH: path });
-      expect(reply).toBeUndefined();
-      expect(log.join("\n")).not.toContain("job-queue");
+      expect(reply?.hookSpecificOutput?.updatedInput?.command).toBe(queued("bun test tests/unit/glob.test.ts", "tests", 1));
+      expect(log).toContainEqual(expect.stringContaining("job-queue tests: queued the command through pueue"));
     });
 
-    test("a heavy command passes through untouched where pueue has no such group", async () => {
+    test("a heavy command runs directly with the reason told to the model where pueue has no such group", async () => {
       const { path } = stubPueue(["default"]);
       const driven = await rig.install(index);
-      const { reply } = await driven.fire("PreToolUse", bash("bun test"), undefined, { PATH: path });
-      expect(reply).toBeUndefined();
+      const { reply, log } = await driven.fire("PreToolUse", bash("bun test"), undefined, { PATH: path });
+      expect(reply?.hookSpecificOutput?.updatedInput).toBeUndefined();
+      expect(reply?.hookSpecificOutput?.additionalContext).toContain("pueue has no tests group");
+      expect(log).toContainEqual(expect.stringContaining("job-queue tests: not queued (pueue has no tests group)"));
     });
 
-    test("a heavy command passes through untouched where pueue is not installed", async () => {
+    test("a heavy command runs directly with the reason told to the model where pueue is not installed", async () => {
       const driven = await rig.install(index);
-      const { reply } = await driven.fire("PreToolUse", bash("bun test"), undefined, { PATH: join(temporary("skills-no-pueue-"), "bin") });
-      expect(reply).toBeUndefined();
+      const { reply, log } = await driven.fire("PreToolUse", bash("bun test"), undefined, { PATH: join(temporary("skills-no-pueue-"), "bin") });
+      expect(reply?.hookSpecificOutput?.updatedInput).toBeUndefined();
+      expect(reply?.hookSpecificOutput?.additionalContext).toContain("pueue group listing failed");
+      expect(log).toContainEqual(expect.stringContaining("job-queue tests: not queued (the pueue group listing failed)"));
     });
   });
 }
@@ -203,10 +222,10 @@ describe("pi running a command through its tool_call event", () => {
     }
   }
 
-  test("a whole test suite is rewritten in place to queue in the tests group, and the call is not blocked", async () => {
+  test("a whole test suite is rewritten in place to queue with priority in the tests group, and the call is not blocked", async () => {
     const { input, result } = await called("bun test", stubPueue(["default", "tests"]).path);
     expect(result).toBeUndefined();
-    expect(input.command).toBe(queued("bun test", "tests"));
+    expect(input.command).toBe(queued("bun test", "tests", 1));
   });
 
   test("an eval run is rewritten in place to queue in the evals group with its concurrency capped", async () => {
@@ -215,9 +234,10 @@ describe("pi running a command through its tool_call event", () => {
     expect(input.command).toBe(queued("EVAL_CONCURRENCY=3 bun run eval", "evals"));
   });
 
-  test("a quick targeted test passes through untouched", async () => {
-    const { input } = await called("bun test tests/unit/glob.test.ts", stubPueue(["default", "tests"]).path);
-    expect(input.command).toBe("bun test tests/unit/glob.test.ts");
+  test("a targeted test is rewritten in place to queue with priority in the tests group", async () => {
+    const { input, result } = await called("bun test tests/unit/glob.test.ts", stubPueue(["default", "tests"]).path);
+    expect(result).toBeUndefined();
+    expect(input.command).toBe(queued("bun test tests/unit/glob.test.ts", "tests", 1));
   });
 
   test("a call that needs both groups is blocked with a word to run them as separate calls", async () => {
@@ -226,9 +246,10 @@ describe("pi running a command through its tool_call event", () => {
     expect(input.command).toBe("llama-bench -m model.gguf && bun test");
   });
 
-  test("a heavy command passes through untouched where pueue has no such group", async () => {
-    const { input } = await called("llama-bench -m model.gguf", stubPueue(["default", "tests"]).path);
+  test("a heavy command runs directly with no model notice where pueue has no such group, and the reason stays in the dispatch log", async () => {
+    const { input, result } = await called("llama-bench -m model.gguf", stubPueue(["default", "tests"]).path);
     expect(input.command).toBe("llama-bench -m model.gguf");
+    expect(result).toBeUndefined();
   });
 });
 
@@ -379,7 +400,7 @@ test.skipIf(!claude)(
   ),
   async () => {
     const result = await claudeRuns("bun run test");
-    expect(result).toContain("ran: bun run test");
+    expect(result).toContain("ran: nice -n 19 bash -c 'bun run test'");
   },
   120_000,
 );
