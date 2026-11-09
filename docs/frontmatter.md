@@ -32,7 +32,7 @@ A field on a Kind that does not take it stops generation.
 
 ## `forbid`
 
-`forbid` names the matchers a Rule refuses a write by, and its value is `comments`, the checks kit's comment matchers, or `prose`, its prose matchers.
+`forbid` names the matchers a Rule refuses a write by, and its value is `comments`, the checks kit's comment matchers, `prose`, its prose matchers, or `types`, its type rules run by the project's oxlint.
 
 ```yaml
 forbid: comments
@@ -54,6 +54,12 @@ A write is refused for whatever that gate would fail on the lines the write adds
 The gate judges a living doc and an agent file, and lets a record under `docs/adr/`, a dated record and a changelog through, so the refusal does the same.
 The matchers read a doc by its path from the root of the repository that holds it, so a doc no repository holds is let through, as docs/adr/0062 records.
 When no repository holds a doc at the path a write names, the doc is judged at its real path, so a harness's agent file linked into a repository is judged as the file it links to.
+
+`forbid: types` runs `data-shape/schema-twin` and the type-aware `typescript/no-unsafe-type-assertion` from the project's own oxlint.
+`typescript-best-practices` carries it.
+A `.ts` or `.tsx` file is judged only when a directory above it holds oxlint and the kit, and a finding is refused when it covers a line the write adds.
+An oxlint that fails or runs past 5 s lets the write through, logged `unjudged`, as docs/adr/0106 records.
+The matcher spends 20 s on oxlint at most across the changes of one tool call, and a file reached after that is logged `unjudged`.
 
 ## `consults`
 

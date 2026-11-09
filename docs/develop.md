@@ -19,11 +19,11 @@ To run the checks before a push:
 1. Run `bun run build`, and commit what it rewrites, because CI fails on a diff the build leaves.
 1. Run `bun run lint`.
 1. Run `bun run typecheck`.
-1. Run `bun run test:fast`.
+1. Run `bunx checks-test --changed`.
 
 `bun run build` writes `CHANGELOG.md` from the conventional commits since the last release, and the Effect scope in `tsconfig.json`.
 
-`.github/workflows/ci.yml` runs the same steps on every pull request and every push to main, on a clone, with the full `bun run test` in place of `bun run test:fast`.
+`.github/workflows/ci.yml` runs the same steps on every pull request and on the release pull request's dispatched run, on a clone, with the full `bun run test` in place of `bunx checks-test --changed`.
 It installs `claude` and a pinned `sqlite3` before `bun run test`.
 It runs `bun run test` with `TMPDIR` set to an empty directory under the runner's per-job temp, then `scripts/check-tmp-clean.sh`, which fails the job naming anything the suite left there.
 Every job runs on `ubuntu-latest`.
@@ -32,7 +32,9 @@ Each workflow in `.github/workflows/` is owned by this repository, and `checks-c
 It also fails a setup step whose Bun is not the kit's fleet version, so `.bun-version` moves only with a kit release that moves the fleet.
 `ci.yml` also lints a pull request's title as a conventional commit, because a squash merge makes the title the commit subject.
 It reports that result as the `commitlint` status through the shared `commitlint-status` action, and a dispatched run reports its result on the head commit through the shared `head-status` action.
-A pull request that touches only top-level Markdown and Markdown under `docs/` skips `bun run typecheck`, `bun run test` and their setup, and still lints its title, builds, lints and reports.
+A pull request that touches only top-level Markdown and Markdown under `docs/` skips `bun run typecheck`, `bun run test` and their setup, and still lints its title, builds, lints, runs `tests/e2e/fleet-names.test.ts` and reports.
+Any other change runs `tests/e2e/fleet-names.test.ts` only inside `bun run test`.
+A push to main starts no `ci.yml` run, and the release pull request's dispatched run is the first run to check the merged tree.
 
 `bun run test` is the kit's `checks-test`, which runs `bun test --randomize` with one worker per machine core and prints the seed that reproduces a failure.
 `bun run test:local` runs the whole unit and e2e tiers through `scripts/test-local.ts`, with the same worker count.
@@ -41,10 +43,11 @@ It fails on a skipped test that declares no reason with `skipReason` at its test
 A skip only a local machine meets, one without `claude` on `PATH` or without the `repos/effect` link, passes `"local"` as the third argument, so only a local run accepts it.
 A test that reads `$HOME` passes against a home nothing was installed into, or skips and says why.
 
-`bun run test:fast` is `scripts/test-fast.ts`, and `.no-mistakes.yaml` names it as the push gate's test step.
-It runs `tests/unit/`, then the e2e test files the branch touches since it left `origin/main`, committed, uncommitted or untracked.
-It runs as many workers as the machine has cores, and judges skips the way `bun run test` does.
-It fails before running anything when `origin/main` is missing, because then the touched files are unknown.
+`bunx checks-test --changed` runs only the unit and e2e test files the change reaches.
+The change is every path between where `HEAD` branched from `origin/main` and `HEAD`, plus the working tree edits and untracked files.
+A changed test file runs on its own, and a shared file never widens the run to the whole suite.
+The run fails before any test runs when `origin/main` is missing, because then the reached files are unknown.
+`.no-mistakes.yaml` names `bunx checks-test --changed` as the push gate test step.
 
 `bun test` preloads `tests/lib/emitted.ts`, which generates into a `generated-<pid>/` of the test process's own.
 A fresh clone and a fresh worktree are green without a command anyone has to remember, parallel test processes never read each other's output, and the suite writes none of the `generated/` tree the harnesses load.
@@ -61,17 +64,24 @@ The suite fails on any entry in `oxlint-suppressions.json`, so the file is absen
 Four gates run only when someone starts `checks-lint --whole-tree` by hand, namely `checks-lint-coverage`, `checks-repetition`, `checks-suppressions-ratchet` and `checks-quarantine-clock`.
 No schedule or workflow runs them.
 `checks-advisories` holds `advisory-acks.json` to its rules on every run and defers its scan to the scheduled run, so the pull request run fetches no advisory database.
-`.github/workflows/advisories.yml` runs it with `--all` every Monday over the whole of `bun.lock`, which finds an advisory published after its package landed and an advisory a `bun.lock` change adds.
+`.github/workflows/advisories.yml` calls the shared `avi2d/workflows` advisory scan every Monday, which runs it with `--all --issue` over the whole of `bun.lock`.
+That finds an advisory published after its package landed and an advisory a `bun.lock` change adds.
+A run on `main` files the verdict as a GitHub issue labelled `advisories`.
 
 `@avi2dg/checks` comes from the public npm registry by semver range, so a clone, a worktree and CI all install the same tree with nothing beside them.
 `tests/e2e/toolchain.test.ts` refuses a `file:` dependency, and a repository dependency that names anything but a commit.
+
+`tests/e2e/fleet-names.test.ts` fails a tracked file that names a machine, an account, a fleet tool or a generic setup path more often than `tests/fixtures/fleet-names.json` allows.
+That file holds each file's count today, and a change that removes a name lowers its count, because the test also fails a count above what the file holds.
+A private names file adds owner-specific names to the same scan with counts in `fleet-names-allow.json` beside it, and the suite scans only the public names when the default names file is absent and fails naming the path when `$SKILLS_FLEET_NAMES_FILE` names a file that does not exist.
+The suite reads that file from `$SKILLS_FLEET_NAMES_FILE` when that variable names it, else from `skills/fleet-names.txt` under `$XDG_CONFIG_HOME` or `~/.config`.
 
 `bun run typecheck` is `tsc --noEmit` plus the Effect language service's diagnostics, configured in `tsconfig.json`.
 Outside the tests, `evals/`, `harness/` and the modules a Dispatcher bundles, the Effect overrides in `oxlint.config.ts` and `tsconfig.json` hold the code to Effect.
 `checks-effect-scope` writes the `tsconfig.json` one from `oxlint.config.ts` in `bun run build`, and fails the lint when the two differ.
 That scope allows no throw, no catch, no IO of its own, no `node:fs` or `node:child_process`, and no read of a variable off `process.env`, so file and process access goes through Effect's services and the layer in `src/platform/platform.ts`, and an environment variable through `Config`.
 The kit ships the rule blocks in `src/quality/presets/`, and `tests/unit/bundle.test.ts` holds the oxlint override to exactly the files a Dispatcher bundles.
-`tests/e2e/effect-scope.test.ts` holds the `tsconfig.json` one, because the mutation sandbox leaves `tsconfig.json` out of its copy.
+`tests/e2e/effect-scope.test.ts` holds the `tsconfig.json` one.
 Across all of `src/`, bundled modules included, `oxlint.config.ts` bans the `Bun` globals for files and processes.
 
 ## Write source code
@@ -98,7 +108,7 @@ To add a test:
 1. Remove every temporary directory the test creates, and point the `TMPDIR` of a process it spawns into one of them, because CI fails a run that leaves anything in its temp directory.
 
 A test under `tests/e2e/` runs out of process, so mutation testing cannot see through it, and it stays out of the mutation scope.
-Stryker's runners share the one sandbox tree it copies to `../.stryker-tmp`, so nothing a test process writes may be shared.
+Stryker's runners share the one working tree they mutate in place, so nothing a test process writes may be shared.
 The preload sets `SKILLS_GENERATED_ROOT` to the process's own `generated-<pid>`.
 `readGeneratedRoot` in `src/generate/bundle.ts` reads it through `Config` wherever the source writes or reads the emitted tree, and `GENERATED_ROOT` runs the same read for a test.
 
@@ -107,27 +117,24 @@ A check that walks the filesystem excludes the fetched tree under `repos/`, and 
 
 ## Run the mutation tests
 
-To run the mutation tests:
+To run the mutation tests, run `bunx stryker run --mutate <glob>` to mutate the files the glob names, and add `--incremental` to reuse the results of the last run.
 
-1. Commit your work, because `bun run mutate` refuses a dirty tree.
-1. Run `bun run mutate -- --mutate <glob>` to mutate the files the glob names, or `bun run mutate:incremental` to reuse the results of the last run.
-
-Outside CI the kit's preset refuses a run with neither `--mutate` nor `--incremental`, and refuses `bun run mutate:incremental` without `--mutate` while `reports/stryker-incremental.json` does not exist.
-`bun run mutate:incremental -- --mutate <glob>` writes that file locally, and the same command run again tests only the mutants changed since.
+Outside CI the kit's preset refuses a run with neither `--mutate` nor `--incremental`, and refuses `--incremental` without `--mutate` while `reports/stryker-incremental.json` does not exist.
+`bunx stryker run --incremental --mutate <glob>` writes that file locally, and the same command run again tests only the mutants changed since.
 A run over the whole of `src/**` is what Stryker's default `mutate` selects here.
-`stryker.conf.mjs` spreads the kit's `stryker.preset.js` and then sets only the keys this repository needs differently.
+`stryker.conf.mjs` spreads the kit's `stryker.preset.js` and sets only `bun.testFiles`.
 The score is advisory, because the preset's `thresholds.break` is null, so no pull request waits on mutation.
 No workflow runs it.
 The runner hands `bun.testFiles` to `bun test` verbatim and expands no glob.
 `stryker.conf.mjs` sets it to the preset's `unitTestFiles()`, every test file under `tests/unit/`, so a covered, non-static mutant loads only the files that cover it.
 The out-of-process tests under `tests/e2e/` and everything under `tests/quarantine/` stay out.
 
-`inPlace` is false where the preset has true, so Stryker mutates a sandbox copy in `../.stryker-tmp`.
+`inPlace` is the preset's true, so Stryker mutates the working tree, keeps a backup in `../.stryker-tmp` and restores the files from it when the run ends.
+Leave `src/` untouched until the run ends, since the restore overwrites an edit made during the run and a commit made during the run records mutated files.
 Each test process's preload generates into its own `generated-<pid>`, and generates nothing when the source resolves any other root.
 It sweeps a dead process's root by renaming it into its own root and removing it there, so no remove runs inside a directory another process reads.
 A unit test that writes, reconciles or checks a generated tree does it in a temporary repository of its own, and the one that checks the preload's output reads `generated-<pid>` by name rather than through the root the source resolves.
-A mutant that makes `generatedRoot` in `src/generate/bundle.ts` fall back to `generated` therefore finds that directory absent from the sandbox, and fails the same way at any concurrency rather than racing other test processes over it.
-The sandbox's `ignorePatterns` leave every `generated*` directory, the vendored `repos/*` links and `tsconfig.json` out of the copy.
+A mutant that makes `generatedRoot` in `src/generate/bundle.ts` fall back to `generated` writes into the `generated/` tree the harnesses load, and Stryker does not restore that tree, so `bun run generate` rebuilds it after a run.
 
 `concurrency` is the preset's half of the cores the machine reports, so `stryker.conf.mjs` does not set it.
 

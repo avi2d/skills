@@ -11,7 +11,9 @@ import { CREW_DISPATCH } from "./machine-files";
 import { noMistakesConfigUnder } from "./no-mistakes-config";
 import { machineOn, type Machine } from "./machine";
 import { piLoads, type PiLoad } from "./preflight";
+import { installScanner } from "./secret-scanner";
 import { main } from "../platform/platform";
+import { UserConfigSource } from "./user-config";
 
 // Bun's userInfo().homedir reads $HOME, so only the passwd record names the home a temporary $HOME cannot stand in for.
 const unreadable = (detail: string) => new FileFailure({ path: "passwd", message: `cannot tell the account's own home: ${detail}` });
@@ -31,8 +33,10 @@ export const AccountHome = Context.Reference("skills/AccountHome", { defaultValu
 
 export type LinkMap = Readonly<Record<string, string>>;
 
+const CLAUDE_CODE_SETTINGS = "harness/claude-code/settings.json";
+
 export const linksUnder = (root: string, machine: Machine): LinkMap => ({
-  ".claude/settings.json": "harness/claude-code/settings.json",
+  ".claude/settings.json": CLAUDE_CODE_SETTINGS,
   ".codex/hooks.json": "harness/codex/hooks.json",
   ".pi/agent/claude-bridge.json": "harness/pi/claude-bridge.json",
   ".pi/agent/keybindings.json": "harness/pi/keybindings.json",
@@ -74,6 +78,18 @@ export const MERGED: Readonly<Record<string, Merge>> = {
   ".pi/agent/settings.json": { from: "harness/pi/settings.json", ownKeys: ["deviceId", "lastChangelogVersion", "trackingId"] },
 };
 
+export type Graft = { readonly from: string; readonly keys: readonly string[] };
+
+export type GraftMap = Readonly<Record<string, Graft>>;
+
+export const CLAUDE_CONFIG_GRAFT: Graft = { from: CLAUDE_CODE_SETTINGS, keys: ["hooks"] };
+
+export const claudeSettingsIn = (dir: string): string => `${dir}/settings.json`;
+
+// Claude Code writes an account's own keys, such as its statusLine, into this file, so a link would carry them into the checkout.
+export const graftsInto = (claudeConfigDirs: readonly string[]): GraftMap =>
+  Object.fromEntries(claudeConfigDirs.map((dir) => [claudeSettingsIn(dir), CLAUDE_CONFIG_GRAFT]));
+
 export const RETIRED: readonly string[] = [
   ".pi/agent/effect-codemode",
   ".claude/agents",
@@ -104,20 +120,46 @@ const temporary = (home: string): boolean => {
 const resolved = (path: string): Effect.Effect<string, FileFailure, FileSystem.FileSystem> =>
   unlessAbsent(attempt(path, (fs) => fs.realPath(path))).pipe(Effect.map(Option.getOrElse(() => path.replace(/\/+$/, ""))));
 
-const refuseAccountHomeOutsideCheckout = Effect.fnUntraced(function* (
+const git = (repo: string, args: readonly string[]) =>
+  Effect.option(outputOf(ChildProcess.make("git", args, { cwd: repo }))).pipe(Effect.map(Option.filter((ran) => ran.code === 0)));
+
+// `git worktree list --porcelain` prints the main worktree's record first, and marks it `bare` when it has no work tree.
+const mainCheckoutOf = (repo: string) =>
+  git(repo, ["worktree", "list", "--porcelain"]).pipe(
+    Effect.map(
+      Option.flatMap((ran) => {
+        const [first = "", ...rest] = (ran.stdout.split("\n\n")[0] ?? "").split("\n");
+        return first.startsWith("worktree ") && !rest.includes("bare") ? Option.some(first.slice("worktree ".length)) : Option.none();
+      }),
+    ),
+  );
+
+const refuseAccountHomeFromWorktree = Effect.fnUntraced(function* (
   repo: string,
   home: string,
 ): Effect.fn.Return<void, FileFailure, FileSystem.FileSystem | ChildProcessSpawner.ChildProcessSpawner> {
-  const accountHome = yield* resolved(yield* yield* AccountHome);
-  if ((yield* resolved(home)) !== accountHome) return;
-  const ownCheckout = `${accountHome}/Projects/skills`;
-  if ((yield* resolved(repo)) === (yield* resolved(ownCheckout))) return;
-  return yield* new FileFailure({
-    path: home,
-    message:
-      `refusing to link the account's own home \`${home}\` from \`${repo}\`, which is not the \`${ownCheckout}\` checkout;` +
-      ` run it from that checkout, or set HOME to a temporary directory`,
-  });
+  if ((yield* resolved(home)) !== (yield* resolved(yield* yield* AccountHome))) return;
+  const refused = (why: string) =>
+    new FileFailure({
+      path: home,
+      message: `refusing to link the account's own home \`${home}\` from \`${repo}\`, ${why}, or set HOME to a temporary directory`,
+    });
+  const notCheckedOut = refused("which git does not check out; clone the repository and run it from the clone");
+  const dirs = yield* git(repo, ["rev-parse", "--absolute-git-dir", "--git-common-dir", "--show-toplevel"]);
+  const [gitDir, commonDir, topLevel] = Option.match(dirs, { onNone: () => [], onSome: (ran) => ran.stdout.trim().split("\n") });
+  if (gitDir === undefined || commonDir === undefined || topLevel === undefined) return yield* notCheckedOut;
+  // A linked worktree keeps its own git dir apart from the common dir every worktree of the repository shares.
+  const sharedDir = commonDir.startsWith("/") ? commonDir : `${repo.replace(/\/+$/, "")}/${commonDir}`;
+  if ((yield* resolved(gitDir)) !== (yield* resolved(sharedDir))) {
+    return yield* refused(
+      Option.match(yield* mainCheckoutOf(repo), {
+        onNone: () => "a linked worktree with no main checkout; clone the repository and run it from the clone",
+        onSome: (checkoutPath) => `a linked worktree; run it from the main checkout \`${checkoutPath}\``,
+      }),
+    );
+  }
+  // git answers for the repository of an enclosing directory, so a copy inside another checkout passes the check above.
+  if ((yield* resolved(topLevel)) !== (yield* resolved(repo))) return yield* notCheckedOut;
 });
 
 const linked = Effect.fnUntraced(function* (dest: string, to: string): Effect.fn.Return<LinkState, FileFailure, FileSystem.FileSystem> {
@@ -157,14 +199,14 @@ const settingsAt = Effect.fnUntraced(function* (path: string): Effect.fn.Return<
 const keysOf = (settings: Settings, keep: (key: string) => boolean): Settings =>
   Object.fromEntries(Object.entries(settings).filter(([key]) => keep(key)));
 
-const merged = Effect.fnUntraced(function* (
+const written = Effect.fnUntraced(function* (
   repo: string,
   home: string,
   rel: string,
-  { from, ownKeys }: Merge,
+  from: string,
+  isOwn: (key: string) => boolean,
 ): Effect.fn.Return<Outcome, FileFailure, FileSystem.FileSystem> {
   const dest = `${home}/${rel}`;
-  const isOwn = (key: string) => ownKeys.includes(key);
   const found = Option.getOrUndefined(yield* unlessAbsent(entryAt(dest)));
   const live = Option.getOrElse(yield* settingsAt(dest), (): Settings => ({}));
   const source = `${repo}${from}`;
@@ -181,8 +223,9 @@ const merged = Effect.fnUntraced(function* (
   return { home: rel, state: "written", replaced };
 });
 
-const git = (repo: string, args: readonly string[]) =>
-  Effect.option(outputOf(ChildProcess.make("git", args, { cwd: repo }))).pipe(Effect.map(Option.filter((ran) => ran.code === 0)));
+const merged = (repo: string, home: string, rel: string, { from, ownKeys }: Merge) => written(repo, home, rel, from, (key) => ownKeys.includes(key));
+
+const grafted = (repo: string, home: string, rel: string, { from, keys }: Graft) => written(repo, home, rel, from, (key) => !keys.includes(key));
 
 const restored = Effect.fnUntraced(function* (
   repo: string,
@@ -213,11 +256,13 @@ const placed = Effect.fnUntraced(function* (repo: string, home: string): Effect.
   if (underTest === "1" && !temporary(home)) {
     return yield* new FileFailure({ path: home, message: `refusing to link into \`${home}\` outside the test's temporary scope` });
   }
-  yield* refuseAccountHomeOutsideCheckout(repo, home);
+  yield* refuseAccountHomeFromWorktree(repo, home);
+  const { claudeConfigDirs = [] } = yield* yield* UserConfigSource;
   for (const [rel, target] of Object.entries(linksUnder(yield* readGeneratedRoot, MACHINE))) {
     outcomes.push({ home: rel, state: yield* linked(`${home}/${rel}`, `${repo}${target}`) });
   }
   for (const [rel, merge] of Object.entries(MERGED)) outcomes.push(yield* merged(repo, home, rel, merge));
+  for (const [rel, graft] of Object.entries(graftsInto(claudeConfigDirs))) outcomes.push(yield* grafted(repo, home, rel, graft));
   for (const rel of RETIRED) {
     const state = yield* retired(repo, `${home}/${rel}`);
     if (state) outcomes.push({ home: rel, state });
@@ -257,7 +302,7 @@ type Refused = Extract<PiLoad, { readonly state: "refused" }>;
 type Linked = Refused | { readonly state: "linked"; readonly load: Exclude<PiLoad, Refused>; readonly outcomes: readonly Outcome[] };
 
 export const install = Effect.fnUntraced(function* (repo: string, home: string, pi: string) {
-  yield* refuseAccountHomeOutsideCheckout(repo, home);
+  yield* refuseAccountHomeFromWorktree(repo, home);
   const { wrote, hubs } = yield* checkout(repo);
   const load = yield* preflight(repo, pi);
   const linking: Linked = load.state === "refused" ? load : { state: "linked", load, outcomes: yield* link(repo, home) };
@@ -282,6 +327,7 @@ if (import.meta.main) {
         return;
       }
       const { load, outcomes } = installed;
+      console.log(`gitleaks at ${yield* installScanner}, which the Dispatchers scan tool output with`);
       console.log(
         load.state === "loaded"
           ? `pi ${load.pi.version} at ${load.pi.path} loaded every extension in a temporary $HOME first`

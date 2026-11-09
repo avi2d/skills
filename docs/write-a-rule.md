@@ -40,7 +40,7 @@ The Rule reaches matching sessions that start after `bun run generate` on a mode
 
 To have the Rule refuse a write as well:
 
-1. Add `forbid` to its frontmatter, naming `comments` or `prose`.
+1. Add `forbid` to its frontmatter, naming `comments`, `prose` or `types`.
 1. Run `bun run generate`.
 
 The refusal fires on every write, whether or not the trigger has fired, as [`forbid`](frontmatter.md#forbid) describes.

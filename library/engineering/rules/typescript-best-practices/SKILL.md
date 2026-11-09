@@ -6,6 +6,7 @@ source: https://github.com/cursor/plugins@fd6dd6f7276956a532bb78a748a8d2818b6eb5
 trigger:
   predicate: repo-contains
   glob: "**/*.{ts,tsx,mts,cts}"
+forbid: types
 ---
 
 # TypeScript best practices
@@ -25,7 +26,7 @@ Rules for the parts of TypeScript no lint rule and no compiler flag decides for 
 
 ## Boundaries
 
-- Types are erased at runtime. Parse incoming data with a schema and derive the static type from it. A hand guard checks every field its type declares. Where Effect cannot load, a hand guard is the parse.
+- **Derive, never write twice; never assert outside data.** Types are erased at runtime, so parse outside data with a schema and derive the static type from it. Never write a second declaration of a shape a schema already declares. Never give outside data a type by assertion. Where Effect cannot load, a hand guard is the parse, and it checks every field its type declares.
 
 ## Generics
 

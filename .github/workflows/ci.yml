@@ -1,7 +1,5 @@
 name: ci
 on:
-  push:
-    branches: [main]
   pull_request:
     types: [opened, edited, synchronize, reopened]
   workflow_dispatch:
@@ -45,6 +43,8 @@ jobs:
       - run: bun run build
       - run: git diff --exit-code
       - run: bun run lint
+      - if: steps.filter.outputs.docs-only == 'true'
+        run: bun test tests/e2e/fleet-names.test.ts
       - if: steps.filter.outputs.docs-only != 'true'
         run: bun run typecheck
       - if: steps.filter.outputs.docs-only != 'true'

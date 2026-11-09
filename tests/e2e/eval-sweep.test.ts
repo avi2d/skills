@@ -4,7 +4,7 @@ import { chmodSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, readdirSync
 import { tmpdir } from "node:os";
 import { basename, dirname, join } from "node:path";
 import { resultFor } from "../../src/eval/ablation";
-import { LIVE_ROOTS } from "../../src/eval/eval-sandbox";
+import { liveRootsFor } from "../../src/eval/eval-sandbox";
 import { parseSweep, SWEEPS } from "../../src/eval/eval-sweeps";
 import { LINKS, REPO } from "../../src/generate/link";
 import { value } from "../lib/effect";
@@ -30,7 +30,7 @@ function describe(path: string, out: Map<string, string>): void {
 
 function snapshot(): Map<string, string> {
   const out = new Map<string, string>();
-  for (const root of LIVE_ROOTS) describe(join(live, root), out);
+  for (const root of liveRootsFor([])) describe(join(live, root), out);
   describe(targets, out);
   return out;
 }

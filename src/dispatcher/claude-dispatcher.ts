@@ -13,7 +13,9 @@ import {
   isHook,
   named,
   note,
+  readOf,
   readPayload,
+  refusedRead,
   sessionOf,
   type Hook,
   type HookAdapter,
@@ -22,9 +24,14 @@ import {
   type Writes,
 } from "./hook-harness";
 import { readIndex } from "./read-index";
+import { scrub, scrubbedLine, stringsIn, withStrings } from "./redact";
 import { field, textsOf, type Entry } from "./transcript";
 
 const INDEX_PATH = fileURLToPath(new URL("./dispatch.json", import.meta.url));
+
+const BUNDLE_DIR = dirname(fileURLToPath(import.meta.url));
+
+export const REDACT = "redact";
 
 const handedDir = (session: string): string => join(STATE, "claude", `${named(session)}.parts`);
 
@@ -170,6 +177,15 @@ function say(reply: Reply, index: Index, hook: Hook, payload: Payload): string {
   return said;
 }
 
+// Claude Code runs its PostToolUse hooks in parallel on the original output, so a reply that rewrote nothing could undo another's redaction.
+async function redacted(payload: Payload): Promise<string | undefined> {
+  const response = payload.tool_response;
+  const scrubbed = await scrub(stringsIn(response), BUNDLE_DIR, readOf(payload)[0]);
+  if (scrubbed.type === "clean") return undefined;
+  note(sessionOf(payload), scrubbedLine(payload.tool_name ?? "", scrubbed));
+  return JSON.stringify({ hookSpecificOutput: { hookEventName: "PostToolUse", updatedToolOutput: withStrings(response, scrubbed.texts) } });
+}
+
 const CLAUDE: HookAdapter = {
   harness: "claude",
   entry: transcriptEntry,
@@ -185,8 +201,11 @@ if (import.meta.main) {
   const [name = "", part] = (process.argv[2] ?? payload.hook_event_name ?? "").split("/");
   const slot = Number(part);
   const carrier = name === "UserPromptSubmit" && slot >= 2;
-  if (isHook(name)) {
-    await answer(payload, () => (carrier ? carry(payload, slot) : handle(CLAUDE, readIndex(INDEX_PATH, "claude-code"), name, payload)));
+  if (name === REDACT) await answer(payload, () => redacted(payload));
+  else if (isHook(name)) {
+    await answer(payload, async () =>
+      carrier ? carry(payload, slot) : (refusedRead(name, payload) ?? handle(CLAUDE, readIndex(INDEX_PATH, "claude-code"), name, payload)),
+    );
     if (name === "UserPromptSubmit" && !carrier) release(payload);
   }
 }

@@ -1,7 +1,7 @@
 import { Effect, FileSystem, Option } from "effect";
 import { MalformedBody, UncomposableBodies, type FileFailure } from "../platform/failures";
 import { attempt, entriesOf, filesUnder, unlessAbsent } from "../platform/files";
-import { requireString, isRecord } from "./fields";
+import { requireString, isRecord } from "../platform/fields";
 import { FORBIDS, isForbid, type Forbid } from "../dispatcher/forbid";
 import { isHarness, type Harness } from "../dispatcher/harness";
 import { parseScopeConditions, type ScopeCondition } from "../dispatcher/scope-condition";

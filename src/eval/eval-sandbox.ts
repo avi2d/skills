@@ -4,15 +4,17 @@ import type { Change, Verification } from "./eval-judges";
 import { FileFailure, fileFailure } from "../platform/failures";
 import { attempt, outputOf, type Ran } from "../platform/files";
 import { LINKS, MERGED } from "../generate/link";
+import { UserConfigSource } from "../generate/user-config";
 
 const AGENT_CONFIG = [".claude", ".pi/agent", ".codex", ".config/opencode", ".agents"];
 
-export const LIVE_ROOTS: readonly string[] = [...new Set([...AGENT_CONFIG, ...Object.keys(LINKS), ...Object.keys(MERGED)])]
-  .filter((root, _, all) => !all.some((other) => root.startsWith(`${other}/`)))
-  .toSorted();
+export const liveRootsFor = (claudeConfigDirs: readonly string[]): readonly string[] =>
+  [...new Set([...AGENT_CONFIG, ...claudeConfigDirs, ...Object.keys(LINKS), ...Object.keys(MERGED)])]
+    .filter((root, _, all) => !all.some((other) => root.startsWith(`${other}/`)))
+    .toSorted();
 
-export const liveRootHolding = (path: string, home: string): string | undefined =>
-  LIVE_ROOTS.find((root) => path === `${home}/${root}` || path.startsWith(`${home}/${root}/`));
+export const liveRootHolding = (roots: readonly string[], path: string, home: string): string | undefined =>
+  roots.find((root) => path === `${home}/${root}` || path.startsWith(`${home}/${root}/`));
 
 export type Env = Readonly<Record<string, string | undefined>>;
 
@@ -20,8 +22,14 @@ export type Sandbox = { root: string; home: string; agentDir: string; tmp: strin
 
 export const CARRIAGE_VARIABLE = "SKILLS_EVAL_CARRIAGE";
 
-export function isolatedEnv(sandbox: Sandbox, caller: Env, credentials: readonly string[], liveHome: string): Record<string, string> {
-  const path = (caller["PATH"] ?? "").split(":").filter((dir) => dir !== "" && liveRootHolding(dir.replace(/\/+$/, ""), liveHome) === undefined);
+export function isolatedEnv(
+  sandbox: Sandbox,
+  caller: Env,
+  credentials: readonly string[],
+  liveHome: string,
+  liveRoots: readonly string[],
+): Record<string, string> {
+  const path = (caller["PATH"] ?? "").split(":").filter((dir) => dir !== "" && liveRootHolding(liveRoots, dir.replace(/\/+$/, ""), liveHome) === undefined);
   const env: Record<string, string> = {
     HOME: sandbox.home,
     PI_CODING_AGENT_DIR: sandbox.agentDir,
@@ -81,7 +89,9 @@ export const seeded = Effect.fnUntraced(function* (
     .makeTempDirectoryScoped({ prefix: "skills-eval-" })
     .pipe(Effect.mapError((error) => fileFailure("$TMPDIR", error.cause ?? error)));
   const root = yield* attempt(made, (fs) => fs.realPath(made));
-  const live = liveRootHolding(root, liveHome);
+  const { claudeConfigDirs = [] } = yield* yield* UserConfigSource;
+  const liveRoots = liveRootsFor(claudeConfigDirs);
+  const live = liveRootHolding(liveRoots, root, liveHome);
   if (live !== undefined) {
     return yield* new FileFailure({ path: root, message: `the sandbox would sit inside the live ~/${live}; point $TMPDIR outside it` });
   }
@@ -101,7 +111,7 @@ export const seeded = Effect.fnUntraced(function* (
     yield* attempt(path, (fs) => fs.makeDirectory(`${sandbox.agentDir}/skills/${name}`, { recursive: true }));
     yield* attempt(path, (fs) => fs.writeFileString(path, text));
   }
-  const env = isolatedEnv(sandbox, caller, credentials, liveHome);
+  const env = isolatedEnv(sandbox, caller, credentials, liveHome, liveRoots);
   yield* git(sandbox.repo, env, ["init", "-q", "-b", "main"]);
   for (const [key, value] of Object.entries(IDENTITY)) yield* git(sandbox.repo, env, ["config", key, value]);
   yield* git(sandbox.repo, env, ["add", "-A"]);

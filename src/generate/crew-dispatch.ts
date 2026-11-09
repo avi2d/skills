@@ -1,4 +1,5 @@
 import { Effect, Schema } from "effect";
+import { MAIN_ACCOUNT } from "./claude-accounts";
 import { MalformedMachineConfig } from "../platform/failures";
 
 const Kind = Schema.Literals(["trivial", "small", "large", "ambiguous", "investigation"]);
@@ -47,9 +48,15 @@ const Floor = Schema.Struct({
   min_percent: Schema.Int.check(Schema.isBetween({ minimum: 0, maximum: 100 })),
 }).annotate({ description: "firstmate skips the candidate while the scope reads below min_percent" });
 
+const ClaudeAccount = Schema.Literal(MAIN_ACCOUNT).annotate({
+  description: "The clauth profile name firstmate launches this profile on",
+});
+
 const Profile = Schema.Union([
-  profileOf("claude-bridge/claude-opus-5-5", "claude"),
-  Schema.Struct({ ...profileOf("claude-bridge/claude-haiku-5-5", "claude").fields, floor: Floor }).annotate({
+  Schema.Struct({ ...profileOf("claude-bridge/claude-opus-5-5", "claude").fields, claude_account: ClaudeAccount }),
+  profileOf("openai/gpt-6-astra", "codex"),
+  profileOf("openai/gpt-6.1-terra", "codex"),
+  Schema.Struct({ ...profileOf("claude-bridge/claude-haiku-5-5", "claude").fields, floor: Floor, claude_account: ClaudeAccount }).annotate({
     description: "Haiku 5.5 spends the Claude windows the main firstmate and Opus crews share, so it always carries a floor",
   }),
   Schema.Struct({ ...profileOf("opencode-go/muse-spark-1.3-contributor", "opencode-go").fields, floor: Floor }).annotate({

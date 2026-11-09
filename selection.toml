@@ -1,7 +1,7 @@
 default_models = ["opus", "claude-bridge/claude-haiku-5-5"]
 
 [profiles.default]
-rules = ["comment-discipline", "fix-what-you-see", "prove-it-works", "typescript-best-practices", "agents-md-router", "readme-front-door"]
+rules = ["comment-discipline", "fix-what-you-see", "prove-it-works", "typescript-best-practices", "agents-md-router", "readme-front-door", "credential-files"]
 skills = ["build-and-review-motion", "develop-a-website", "grilling", "refine-design", "stress-test-content", "teach"]
 references = ["effect-patterns", "interface-copy", "mobile-web", "motion", "motion-vocabulary", "plain-sentences", "plain-words", "punctuation", "russian-prose", "technical-writing", "typography", "ui-principles", "unslop", "visitor-job", "writing-for-agents"]
 
@@ -12,7 +12,7 @@ models = ["opencode-go/muse-spark-1.3-contributor"]
 add = ["guard-the-context-window", "writing-for-people"]
 
 [profiles.gpt-6]
-models = ["openai-codex/gpt-6-luna", "openai/gpt-6-luna", "openai-codex/gpt-6.1-sol", "openai/gpt-6.1-sol"]
+models = ["openai-codex/gpt-6-luna", "openai/gpt-6-luna", "openai-codex/gpt-6.1-sol", "openai/gpt-6.1-sol", "openai/gpt-6-astra", "openai/gpt-6.1-terra"]
 
 [profiles.gpt-6.rules]
 add = ["force-determinism", "git-hygiene"]

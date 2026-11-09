@@ -18,6 +18,7 @@ import {
   type ToolCallEvent,
   type ToolCallEventResult,
   type ToolResultEvent,
+  type ToolResultEventResult,
 } from "@earendil-works/pi-coding-agent";
 import {
   carriage,
@@ -31,10 +32,13 @@ import { START, type RunState } from "./run-state";
 import { logLine } from "./dispatch-log";
 import { releasedText } from "./verdict";
 import { VERIFY_BUDGET_SECONDS, fingerprint, sight, unreadableNote, verify } from "./gate";
+import { credentialRead, refusedLine, refusedText } from "./credential-reads";
 import type { Change, ClaudeEdit } from "./forbid";
 import { steer, steeredLine } from "./job-queue";
 import { readProject } from "./project";
 import { readIndex } from "./read-index";
+import { redaction } from "./pi-redact";
+import { scrubbedLine } from "./redact";
 import { cappedNote, repoFiles, standing, type Listed } from "./repo-walk";
 
 const because = (e: unknown): string => (e instanceof Error ? e.message : String(e));
@@ -237,6 +241,11 @@ function onContext(dispatcher: Dispatcher, event: ContextEvent): ContextEventRes
 }
 
 function onToolCall(dispatcher: Dispatcher, event: ToolCallEvent, ctx: ExtensionContext): ToolCallEventResult | undefined {
+  const credential = credentialRead(event.toolName, event.input, ctx.cwd);
+  if (credential !== undefined) {
+    note(dispatcher, refusedLine(credential));
+    return { block: true, reason: refusedText(credential) };
+  }
   const writing = isToolCallEventType("write", event) || isToolCallEventType("edit", event);
   const changes: Change[] = [];
   if (isToolCallEventType("write", event)) {
@@ -258,16 +267,26 @@ function onToolCall(dispatcher: Dispatcher, event: ToolCallEvent, ctx: Extension
   return isToolCallEventType("bash", event) ? queue(dispatcher, event.input, ctx.cwd) : undefined;
 }
 
-function onToolResult(dispatcher: Dispatcher, event: ToolResultEvent, ctx: ExtensionContext): void {
+function readOf(event: ToolResultEvent, cwd: string): string | undefined {
   const { path } = event.input;
-  if (!isReadToolResult(event) || event.isError || typeof path !== "string") return;
-  let read: string;
+  if (!isReadToolResult(event) || typeof path !== "string") return undefined;
   try {
-    read = realpathSync(onDisk(path, ctx.cwd));
+    return realpathSync(onDisk(path, cwd));
   } catch {
-    return;
+    return undefined;
   }
-  step(dispatcher, { type: "read", tool: event.toolName, paths: [read] });
+}
+
+function onToolResult(dispatcher: Dispatcher, event: ToolResultEvent, ctx: ExtensionContext): void {
+  const read = event.isError ? undefined : readOf(event, ctx.cwd);
+  if (read !== undefined) step(dispatcher, { type: "read", tool: event.toolName, paths: [read] });
+}
+
+async function redact(dispatcher: Dispatcher, event: ToolResultEvent, ctx: ExtensionContext): Promise<ToolResultEventResult | undefined> {
+  const redacted = await redaction(event, BUNDLE_DIR, readOf(event, ctx.cwd));
+  if (redacted === undefined) return undefined;
+  note(dispatcher, scrubbedLine(event.toolName, redacted.scrubbed));
+  return redacted.result;
 }
 
 function queue(dispatcher: Dispatcher, input: { command: string }, cwd: string): ToolCallEventResult | undefined {
@@ -360,7 +379,10 @@ export default function (pi: ExtensionAPI): void {
   });
   pi.on("context", (event) => onContext(dispatcher, event));
   pi.on("tool_call", (event, ctx) => onToolCall(dispatcher, event, ctx));
-  pi.on("tool_result", (event, ctx) => onToolResult(dispatcher, event, ctx));
+  pi.on("tool_result", async (event, ctx) => {
+    onToolResult(dispatcher, event, ctx);
+    return redact(dispatcher, event, ctx);
+  });
   pi.on("session_compact", () => {
     step(dispatcher, { type: "compaction" });
   });

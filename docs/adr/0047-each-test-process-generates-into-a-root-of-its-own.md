@@ -12,6 +12,7 @@ as 0035 decided; it writes it somewhere no other process reads, and uses
 touches the tree, not into a `GENERATED_ROOT` constant as `src/bundle.ts` loads.
 Superseded in part by 0089: `concurrency` is the `@avi2dg/checks` preset's half
 of the cores, not 10.
+Superseded in part by 0105: Stryker mutates the working tree in place.
 
 ## Context
 

@@ -4,7 +4,7 @@ kind: reference
 # The link map
 
 The link map is every path in $HOME that `bun run link` writes or takes back, and what each one points at in this checkout.
-`bun run docs` writes this page from `LINKS`, `MERGED` and `RETIRED` in `src/generate/link.ts`, and `bun run test` fails when the two disagree.
+`bun run docs` writes this page from `LINKS`, `MERGED`, `CLAUDE_CONFIG_GRAFT` and `RETIRED` in `src/generate/link.ts`, and `bun run test` fails when the two disagree.
 
 ## The links
 
@@ -51,6 +51,18 @@ When the file in this checkout differs from its last commit only in the keys the
 | In $HOME | Written from, in this checkout | Kept from the file already there |
 | --- | --- | --- |
 | `~/.pi/agent/settings.json` | `harness/pi/settings.json` | `deviceId`, `lastChangelogVersion`, `trackingId` |
+
+## The keys it adds to a Claude config directory
+
+Claude Code started with `CLAUDE_CONFIG_DIR` set reads `settings.json` from the directory it names, and never `~/.claude/settings.json`.
+For each `<dir>` in the `claudeConfigDirs` of [the skills config](config.md), `bun run link` writes each key the last column names into the path below.
+It keeps every other key the file already holds.
+It names each key it replaces, with the value the file held.
+With no `claudeConfigDirs`, it writes no such file.
+
+| In $HOME | Taken from, in this checkout | Keys it writes |
+| --- | --- | --- |
+| `~/<dir>/settings.json` | `harness/claude-code/settings.json` | `hooks` |
 
 ## The paths it takes back
 

@@ -1,3 +1,6 @@
+---
+governs: [src/generate/no-mistakes-config.ts, tests/unit/machine-files.test.ts]
+---
 # 102. The main account reviews first, Codex second, and the second account last with no floor
 
 Date: 2026-11-03
@@ -5,12 +8,13 @@ Date: 2026-11-03
 ## Status
 
 Accepted. Amends 0083, 0100 and 0101: the reviewer chain runs Opus on main first, Sol on Codex second behind its five-hour floor, and Opus on second last with no floor.
+Amended by 0108: Astra on Codex reviews first with no floor, and Sol leaves the chain.
 
 ## Context
 
 The captain asked for review on the main Claude account first, then Codex, with the second account last.
 The generated config had listed Codex first, the second account second, and main third.
-The fork always tries the last entry whatever its floor reads, and it moves to the next entry only after a usage limit error, as 0083 records.
+The fork always tries the last entry whatever its floor reads, and it moves to the next entry only after a usage limit error.
 A floor on the last entry therefore never skips anything, so the second account carries none.
 
 ## Decision

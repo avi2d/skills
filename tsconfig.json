@@ -31,6 +31,7 @@
               "harness/**",
               "src/dispatcher/claude-dispatcher.ts",
               "src/dispatcher/codex-dispatcher.ts",
+              "src/dispatcher/credential-reads.ts",
               "src/dispatcher/dispatch-log.ts",
               "src/dispatcher/dispatch.ts",
               "src/dispatcher/forbid.ts",
@@ -41,12 +42,15 @@
               "src/dispatcher/job-queue.ts",
               "src/dispatcher/model-scope.ts",
               "src/dispatcher/pi-dispatcher.ts",
+              "src/dispatcher/pi-redact.ts",
               "src/dispatcher/project.ts",
               "src/dispatcher/read-index.ts",
+              "src/dispatcher/redact.ts",
               "src/dispatcher/repo-walk.ts",
               "src/dispatcher/run-state.ts",
               "src/dispatcher/shell-words.ts",
               "src/dispatcher/transcript.ts",
+              "src/dispatcher/types.ts",
               "src/dispatcher/verdict.ts"
             ],
             "options": {

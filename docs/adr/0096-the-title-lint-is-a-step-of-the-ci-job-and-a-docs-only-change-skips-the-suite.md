@@ -5,6 +5,7 @@ Date: 2026-10-11
 ## Status
 
 Accepted. Supersedes 0059's decision that commitlint keeps its own workflow.
+Amended by 0107: the fleet-names scan runs alone on a docs-only change.
 
 ## Context
 

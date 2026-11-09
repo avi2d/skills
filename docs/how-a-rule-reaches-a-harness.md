@@ -22,10 +22,11 @@ Five of the links point into directories a clone does not have, so linking first
 A run that stops on a bad Body installs nothing at all.
 A run where the installed pi fails to load an extension the map links installs nothing either, as [record 0082](adr/0082-a-link-waits-until-pi-loads-every-extension-in-a-temporary-home.md) records.
 The links it leaves still point into the checkout, so the bundles it wrote and an extension already linked reach the harnesses all the same.
-A run whose $HOME is the account's own home, as its passwd record names it, installs only from `~/Projects/skills`, and from any other copy it stops before it writes, so a worktree cannot repoint the live harnesses into itself.
+A run whose $HOME is the account's own home, as its passwd record names it, installs only from a main checkout.
+From a linked git worktree, or a copy git does not check out, it stops before it writes, so a worktree cannot repoint the live harnesses into itself.
 
-The linker repoints links and refuses real files.
-The one exception is `~/.pi/agent/settings.json`, which it writes from the checkout as a file of the machine's own, so a change to `harness/pi/settings.json` reaches pi only at the next `bun run link`, as [the link map](links.md#the-files-it-writes) says.
+The linker repoints links and refuses real files, except where [the link map](links.md) says it writes.
+A change to `harness/pi/settings.json` reaches pi only at the next `bun run link`.
 On a machine where home-manager still owns these paths, the previous owner has to let go before the new one takes hold, as [record 0004](adr/0004-the-repo-installs-itself-and-the-contract-stays-hand-written.md) records.
 The linker removes only the paths `RETIRED` in `src/generate/link.ts` names, each one only while it is still a link into this checkout.
 Dropping an entry from the map says nothing to any machine, so a path leaves the map by moving to `RETIRED`, and every machine that runs the linker again lets go of it, as [record 0020](adr/0020-a-path-home-took-from-here-is-retired-rather-than-forgotten.md) records.
@@ -55,7 +56,7 @@ Codex's is `generated/codex/dispatcher`, linked at `~/.codex/skills-dispatch` an
 Each bundle is a directory because pi loads extensions with jiti, which resolves a relative import from the path it was handed rather than from what that path points at.
 A single linked file cannot see its own siblings, so the generator gathers the adapter, the dispatch core and the index of Rules into one flat directory, and the suite fails if any module in it reaches outside.
 `src/dispatcher/pi-dispatcher.ts` sits beside `src/dispatcher/dispatch.ts` for the same reason, because a source laid out the way the bundle is needs no rewriting when it is copied.
-The two modules not taken from `src/` are `comments.ts` and `prose.ts`, the checks kit's own files under the names `src/dispatcher/comments.ts` and `src/dispatcher/prose.ts` re-export them by, so a Dispatcher refuses exactly what the kit's comment and docs gates refuse.
+The two modules not taken from `src/` are `comments.ts` and `prose.ts`, the checks kit's own files under the names `src/dispatcher/comments.ts` and `src/dispatcher/prose.ts` re-export them by, so a Dispatcher refuses what the kit's comment and docs gates refuse and `types.ts` runs the project's own oxlint as [Frontmatter fields](frontmatter.md#forbid) describes.
 
 ## Where dispatch logic goes
 
@@ -74,6 +75,7 @@ Reading a hook's reply back from a harness's transcript is translation the two h
 The rest the two hook adapters share is `src/dispatcher/hook-harness.ts`, also bundled into both, so an adapter hands it a `HookAdapter` holding only what its harness does differently.
 The index check all three adapters share is `src/dispatcher/read-index.ts`.
 Which shell command goes to the job queue is decided in `src/dispatcher/job-queue.ts`, which reads a command's words through `src/dispatcher/shell-words.ts`, and each adapter hands it the command and applies what it returns, as [Heavy commands go to the job queue](#heavy-commands-go-to-the-job-queue) describes.
+Whether a call reads a credential file is decided in `src/dispatcher/credential-reads.ts`, and each adapter refuses the call it names, as [A credential file is not read](#a-credential-file-is-not-read) describes.
 `src/dispatcher/gate.ts` is I/O the three adapters share for the verdict gate, reading `.no-mistakes.yaml` through `src/dispatcher/gate-config.ts`, and whether a settle is checked, held or let go is decided in `src/dispatcher/verdict.ts`, as [record 0048](adr/0048-a-session-that-changed-the-tree-settles-past-the-checks-its-push-gate-runs.md) records.
 
 A Profile is declared in `selection.toml` and nowhere else.
@@ -167,6 +169,43 @@ When `pueue` is not installed, its daemon is down, or it lacks a group the comma
 A queued job runs under the pueue daemon, outside any sandbox, so Codex queues or refuses a command only in a full-access turn and never overrides a restricted sandbox, whatever its network setting.
 The Dispatcher reads that sandbox from the latest `turn_context` in the rollout, and runs the command as it is under any other sandbox or a rollout it cannot read.
 Each queued or refused call is a `job-queue` line in the dispatch log naming its groups, and never the command, which can carry a credential.
+
+## Tool output is scrubbed for credentials
+
+Every tool result is scanned with gitleaks against the checks kit's rules before the model or the transcript holds it.
+pi scans at `tool_result`, and Claude Code at `PostToolUse`, through the `redact` entry whose matcher is `*` in `harness/claude-code/settings.json`.
+`bun run generate` copies the kit's `gitleaks.toml` and the gitleaks version the kit pins into the pi and Claude Code bundles.
+`bun run link` installs that version where the kit's `checks-secrets` keeps it, under `~/.cache/avi2dg-checks/gitleaks/`.
+
+Each match becomes `[redacted: <rule>]`, and a match found under base64, hex or percent encoding takes the whole encoded run with it.
+A read also has its file scanned, so a rule that matches on a path redacts what the read returned.
+pi's result is rewritten in its content, details and structured content, so a codemode script gets the redacted result back.
+A result with nothing to redact is left as it was, and Claude Code gets no reply for it.
+Claude Code runs its `PostToolUse` hooks in parallel on the original output, so a reply that rewrote nothing could undo another's redaction.
+
+The scan fails closed.
+When gitleaks is missing, fails, or runs past 15 seconds, the result is replaced with a message saying it was withheld and why.
+
+Each redaction is a `redact <tool>: <rules>` line in the dispatch log, and each withheld result a `withhold <tool>: <why>` line, and neither holds the secret.
+
+Claude Code hands a failed call, such as a Bash command that exits non-zero, to `PostToolUseFailure`, which can add context but cannot rewrite the error text.
+So a credential in the output of a failed Claude Code call reaches the model and the transcript as it was.
+pi scans a failed call like any other.
+Codex output is not scanned.
+
+## A credential file is not read
+
+What a tool prints stays in the session transcript, so every Dispatcher refuses a call that reads a known credential file before anything else it does at that call.
+`~/.npmrc` and `.credentials.json` match in any directory, `~/.pi/agent/auth.json`, `~/.codex/auth.json` and `~/.config/gh/hosts.yml` match at the default location and at the location the owning directory variable names, a file below a `wireguard` or `amneziawg` directory that sits below an `etc` directory matches on its directory name, only `privatekey` and `*.key` match under any other directory named `wireguard` or `amneziawg`, and any other `.conf` holding an `[Interface]` with a `PrivateKey` matches on its text.
+A set owning directory variable adds a location and never replaces one.
+A project file named `auth.json` or `hosts.yml` passes, while a project `.npmrc` is refused.
+A path tool, such as `read`, `edit` or `grep`, is refused on the file location.
+A shell command is refused when a word in it, a redirect target or a piece of a quoted script names one of those files that exists, with `~`, `$HOME` and symlinks resolved and every glob expanded and each `cd` and `pushd` in the command resolved against the directory the previous one left, where a bare `cd` resolves to the home directory.
+A word that holds a slash after expansion and names a tunnel file in this way is refused without a stat, while a bare word resolved against the working directory or a `cd` target still needs a stat.
+`jq keys`, `yq keys` and a command that reads only metadata, such as `ls`, `stat` or `test`, pass, unless a substitution runs inside them.
+pi blocks the call at `tool_call`, and Claude Code and Codex get a `deny` in their PreToolUse reply, which tells the model to read the file with its key names only.
+Each refusal is a `credential-read` line in the dispatch log naming the path.
+A path built at run time, a recursive grep over a directory and a script that opens the file itself are not seen, and the `credential-files` Rule covers them and every other file that holds a secret.
 
 ## The dispatch log
 

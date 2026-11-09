@@ -26,9 +26,8 @@ const decodeConfig = Schema.decodeUnknownSync(
     overrides: Schema.optionalKey(Schema.Array(Schema.Struct({ rules: Rules }))),
   }),
 );
-const decodeReport = Schema.decodeUnknownSync(
-  Schema.Struct({ diagnostics: Schema.Array(Schema.Struct({ filename: Schema.String, code: Schema.String })) }),
-);
+const Diagnostic = Schema.Struct({ filename: Schema.String, code: Schema.String });
+const decodeReport = Schema.decodeUnknownSync(Schema.Struct({ diagnostics: Schema.Array(Diagnostic) }));
 
 const config = decodeConfig(oxlintConfig);
 const overrides = config.overrides ?? [];
@@ -39,7 +38,7 @@ const typescript = Bun.spawnSync(["git", "ls-files", "-z", "--", "*.ts", "*.tsx"
   .filter(Boolean);
 const typescriptDirs = [...new Set(typescript.filter((path) => path.includes("/")).map(topLevel))];
 
-type Lint = { exitCode: number; diagnostics: readonly { filename: string; code: string }[] };
+type Lint = { exitCode: number; diagnostics: readonly (typeof Diagnostic.Type)[] };
 
 // The default format is chosen by what oxlint detects around it, an agent or a CI, so only JSON parses the same everywhere.
 const inScratch = (sources: readonly string[], check: (dir: string, lint: (file: string) => Lint) => void): void => {

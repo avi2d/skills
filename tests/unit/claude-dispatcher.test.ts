@@ -3,9 +3,10 @@ import { Effect, Schema } from "effect";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { loadBodies } from "../../src/bodies/bodies";
-import { CONTEXT_LIMIT, HAND_OFF_WAIT_SECONDS, PROMPT_HOOKS, parts } from "../../src/dispatcher/claude-dispatcher";
+import { CONTEXT_LIMIT, HAND_OFF_WAIT_SECONDS, PROMPT_HOOKS, REDACT, parts } from "../../src/dispatcher/claude-dispatcher";
 import { HOOKS, type Reply } from "../../src/dispatcher/hook-harness";
 import { carriage, type Index } from "../../src/dispatcher/dispatch";
+import { SCAN_SECONDS } from "../../src/dispatcher/redact";
 import { indexFor } from "../../src/generate/dispatch-index";
 import { loadSelection, profilesOf, selected } from "../../src/bodies/selection";
 import { carriageFor } from "../lib/dispatch";
@@ -97,5 +98,24 @@ describe("the prompt hooks the settings run", () => {
     const split = parts(checkedIn, reply(checkedIn.rules.map((rule) => rule.name)), CONTEXT_LIMIT);
     expect(split.length, `the Rules come to ${split.length} parts: add a prompt hook and raise PROMPT_HOOKS`).toBeLessThanOrEqual(PROMPT_HOOKS);
     for (const part of split) expect(part.length, "a Rule longer than Claude Code shows whole can only arrive as a preview").toBeLessThanOrEqual(CONTEXT_LIMIT);
+  });
+});
+
+describe("the redact hook the settings run", () => {
+  const Hooked = Schema.Struct({ command: Schema.optionalKey(Schema.String), timeout: Schema.optionalKey(Schema.Finite) });
+  const Matched = Schema.Struct({ matcher: Schema.optionalKey(Schema.String), hooks: Schema.optionalKey(Schema.Array(Hooked)) });
+  const settings = Schema.decodeUnknownSync(
+    Schema.Struct({ hooks: Schema.optionalKey(Schema.Struct({ PostToolUse: Schema.optionalKey(Schema.Array(Matched)) })) }),
+  )(JSON.parse(readFileSync(join(repo, "harness/claude-code/settings.json"), "utf8")));
+  const redacting = (settings.hooks?.PostToolUse ?? []).flatMap(({ matcher, hooks = [] }) =>
+    hooks.filter((hook) => hook.command === `bun "$HOME/.claude/skills-dispatch/index.ts" ${REDACT}`).map((hook) => ({ matcher, ...hook })),
+  );
+
+  test("one redact hook runs after every tool, not after a named few", () => {
+    expect(redacting.map((hook) => hook.matcher)).toEqual(["*"]);
+  });
+
+  test("Claude Code waits longer than a scan can run, so a scan that hangs is answered by the hook withholding the output and not by Claude Code passing it on", () => {
+    expect(redacting[0]?.timeout ?? 0).toBeGreaterThan(SCAN_SECONDS);
   });
 });

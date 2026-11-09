@@ -1,6 +1,7 @@
 import { Config, Effect, Option, type FileSystem } from "effect";
 import { FileFailure, UnloadableBundle } from "../platform/failures";
 import { attempt, unlessAbsent } from "../platform/files";
+import { scannerFiles } from "./secret-scanner";
 
 // Parallel test runners share one tree, so each test process takes its own
 // generated output. The preload names it; anything else is rejected.
@@ -27,6 +28,7 @@ export type Bundle = {
   files: Record<string, string>;
   dir: string;
   externals?: readonly string[];
+  scansOutput?: true;
 };
 
 const CORE_FILES = {
@@ -37,6 +39,7 @@ const CORE_FILES = {
   "src/dispatcher/forbid.ts": "forbid.ts",
   [KIT_COMMENTS]: "comments.ts",
   [KIT_PROSE]: "prose.ts",
+  "src/dispatcher/types.ts": "types.ts",
   "src/dispatcher/glob.ts": "glob.ts",
   "src/dispatcher/project.ts": "project.ts",
   "src/dispatcher/repo-walk.ts": "repo-walk.ts",
@@ -45,6 +48,7 @@ const CORE_FILES = {
   "src/dispatcher/gate-config.ts": "gate-config.ts",
   "src/dispatcher/read-index.ts": "read-index.ts",
   "src/dispatcher/job-queue.ts": "job-queue.ts",
+  "src/dispatcher/credential-reads.ts": "credential-reads.ts",
   "src/dispatcher/shell-words.ts": "shell-words.ts",
 };
 
@@ -59,8 +63,11 @@ export const PI_BUNDLE: Bundle = {
   files: {
     "src/dispatcher/pi-dispatcher.ts": ENTRY,
     ...CORE_FILES,
+    "src/dispatcher/pi-redact.ts": "pi-redact.ts",
+    "src/dispatcher/redact.ts": "redact.ts",
   },
   externals: ["@earendil-works/pi-coding-agent"],
+  scansOutput: true,
 };
 
 export const CLAUDE_BUNDLE: Bundle = {
@@ -68,7 +75,9 @@ export const CLAUDE_BUNDLE: Bundle = {
   files: {
     "src/dispatcher/claude-dispatcher.ts": ENTRY,
     ...HOOK_FILES,
+    "src/dispatcher/redact.ts": "redact.ts",
   },
+  scansOutput: true,
 };
 
 export const CODEX_BUNDLE: Bundle = {
@@ -166,5 +175,6 @@ export const bundle = Effect.fnUntraced(function* (
 
   const out = new Map<string, Uint8Array>();
   for (const { name, bytes } of sources.values()) out.set(`${root}/${name}`, bytes);
+  if (spec.scansOutput) for (const [name, bytes] of yield* scannerFiles()) out.set(`${root}/${name}`, bytes);
   return out;
 });

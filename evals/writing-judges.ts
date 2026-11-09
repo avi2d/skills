@@ -47,6 +47,24 @@ export const releasePointer: ProgramJudge = {
   },
 };
 
+export const whatGoesWhere: ProgramJudge = {
+  name: "what-goes-where",
+  judge: ({ changes }) => {
+    const stray = changes
+      .filter((change) => change.path === "README.md" || change.path === "AGENTS.md")
+      .flatMap(addedLines)
+      .filter((line) => /explicit over implicit/i.test(line) || (/plugin/i.test(line) && /refus/i.test(line)));
+    if (stray.length > 0) return { passed: false, evidence: ["the refusal landed outside VISION.md:", ...stray] };
+    const vision = changes.find((change) => change.path === "VISION.md");
+    if (vision === undefined) return { unjudged: "VISION.md was not changed" };
+    const text = addedLines(vision).join("\n");
+    if (!/refus/i.test(text) || !/plugin/i.test(text) || !/explicit over implicit/i.test(text)) {
+      return { unjudged: "VISION.md does not carry the refusal and the principle the task gave" };
+    }
+    return { passed: true, evidence: ["VISION.md carries the refusal and its principle, and neither README.md nor AGENTS.md repeats it"] };
+  },
+};
+
 const PROPER_NOUNS = new Set(["Ledger"]);
 
 const titleCased = (line: string): boolean => {

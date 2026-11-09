@@ -4,6 +4,7 @@ import { dirname, join, resolve } from "node:path";
 import { dispatch, placed, repoGlobs, type Action, type Event, type Index, type Step } from "./dispatch";
 import { decodeRunState, isRecord, START, type RunState } from "./run-state";
 import { logLine } from "./dispatch-log";
+import { credentialRead, refusedLine, refusedText } from "./credential-reads";
 import type { Change } from "./forbid";
 import { VERIFY_BUDGET_SECONDS, fingerprint, sight, unreadableNote, verify } from "./gate";
 import { steer, steeredLine, type Steered } from "./job-queue";
@@ -127,7 +128,7 @@ const PAYLOAD_TEXT = [
   "to_model",
 ] as const;
 
-export type Payload = { [K in (typeof PAYLOAD_TEXT)[number]]?: string } & { tool_input?: Record<string, unknown> };
+export type Payload = { [K in (typeof PAYLOAD_TEXT)[number]]?: string } & { tool_input?: Record<string, unknown>; tool_response?: unknown };
 
 export function readPayload(raw: string): Payload {
   let parsed: unknown;
@@ -143,6 +144,7 @@ export function readPayload(raw: string): Payload {
     if (typeof value === "string") payload[key] = value;
   }
   if (isRecord(parsed.tool_input)) payload.tool_input = parsed.tool_input;
+  if (parsed.tool_response !== undefined) payload.tool_response = parsed.tool_response;
   return payload;
 }
 
@@ -209,7 +211,7 @@ function promptEvent(payload: Payload, { files, gate, project }: Lookups): Event
   };
 }
 
-function readOf(payload: Payload): string[] {
+export function readOf(payload: Payload): string[] {
   const path = payload.tool_input?.file_path;
   if (payload.tool_name !== "Read" || typeof path !== "string") return [];
   try {
@@ -332,6 +334,14 @@ export async function handle(adapter: HookAdapter, index: Index, hook: Hook, pay
   if (steered?.type === "refuse") return hookOutput(hook, steered.text, "deny", told);
   if (steered?.type === "queue") return rewriteOutput(adapter, { ...payload.tool_input, command: steered.command }, told);
   return hookOutput(hook, adapter.say(reply, index, hook, payload), mode, told);
+}
+
+export function refusedRead(hook: Hook, payload: Payload): string | undefined {
+  if (hook !== "PreToolUse") return undefined;
+  const path = credentialRead(payload.tool_name ?? "", payload.tool_input ?? {}, payload.cwd ?? process.cwd());
+  if (path === undefined) return undefined;
+  note(sessionOf(payload), refusedLine(path));
+  return hookOutput(hook, refusedText(path), "deny");
 }
 
 export async function answer(payload: Payload, reply: () => Promise<string | undefined>): Promise<void> {

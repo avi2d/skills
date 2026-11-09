@@ -13,19 +13,22 @@ Install skills once on each machine whose harnesses should take their instructio
 
 To install skills:
 
-1. Clone `https://github.com/avi2d/skills` to `~/Projects/skills`, because every link the install makes points into the checkout, and `bun run link` links your own home only from there.
+1. Clone `https://github.com/avi2d/skills` to a checkout, because every link the install makes points into the checkout.
+   `bun run link` links your own home only from a main checkout, wherever you clone it.
+   From a linked git worktree, or a copy git does not check out, it stops before it writes, so a worktree cannot repoint your harnesses into itself.
 1. From the root of the checkout, run `bun install`.
    It installs the dependencies and links the declared library sources under `repos/`.
 1. Run `bun run link`.
    It writes `generated/` and checks that pi loads the checkout's extensions in a temporary home.
    Then it links each path below to the checkout, or writes it from the checkout where the list says so.
+   [The skills config](config.md), when there is one, names the Claude config directories it also writes into.
 
-`bun run link` prints the version and path of the pi it checked, such as `pi 1.2.0 at /usr/local/bin/pi loaded every extension in a temporary $HOME first`.
+`bun run link` prints the version and path of the pi it checked, such as `pi 1.5.0 at /usr/local/bin/pi loaded every extension in a temporary $HOME first`.
 It then ends with one line per path, such as `linked   ~/.claude/settings.json`, and exits 0.
 On a machine without pi, the line about pi reads `pi is not on $PATH, so no pi extension was load-checked`.
 These paths in $HOME then belong to the checkout:
 
-<!-- `bun run docs` writes the list below from `LINKS` and `MERGED` in `src/generate/link.ts`. -->
+<!-- `bun run docs` writes the list below from `LINKS`, `MERGED` and `CLAUDE_CONFIG_GRAFT` in `src/generate/link.ts`. -->
 - `~/.claude/settings.json`
 - `~/.codex/hooks.json`
 - `~/.pi/agent/claude-bridge.json`
@@ -51,6 +54,7 @@ These paths in $HOME then belong to the checkout:
 - `~/Projects/firstmate/config/supervision-branch-model`
 - `~/Projects/firstmate/config/supervision-branch-effort`
 - `~/.pi/agent/settings.json`, written from `harness/pi/settings.json` rather than linked
+- `~/<dir>/settings.json` for each `<dir>` in the config's `claudeConfigDirs`, given `hooks` from `harness/claude-code/settings.json` and keeping every other key
 <!-- The list above ends here. -->
 
 [The link map](links.md) says what each one points at.
@@ -60,7 +64,7 @@ Codex also has to trust its hooks once, as [Codex does not run the hooks](troubl
 
 To uninstall skills, run this script from the root of the checkout:
 
-<!-- `bun run docs` writes the script below from `LINKS` and `RETIRED` in `src/generate/link.ts`. -->
+<!-- `bun run docs` writes the script below from `LINKS`, `CLAUDE_CONFIG_GRAFT` and `RETIRED` in `src/generate/link.ts`. -->
 ```sh
 root=$(pwd -P)
 for path in \
@@ -99,10 +103,13 @@ for path in \
 do
   case "$(readlink "$HOME/$path")" in "$root"/*) rm "$HOME/$path" ;; esac
 done
+bun -e 'import fs from "node:fs";const e=process.env;const config=e.SKILLS_CONFIG||(e.XDG_CONFIG_HOME||e.HOME+"/.config")+"/skills/config.json";if(!fs.existsSync(config))process.exit(0);const keys=Bun.argv.slice(1);for(const dir of JSON.parse(fs.readFileSync(config,"utf8")).claudeConfigDirs??[]){const file=e.HOME+"/"+dir+"/settings.json";if(!fs.existsSync(file))continue;const o=JSON.parse(fs.readFileSync(file,"utf8"));for(const k of keys){delete o[k];}fs.writeFileSync(file,JSON.stringify(o,null,2));}' 'hooks' || exit 1
 ```
 <!-- The script above ends here. -->
 
 The script removes each path that is still a link into this checkout, and leaves a path holding anything else alone.
+For each directory that `claudeConfigDirs` in [the skills config](config.md) names, it removes the grafted `hooks` key from that directory's `settings.json`.
+It keeps every other key that file holds, and leaves every such file alone when there is no config.
 It leaves each file `bun run link` writes rather than links, because that file holds keys of the machine's own, such as pi's `deviceId`.
 The directories `bun run link` created to hold a link stay behind.
 
@@ -110,3 +117,4 @@ The directories `bun run link` created to hold a link stay behind.
 
 - [Troubleshoot skills](troubleshooting.md)
 - [The link map](links.md)
+- [The skills config](config.md)

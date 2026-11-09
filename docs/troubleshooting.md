@@ -3,7 +3,7 @@ kind: how-to
 ---
 # Troubleshoot skills
 
-Read this page when `bun run link` refuses, a Rule does not reach a session, or Codex skips the hooks.
+Read this page when `bun run link` refuses, a Rule does not reach a session, a tool's output is withheld, or Codex skips the hooks.
 
 ## Troubleshooting
 
@@ -16,7 +16,7 @@ When the index is stale, run `bun run generate` and start a new session.
 
 ### `refused: a real file stands where a link belongs`
 
-`bun run link` never replaces a path that holds anything other than a link, and home-manager may still own the path.
+Where [the link map](links.md#the-links) lists a link, `bun run link` never replaces a path that holds anything other than a link, and home-manager may still own the path.
 To clear it:
 
 1. If home-manager wrote it, remove the path from the dotfiles tree and rebuild, and otherwise move the file aside.
@@ -33,8 +33,15 @@ Otherwise, fix the extension, or remove it from `harness/pi/settings.json`, or m
 
 ### `refusing to link the account's own home`
 
-`bun run link` links the home your account owns only from the `~/Projects/skills` checkout, so a worktree or a second clone cannot repoint your harnesses into itself.
-Run it from `~/Projects/skills`, or, to try a copy, give it a temporary home: `HOME=$(mktemp -d) bun run link`.
+`bun run link` links your own home only from a main checkout.
+From a linked git worktree, or a copy git does not check out, it stops before it writes, so a worktree cannot repoint your harnesses into itself.
+Follow the refusal: run it from the checkout it names, or from a fresh clone, or, to try a copy, give it a temporary home: `HOME=$(mktemp -d) bun run link`.
+
+### `[tool output withheld: the secret scan could not run ...]`
+
+The Dispatcher could not scan the tool's output for credentials, so it withheld the output, and the message names the reason.
+When it says gitleaks is not installed, run `bun run link`, which installs the version the bundles pin.
+When it names a version the cache does not hold after a checks kit upgrade, run `bun run generate` and then `bun run link`.
 
 ### Codex does not run the hooks
 

@@ -9,6 +9,9 @@ const { readGeneratedRoot } = await import("../../src/generate/bundle");
 const { value, valueOf } = await import("./effect");
 const { REPO } = await import("../../src/generate/link");
 
+// A test reads only a user config it writes itself, never the one on the machine running it.
+process.env.SKILLS_CONFIG = `${REPO}${own}/no-user-config.json`;
+
 // `bun test` never runs a preload's exit hooks, so every process leaves its
 // directory behind. A recycled pid inherits its predecessor's, so this process
 // starts empty and takes out what dead pids left.

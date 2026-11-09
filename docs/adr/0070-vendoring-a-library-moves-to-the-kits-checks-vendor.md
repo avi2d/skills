@@ -10,6 +10,8 @@ and 0037 on when the suite runs.
 Amended by 0074: the `prepare` script's arguments name the library,
 `ci.yml` is hand-written, the vendored-paths skip is declared at the test, and
 the Bodies' fallback is `bun install` or `bun run prepare`.
+Superseded in part by 0105: `stryker.conf.mjs` sets no `ignorePatterns`.
+Amended by 0107: `ci.yml` no longer runs on a push to main.
 
 ## Context
 

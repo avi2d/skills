@@ -41,6 +41,15 @@ describe("a record", () => {
     expect(message).toContain("no `## Status` section");
   });
 
+  test("opening with a governs front matter is indexed by its heading rather than refused as untitled", () => {
+    const record = value(parseRecord("0007-a-record.md", `---\ngoverns: [src/parts.ts]\n---\n${recorded(7, "A thing", "Accepted.")}`));
+    expect([record.number, record.title, record.state]).toEqual([7, "A thing", "Accepted"]);
+  });
+
+  test("with a front matter fence left open is refused rather than read as its heading", () => {
+    expect(said(parseRecord("0007-a-record.md", "---\ngoverns: [src/parts.ts]\n# 7. A thing\n\n## Status\n\nAccepted.\n"))).toContain("heading");
+  });
+
   test("with no numbered heading is refused rather than indexed untitled", () => {
     expect(said(parseRecord("0007-a-record.md", "A thing\n\n## Status\n\nAccepted.\n"))).toContain("heading");
   });
@@ -73,11 +82,13 @@ describe("the index", () => {
 
 const LINKED = { ".a/settings.json": "harness/a/settings.json", "it's/here": "generated/skills" };
 const MERGED_FILES = { ".b/settings.json": { from: "harness/b/settings.json", ownKeys: ["deviceId", "seenVersion"] } };
+const CONFIG_GRAFT = { from: "harness/a/settings.json", keys: ["hooks", "env"] };
 
 describe("the link page", () => {
   const page = linkPage(
     { mac: { ...LINKED, ".b/rules.json": "harness/b/rules.mac.json" }, windows: { ...LINKED, ".b/rules.json": "harness/b/rules.json" } },
     MERGED_FILES,
+    CONFIG_GRAFT,
     [".a/old"],
   );
 
@@ -90,6 +101,7 @@ describe("the link page", () => {
     const macOnly = linkPage(
       { mac: { ...LINKED, "only/mac": "harness/only/mac" }, windows: { ...LINKED } },
       MERGED_FILES,
+      CONFIG_GRAFT,
       [],
     );
     expect(macOnly).toContain("| `~/only/mac` | `harness/only/mac` on the Mac |");
@@ -103,6 +115,10 @@ describe("the link page", () => {
 
   test("pairs each file the linker writes with its source in this checkout and the keys it keeps from the file there", () => {
     expect(page).toContain("| `~/.b/settings.json` | `harness/b/settings.json` | `deviceId`, `seenVersion` |");
+  });
+
+  test("pairs the settings file of a Claude config dir with every key it is given, rather than with one fixed key", () => {
+    expect(page).toContain("| `~/<dir>/settings.json` | `harness/a/settings.json` | `hooks`, `env` |");
   });
 
   test("lists each retired path among the ones the linker takes back, and not among the links", () => {
@@ -120,26 +136,29 @@ describe("the link page", () => {
 });
 
 describe("the install page's lists of what `bun run link` owns", () => {
-  const owned = "<!-- `bun run docs` writes the list below from `LINKS` and `MERGED` in `src/generate/link.ts`. -->";
-  const script = "<!-- `bun run docs` writes the script below from `LINKS` and `RETIRED` in `src/generate/link.ts`. -->";
+  const owned = "<!-- `bun run docs` writes the list below from `LINKS`, `MERGED` and `CLAUDE_CONFIG_GRAFT` in `src/generate/link.ts`. -->";
+  const script = "<!-- `bun run docs` writes the script below from `LINKS`, `CLAUDE_CONFIG_GRAFT` and `RETIRED` in `src/generate/link.ts`. -->";
   const page = ["# a", owned, "- `~/.gone`", "<!-- The list above ends here. -->", "Between.", script, "<!-- The script above ends here. -->", ""].join("\n");
-  const spliced = value(withLinks(page, LINKED, MERGED_FILES, [".a/old"]));
+  const spliced = value(withLinks(page, LINKED, MERGED_FILES, CONFIG_GRAFT, [".a/old"]));
   const lines = spliced.split("\n");
   const shell = /```sh\n([\s\S]*?)```/.exec(spliced)?.[1] ?? expect.unreachable("the install page holds no sh block");
 
-  test("install every mapped path in map order, then each written file, none retired and nothing the map no longer holds", () => {
-    expect(lines.slice(1, 6)).toEqual([
+  test("install every mapped path in map order, then each written file, then the Claude config dirs, none retired and nothing the map no longer holds", () => {
+    expect(lines.slice(1, 7)).toEqual([
       owned,
       "- `~/.a/settings.json`",
       "- `~/it's/here`",
       "- `~/.b/settings.json`, written from `harness/b/settings.json` rather than linked",
+      "- `~/<dir>/settings.json` for each `<dir>` in the config's `claudeConfigDirs`, given `hooks`, `env` from `harness/a/settings.json` and keeping every other key",
       "<!-- The list above ends here. -->",
     ]);
   });
 
-  test("uninstall every path the map holds or retired, and leave each written file with the machine's own keys", () => {
+  test("uninstall every linked or retired path, and take every grafted key, not only hooks, out of each Claude config dir", () => {
     expect(shell.split("\n").slice(1, 5)).toEqual(["for path in \\", "  '.a/settings.json' \\", "  'it'\\''s/here' \\", "  '.a/old'"]);
     expect(shell).not.toContain(".b/settings.json");
+    expect(shell).toContain("claudeConfigDirs");
+    expect(shell).toContain("' 'hooks' 'env' || exit 1");
   });
 
   test("leave what lies outside their markers as it was", () => {
@@ -149,7 +168,7 @@ describe("the install page's lists of what `bun run link` owns", () => {
   });
 
   test("are refused when the install page has lost the markers around one, rather than left stale", () => {
-    expect(said(withLinks(page.replace(script, ""), LINKED, MERGED_FILES, []))).toContain("docs/install.md has lost the markers around its uninstall script");
+    expect(said(withLinks(page.replace(script, ""), LINKED, MERGED_FILES, CONFIG_GRAFT, []))).toContain("docs/install.md has lost the markers around its uninstall script");
   });
 });
 

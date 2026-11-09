@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test";
-import { CARRIAGE_VARIABLE, LIVE_ROOTS, isolatedEnv, liveRootHolding, type Sandbox } from "../../src/eval/eval-sandbox";
-import { LINKS, MERGED } from "../../src/generate/link";
+import { CARRIAGE_VARIABLE, isolatedEnv, liveRootHolding, liveRootsFor, type Sandbox } from "../../src/eval/eval-sandbox";
+import { LINKS, MERGED, graftsInto } from "../../src/generate/link";
 
 const home = "/Users/someone";
 
@@ -13,18 +13,28 @@ const sandbox: Sandbox = {
   carriage: "/tmp/skills-eval-x/carriage.md",
 };
 
-test("every path the linker manages, and every agent config root, is a live root or under one", () => {
-  for (const rel of [...Object.keys(LINKS), ...Object.keys(MERGED), ".claude", ".pi/agent", ".codex", ".config/opencode", ".agents"]) {
-    expect(liveRootHolding(`${home}/${rel}`, home), `~/${rel} is not held by any live root`).toBeDefined();
+const CONFIG_DIRS = [".claude-work", ".config/claude-other"];
+
+const roots = liveRootsFor(CONFIG_DIRS);
+
+test("every path the linker manages, every Claude config dir the config names, and every agent config root, is a live root or under one", () => {
+  const managed = [...Object.keys(LINKS), ...Object.keys(MERGED), ...Object.keys(graftsInto(CONFIG_DIRS)), ...CONFIG_DIRS];
+  for (const rel of [...managed, ".claude", ".pi/agent", ".codex", ".config/opencode", ".agents"]) {
+    expect(liveRootHolding(roots, `${home}/${rel}`, home), `~/${rel} is not held by any live root`).toBeDefined();
   }
-  expect(LIVE_ROOTS.filter((root) => LIVE_ROOTS.some((other) => root.startsWith(`${other}/`))), "a live root is listed under another").toEqual([]);
+  expect(roots.filter((root) => roots.some((other) => root.startsWith(`${other}/`))), "a live root is listed under another").toEqual([]);
+});
+
+test("a Claude config dir no config names is not live", () => {
+  expect(liveRootHolding(liveRootsFor([]), `${home}/.claude-work/sessions`, home)).toBeUndefined();
 });
 
 test("a path beside a live root, or merely sharing its prefix, is not live", () => {
-  expect(liveRootHolding(`${home}/.pi/agentless`, home)).toBeUndefined();
-  expect(liveRootHolding(`${home}/.local/share/mise/installs/node/bin`, home)).toBeUndefined();
-  expect(liveRootHolding("/tmp/skills-eval-x/home/.claude", home)).toBeUndefined();
-  expect(liveRootHolding(`${home}/.pi/agent/bin`, home)).toBe(".pi/agent");
+  expect(liveRootHolding(roots, `${home}/.pi/agentless`, home)).toBeUndefined();
+  expect(liveRootHolding(roots, `${home}/.local/share/mise/installs/node/bin`, home)).toBeUndefined();
+  expect(liveRootHolding(roots, "/tmp/skills-eval-x/home/.claude", home)).toBeUndefined();
+  expect(liveRootHolding(roots, `${home}/.pi/agent/bin`, home)).toBe(".pi/agent");
+  expect(liveRootHolding(roots, `${home}/.claude-work/bin`, home)).toBe(".claude-work");
 });
 
 test("the agent's environment is built from nothing, so no variable naming a live config reaches it", () => {
@@ -32,7 +42,7 @@ test("the agent's environment is built from nothing, so no variable naming a liv
     sandbox,
     {
       HOME: home,
-      PATH: `${home}/.pi/agent/bin:/usr/bin:${home}/.local/share/mise/shims:/bin:`,
+      PATH: `${home}/.pi/agent/bin:/usr/bin:${home}/.claude-work/bin:${home}/.local/share/mise/shims:/bin:`,
       PI_CODING_AGENT_DIR: `${home}/.pi/agent`,
       PI_CODING_AGENT_SESSION_DIR: `${home}/.pi/agent/sessions`,
       CLAUDE_CONFIG_DIR: `${home}/.claude`,
@@ -43,6 +53,7 @@ test("the agent's environment is built from nothing, so no variable naming a liv
     },
     ["OPENCODE_API_KEY", "ABSENT_KEY"],
     home,
+    roots,
   );
   expect(env).toEqual({
     HOME: sandbox.home,

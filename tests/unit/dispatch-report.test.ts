@@ -173,7 +173,7 @@ describe("which sessions lost a Rule", () => {
       profiles: [],
       hub: [],
     };
-    const edit: Event = { type: "tool-call", tool: "edit", input: {}, writes: ["src/a.ts"], changes: [{ path: "src/a.ts", before: { text: () => undefined, inRepository: () => "src/a.ts" }, edits: [{ old: "a", new: "b" }] }] };
+    const edit: Event = { type: "tool-call", tool: "edit", input: {}, writes: ["src/a.ts"], changes: [{ path: "src/a.ts", before: { onDisk: "src/a.ts", text: () => undefined, inRepository: () => "src/a.ts" }, edits: [{ old: "a", new: "b" }] }] };
     const { actions } = run(index, [edit]);
     expect(actions).toHaveLength(1);
     const text = written([["s", "inject comment-discipline: always"], ...actions.map((action) => ["s", logLine(action)] as const)]);

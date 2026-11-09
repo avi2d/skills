@@ -104,7 +104,7 @@ test("a Reference case is swept, and so pooled, under the Reference rather than 
     const sweep = sweepOf(CASES, { rules: [name], cases: "all", repeats: 1, maxRuns: 100 });
     return "refused" in sweep ? expect.unreachable(sweep.refused) : [...new Set(sweep.cells.map((cell) => cell.case))];
   };
-  expect(casesOf("agents-md-router")).toEqual(["release-pointer"]);
+  expect(casesOf("agents-md-router")).toEqual(["release-pointer", "what-goes-where"]);
   expect(casesOf("writing-for-agents")).toEqual(["writing-for-agents-reference", "positive-target", "lookup-left", "one-source"]);
   expect(casesOf("writing-for-people")).toEqual([
     "en-readme",
@@ -140,7 +140,7 @@ test("no seed repository already holds a comment the comment judge refuses, so e
   let checked = 0;
   for (const c of CASES) {
     for (const [path, text] of Object.entries(c.files)) {
-      if (reads("comments", { path, before: { text: () => text, inRepository: () => path } })) {
+      if (reads("comments", { path, before: { onDisk: path, text: () => text, inRepository: () => path } })) {
         checked += 1;
         expect(refused(path, text), `${c.rule}/${c.id}: ${path}`).toEqual([]);
       }

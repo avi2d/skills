@@ -9,7 +9,7 @@ Use it to keep one set of agent instructions for every harness you run, and to h
 
 - Bun, at the version `.bun-version` pins, which runs every command below.
 - Git, to clone the repository.
-- At least one harness: pi 1.2.0, Claude Code 2.1.280 or Codex 0.155.0-alpha.16.
+- At least one harness: pi 1.5.0, Claude Code 2.1.280 or Codex 0.155.0-alpha.16.
 
 ## Install
 
@@ -75,8 +75,8 @@ To see what fired:
 | `src/eval/` | what `bun run eval` runs to measure a Rule |
 | `src/context/` | what `bun run context-index` and `bun run context-report` run to read the opening context of stored sessions |
 | `src/docs/`, `src/report/` | what `bun run docs` and `bun run dispatch-report` run |
-| `src/platform/` | the Effect layer, file access and failures the rest of `src/` shares |
-| `tests/` | the suite, run with `bun run test:fast` |
+| `src/platform/` | the Effect layer, file access, frontmatter field readers and failures the rest of `src/` shares |
+| `tests/` | the suite, run with `bunx checks-test --changed` |
 | `evals/` | the ablation that measures what a Rule or a Reference changes |
 | `evals/sweeps/` | one committed record per sweep, and the page `bun run docs` writes from them |
 | `harness/` | each harness's Contract, which [The harness Contracts](docs/contracts.md) describes |
@@ -95,6 +95,7 @@ To see what fired:
 - [Frontmatter fields](docs/frontmatter.md)
 - [Trigger predicates](docs/triggers.md)
 - [The link map](docs/links.md)
+- [The skills config](docs/config.md)
 - [Eval variables](docs/eval-variables.md)
 - [Eval cases](docs/eval-cases.md)
 - [The harness Contracts](docs/contracts.md)

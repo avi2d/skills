@@ -38,8 +38,7 @@ describe("a checkout whose pi settings pi wrote into through the old link", () =
     const root = await mkdtemp(join(tmpdir(), "skills-pi-dirtied-"));
     const repo = `${root}/repo/`;
     const home = `${root}/home`;
-    await mkdir(`${repo}harness/pi`, { recursive: true });
-    await cp(`${REPO}${FROM}`, `${repo}${FROM}`);
+    await cp(`${REPO}harness`, `${repo}harness`, { recursive: true });
     await Bun.$`git init -q && git add -A && git -c user.name=test -c user.email=test@example.invalid commit -q -m base`.cwd(repo).quiet();
     await writeFile(`${repo}${FROM}`, JSON.stringify({ ...piSettingsFile, ...changes }, null, 2));
     await mkdir(`${home}/.pi/agent`, { recursive: true });
@@ -119,8 +118,7 @@ exit 1`;
       const repo = `${root}/repo/`;
       const home = `${root}/home`;
       try {
-        await mkdir(`${repo}harness/pi`, { recursive: true });
-        await cp(`${REPO}${FROM}`, `${repo}${FROM}`);
+        await cp(`${REPO}harness`, `${repo}harness`, { recursive: true });
         await mkdir(`${home}/.pi/agent`, { recursive: true });
         await writeFile(
           `${home}/${SETTINGS}`,
@@ -203,6 +201,18 @@ test("the account's own home is read from the passwd record, which a temporary $
   }
 });
 
+const uninstallScript = async () => {
+  const page = await Bun.file(`${REPO}${INSTALL_PAGE}`).text();
+  return /```sh\n([\s\S]*?)```/.exec(page)?.[1] ?? expect.unreachable(`${INSTALL_PAGE} holds no sh block`);
+};
+
+const withoutConfigVariables = (env: Record<string, string | undefined>): Record<string, string | undefined> =>
+  Object.fromEntries(Object.entries(env).filter(([name]) => name !== "SKILLS_CONFIG" && name !== "XDG_CONFIG_HOME"));
+
+const CONFIG_DIRS = [".claude-work", ".config/claude-other"];
+
+const settingsIn = (dir: string) => `${dir}/settings.json`;
+
 test("the uninstall on the install page removes every link the linker wrote, and leaves what it did not write", async () => {
   const home = await mkdtemp(join(tmpdir(), "skills-uninstall-"));
   const elsewhere = await mkdtemp(join(tmpdir(), "skills-elsewhere-"));
@@ -212,10 +222,19 @@ test("the uninstall on the install page removes every link the linker wrote, and
     await symlink(elsewhere, join(home, ".codex/hooks.json"));
     await mkdir(join(home, ".claude"), { recursive: true });
     await writeFile(join(home, ".claude/agents"), "not a link\n");
+    await mkdir(join(home, ".config/skills"), { recursive: true });
+    await writeFile(join(home, ".config/skills/config.json"), JSON.stringify({ claudeConfigDirs: CONFIG_DIRS }));
+    const [kept = expect.unreachable("no Claude config dir listed"), ...absent] = CONFIG_DIRS.map(settingsIn);
+    const ownHooks = { Stop: [{ hooks: [{ type: "command", command: "checkout-hook" }] }] };
+    const ownKeys = { statusLine: { type: "command", command: "machine-statusline" }, theme: "machine-theme" };
+    await mkdir(dirname(join(home, kept)), { recursive: true });
+    await writeFile(join(home, kept), JSON.stringify({ ...ownKeys, hooks: ownHooks }));
+    for (const rel of absent) await rm(join(home, rel), { force: true });
+    const unlisted = settingsIn(".claude-third");
+    await mkdir(dirname(join(home, unlisted)), { recursive: true });
+    await writeFile(join(home, unlisted), JSON.stringify({ ...ownKeys, hooks: ownHooks }));
 
-    const page = await Bun.file(`${REPO}${INSTALL_PAGE}`).text();
-    const script = /```sh\n([\s\S]*?)```/.exec(page)?.[1] ?? expect.unreachable(`${INSTALL_PAGE} holds no sh block`);
-    const run = await Bun.$`sh -c ${script}`.cwd(REPO).env({ ...process.env, HOME: home }).nothrow().quiet();
+    const run = await Bun.$`sh -c ${await uninstallScript()}`.cwd(REPO).env({ ...withoutConfigVariables(process.env), HOME: home }).nothrow().quiet();
     expect(run.exitCode, run.stderr.toString()).toBe(0);
 
     const remaining = await Promise.all(
@@ -225,9 +244,55 @@ test("the uninstall on the install page removes every link the linker wrote, and
     expect(left, "the uninstall left a link the linker wrote").toEqual([]);
     expect(await readlink(join(home, ".codex/hooks.json")), "the uninstall removed a link it did not write").toBe(elsewhere);
     expect(await Bun.file(join(home, ".claude/agents")).text(), "the uninstall removed a real file").toBe("not a link\n");
+    expect(await Bun.file(join(home, kept)).json(), "the uninstall kept a grafted hooks key pointing at removed files").toEqual(ownKeys);
+    expect(await Bun.file(join(home, unlisted)).json(), "the uninstall touched a Claude config dir the config does not name").toEqual({ ...ownKeys, hooks: ownHooks });
   } finally {
     await rm(home, { recursive: true, force: true });
     await rm(elsewhere, { recursive: true, force: true });
+  }
+});
+
+test("the uninstall with no config leaves a Claude config dir holding the user's own hooks alone", async () => {
+  const home = await mkdtemp(join(tmpdir(), "skills-uninstall-unconfigured-"));
+  try {
+    const ownHooks = { Stop: [{ hooks: [{ type: "command", command: "user-hook" }] }] };
+    const ownKeys = { statusLine: { type: "command", command: "user-statusline" }, theme: "user-theme" };
+    const [rel = expect.unreachable("no Claude config dir listed")] = CONFIG_DIRS.map(settingsIn);
+    await mkdir(dirname(join(home, rel)), { recursive: true });
+    await writeFile(join(home, rel), JSON.stringify({ ...ownKeys, hooks: ownHooks }));
+    const run = await Bun.$`sh -c ${await uninstallScript()}`.cwd(REPO).env({ ...withoutConfigVariables(process.env), HOME: home }).nothrow().quiet();
+    expect(run.exitCode, run.stderr.toString()).toBe(0);
+    expect(await Bun.file(join(home, rel)).json(), "the uninstall deleted hooks link never grafted").toEqual({ ...ownKeys, hooks: ownHooks });
+  } finally {
+    await rm(home, { recursive: true, force: true });
+  }
+});
+
+test("the uninstall reads the config SKILLS_CONFIG names, and fails instead of leaving a grafted hooks key it cannot read", async () => {
+  const home = await mkdtemp(join(tmpdir(), "skills-uninstall-broken-"));
+  const configDir = await mkdtemp(join(tmpdir(), "skills-uninstall-config-"));
+  try {
+    const config = join(configDir, "named.json");
+    await writeFile(config, JSON.stringify({ claudeConfigDirs: CONFIG_DIRS }));
+    const [broken = expect.unreachable("no Claude config dir listed"), ...rest] = CONFIG_DIRS.map(settingsIn);
+    expect(rest.length, "one Claude config dir listed, so nothing rejects cleaning past an unreadable one").toBeGreaterThan(0);
+    const ownKeys = { statusLine: { type: "command", command: "machine-statusline" }, theme: "machine-theme" };
+    const ownHooks = { Stop: [{ hooks: [{ type: "command", command: "checkout-hook" }] }] };
+    await mkdir(dirname(join(home, broken)), { recursive: true });
+    await writeFile(join(home, broken), "{ not json");
+    for (const rel of rest) {
+      await mkdir(dirname(join(home, rel)), { recursive: true });
+      await writeFile(join(home, rel), JSON.stringify({ ...ownKeys, hooks: ownHooks }));
+    }
+    const run = await Bun.$`sh -c ${await uninstallScript()}`.cwd(REPO).env({ ...process.env, HOME: home, SKILLS_CONFIG: config }).nothrow().quiet();
+    expect(run.exitCode, "the uninstall left hooks pointing at removed files without a word").not.toBe(0);
+    expect(await Bun.file(join(home, broken)).text(), "the uninstall rewrote a file it could not clean").toBe("{ not json");
+    for (const rel of rest) {
+      expect(await Bun.file(join(home, rel)).json(), "the uninstall cleaned past a file it could not clean").toEqual({ ...ownKeys, hooks: ownHooks });
+    }
+  } finally {
+    await rm(home, { recursive: true, force: true });
+    await rm(configDir, { recursive: true, force: true });
   }
 });
 
