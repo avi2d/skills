@@ -53,12 +53,12 @@ export const whatGoesWhere: ProgramJudge = {
     const stray = changes
       .filter((change) => change.path === "README.md" || change.path === "AGENTS.md")
       .flatMap(addedLines)
-      .filter((line) => /refus|explicit over implicit/i.test(line) || (/plugin/i.test(line) && !/vision\.md/i.test(line)));
+      .filter((line) => /explicit over implicit/i.test(line) || (/plugin/i.test(line) && /refus/i.test(line)));
     if (stray.length > 0) return { passed: false, evidence: ["the refusal landed outside VISION.md:", ...stray] };
     const vision = changes.find((change) => change.path === "VISION.md");
     if (vision === undefined) return { unjudged: "VISION.md was not changed" };
     const text = addedLines(vision).join("\n");
-    if (!/plugin/i.test(text) || !/explicit over implicit/i.test(text)) {
+    if (!/refus/i.test(text) || !/plugin/i.test(text) || !/explicit over implicit/i.test(text)) {
       return { unjudged: "VISION.md does not carry the refusal and the principle the task gave" };
     }
     return { passed: true, evidence: ["VISION.md carries the refusal and its principle, and neither README.md nor AGENTS.md repeats it"] };

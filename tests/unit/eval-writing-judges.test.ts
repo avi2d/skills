@@ -104,8 +104,40 @@ test("a refusal kept only outside VISION.md fails, a duplicated principle fails,
     ]),
   );
   expect(linked.outcome).toBe("fail");
+  const readmeLinked = verdictOf(
+    whatGoesWhere,
+    run([], [
+      { path: "VISION.md", before: vision, after: `${vision}${refusal}` },
+      { path: "README.md", before: "# ledger\n", after: "# ledger\n\nPlugin support is refused: see VISION.md.\n" },
+    ]),
+  );
+  expect(readmeLinked.outcome).toBe("fail");
+  for (const dest of ["AGENTS.md", "README.md"] as const) {
+    const before = dest === "AGENTS.md" ? "# Agent notes\n" : "# ledger\n";
+    const refusPointer = verdictOf(
+      whatGoesWhere,
+      run([], [
+        { path: "VISION.md", before: vision, after: `${vision}${refusal}` },
+        { path: dest, before, after: `${before}For refusal decisions, read VISION.md.\n` },
+      ]),
+    );
+    expect(refusPointer.outcome).toBe("pass");
+    const reasonPointer = verdictOf(
+      whatGoesWhere,
+      run([], [
+        { path: "VISION.md", before: vision, after: `${vision}${refusal}` },
+        { path: dest, before, after: `${before}Plugins are excluded because they hide data flow. See VISION.md.\n` },
+      ]),
+    );
+    expect(reasonPointer.outcome).toBe("pass");
+  }
   expect(verdictOf(whatGoesWhere, run([], [{ path: "VISION.md", before: vision, after: vision }])).outcome).toBe("unjudged");
   expect(verdictOf(whatGoesWhere, run([], [])).outcome).toBe("unjudged");
+});
+
+test("vision without the refusal word is unjudged", () => {
+  const vision = "# Vision\n\nLedger stays a small explicit tool.\n";
+  expect(verdictOf(whatGoesWhere, run([], [{ path: "VISION.md", before: vision, after: `${vision}## Plugin support\n\nExplicit over implicit is our guiding principle.\n` }])).outcome).toBe("unjudged");
 });
 
 test("a review step without an end condition fails and a bounded one passes", () => {
