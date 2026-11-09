@@ -74,7 +74,7 @@ test.each([
   ["a harness", { harness: "codex" }, PROFILES_KNOWN],
   ["a model", { model: "opencode-go/muse-spark-9" }, PROFILES_KNOWN],
   ["a provider", { provider: "openrouter" }, PROFILES_KNOWN],
-  ["a provider the model does not spend", { provider: "claude" }, PROFILES_KNOWN],
+  ["a provider the model does not spend", { provider: "opencode-go" }, PROFILES_KNOWN],
   ["an effort", { effort: "extreme" }, /Expected "low" \| "medium" \| "high" \| "xhigh" \| "max"\n {2}at .*\["effort"\]$/],
   ["a field", { why: "a rationale nobody keeps up" }, /why/],
 ])("generation refuses %s the schema does not know", async (_, change, named) => {
@@ -109,7 +109,7 @@ test("generation refuses a Claude profile with no claude_account, which leaves f
   const [first, ...rest] = source.rules;
   if (first === undefined) return expect.unreachable("the source holds no rule");
   const use = first.use.map(withoutClaudeAccount);
-  expect(await saidBy(crewDispatchJson({ ...source, rules: [{ ...first, use }, ...rest] }))).toMatch(/at \["rules"\]\[0\]\["use"\]\[1\]\["claude_account"\]/);
+  expect(await saidBy(crewDispatchJson({ ...source, rules: [{ ...first, use }, ...rest] }))).toMatch(/at \["rules"\]\[0\]\["use"\]\[0\]\["claude_account"\]/);
 });
 
 test("generation refuses a claude_account other than main or second, which every Claude spawn carries", async () => {
@@ -119,12 +119,11 @@ test("generation refuses a claude_account other than main or second, which every
   const use = first.use.map((profile) =>
     profile.model === "claude-bridge/claude-opus-5-5" ? { ...profile, claude_account: "third" } : profile,
   );
-  expect(await saidBy(crewDispatchJson({ ...source, rules: [{ ...first, use }, ...rest] }))).toMatch(/Expected "main" \| "second"[\s\S]*at \["rules"\]\[0\]\["use"\]\[3\]\["claude_account"\]$/);
+  expect(await saidBy(crewDispatchJson({ ...source, rules: [{ ...first, use }, ...rest] }))).toMatch(/Expected "main" \| "second"[\s\S]*at \["rules"\]\[0\]\["use"\]\[2\]\["claude_account"\]$/);
 });
 
 test("generation refuses a claude_account on a Muse profile, which spends OpenCode Go rather than Claude", async () => {
-  const source = withFirstProfile((profile) => ({ ...profile, claude_account: "main" }));
-  expect(await saidBy(crewDispatchJson(source))).toMatch(/Expected no excess property\n {2}at \["rules"\]\[0\]\["use"\]\[0\]\["claude_account"\]/);
+  expect(await saidBy(crewDispatchJson(kindRule({ kind: "trivial", use: [{ ...muse, claude_account: "main" }] })))).toMatch(/Expected no excess property\n {2}at \["rules"\]\[0\]\["use"\]\[0\]\["claude_account"\]/);
 });
 
 test("generation refuses a floor on a profile other than Haiku 5.5 and Muse", async () => {
@@ -253,13 +252,14 @@ test.each([
   expect(await Bun.file(`${REPO}${rel}`).text()).toBe(`${pin}\n`);
 });
 
-test("secondmate harness defaults to haiku", () => {
+test("secondmate harness is sonnet, and the supervision branch pins the Muse candidate of the small rule", () => {
   expect(FIRSTMATE_PINS["harness/firstmate/secondmate-harness"]?.trim()).toBe("pi claude-bridge/claude-sonnet-5-5 high");
   const small = crewDispatchOf("mac").rules.find((rule) => rule.kind === "small");
   if (small === undefined) return expect.unreachable("the mac source holds no small rule");
-  const [cheap] = small.use;
-  expect(FIRSTMATE_PINS["harness/firstmate/supervision-branch-model"]?.trim()).toBe(cheap.model);
-  expect(FIRSTMATE_PINS["harness/firstmate/supervision-branch-effort"]?.trim()).toBe(cheap.effort);
+  const museCandidate = small.use.find((profile) => profile.model.startsWith("opencode-go/muse-spark"));
+  if (museCandidate === undefined) return expect.unreachable("the small rule holds no Muse candidate");
+  expect(FIRSTMATE_PINS["harness/firstmate/supervision-branch-model"]?.trim()).toBe(museCandidate.model);
+  expect(FIRSTMATE_PINS["harness/firstmate/supervision-branch-effort"]?.trim()).toBe(museCandidate.effort);
 });
 
 test.each([

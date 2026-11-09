@@ -115,4 +115,5 @@ Read those before acting on the record they revise.
 | [0105](0105-the-mutation-config-is-the-kits-preset-and-the-unit-test-files.md) | The mutation config is the kit's preset and the unit test files | Accepted |  |
 | [0106](0106-a-type-that-repeats-a-schema-or-asserts-outside-data-is-refused-at-every-write-by-oxlint.md) | A type that repeats a schema or asserts outside data is refused at every write, by oxlint | Accepted |  |
 | [0107](0107-a-push-to-main-starts-no-ci-run-and-the-fleet-names-scan-runs-alone-only-on-a-docs-only-change.md) | A push to main starts no ci run, and the fleet-names scan runs alone only on a docs-only change | Accepted |  |
-| [0108](0108-astra-reviews-first-with-no-floor-and-codex-models-join-four-dispatch-rules.md) | Astra reviews first with no floor, and Codex models join four dispatch rules | Accepted |  |
+| [0108](0108-astra-reviews-first-with-no-floor-and-codex-models-join-four-dispatch-rules.md) | Astra reviews first with no floor, and Codex models join four dispatch rules | Accepted | [0109](0109-claude-candidates-lead-the-three-implementation-dispatch-rules.md) |
+| [0109](0109-claude-candidates-lead-the-three-implementation-dispatch-rules.md) | Claude candidates lead the three implementation dispatch rules | Accepted |  |
