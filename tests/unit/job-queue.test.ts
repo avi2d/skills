@@ -150,6 +150,24 @@ describe("the evals group", () => {
   );
 });
 
+describe("the heavy shapes the queue plan adds", () => {
+  test("checks-test --changed queues in the tests group instead of running as a quick targeted test", () => {
+    expect(steer("checks-test --changed", work, () => ["default", "tests"])).toEqual({
+      type: "queue",
+      group: "tests",
+      command: expect.stringContaining("pueue add --priority 1 --print-task-id --group tests -- 'checks-test --changed'"),
+    });
+  });
+
+  test("bin/fm-test-run.sh --changed queues in the tests group instead of running as a quick targeted test", () => {
+    expect(steer("bin/fm-test-run.sh --changed", work, () => ["default", "tests"])).toEqual({
+      type: "queue",
+      group: "tests",
+      command: expect.stringContaining("pueue add --priority 1 --print-task-id --group tests -- 'bin/fm-test-run.sh --changed'"),
+    });
+  });
+});
+
 describe("model inference in the gpu group", () => {
   test.each([
     "rembg i in.png out.png",
