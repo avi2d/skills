@@ -1,12 +1,13 @@
 import type { Event } from "./dispatch";
+import { digestCommand } from "./rerun";
 import { isRecord } from "./run-state";
 
 type HookPayload = { tool_name?: string; tool_input?: Record<string, unknown> };
 
-export type PendingBash = { command: string; at: number };
+export type PendingBash = { digest: string; at: number };
 
 export const isPending = (value: unknown): value is PendingBash =>
-  isRecord(value) && typeof value.command === "string" && typeof value.at === "number";
+  isRecord(value) && typeof value.digest === "string" && typeof value.at === "number";
 
 const bashCommandOf = (payload: HookPayload): string | undefined => {
   if ((payload.tool_name ?? "").toLowerCase() !== "bash") return undefined;
@@ -26,13 +27,13 @@ export const trackBash = (
 } => {
   const kept = [...seed];
   const startedAt = preToolUse ? bashCommandOf(payload) : undefined;
-  const started = startedAt === undefined ? undefined : { command: startedAt, at: Date.now() };
+  const started = startedAt === undefined ? undefined : { digest: digestCommand(startedAt), at: Date.now() };
   if (started !== undefined) {
     kept.push(started);
     if (kept.length > 32) kept.splice(0, kept.length - 32);
   }
   const take = (command: string): number | undefined => {
-    const position = kept.findIndex((entry) => entry.command === command);
+    const position = kept.findIndex((entry) => entry.digest === digestCommand(command));
     if (position === -1) return undefined;
     const [match] = kept.splice(position, 1);
     return match?.at;
@@ -44,7 +45,7 @@ export const trackBash = (
   };
   const moved = (command: string): void => {
     dropStarted();
-    if (started !== undefined) kept.push({ command, at: started.at });
+    if (started !== undefined) kept.push({ digest: digestCommand(command), at: started.at });
   };
   return { pending: kept, take, dropStarted, moved };
 };

@@ -43,7 +43,18 @@ describe("bash start tracking", () => {
   });
 
   test("a persisted pending entry with a missing clock reading is not restored", () => {
-    expect(isPending({ command: "sleep 70" })).toBe(false);
-    expect(isPending({ command: "sleep 70", at: 1_700_000_000_000 })).toBe(true);
+    expect(isPending({ digest: "abc" })).toBe(false);
+    expect(isPending({ digest: "abc", at: 1_700_000_000_000 })).toBe(true);
+  });
+
+  test("a persisted entry holds a digest, never the command text", () => {
+    const tracking = trackBash(true, bash("TOKEN=secret sleep 70"), []);
+    expect(tracking.pending).toHaveLength(1);
+    const entry = tracking.pending[0];
+    expect(entry).toBeDefined();
+    if (entry === undefined) return;
+    expect("command" in entry).toBe(false);
+    expect(entry.digest).toMatch(/^[0-9a-f]{64}$/);
+    expect(JSON.stringify(tracking.pending)).not.toContain("secret");
   });
 });

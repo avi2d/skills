@@ -1,5 +1,8 @@
-import type { RunState } from "./run-state";
+import { createHash } from "node:crypto";
+import type { RunState, SlowGuard } from "./run-state";
 import { segments } from "./shell-words";
+
+export const digestCommand = (command: string): string => createHash("sha256").update(command, "utf8").digest("hex");
 
 const SLOW_SECONDS = 60;
 
@@ -113,20 +116,25 @@ const segmentWrites = (words: readonly string[]): boolean => {
   return TREE_WRITES.has(program);
 };
 
-const refusedRerun = (command: string, slow: string | undefined): RerunRefused | undefined => {
-  if (slow === undefined || stripped(command) !== slow || command === slow) return undefined;
-  if (outputGoesToFile(command)) return undefined;
-  return { type: "rerun-refused", why: RERUN_REFUSED_WHY, text: RERUN_REFUSAL };
+const refusedRerun = (command: string, slow: SlowGuard): RerunRefused | "recover" | undefined => {
+  if (digestCommand(command) === slow.full) return undefined;
+  if (digestCommand(stripped(command)) !== slow.canon) return undefined;
+  if (!outputGoesToFile(command) || slow.recovered === true) {
+    return { type: "rerun-refused", why: RERUN_REFUSED_WHY, text: RERUN_REFUSAL };
+  }
+  return "recover";
 };
 
 export const checkedRerun = (event: ToolCall, state: RunState): { refused?: RerunRefused; state: RunState } => {
   const command = event.tool.toLowerCase() === "bash" && typeof event.input["command"] === "string" ? event.input["command"] : undefined;
-  if (command !== undefined) {
-    const refused = refusedRerun(command, state.slow);
-    if (refused !== undefined) return { refused, state };
+  const slow = state.slow;
+  if (command !== undefined && slow !== undefined) {
+    const decision = refusedRerun(command, slow);
+    if (decision === "recover") return { state: { ...state, slow: { ...slow, recovered: true } } };
+    if (decision !== undefined) return { refused: decision, state };
   }
   const changed =
-    command !== undefined ? stripped(command) !== state.slow && bashLooksMutating(command) : (event.writes?.length ?? 0) > 0;
+    command !== undefined ? digestCommand(stripped(command)) !== slow?.canon && bashLooksMutating(command) : (event.writes?.length ?? 0) > 0;
   if (!changed) return { state };
   const { slow: _settled, ...rest } = state;
   return { state: { ...rest } };
@@ -137,7 +145,10 @@ export const slowResult = (
   state: RunState,
 ): { actions: []; state: RunState } => {
   if (event.tool.toLowerCase() !== "bash" || event.seconds < SLOW_SECONDS) return { actions: [], state };
-  return { actions: [], state: { ...state, slow: stripped(event.command) } };
+  return {
+    actions: [],
+    state: { ...state, slow: { full: digestCommand(event.command), canon: digestCommand(stripped(event.command)) } },
+  };
 };
 
 export const bashLooksMutating = (command: string): boolean => {

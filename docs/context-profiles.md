@@ -56,7 +56,7 @@ Tool definitions are absent from this repository and have no character size in t
 | rule: `comment-discipline` | 2671 | 22.9% |
 | rule: `finish-the-task` | 362 | 3.1% |
 | rule: `fix-what-you-see` | 328 | 2.8% |
-| rule: `guard-the-context-window` | 609 | 5.2% |
+| rule: `guard-the-context-window-spark` | 618 | 5.3% |
 | rule: `prove-it-works` | 2760 | 23.6% |
 | rule: `typescript-best-practices` | 1768 | 15.1% |
 | rule: `agents-md-router` | 754 | 6.5% |
@@ -173,12 +173,12 @@ Tool definitions are absent from this repository and have no character size in t
 
 | Part | Characters | Share of Rules by characters |
 | --- | ---: | ---: |
-| rule: `guard-the-context-window` | 609 | 10.7% |
-| rule: `prove-it-works` | 2760 | 48.5% |
-| rule: `agents-md-router` | 754 | 13.3% |
-| rule: `readme-front-door` | 678 | 11.9% |
-| rule: `credential-files` | 369 | 6.5% |
-| rule: `git-hygiene-stash` | 516 | 9.1% |
+| rule: `guard-the-context-window` | 353 | 6.5% |
+| rule: `prove-it-works` | 2760 | 50.8% |
+| rule: `agents-md-router` | 754 | 13.9% |
+| rule: `readme-front-door` | 678 | 12.5% |
+| rule: `credential-files` | 369 | 6.8% |
+| rule: `git-hygiene-stash` | 516 | 9.5% |
 | skill: `build-and-review-motion` | 5794 |  |
 | skill: `develop-a-website` | 8421 |  |
 | skill: `grilling` | 3528 |  |

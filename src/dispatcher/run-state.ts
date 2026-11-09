@@ -11,8 +11,10 @@ export type RunState = {
   walked?: Record<string, Listed>;
   gate?: GateState;
   project?: Project;
-  slow?: string;
+  slow?: SlowGuard;
 };
+
+export type SlowGuard = { full: string; canon: string; recovered?: boolean };
 
 export const START: RunState = { rules: {} };
 
@@ -101,13 +103,19 @@ const isProject = (value: unknown): value is Project => {
   );
 };
 
+const isSlowGuard = (value: unknown): value is SlowGuard =>
+  isRecord(value) &&
+  typeof value.full === "string" &&
+  typeof value.canon === "string" &&
+  (value.recovered === undefined || typeof value.recovered === "boolean");
+
 const hasSessionFields = (value: Record<string, unknown>): boolean =>
   (value.model === undefined || typeof value.model === "string") &&
   (value.holding === undefined || isStrings(value.holding)) &&
   (value.walked === undefined || isWalked(value.walked)) &&
   (value.gate === undefined || isGateState(value.gate)) &&
   (value.project === undefined || isProject(value.project)) &&
-  (value.slow === undefined || typeof value.slow === "string");
+  (value.slow === undefined || isSlowGuard(value.slow));
 
 export const isRunState = (value: unknown): value is RunState =>
   isRecord(value) &&
@@ -152,7 +160,6 @@ const migratedRules = (legacy: LegacyRunState): Record<string, RuleLifecycle> =>
 
 export const decodeRunState = (value: unknown): RunState | undefined => {
   if (isRunState(value)) return value;
-  const slow = isRecord(value) && typeof value.slow === "string" ? value.slow : undefined;
   if (!isLegacyRunState(value)) return undefined;
   const rules = migratedRules(value);
   return {
@@ -162,6 +169,5 @@ export const decodeRunState = (value: unknown): RunState | undefined => {
     ...(value.walked === undefined ? {} : { walked: value.walked }),
     ...(value.gate === undefined ? {} : { gate: value.gate }),
     ...(value.project === undefined ? {} : { project: value.project }),
-    ...(slow === undefined ? {} : { slow }),
   };
 };

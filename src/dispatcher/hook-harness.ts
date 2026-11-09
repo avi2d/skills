@@ -362,17 +362,10 @@ export async function handle(adapter: HookAdapter, index: Index, hook: Hook, pay
 
 export function refusedRead(hook: Hook, payload: Payload): string | undefined {
   if (hook !== "PreToolUse") return undefined;
-  const input = payload.tool_input ?? {};
-  const cwd = payload.cwd ?? process.cwd();
-  const path = credentialRead(payload.tool_name ?? "", input, cwd);
-  if (path !== undefined) {
-    note(sessionOf(payload), refusedLine(path));
-    return hookOutput(hook, refusedText(path), "deny");
-  }
-  const identity = commitIdentity(payload.tool_name ?? "", input, cwd);
-  if (identity === undefined) return undefined;
-  note(sessionOf(payload), COMMIT_IDENTITY_LINE);
-  return hookOutput(hook, identity, "deny");
+  const path = credentialRead(payload.tool_name ?? "", payload.tool_input ?? {}, payload.cwd ?? process.cwd());
+  if (path === undefined) return undefined;
+  note(sessionOf(payload), refusedLine(path));
+  return hookOutput(hook, refusedText(path), "deny");
 }
 
 export function refusedCommit(hook: Hook, payload: Payload): string | undefined {

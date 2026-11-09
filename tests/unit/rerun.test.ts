@@ -26,6 +26,13 @@ test("a rerun that changes only its output filter is refused, and the rerun sent
   expect(after([...slowSince(400), call(`${SLOW} > /tmp/eval.log 2>&1`)]).refused).toEqual([]);
 });
 
+test("a first save of unsaved output passes once, and the next save to another file is refused", () => {
+  const saved = [...slowSince(400), call(`${SLOW} > /tmp/first.log`)];
+  expect(after(saved).refused).toEqual([]);
+  expect(after([...saved, call(`${SLOW} > /tmp/second.log`)]).refused).toEqual([RERUN_REFUSAL]);
+  expect(after([...saved, call(`${SLOW} > /tmp/third.log`)]).refused).toEqual([RERUN_REFUSAL]);
+});
+
 test("an identical rerun settles a flake, and a rerun after an edit passes", () => {
   expect(after([...slowSince(400), call(SLOW)]).refused).toEqual([]);
   expect(after([...slowSince(400), wrote("src/a.ts"), call(`${SLOW} 2>&1 | tail -5`)]).refused).toEqual([]);
