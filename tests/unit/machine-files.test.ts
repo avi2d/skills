@@ -112,14 +112,14 @@ test("generation refuses a Claude profile with no claude_account, which leaves f
   expect(await saidBy(crewDispatchJson({ ...source, rules: [{ ...first, use }, ...rest] }))).toMatch(/at \["rules"\]\[0\]\["use"\]\[1\]\["claude_account"\]/);
 });
 
-test("generation refuses a claude_account other than main, which every Claude spawn carries", async () => {
+test("generation refuses a claude_account other than main or second, which every Claude spawn carries", async () => {
   const source = crewDispatchOf("windows");
   const [first, ...rest] = source.rules;
   if (first === undefined) return expect.unreachable("the source holds no rule");
   const use = first.use.map((profile) =>
-    profile.model === "claude-bridge/claude-opus-5-5" ? { ...profile, claude_account: "second" } : profile,
+    profile.model === "claude-bridge/claude-opus-5-5" ? { ...profile, claude_account: "third" } : profile,
   );
-  expect(await saidBy(crewDispatchJson({ ...source, rules: [{ ...first, use }, ...rest] }))).toMatch(/"claude_account": "main"[\s\S]*at \["rules"\]\[0\]\["use"\]\[2\]$/);
+  expect(await saidBy(crewDispatchJson({ ...source, rules: [{ ...first, use }, ...rest] }))).toMatch(/Expected "main" \| "second"[\s\S]*at \["rules"\]\[0\]\["use"\]\[3\]\["claude_account"\]$/);
 });
 
 test("generation refuses a claude_account on a Muse profile, which spends OpenCode Go rather than Claude", async () => {

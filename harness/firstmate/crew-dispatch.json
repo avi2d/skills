@@ -27,10 +27,28 @@
         },
         {
           "harness": "pi",
+          "model": "claude-bridge/claude-haiku-5-5",
+          "effort": "low",
+          "provider": "claude",
+          "floor": {
+            "scope": "all_models",
+            "min_percent": 15
+          },
+          "claude_account": "second"
+        },
+        {
+          "harness": "pi",
           "model": "claude-bridge/claude-opus-5-5",
           "effort": "low",
           "provider": "claude",
           "claude_account": "main"
+        },
+        {
+          "harness": "pi",
+          "model": "claude-bridge/claude-opus-5-5",
+          "effort": "low",
+          "provider": "claude",
+          "claude_account": "second"
         }
       ]
     },
@@ -66,10 +84,28 @@
         },
         {
           "harness": "pi",
+          "model": "claude-bridge/claude-haiku-5-5",
+          "effort": "high",
+          "provider": "claude",
+          "floor": {
+            "scope": "all_models",
+            "min_percent": 15
+          },
+          "claude_account": "second"
+        },
+        {
+          "harness": "pi",
           "model": "claude-bridge/claude-opus-5-5",
           "effort": "medium",
           "provider": "claude",
           "claude_account": "main"
+        },
+        {
+          "harness": "pi",
+          "model": "claude-bridge/claude-opus-5-5",
+          "effort": "medium",
+          "provider": "claude",
+          "claude_account": "second"
         }
       ]
     },
@@ -98,6 +134,13 @@
           "effort": "medium",
           "provider": "claude",
           "claude_account": "main"
+        },
+        {
+          "harness": "pi",
+          "model": "claude-bridge/claude-opus-5-5",
+          "effort": "medium",
+          "provider": "claude",
+          "claude_account": "second"
         }
       ]
     },
@@ -110,6 +153,13 @@
           "effort": "high",
           "provider": "claude",
           "claude_account": "main"
+        },
+        {
+          "harness": "pi",
+          "model": "claude-bridge/claude-opus-5-5",
+          "effort": "high",
+          "provider": "claude",
+          "claude_account": "second"
         }
       ]
     },
@@ -122,6 +172,13 @@
           "effort": "high",
           "provider": "claude",
           "claude_account": "main"
+        },
+        {
+          "harness": "pi",
+          "model": "claude-bridge/claude-opus-5-5",
+          "effort": "high",
+          "provider": "claude",
+          "claude_account": "second"
         },
         {
           "harness": "pi",
@@ -143,6 +200,13 @@
         },
         {
           "harness": "pi",
+          "model": "claude-bridge/claude-opus-5-5",
+          "effort": "high",
+          "provider": "claude",
+          "claude_account": "second"
+        },
+        {
+          "harness": "pi",
           "model": "openai/gpt-6-astra",
           "effort": "high",
           "provider": "codex"
@@ -157,6 +221,13 @@
       "effort": "high",
       "provider": "claude",
       "claude_account": "main"
+    },
+    {
+      "harness": "pi",
+      "model": "claude-bridge/claude-opus-5-5",
+      "effort": "high",
+      "provider": "claude",
+      "claude_account": "second"
     }
   ]
 }

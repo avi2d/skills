@@ -1,5 +1,5 @@
 import { Effect, Schema } from "effect";
-import { MAIN_ACCOUNT } from "./claude-accounts";
+import { MAIN_ACCOUNT, SECOND_ACCOUNT } from "./claude-accounts";
 import { MalformedMachineConfig } from "../platform/failures";
 
 const Kind = Schema.Literals(["trivial", "small", "large", "ambiguous", "investigation"]);
@@ -48,7 +48,7 @@ const Floor = Schema.Struct({
   min_percent: Schema.Int.check(Schema.isBetween({ minimum: 0, maximum: 100 })),
 }).annotate({ description: "firstmate skips the candidate while the scope reads below min_percent" });
 
-const ClaudeAccount = Schema.Literal(MAIN_ACCOUNT).annotate({
+const ClaudeAccount = Schema.Literals([MAIN_ACCOUNT, SECOND_ACCOUNT]).annotate({
   description: "The clauth profile name firstmate launches this profile on",
 });
 
