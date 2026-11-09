@@ -81,10 +81,11 @@ A description says what a rule is for and why, names no model or effort, and sta
 Change a rule there and regenerate, because `tests/unit/machine-files.test.ts` and `bun run generate --check` fail on a committed file that differs from what the source writes.
 Both files set `array_order` to `preference`, so firstmate takes the first candidate that quota-axi shows usable.
 A Haiku 5.5 candidate and a Muse candidate each carry a `floor` on the `all_models` scope of their provider, so firstmate skips each while that scope holds under 15%.
-Every Claude candidate carries `main` in `claude_account`, which `src/generate/claude-accounts.ts` names `MAIN_ACCOUNT`, so firstmate launches it with `--claude-account`.
-GPT-6 Astra at high follows Opus 5.5 in the bounded investigation rule and the unknown cause rule.
-GPT-6.1 Terra at high follows Muse in the two clearly specified implementation rules.
-Both spend the `codex` provider and carry no floor.
+Every Claude model lists once with `main` and once with `second` in `claude_account`, which `src/generate/claude-accounts.ts` names `MAIN_ACCOUNT` and `SECOND_ACCOUNT`.
+Firstmate launches each candidate with `--claude-account` and picks the usable one by quota.
+The bounded investigation rule and the unknown cause rule list Opus 5.5 at high on both accounts.
+The three implementation rules list the Claude candidates first, then Muse, and GPT-6.1 Terra at high last in the two clearly specified ones.
+It spends the `codex` provider and carries no floor.
 `bun run link` links the Mac's file on macOS and the other one on every other platform.
 It links the three pins on macOS only.
 `tests/unit/crew-dispatch.test.ts` fails on a profile whose effort pi would run at another level.
@@ -94,9 +95,8 @@ pi silently moves an effort a model does not support to the next level up that i
 
 `bun run generate` writes the no-mistakes global config to `generated/no-mistakes/config.yaml` from `src/generate/no-mistakes-config.ts`, for the `$HOME` it runs under, and `bun run link` links `~/.no-mistakes/config.yaml` to it.
 The schema knows only the fields no-mistakes reads, because no-mistakes refuses a config file with a field it does not know.
-In `reviewer_chain`, the review step tries GPT-6 Astra on the Codex sign-in first, then Opus 5.5 on the clauth account `main`, then Opus 5.5 on the clauth account `second` last.
-No entry carries a floor, so the review step moves to the next entry only after a usage limit, as [record 0108](adr/0108-astra-reviews-first-with-no-floor-and-codex-models-join-four-dispatch-rules.md) records.
-pi names Astra `openai/gpt-6-astra` on both machines.
+In `reviewer_chain`, the review step tries Opus 5.5 on the clauth account `main` first, then Opus 5.5 on the clauth account `second` last.
+No entry carries a floor, so the review step moves to the next entry only after a usage limit.
 The login folders of `second` and `main` sit under `~/.claude-accounts/`.
 `review` holds one path instruction over every changed file that reviews added comments against comment discipline as warnings that never fix or block.
 It flags a comment that restates its line or carries a measured number that will go stale, and it keeps a comment that gives a reason the code cannot show.

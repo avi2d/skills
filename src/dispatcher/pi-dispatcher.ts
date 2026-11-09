@@ -294,6 +294,7 @@ function queue(dispatcher: Dispatcher, input: { command: string }, cwd: string):
   if (steered === undefined) return undefined;
   note(dispatcher, steeredLine(steered));
   if (steered.type === "refuse") return { block: true, reason: steered.text };
+  if (steered.type === "pass") return undefined;
   input.command = steered.command;
   return undefined;
 }

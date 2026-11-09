@@ -58,50 +58,66 @@ const INVESTIGATION = "Bounded investigation";
 
 const UNKNOWN_CAUSE = "A code change whose cause or scope is not yet known";
 
-test.each([...MACHINES])("on the %s machine, the trivial tier prefers Muse, then Haiku, then Opus, with no Codex model, in array order", async (machine) => {
+test.each([...MACHINES])("on the %s machine, the trivial tier prefers Haiku on both accounts, then Opus on both accounts, then Muse, so Muse never leads Claude, with no Codex model, in array order", async (machine) => {
   const dispatch = await dispatchOn(machine);
   expect(dispatch.array_order, "without preference order firstmate ranks the candidates by spendPriority").toBe("preference");
-  expect(familiesIn(dispatch, "Mechanical")).toEqual(["muse", "haiku", "opus"]);
+  expect(familiesIn(dispatch, "Mechanical")).toEqual(["haiku", "haiku", "opus", "opus", "muse"]);
 });
 
-test.each([...MACHINES])("on the %s machine, the small tier keeps Muse first, Terra second, then Haiku and Opus, so Terra never leads Muse", async (machine) => {
-  expect(familiesIn(await dispatchOn(machine), ORDINARY)).toEqual(["muse", "terra", "haiku", "opus"]);
+test.each([...MACHINES])("on the %s machine, the small tier lists Haiku and Opus on both accounts first, then Muse, then Terra, so Terra never leads Muse or Claude", async (machine) => {
+  expect(familiesIn(await dispatchOn(machine), ORDINARY)).toEqual(["haiku", "haiku", "opus", "opus", "muse", "terra"]);
 });
 
-test.each([...MACHINES])("on the %s machine, the large tier keeps Muse first, Terra second, then Opus, so Terra is not missing above 150 lines", async (machine) => {
-  expect(familiesIn(await dispatchOn(machine), ABOVE_150)).toEqual(["muse", "terra", "opus"]);
+test.each([...MACHINES])("on the %s machine, the large tier lists Opus on both accounts first, then Muse, then Terra, so Muse never leads Opus above 150 lines", async (machine) => {
+  expect(familiesIn(await dispatchOn(machine), ABOVE_150)).toEqual(["opus", "opus", "muse", "terra"]);
 });
 
-test.each([...MACHINES])("on the %s machine, the investigation and unknown cause rules list Opus then Astra, so neither drops Astra or Opus", async (machine) => {
+test.each([...MACHINES])("on the %s machine, the investigation and unknown cause rules list Opus on both accounts with no Astra, so neither drops Opus", async (machine) => {
   const dispatch = await dispatchOn(machine);
-  for (const opening of [INVESTIGATION, UNKNOWN_CAUSE]) expect(familiesIn(dispatch, opening), opening).toEqual(["opus", "astra"]);
+  for (const opening of [INVESTIGATION, UNKNOWN_CAUSE]) expect(familiesIn(dispatch, opening), opening).toEqual(["opus", "opus"]);
 });
 
-test.each([...MACHINES])("on the %s machine, Astra and Terra sit only in their two rules each, at high effort on Codex", async (machine) => {
-  const placed = naming(/astra|terra/i)(await profilesOn(machine));
+test.each([...MACHINES])("on the %s machine, Terra sits only in the small and large tiers, at high effort on Codex", async (machine) => {
+  const placed = naming(/terra/i)(await profilesOn(machine));
   const openingOf = (at: string) => [ORDINARY, ABOVE_150, INVESTIGATION, UNKNOWN_CAUSE].find((opening) => at.startsWith(opening.slice(0, at.length))) ?? at;
   expect(placed.map(({ at, profile }) => [familyOf(profile.model), openingOf(at), profile.effort, profile.provider, profile.floor])).toEqual([
     ["terra", ORDINARY, "high", "codex", undefined],
     ["terra", ABOVE_150, "high", "codex", undefined],
-    ["astra", INVESTIGATION, "high", "codex", undefined],
-    ["astra", UNKNOWN_CAUSE, "high", "codex", undefined],
   ]);
 });
 
-test.each([...MACHINES])("on the %s machine, Haiku sits only in the trivial and small tiers, at low and high effort", async (machine) => {
+test.each([...MACHINES])("on the %s machine, Haiku sits only in the trivial and small tiers, at low and high effort, once per account", async (machine) => {
   const haiku = naming(/haiku/i)(await profilesOn(machine));
-  expect(haiku.map(({ at, profile }) => [/^(Mechanical|Clearly specified implementation work of ordinary size)/.exec(at)?.[0] ?? at, profile.effort])).toEqual([
-    ["Mechanical", "low"],
-    ["Clearly specified implementation work of ordinary size", "high"],
+  expect(haiku.map(({ at, profile }) => [/^(Mechanical|Clearly specified implementation work of ordinary size)/.exec(at)?.[0] ?? at, profile.effort, profile.claude_account])).toEqual([
+    ["Mechanical", "low", "main"],
+    ["Mechanical", "low", "second"],
+    ["Clearly specified implementation work of ordinary size", "high", "main"],
+    ["Clearly specified implementation work of ordinary size", "high", "second"],
   ]);
 });
 
-test.each([...MACHINES])("on the %s machine, every Claude profile launches on the main clauth account and no other profile names one", async (machine) => {
+test.each([...MACHINES])("on the %s machine, every Claude model lists once on each clauth account and no other profile names one", async (machine) => {
   const placed = await profilesOn(machine);
   const claude = placed.filter(({ profile }) => profile.model?.startsWith("claude-bridge/"));
   expect(claude.length, "no rule names a Claude profile, so this checks nothing").toBeGreaterThan(0);
-  for (const { profile } of claude) expect(profile).toMatchObject({ provider: "claude", claude_account: "main" });
+  for (const { profile } of claude) {
+    expect(profile.provider).toBe("claude");
+    if (profile.claude_account === undefined) expect.unreachable("a Claude profile names no account");
+    expect(["main", "second"]).toContain(profile.claude_account);
+  }
   expect(placed.filter(({ profile }) => profile.claude_account !== undefined && !profile.model?.startsWith("claude-bridge/"))).toEqual([]);
+  const dispatch = await dispatchOn(machine);
+  const lists = [...dispatch.rules.map(({ use }) => listed(use)), ...(dispatch.default === undefined ? [] : [listed(dispatch.default)])];
+  for (const list of lists) {
+    const accounts = list.filter(({ model }) => model?.startsWith("claude-bridge/"));
+    for (let at = 0; at < accounts.length; at += 2) {
+      const first = accounts[at];
+      const second = accounts[at + 1];
+      expect(second, "a Claude main entry with no second directly after it").toBeDefined();
+      expect([first?.model, first?.effort, first?.provider]).toEqual([second?.model, second?.effort, second?.provider]);
+      expect([first?.claude_account, second?.claude_account]).toEqual(["main", "second"]);
+    }
+  }
 });
 
 test.each([...MACHINES])("on the %s machine, every Haiku profile is skipped while either Claude window holds under 15 percent", async (machine) => {
@@ -171,7 +187,7 @@ test.each([...MACHINES])("on the %s machine, pi runs every dispatched effort as 
   expect(held.flatMap(misrun)).toEqual([]);
 });
 
-test("on the mac machine, a code change whose cause is not yet known dispatches Opus 5.5 then Astra at high, after the narrower shared rules", async () => {
+test("on the mac machine, a code change whose cause is not yet known dispatches Opus 5.5 on both accounts with no Astra, after the narrower shared rules", async () => {
   const dispatch = await dispatchOn("mac");
   const found = dispatch.rules.filter(({ when }) => when.includes(UNKNOWN_CAUSE));
   expect(found, "the mac dispatch carries no unknown-cause rule, so one falls to the default").toHaveLength(1);
@@ -181,6 +197,6 @@ test("on the mac machine, a code change whose cause is not yet known dispatches 
   expect(narrow.length, "a narrower shared rule must still win over the unknown cause rule").toBe(2);
   expect(listed(rule.use)).toEqual([
     { harness: "pi", model: "claude-bridge/claude-opus-5-5", effort: "high", provider: "claude", claude_account: "main" },
-    { harness: "pi", model: "openai/gpt-6-astra", effort: "high", provider: "codex" },
+    { harness: "pi", model: "claude-bridge/claude-opus-5-5", effort: "high", provider: "claude", claude_account: "second" },
   ]);
 });

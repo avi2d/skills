@@ -9,6 +9,7 @@ Date: 2026-11-08
 
 Accepted.
 Amends 0102: the reviewer chain runs Astra on Codex first, then Opus on the account main, then Opus on the account second, and no entry carries a floor.
+Amended by 0109: the three implementation rules list the Claude candidates first, with Muse and then Terra after them.
 
 ## Context
 

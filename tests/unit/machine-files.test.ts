@@ -74,7 +74,7 @@ test.each([
   ["a harness", { harness: "codex" }, PROFILES_KNOWN],
   ["a model", { model: "opencode-go/muse-spark-9" }, PROFILES_KNOWN],
   ["a provider", { provider: "openrouter" }, PROFILES_KNOWN],
-  ["a provider the model does not spend", { provider: "claude" }, PROFILES_KNOWN],
+  ["a provider the model does not spend", { provider: "opencode-go" }, PROFILES_KNOWN],
   ["an effort", { effort: "extreme" }, /Expected "low" \| "medium" \| "high" \| "xhigh" \| "max"\n {2}at .*\["effort"\]$/],
   ["a field", { why: "a rationale nobody keeps up" }, /why/],
 ])("generation refuses %s the schema does not know", async (_, change, named) => {
@@ -109,22 +109,21 @@ test("generation refuses a Claude profile with no claude_account, which leaves f
   const [first, ...rest] = source.rules;
   if (first === undefined) return expect.unreachable("the source holds no rule");
   const use = first.use.map(withoutClaudeAccount);
-  expect(await saidBy(crewDispatchJson({ ...source, rules: [{ ...first, use }, ...rest] }))).toMatch(/at \["rules"\]\[0\]\["use"\]\[1\]\["claude_account"\]/);
+  expect(await saidBy(crewDispatchJson({ ...source, rules: [{ ...first, use }, ...rest] }))).toMatch(/at \["rules"\]\[0\]\["use"\]\[0\]\["claude_account"\]/);
 });
 
-test("generation refuses a claude_account other than main, which every Claude spawn carries", async () => {
+test("generation refuses a claude_account other than main or second, which every Claude spawn carries", async () => {
   const source = crewDispatchOf("windows");
   const [first, ...rest] = source.rules;
   if (first === undefined) return expect.unreachable("the source holds no rule");
   const use = first.use.map((profile) =>
-    profile.model === "claude-bridge/claude-opus-5-5" ? { ...profile, claude_account: "second" } : profile,
+    profile.model === "claude-bridge/claude-opus-5-5" ? { ...profile, claude_account: "third" } : profile,
   );
-  expect(await saidBy(crewDispatchJson({ ...source, rules: [{ ...first, use }, ...rest] }))).toMatch(/"claude_account": "main"[\s\S]*at \["rules"\]\[0\]\["use"\]\[2\]$/);
+  expect(await saidBy(crewDispatchJson({ ...source, rules: [{ ...first, use }, ...rest] }))).toMatch(/Expected "main" \| "second"[\s\S]*at \["rules"\]\[0\]\["use"\]\[2\]\["claude_account"\]$/);
 });
 
 test("generation refuses a claude_account on a Muse profile, which spends OpenCode Go rather than Claude", async () => {
-  const source = withFirstProfile((profile) => ({ ...profile, claude_account: "main" }));
-  expect(await saidBy(crewDispatchJson(source))).toMatch(/Expected no excess property\n {2}at \["rules"\]\[0\]\["use"\]\[0\]\["claude_account"\]/);
+  expect(await saidBy(crewDispatchJson(kindRule({ kind: "trivial", use: [{ ...muse, claude_account: "main" }] })))).toMatch(/Expected no excess property\n {2}at \["rules"\]\[0\]\["use"\]\[0\]\["claude_account"\]/);
 });
 
 test("generation refuses a floor on a profile other than Haiku 5.5 and Muse", async () => {
@@ -184,9 +183,8 @@ test("the comment review reports a warning with no-op, never an error or an esca
   expect(emitted()).toMatchObject({ review: { path_instructions: [{ path: "**/*", instructions: expect.stringContaining("will go stale") }] } });
 });
 
-test("the reviewer chain runs Astra at high first, then Opus on main, then Opus on second, with Sol and every floor gone", () => {
+test("the reviewer chain runs Opus on main then Opus on second, with Astra refused a slot and every floor gone", () => {
   expect(noMistakesConfigOf(HOME).reviewer_chain).toEqual([
-    { agent: "pi", model: "openai/gpt-6-astra", effort: "high" },
     { agent: "pi", model: "claude-bridge/claude-opus-5-5", effort: "high", env: { CLAUDE_CONFIG_DIR: "/home/someone/.claude-accounts/main" } },
     { agent: "pi", model: "claude-bridge/claude-opus-5-5", effort: "high", env: { CLAUDE_CONFIG_DIR: "/home/someone/.claude-accounts/second" } },
   ]);
@@ -202,7 +200,7 @@ test("generation writes this machine's no-mistakes config under the generated ro
   const config = Bun.YAML.parse(new TextDecoder().decode(bytes));
   const home = process.env.HOME ?? expect.unreachable("the test runs with no $HOME");
   expect(config).toEqual(noMistakesConfigOf(home));
-  expect(config).toMatchObject({ reviewer_chain: [{}, { env: { CLAUDE_CONFIG_DIR: `${home}/.claude-accounts/main` } }, { env: { CLAUDE_CONFIG_DIR: `${home}/.claude-accounts/second` } }] });
+  expect(config).toMatchObject({ reviewer_chain: [{ env: { CLAUDE_CONFIG_DIR: `${home}/.claude-accounts/main` } }, { env: { CLAUDE_CONFIG_DIR: `${home}/.claude-accounts/second` } }] });
 });
 
 type Chain = readonly Record<string, unknown>[];
@@ -215,19 +213,19 @@ const withChain = (reorder: (chain: Chain) => readonly unknown[]) => {
 const codexFloor = { command: "true", field: "remaining_percent", minimum: 30 };
 
 test.each([
-  ["a Codex floor left on Astra", ([astra, main, second]: Chain) => [{ ...astra, floor: codexFloor }, main, second], /no excess property\n {2}at \["reviewer_chain"\]\[0\]\["floor"\]$/],
-  ["a floor on the second account", ([astra, main, second]: Chain) => [astra, main, { ...second, floor: codexFloor }], /no excess property\n {2}at \["reviewer_chain"\]\[2\]\["floor"\]$/],
-  ["Sol left first in the chain", ([astra, main, second]: Chain) => [{ ...astra, model: "openai/gpt-6.1-sol" }, main, second], /at \["reviewer_chain"\]\[0\]\["model"\]$/],
-  ["Sol added back as a fourth reviewer", (chain: Chain) => [...chain, { agent: "pi", model: "openai/gpt-6.1-sol", effort: "high" }], /reviewer_chain/],
-  ["Opus on main ahead of Astra", ([astra, main, second]: Chain) => [main, astra, second], /at \["reviewer_chain"\]\[0\]/],
-  ["a chain that drops Astra", ([, main, second]: Chain) => [main, second], /at \["reviewer_chain"\]\[0\]/],
-  ["the second account login ahead of main", ([astra, main, second]: Chain) => [astra, second, main], /at \["reviewer_chain"\]\[1\]/],
+  ["a Codex floor left on main", ([main, second]: Chain) => [{ ...main, floor: codexFloor }, second], /no excess property\n {2}at \["reviewer_chain"\]\[0\]\["floor"\]$/],
+  ["a floor on the second account", ([main, second]: Chain) => [main, { ...second, floor: codexFloor }], /no excess property\n {2}at \["reviewer_chain"\]\[1\]\["floor"\]$/],
+  ["Sol left first in the chain", ([, second]: Chain) => [{ agent: "pi", model: "openai/gpt-6.1-sol", effort: "high" }, second], /at \["reviewer_chain"\]\[0\]\["model"\]$/],
+  ["Sol added back as a third reviewer", (chain: Chain) => [...chain, { agent: "pi", model: "openai/gpt-6.1-sol", effort: "high" }], /reviewer_chain/],
+  ["Astra added back first", ([, second]: Chain) => [{ agent: "pi", model: "openai/gpt-6-astra", effort: "high" }, second], /at \["reviewer_chain"\]\[0\]\["model"\]$/],
+  ["a chain that drops second", ([main]: Chain) => [main], /reviewer_chain/],
+  ["the second account login ahead of main", ([main, second]: Chain) => [second, main], /at \["reviewer_chain"\]\[0\]/],
 ])("generation refuses a reviewer chain with %s", async (_, reorder, named) => {
   expect(await saidBy(noMistakesYaml(withChain(reorder)))).toMatch(named);
 });
 
 test("generation refuses a login folder written with a tilde, which no-mistakes passes to the agent unexpanded", async () => {
-  const source = withChain(([astra, main, second]) => [astra, main, { ...second, env: { CLAUDE_CONFIG_DIR: "~/.claude-accounts/second" } }]);
+  const source = withChain(([main, second]) => [main, { ...second, env: { CLAUDE_CONFIG_DIR: "~/.claude-accounts/second" } }]);
   expect(await saidBy(noMistakesYaml(source))).toMatch(/Expected a string starting with "\/"\n {2}at .*\["CLAUDE_CONFIG_DIR"\]$/);
 });
 
@@ -254,13 +252,14 @@ test.each([
   expect(await Bun.file(`${REPO}${rel}`).text()).toBe(`${pin}\n`);
 });
 
-test("secondmate harness defaults to haiku", () => {
+test("secondmate harness is sonnet, and the supervision branch pins the Muse candidate of the small rule", () => {
   expect(FIRSTMATE_PINS["harness/firstmate/secondmate-harness"]?.trim()).toBe("pi claude-bridge/claude-sonnet-5-5 high");
   const small = crewDispatchOf("mac").rules.find((rule) => rule.kind === "small");
   if (small === undefined) return expect.unreachable("the mac source holds no small rule");
-  const [cheap] = small.use;
-  expect(FIRSTMATE_PINS["harness/firstmate/supervision-branch-model"]?.trim()).toBe(cheap.model);
-  expect(FIRSTMATE_PINS["harness/firstmate/supervision-branch-effort"]?.trim()).toBe(cheap.effort);
+  const museCandidate = small.use.find((profile) => profile.model.startsWith("opencode-go/muse-spark"));
+  if (museCandidate === undefined) return expect.unreachable("the small rule holds no Muse candidate");
+  expect(FIRSTMATE_PINS["harness/firstmate/supervision-branch-model"]?.trim()).toBe(museCandidate.model);
+  expect(FIRSTMATE_PINS["harness/firstmate/supervision-branch-effort"]?.trim()).toBe(museCandidate.effort);
 });
 
 test.each([
