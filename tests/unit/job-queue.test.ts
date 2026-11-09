@@ -1,4 +1,4 @@
-import { afterAll, describe, expect, test } from "bun:test";
+import { afterAll, afterEach, beforeEach, describe, expect, test } from "bun:test";
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
@@ -14,6 +14,21 @@ for (const file of ["tests/unit/a.test.ts", "tests/unit/glob.test.ts", "tests/te
 }
 
 const q = (command: string): string | undefined => queueFor(command, work).join(" and ") || undefined;
+
+const savedGroup = process.env.PUEUE_GROUP;
+const savedWorker = process.env.PUEUE_WORKER_ID;
+
+beforeEach(() => {
+  delete process.env.PUEUE_GROUP;
+  delete process.env.PUEUE_WORKER_ID;
+});
+
+afterEach(() => {
+  if (savedGroup === undefined) delete process.env.PUEUE_GROUP;
+  else process.env.PUEUE_GROUP = savedGroup;
+  if (savedWorker === undefined) delete process.env.PUEUE_WORKER_ID;
+  else process.env.PUEUE_WORKER_ID = savedWorker;
+});
 
 describe("the tests group", () => {
   test.each(["bun test", "bun test --randomize", "bun test --randomize --seed=7"])(
@@ -151,46 +166,64 @@ describe("the evals group", () => {
 });
 
 describe("the heavy shapes the queue plan adds", () => {
-  test("checks-test --changed queues in the tests group instead of running as a quick targeted test", () => {
+  test("checks-test --changed queues with priority in the tests group", () => {
     expect(steer("checks-test --changed", work, () => ["default", "tests"])).toEqual({
       type: "queue",
       group: "tests",
-      command: expect.stringContaining("pueue add --priority 1 --print-task-id --group tests -- 'checks-test --changed'"),
+      command: queued("checks-test --changed", "tests", 1),
     });
   });
 
-  test("bin/fm-test-run.sh --changed queues in the tests group instead of running as a quick targeted test", () => {
+  test("bin/fm-test-run.sh --changed queues with priority in the tests group", () => {
     expect(steer("bin/fm-test-run.sh --changed", work, () => ["default", "tests"])).toEqual({
       type: "queue",
       group: "tests",
-      command: expect.stringContaining("pueue add --priority 1 --print-task-id --group tests -- 'bin/fm-test-run.sh --changed'"),
+      command: queued("bin/fm-test-run.sh --changed", "tests", 1),
     });
   });
 
   test.each([
-    ["checks-test", undefined],
-    ["bin/fm-test-run.sh", undefined],
-    ["bin/worker.test.sh", 1],
-    ["go test ./...", undefined],
-    ["go test -run TestFoo ./...", 1],
-    ["bun run lint src/foo.ts", 1],
-    ["xcrun simctl boot 1234-ABCD", undefined],
-    ["xcrun simctl io booted screenshot screen.png", undefined],
-    ["fm-sim-boot.sh", undefined],
-  ] as const)(
-    "%s queues in the tests group instead of running directly",
-    (command, priority) => {
-      expect(steer(command, work, () => ["default", "tests"])).toEqual({ type: "queue", group: "tests", command: queued(command, "tests", priority) });
-    },
-  );
-
-  test.each(["bun run lint", "npm run typecheck", "pnpm run build", "yarn run test:fast"])(
-    "%s queues in the tests group instead of running directly",
+    "checks-test",
+    "checks-test --changed",
+    "bin/fm-test-run.sh",
+    "./bin/fm-test-run.sh",
+    "bin/worker.test.sh",
+    "sh bin/worker.test.sh",
+    "go test ./...",
+    "go test -run TestFoo ./...",
+    "bin/lint",
+    "./bin/typecheck",
+    "bin/build",
+    "sh bin/lint",
+    "bun run test:fast",
+    "npm run test:fast",
+    "pnpm run test:fast",
+    "yarn run test:fast",
+    "xcrun simctl boot 1234-ABCD",
+    "xcrun simctl io booted screenshot screen.png",
+    "fm-sim-boot.sh",
+  ])(
+    "%s queues with priority in the tests group instead of running directly",
     (command) => {
-      expect(steer(command, work, () => ["default", "tests"])).toEqual({ type: "queue", group: "tests", command: queued(command, "tests") });
+      expect(steer(command, work, () => ["default", "tests"])).toEqual({ type: "queue", group: "tests", command: queued(command, "tests", 1) });
     },
   );
 
+  test.each([
+    "./scripts/smoke.test.sh",
+    "scripts/fm-test-run.sh",
+    "sub/dir/worker.test.sh",
+    "sh scripts/worker.test.sh",
+    "lint",
+    "bun run lint",
+    "npm run typecheck",
+    "pnpm run build",
+  ])(
+    "%s names no queued shape, so it runs as it is",
+    (command) => {
+      expect(q(command)).toBeUndefined();
+    },
+  );
 });
 
 describe("model inference in the gpu group", () => {
@@ -315,7 +348,7 @@ describe("what runs as it is", () => {
     },
   );
 
-  test.each(["ls", "git status", "bun install", "echo bun test", "grep -r 'bun test' docs"])(
+  test.each(["ls", "git status", "lint", "bun install", "echo bun test", "grep -r 'bun test' docs"])(
     "%s is not a test suite or a GPU run",
     (command) => {
       expect(q(command)).toBeUndefined();
@@ -326,8 +359,8 @@ describe("what runs as it is", () => {
 describe("reading the shell around a command", () => {
   test.each([
     ["cd sub && bun run test", "tests"],
-    ["bun run lint && bun run test 2>&1 | tail -40", "tests"],
-    ["bun run build; bun test", "tests"],
+    ["bun run test:fast && bun run test 2>&1 | tail -40", "tests"],
+    ["bun run test:fast; bun test", "tests"],
     ["CI=1 bun test", "tests"],
     ["env CI=1 bun test", "tests"],
     ["time bun run test", "tests"],
@@ -374,15 +407,22 @@ describe("reading the shell around a command", () => {
 });
 
 describe("the queued command", () => {
-  test("it adds the command to the group whole, in one pair of single quotes, then waits and shows the log", () => {
-    const wrapped = queued("bun run test", "tests");
-    expect(wrapped).toContain("pueue add --print-task-id --group tests -- 'bun run test'");
+  test("it adds the command under nice with priority, in one pair of single quotes, then waits and shows the log", () => {
+    const wrapped = queued("bun run test", "tests", 1);
+    expect(wrapped).toContain("pueue add --priority 1 --print-task-id --group tests -- 'nice -n 19 sh -c");
+    expect(wrapped).toContain("bun run test");
     expect(wrapped).toContain('pueue wait --quiet --status success "$id"');
     expect(wrapped).toContain(`pueue log --lines ${LOG_LINES} "$id"`);
   });
 
+  test("a compound command stays whole under the one nice invocation", () => {
+    const wrapped = queued("bun test && cargo test", "tests", 1);
+    expect(wrapped).toContain("nice -n 19 sh -c");
+    expect(wrapped).toContain("bun test && cargo test");
+  });
+
   test("a single quote inside the command survives the quoting", () => {
-    expect(queued("bun test -t 'it'", "tests")).toContain(`-- 'bun test -t '\\''it'\\'''`);
+    expect(queued("bun test -t 'it'", "tests", 1)).toContain("'\\''");
   });
 
   test("the queued command is itself a pueue call, so a hook that sees it again leaves it alone", () => {
@@ -399,8 +439,8 @@ describe("the queued command", () => {
     expect(steeredLine({ type: "refuse", groups: ["evals", "gpu"], text: SEPARATE_EVAL_CALLS })).toBe("job-queue evals and gpu: refused a call that mixes groups");
   });
 
-  test("a targeted run queues with priority 1 instead of waiting behind whole suites", () => {
-    expect(queued("bun test tests/unit/a.test.ts", "tests", 1)).toContain("pueue add --priority 1 --print-task-id --group tests -- 'bun test tests/unit/a.test.ts'");
+  test("every tests run queues with priority 1 instead of waiting behind whatever else waits", () => {
+    expect(queued("bun test tests/unit/a.test.ts", "tests", 1)).toContain("pueue add --priority 1 --print-task-id --group tests");
   });
 
   test("the log line names the missing queue and the reason, and never the command", () => {
@@ -410,8 +450,8 @@ describe("the queued command", () => {
 });
 
 describe("steer", () => {
-  test("a heavy command queues in its group when pueue has that group", () => {
-    expect(steer("bun test", work, () => ["default", "tests"])).toEqual({ type: "queue", group: "tests", command: queued("bun test", "tests") });
+  test("a heavy command queues with priority under nice when pueue has that group", () => {
+    expect(steer("bun test", work, () => ["default", "tests"])).toEqual({ type: "queue", group: "tests", command: queued("bun test", "tests", 1) });
   });
 
 
@@ -493,7 +533,7 @@ describe("steer", () => {
   );
 
   test("two heavy commands in one group queue together as one job", () => {
-    expect(steer("bun run lint && bun test && cargo test", work, () => ["tests"])).toEqual({ type: "queue", group: "tests", command: queued("bun run lint && bun test && cargo test", "tests") });
+    expect(steer("bun run test:fast && bun test && cargo test", work, () => ["tests"])).toEqual({ type: "queue", group: "tests", command: queued("bun run test:fast && bun test && cargo test", "tests", 1) });
   });
 
   test("a heavy command left running directly names the failed listing instead of failing silently", () => {
