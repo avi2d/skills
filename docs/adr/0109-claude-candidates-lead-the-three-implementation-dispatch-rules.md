@@ -22,6 +22,6 @@ The investigation, design and unknown-cause rules, the floors, efforts and accou
 
 ## Consequences
 
-Firstmate takes a Claude candidate of a rule whenever one is usable, and reaches Muse only once the Claude candidates of that rule are not usable.
-The Mac's supervision branch still pins Muse, which is no longer the first candidate of its small rule.
+The dispatch takes a Claude candidate of a rule whenever one is usable, and reaches Muse only once the Claude candidates of that rule are not usable.
+The supervision branch still pins Muse, which is no longer the first candidate of its small rule.
 Moving that pin to Haiku is a separate decision.

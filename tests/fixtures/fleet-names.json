@@ -57,6 +57,7 @@
   "docs/adr/0102-the-main-account-reviews-first-codex-second-and-the-second-account-last-with-no-floor.md": 4,
   "docs/adr/0103-a-read-of-a-known-credential-file-is-refused-by-the-dispatcher.md": 1,
   "docs/adr/0108-astra-reviews-first-with-no-floor-and-codex-models-join-four-dispatch-rules.md": 4,
+  "docs/adr/0109-claude-candidates-lead-the-three-implementation-dispatch-rules.md": 3,
   "docs/adr/README.md": 9,
   "docs/contracts.md": 58,
   "docs/develop.md": 1,
