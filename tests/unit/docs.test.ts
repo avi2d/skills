@@ -24,7 +24,20 @@ const recorded = (number: number, title: string, status: string) =>
 const filed = (number: number, title: string, status: string): DecisionRecord =>
   value(parseRecord(`${String(number).padStart(4, "0")}-a-record.md`, recorded(number, title, status)));
 
+const governing = (number: number, title: string, status: string, governs: string): DecisionRecord =>
+  value(parseRecord(`${String(number).padStart(4, "0")}-a-record.md`, `---\ngoverns: [${governs}]\n---\n${recorded(number, title, status)}`));
+
 describe("a record", () => {
+  test("reads the paths it governs from its front matter", () => {
+    expect(governing(7, "A thing", "Accepted.", "src/parts.ts").governs).toEqual(["src/parts.ts"]);
+  });
+
+  test("holding a governs that is not a list of paths is refused, naming the record", () => {
+    const message = said(parseRecord("0007-a-record.md", `---\ngoverns: src/parts.ts\n---\n${recorded(7, "A thing", "Accepted.")}`));
+    expect(message).toContain("docs/adr/0007-a-record.md");
+    expect(message).toContain("`governs`");
+  });
+
   test("gives the index its number, its title, and the first word of its status", () => {
     const record = filed(7, "A thing is decided", "Superseded by 0009, which\nundoes it.");
     expect([record.number, record.title, record.state]).toEqual([7, "A thing is decided", "Superseded"]);
@@ -59,7 +72,7 @@ describe("the index", () => {
   const records = [
     filed(1, "First", "Accepted. Amended by 0003, which narrows it. Follows #2, and not 2003."),
     filed(2, "Second | with a bar", "Superseded by `0003-a-record.md`."),
-    filed(3, "Third", "Accepted. Supersedes 0002 and amends 0001. 0004 has since narrowed it."),
+    governing(3, "Third", "Accepted. Supersedes 0002 and amends 0001. 0004 has since narrowed it.", "src/parts.ts, src/more.ts"),
   ];
   const rows = recordIndex(records.toReversed())
     .split("\n")
@@ -69,10 +82,15 @@ describe("the index", () => {
     expect(rows.map((row) => row.slice(0, 8))).toEqual(["| [0001]", "| [0002]", "| [0003]"]);
   });
 
-  test("names as revising a record each later record its status cites, and nothing else it cites", () => {
-    expect(rows[0]).toEndWith("| Accepted | [0003](0003-a-record.md) |");
-    expect(rows[1]).toEndWith("| Superseded | [0003](0003-a-record.md) |");
-    expect(rows[2], "an earlier record, or a number no record holds, revised this one").toEndWith("| Accepted |  |");
+  test("lists the paths a record governs in its Governs cell, and leaves the cell empty for one that governs none", () => {
+    expect(rows[0]).toEndWith("| Accepted |  |");
+    expect(rows[2]).toEndWith("| Accepted | `src/parts.ts`, `src/more.ts` |");
+  });
+
+  test("is written between the marker lines checks-adr-index reads back", () => {
+    const index = recordIndex(records);
+    expect(index).toContain("<!-- generated adr-index: checks-adr-index writes it from the records in docs/adr/ -->");
+    expect(index).toContain("<!-- end generated adr-index -->");
   });
 
   test("keeps a bar in a title inside its cell", () => {

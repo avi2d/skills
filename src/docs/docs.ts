@@ -37,11 +37,11 @@ export type DecisionRecord = {
   readonly title: string;
   readonly state: (typeof STATES)[number];
   readonly status: string;
+  readonly governs: readonly string[];
 };
 
 const FILED = /^(\d{4})-[a-z0-9]+(?:-[a-z0-9]+)*\.md$/;
 const HEADING = /^# \d+\. (.+)$/;
-const CITED = /(?<![\w#])\d{4}(?!\d)/g;
 
 const malformed = (file: string, problem: string) => new MalformedRecord({ message: `${RECORDS}/${file} ${problem}` });
 
@@ -61,6 +61,23 @@ const statusOf = (lines: readonly string[]): string | undefined => {
   return (end === -1 ? after : after.slice(0, end)).join(" ").replace(/\s+/g, " ").trim();
 };
 
+const frontMatterOf = (lines: readonly string[]): readonly string[] => {
+  if (lines[0] !== FENCE) return [];
+  const closed = lines.indexOf(FENCE, 1);
+  return closed === -1 ? [] : lines.slice(1, closed);
+};
+
+const GOVERNS = Schema.Struct({ governs: Schema.optionalKey(Schema.Array(Schema.String)) });
+const decodeGoverns = Schema.decodeUnknownEffect(GOVERNS);
+
+const governsIn = Effect.fnUntraced(function* (file: string, lines: readonly string[]): Effect.fn.Return<readonly string[], MalformedRecord> {
+  const front = frontMatterOf(lines).join("\n");
+  if (front === "") return [];
+  const parsed = yield* Effect.try({ try: () => Bun.YAML.parse(front), catch: () => malformed(file, "has front matter that is not YAML") });
+  const decoded = yield* decodeGoverns(parsed).pipe(Effect.mapError(() => malformed(file, "holds a `governs` that is not a list of paths")));
+  return decoded.governs ?? [];
+});
+
 export const parseRecord = Effect.fnUntraced(function* (
   file: string,
   text: string,
@@ -77,41 +94,38 @@ export const parseRecord = Effect.fnUntraced(function* (
     const opened = state === undefined ? "nothing" : `\`${state}\``;
     return yield* malformed(file, `opens its status with ${opened} rather than one of ${STATES.join(", ")}`);
   }
-  return { file, number: Number(filed), title, state, status };
+  const governs = yield* governsIn(file, text.split("\n"));
+  return { file, number: Number(filed), title, state, status, governs };
 });
 
 const padded = (number: number) => String(number).padStart(4, "0");
 
 const cell = (text: string) => text.replaceAll("|", "\\|");
 
-// A record's status names a later record only once it has been edited after that one landed.
-const revisers = (record: DecisionRecord, filed: ReadonlyMap<number, DecisionRecord>): DecisionRecord[] =>
-  [...new Set(Array.from(record.status.matchAll(CITED), ([digits]) => Number(digits)))]
-    .filter((number) => number > record.number)
-    .toSorted((a, b) => a - b)
-    .flatMap((number) => filed.get(number) ?? []);
+// checks-adr-index reads this block back by these exact marker lines, so its text is the kit's own.
+const INDEX_OPENING = `<!-- generated adr-index: checks-adr-index writes it from the records in ${RECORDS}/ -->`;
+const INDEX_CLOSING = "<!-- end generated adr-index -->";
+
+const governedPaths = (paths: readonly string[]): string => cell(paths.map((path) => `\`${path}\``).join(", "));
 
 export const recordIndex = (records: readonly DecisionRecord[]): string => {
-  const filed = new Map(records.map((record) => [record.number, record]));
-  const linked = (record: DecisionRecord) => `[${padded(record.number)}](${record.file})`;
   const rows = records
     .toSorted((a, b) => a.number - b.number)
-    .map((record) => {
-      const revised = revisers(record, filed).map(linked).join(", ");
-      return `| ${linked(record)} | ${cell(record.title)} | ${record.state} | ${revised} |`;
-    });
+    .map((record) => `| [${padded(record.number)}](${record.file}) | ${cell(record.title)} | ${record.state} | ${governedPaths(record.governs)} |`);
   return [
     "# Decision records",
     "",
     "`bun run docs` writes this index from the records beside it, and `bun run test` fails when the two disagree.",
     "",
     "**Status** is the first word of a record's Status section.",
-    "**Revised by** lists the later records that section names, which is where a record says what superseded, retired, narrowed or amended part of it.",
-    "Read those before acting on the record they revise.",
     "",
-    "| Record | Title | Status | Revised by |",
+    INDEX_OPENING,
+    "",
+    "| Number | Title | Status | Governs |",
     "| --- | --- | --- | --- |",
     ...rows,
+    "",
+    INDEX_CLOSING,
     "",
   ].join("\n");
 };

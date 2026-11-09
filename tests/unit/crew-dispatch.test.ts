@@ -58,18 +58,18 @@ const INVESTIGATION = "Bounded investigation";
 
 const UNKNOWN_CAUSE = "A code change whose cause or scope is not yet known";
 
-test.each([...MACHINES])("on the %s machine, the trivial tier prefers Muse, then Haiku on both accounts, then Opus on both accounts, with no Codex model, in array order", async (machine) => {
+test.each([...MACHINES])("on the %s machine, the trivial tier prefers Haiku on both accounts, then Opus on both accounts, then Muse, so Muse never leads Claude, with no Codex model, in array order", async (machine) => {
   const dispatch = await dispatchOn(machine);
   expect(dispatch.array_order, "without preference order firstmate ranks the candidates by spendPriority").toBe("preference");
-  expect(familiesIn(dispatch, "Mechanical")).toEqual(["muse", "haiku", "haiku", "opus", "opus"]);
+  expect(familiesIn(dispatch, "Mechanical")).toEqual(["haiku", "haiku", "opus", "opus", "muse"]);
 });
 
-test.each([...MACHINES])("on the %s machine, the small tier keeps Muse first, Terra second, then Haiku and Opus on both accounts, so Terra never leads Muse", async (machine) => {
-  expect(familiesIn(await dispatchOn(machine), ORDINARY)).toEqual(["muse", "terra", "haiku", "haiku", "opus", "opus"]);
+test.each([...MACHINES])("on the %s machine, the small tier lists Haiku and Opus on both accounts first, then Muse, then Terra, so Terra never leads Muse or Claude", async (machine) => {
+  expect(familiesIn(await dispatchOn(machine), ORDINARY)).toEqual(["haiku", "haiku", "opus", "opus", "muse", "terra"]);
 });
 
-test.each([...MACHINES])("on the %s machine, the large tier keeps Muse first, Terra second, then Opus on both accounts, so Terra is not missing above 150 lines", async (machine) => {
-  expect(familiesIn(await dispatchOn(machine), ABOVE_150)).toEqual(["muse", "terra", "opus", "opus"]);
+test.each([...MACHINES])("on the %s machine, the large tier lists Opus on both accounts first, then Muse, then Terra, so Muse never leads Opus above 150 lines", async (machine) => {
+  expect(familiesIn(await dispatchOn(machine), ABOVE_150)).toEqual(["opus", "opus", "muse", "terra"]);
 });
 
 test.each([...MACHINES])("on the %s machine, the investigation and unknown cause rules list Opus on both accounts with no Astra, so neither drops Opus", async (machine) => {

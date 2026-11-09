@@ -26,7 +26,7 @@ const haikuOn = (effort: Effort, claude_account: ClaudeAccount) =>
 
 const haikuBoth = (effort: Effort): Profiles => [haikuOn(effort, MAIN_ACCOUNT), haikuOn(effort, SECOND_ACCOUNT)];
 
-const workhorse = (efforts: { muse: Effort; haiku: Effort; opus: Effort }): Profiles => [muse(efforts.muse), ...haikuBoth(efforts.haiku), ...opusBoth(efforts.opus)];
+const workhorse = (efforts: { muse: Effort; haiku: Effort; opus: Effort }): Profiles => [...haikuBoth(efforts.haiku), ...opusBoth(efforts.opus), muse(efforts.muse)];
 
 const TRIVIAL_EFFORTS = { muse: "low", haiku: "low", opus: "low" } as const;
 
@@ -46,8 +46,8 @@ const macOnly: OwnRule = {
 
 const shared: CrewDispatch["rules"] = [
   { kind: "trivial", use: workhorse(TRIVIAL_EFFORTS) },
-  { kind: "small", use: [muse(SMALL_EFFORTS.muse), terra("high"), ...haikuBoth(SMALL_EFFORTS.haiku), ...opusBoth(SMALL_EFFORTS.opus)] },
-  { kind: "large", use: [muse("high"), terra("high"), ...opusBoth("medium")] },
+  { kind: "small", use: [...haikuBoth(SMALL_EFFORTS.haiku), ...opusBoth(SMALL_EFFORTS.opus), muse(SMALL_EFFORTS.muse), terra("high")] },
+  { kind: "large", use: [...opusBoth("medium"), muse("high"), terra("high")] },
   { kind: "ambiguous", use: [...opusBoth("high")] },
   { kind: "investigation", use: [...opusBoth("high")] },
 ];
