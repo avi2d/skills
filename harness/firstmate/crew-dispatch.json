@@ -179,12 +179,6 @@
           "effort": "high",
           "provider": "claude",
           "claude_account": "second"
-        },
-        {
-          "harness": "pi",
-          "model": "openai/gpt-6-astra",
-          "effort": "high",
-          "provider": "codex"
         }
       ]
     },
@@ -204,12 +198,6 @@
           "effort": "high",
           "provider": "claude",
           "claude_account": "second"
-        },
-        {
-          "harness": "pi",
-          "model": "openai/gpt-6-astra",
-          "effort": "high",
-          "provider": "codex"
         }
       ]
     }
