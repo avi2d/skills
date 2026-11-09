@@ -1,8 +1,8 @@
 import type { Event } from "./dispatch";
-import { bashLooksMutating, digestCommand, outputGoesToFile, stripped } from "./rerun";
+import { bashLooksMutating, digestCommand, savesStdout, stripped } from "./rerun";
 import { isRecord } from "./run-state";
 
-type HookPayload = { tool_name?: string; tool_input?: Record<string, unknown>; tool_response?: unknown };
+type HookPayload = { tool_name?: string; tool_input?: Record<string, unknown>; tool_response?: unknown; hook_event_name?: string };
 
 export type PendingBash = {
   digest: string;
@@ -51,7 +51,7 @@ export const trackBash = (
           full: digestCommand(raw),
           canon: digestCommand(stripped(raw)),
           mutating: bashLooksMutating(raw),
-          saved: outputGoesToFile(raw),
+          saved: savesStdout(raw),
           at: Date.now(),
         };
   if (started !== undefined) {
@@ -92,6 +92,24 @@ export const resultEvent = (
     ...(found.canon === undefined ? {} : { canon: found.canon }),
     ...(found.mutating === undefined ? {} : { mutating: found.mutating }),
     ...(found.saved === undefined ? {} : { saved: found.saved }),
-    ...(failedOf(payload.tool_response) ? { failed: true } : {}),
+    ...(failedOf(payload.tool_response) || payload.hook_event_name === "PostToolUseFailure" ? { failed: true } : {}),
+  };
+};
+
+export const writeResultEvent = (payload: HookPayload, writes: readonly string[]): Event | undefined => {
+  const tool = (payload.tool_name ?? "").toLowerCase();
+  const input = payload.tool_input ?? {};
+  const path =
+    tool === "write" || tool === "edit"
+      ? [input.file_path, input.path].find((value): value is string => typeof value === "string")
+      : tool === "apply_patch"
+        ? writes[0]
+        : undefined;
+  if (path === undefined) return undefined;
+  return {
+    type: "write-result",
+    tool: payload.tool_name ?? "",
+    writes: tool === "apply_patch" ? writes : [path],
+    ...(payload.hook_event_name === "PostToolUseFailure" ? { failed: true } : {}),
   };
 };

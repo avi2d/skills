@@ -1,5 +1,5 @@
 import { afterAll, expect, test } from "bun:test";
-import { mkdirSync, mkdtempSync, rmSync } from "node:fs";
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { COMMIT_IDENTITY_REFUSAL, commitIdentity } from "../../src/dispatcher/commit-identity";
@@ -30,6 +30,40 @@ test.each([
   "GIT_AUTHOR_NAME=spark git status",
 ])("a commit that keeps the repository's identity, like %s, passes", (command) => {
   expect(refused(command)).toBeUndefined();
+});
+
+test.each([
+  "git -c author.name=spark commit -m 'x'",
+  "git -c committer.email=spark@example.invalid commit -m 'x'",
+  "git --config-env=user.name=GIT_WHO commit -m 'x'",
+  "git -cuser.name=spark commit -m 'x'",
+  "sudo git -c user.name=spark commit -m 'x'",
+  "env -u UNUSED GIT_AUTHOR_NAME=spark git commit -m 'x'",
+  "env GIT_AUTHOR_NAME=spark git -c user.name=x commit -m 'x'",
+])("a commit that sets its identity through %s is refused", (command) => {
+  expect(refused(command)).toBe(COMMIT_IDENTITY_REFUSAL);
+});
+
+test("a cd that a subshell, a pipeline, or a function body discards never moves the commit target", () => {
+  expect(refused(`(cd ${fixture} && git status); git commit --author=spark -m 'x'`)).toBe(COMMIT_IDENTITY_REFUSAL);
+  expect(refused(`cd ${fixture} | cat && git commit --author=spark -m 'x'`)).toBe(COMMIT_IDENTITY_REFUSAL);
+  expect(refused(`shim() { cd ${fixture}; }; git commit --author=spark -m 'x'`)).toBe(COMMIT_IDENTITY_REFUSAL);
+  expect(refused("echo 'shim() {' && git commit --author=spark -m 'x'")).toBe(COMMIT_IDENTITY_REFUSAL);
+  expect(refused(`(cd ${fixture} && git commit --author=spark -m 'x')`)).toBeUndefined();
+});
+
+test("the commit target follows the repository selectors, and the work tree never moves it", () => {
+  expect(refused(`GIT_DIR=/repo/.git git commit --author=spark -m 'x'`, fixture)).toBe(COMMIT_IDENTITY_REFUSAL);
+  expect(refused(`git --git-dir=${fixture} commit --author=spark -m 'x'`)).toBeUndefined();
+  expect(refused(`git --work-tree=/repo commit --author=spark -m 'x'`, fixture)).toBeUndefined();
+});
+
+test("a .git file pointer moves the commit target, even from a subdirectory", () => {
+  const pointed = join(fixture, "pointed");
+  mkdirSync(join(pointed, "sub"), { recursive: true });
+  writeFileSync(join(pointed, ".git"), "gitdir: /repo-external\n");
+  expect(refused("git commit --author=spark -m 'x'", pointed)).toBe(COMMIT_IDENTITY_REFUSAL);
+  expect(refused("git commit --author=spark -m 'x'", join(pointed, "sub"))).toBe(COMMIT_IDENTITY_REFUSAL);
 });
 
 test("a non-bash tool and a non-string command pass", () => {

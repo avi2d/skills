@@ -61,6 +61,37 @@ test("a read of the script never counts as a report run, and an answer with no r
   expect(verdictOf(judge, derived).outcome).toBe("unjudged");
 });
 
+test("a shell flag or a checking run around the report still counts, and a stderr-only save fails", () => {
+  const judge = answeredFromSavedOutput(/sku-0420/, /2743/, /stock-take\.sh/, 1000);
+  const wrapped = run(
+    [
+      bash("bash -x tools/stock-take.sh > report.txt", ""),
+      bash("grep LOW report.txt", "STOCK sku-0420"),
+      bash("wc -l report.txt", "2743 report.txt"),
+    ],
+    [],
+    "sku-0420 is flagged LOW, and the full report holds 2743 stock lines.",
+  );
+  expect(verdictOf(judge, wrapped)).toMatchObject({ outcome: "pass", judge: "answered-from-saved-output" });
+  const flagged = run(
+    [
+      bash("bash -n tools/stock-take.sh > report.txt", ""),
+      bash("bash tools/stock-take.sh > report.txt", ""),
+      bash("grep LOW report.txt", "STOCK sku-0420"),
+      bash("wc -l report.txt", "2743 report.txt"),
+    ],
+    [],
+    "sku-0420 is flagged LOW, and the full report holds 2743 stock lines.",
+  );
+  expect(verdictOf(judge, flagged)).toMatchObject({ outcome: "pass", judge: "answered-from-saved-output" });
+  const errors = run(
+    [bash("bash tools/stock-take.sh 2> errors.log | awk '/LOW/ { print } END { print NR }'", "STOCK sku-0420\n2743")],
+    [],
+    "sku-0420 is flagged LOW, and the full report holds 2743 stock lines.",
+  );
+  expect(verdictOf(judge, errors)).toMatchObject({ outcome: "fail", judge: "answered-from-saved-output" });
+});
+
 test("two report runs inside one bash call fail, and one unsaved run fails too", () => {
   const judge = answeredFromSavedOutput(/sku-0420/, /2743/, /stock-take\.sh/, 1000);
   const twice = run(

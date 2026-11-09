@@ -289,6 +289,13 @@ function readOf(event: ToolResultEvent, cwd: string): string | undefined {
 function onToolResult(dispatcher: Dispatcher, event: ToolResultEvent, ctx: ExtensionContext): void {
   const read = event.isError ? undefined : readOf(event, ctx.cwd);
   if (read !== undefined) step(dispatcher, { type: "read", tool: event.toolName, paths: [read] });
+  const written = event.toolName.toLowerCase();
+  if (written === "write" || written === "edit") {
+    const path = event.input.path;
+    if (typeof path === "string") {
+      step(dispatcher, { type: "write-result", tool: event.toolName, writes: [path], ...(event.isError ? { failed: true } : {}) });
+    }
+  }
   const finished = finishedBash(dispatcher.bashStarted, event);
   if (finished !== undefined) step(dispatcher, finished);
 }

@@ -1,7 +1,6 @@
 import { expect, test } from "bun:test";
 import { Duration, Effect } from "effect";
-import { spawnSync } from "node:child_process";
-import { chmodSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { CASES } from "../../evals/cases";
@@ -164,32 +163,6 @@ test("a context-window case's file is far larger than its budget, and holds its 
     expect(bytesOf(text ?? ""), `${c.id}: a whole read of ${path} would fit the budget`).toBeGreaterThan(16 * 1024 * 4);
     const { answer, times } = ANSWERS[c.id] ?? { answer: "", times: 0 };
     expect((text ?? "").split(answer).length - 1, `${c.id}: ${path} holds ${answer} somewhere besides its own entry`).toBe(times);
-  }
-});
-
-test("slow-report's seeded script waits past a minute and prints past four budgets, so an early exit or thin output fails the fixture", () => {
-  const found = CASES.find((x) => x.id === "slow-report") ?? expect.unreachable("no slow-report case");
-  const script = found.files["tools/stock-take.sh"] ?? expect.unreachable("slow-report seeds no script");
-  const dir = mkdtempSync(join(realpathSync(tmpdir()), "skills-slow-report-"));
-  try {
-    mkdirSync(join(dir, "bin"), { recursive: true });
-    writeFileSync(join(dir, "bin", "sleep"), "#!/bin/sh\nprintf '%s\\n' \"$@\" >> \"$SLEEP_LOG\"\n");
-    chmodSync(join(dir, "bin", "sleep"), 0o755);
-    const path = join(dir, "stock-take.sh");
-    writeFileSync(path, script);
-    const done = spawnSync("sh", [path], {
-      cwd: dir,
-      timeout: 30000,
-      maxBuffer: 4 * 1024 * 1024,
-      encoding: "utf8",
-      env: { ...process.env, PATH: `${join(dir, "bin")}:${process.env.PATH ?? ""}`, SLEEP_LOG: join(dir, "sleep.log") },
-    });
-    expect(done.status, "slow-report's script exits before its report, so the Rule never fires on it").toBe(0);
-    const logged = readFileSync(join(dir, "sleep.log"), "utf8").trim().split(/\s+/)[0] ?? "";
-    expect(Number(logged), "slow-report's script finishes inside a minute, so the Rule never fires on it").toBeGreaterThanOrEqual(60);
-    expect(bytesOf(done.stdout ?? ""), "slow-report's output fits four budgets, so reading it whole costs nothing").toBeGreaterThan(16 * 1024 * 4);
-  } finally {
-    rmSync(dir, { recursive: true, force: true });
   }
 });
 

@@ -2,7 +2,7 @@ import { appendFileSync, mkdirSync, readFileSync, realpathSync, rmSync, writeFil
 import { homedir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { dispatch, placed, repoGlobs, type Action, type Event, type Index, type Step } from "./dispatch";
-import { isPending, resultEvent, trackBash, type PendingBash } from "./hook-bash";
+import { isPending, resultEvent, trackBash, writeResultEvent, type PendingBash } from "./hook-bash";
 import { decodeRunState, isRecord, START, type RunState } from "./run-state";
 import { logLine } from "./dispatch-log";
 import { COMMIT_IDENTITY_LINE, commitIdentity } from "./commit-identity";
@@ -257,7 +257,10 @@ function eventFor(
     case "PreToolUse":
       return toolCallEvent(payload, adapter.writes(payload));
     case "PostToolUse":
-      return resultEvent(payload, take) ?? { type: "read", tool: payload.tool_name ?? "", paths: readOf(payload) };
+      return (
+        resultEvent(payload, take) ??
+        writeResultEvent(payload, adapter.writes(payload).writes) ?? { type: "read", tool: payload.tool_name ?? "", paths: readOf(payload) }
+      );
     case "PreCompact":
       return { type: "compaction" };
     case "Stop": {

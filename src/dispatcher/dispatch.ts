@@ -52,6 +52,12 @@ export type Event =
     }
   | { type: "read"; tool: string; paths: readonly string[] }
   | {
+      type: "write-result";
+      tool: string;
+      writes: readonly string[];
+      failed?: boolean;
+    }
+  | {
       type: "tool-result";
       tool: string;
       command: string;
@@ -334,9 +340,7 @@ function onToolCall(index: Index, event: Extract<Event, { type: "tool-call" }>, 
   // A refusal spends no context, so only a project's switch stands it down.
   for (const rule of index.rules.filter((r) => !switchedOff(r, before.project)))
     actions.push(...forbidding(rule, index.harness, event.changes ?? []));
-  const refused = actions.some((action) => action.type === "refuse");
-  const rest = !refused && (event.writes?.length ?? 0) > 0 ? clearedSlow(before) : before;
-  return { actions, state: { ...rest, rules } };
+  return { actions, state: { ...before, rules } };
 }
 
 function onRead(index: Index, event: Extract<Event, { type: "read" }>, state: RunState): Step {
@@ -386,6 +390,8 @@ export function dispatch(index: Index, event: Event, state: RunState): Step {
       return onCompaction(index, state);
     case "tool-call":
       return onToolCall(index, event, state);
+    case "write-result":
+      return { actions: [], state: event.failed === true ? state : clearedSlow(state) };
     case "tool-result":
       return slowResult(event, state);
     case "read":

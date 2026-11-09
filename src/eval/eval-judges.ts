@@ -3,7 +3,7 @@ import type { Verdict } from "./ablation";
 import { commentsIn, syntaxOf } from "../dispatcher/comments";
 import { bytesOf, type Call, type Transcript } from "./eval-transcript";
 import { judged, reads, type Standing } from "../dispatcher/forbid";
-import { outputGoesToFile } from "../dispatcher/rerun";
+import { savesStdout } from "../dispatcher/rerun";
 import { segments } from "../dispatcher/shell-words";
 
 export type Change = { path: string; before: string | undefined; after: string };
@@ -172,16 +172,40 @@ export const reproducedBeforeFix = (source: RegExp, runs: RegExp, input: string,
   },
 });
 
-const EXECUTORS = new Set(["bash", "sh", "dash", "zsh", "ksh", "ash", "env", "time", "timeout", "nice", "nohup"]);
+const SHELLS = new Set(["ash", "bash", "dash", "ksh", "sh", "zsh"]);
+
+const scriptOperand = (words: readonly string[], slow: RegExp): string | undefined => {
+  const program = words[0] ?? "";
+  if (slow.test(program)) return program;
+  if (!SHELLS.has(program.split("/").pop() ?? "")) return undefined;
+  let noexec = false;
+  for (let at = 1; at < words.length; at += 1) {
+    const word = words[at] ?? "";
+    if (word === "--") return noexec ? undefined : words[at + 1];
+    if (word === "-c" || word === "-o") {
+      if (word === "-o" && words[at + 1] === "noexec") noexec = true;
+      at += 1;
+      continue;
+    }
+    if (word.startsWith("--")) {
+      if (word === "--noexec") noexec = true;
+      continue;
+    }
+    if (word.startsWith("-") && word !== "-") {
+      if (word.slice(1).includes("n")) noexec = true;
+      continue;
+    }
+    return noexec ? undefined : word;
+  }
+  return undefined;
+};
 
 const slowExecutions = (command: string, slow: RegExp): number => {
   let runs = 0;
   for (const segment of segments(command)) {
     const words = segment.map((word) => word.text);
-    const hit = words.findIndex((word) => slow.test(word));
-    if (hit === -1) continue;
-    if (hit === 0 || EXECUTORS.has(words[0] ?? "")) runs += 1;
-    else if (words.slice(0, hit).some((word) => EXECUTORS.has(word))) runs += 1;
+    const operand = scriptOperand(words, slow);
+    if (operand !== undefined && slow.test(operand)) runs += 1;
   }
   return runs;
 };
@@ -194,7 +218,7 @@ export const answeredFromSavedOutput = (first: RegExp, second: RegExp, slow: Reg
     const executions = calls(transcript).flatMap((placed) => {
       const command = commandOf(placed.call);
       const runs = command === "" ? 0 : slowExecutions(command, slow);
-      return runs === 0 ? [] : [{ at: placed.at, runs, saved: outputGoesToFile(command) }];
+      return runs === 0 ? [] : [{ at: placed.at, runs, saved: savesStdout(command) }];
     });
     if (executions.length === 0) return { unjudged: `no command matching ${slow} ran, so the run never produced the report it answers from` };
     const total = executions.reduce((sum, execution) => sum + execution.runs, 0);

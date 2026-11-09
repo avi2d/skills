@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { isPending, resultEvent, trackBash } from "../../src/dispatcher/hook-bash";
+import { isPending, resultEvent, trackBash, writeResultEvent } from "../../src/dispatcher/hook-bash";
 import { digestCommand, stripped } from "../../src/dispatcher/rerun";
 
 const bash = (command: string) => ({ tool_name: "Bash", tool_input: { command } });
@@ -43,6 +43,39 @@ describe("bash start tracking", () => {
 
   test("a PostToolUse without a matching start is a read, not a tool result", () => {
     expect(resultEvent(bash("sleep 70"), () => undefined)).toBeUndefined();
+  });
+
+  test("a start records whether stdout reaches a file, and a stderr-only redirection records nothing saved", () => {
+    expect(trackBash(true, bash("sleep 70 > out.log"), []).pending[0]?.saved).toBe(true);
+    expect(trackBash(true, bash("sleep 70 2> err.log"), []).pending[0]?.saved).toBe(false);
+  });
+
+  test("a PostToolUseFailure marks the bash result failed, so a failed slow run stays recorded without clearing the guard", () => {
+    const event = resultEvent(
+      { tool_name: "Bash", tool_input: { command: "sleep 70" }, hook_event_name: "PostToolUseFailure" },
+      () => ({ digest: "x", at: Date.now() - 70_000 }),
+    );
+    expect(event?.type).toBe("tool-result");
+    if (event?.type !== "tool-result") return;
+    expect(event.failed).toBe(true);
+  });
+
+  test("a Write or Edit PostToolUse reports its file as a write result, and a failed one keeps the guard", () => {
+    expect(writeResultEvent({ tool_name: "Write", tool_input: { file_path: "src/a.ts" } }, [])).toEqual({
+      type: "write-result",
+      tool: "Write",
+      writes: ["src/a.ts"],
+    });
+    expect(
+      writeResultEvent({ tool_name: "Edit", tool_input: { file_path: "src/a.ts" }, hook_event_name: "PostToolUseFailure" }, []),
+    ).toEqual({ type: "write-result", tool: "Edit", writes: ["src/a.ts"], failed: true });
+    expect(writeResultEvent({ tool_name: "Bash", tool_input: { command: "ls" } }, [])).toBeUndefined();
+    expect(writeResultEvent({ tool_name: "apply_patch", tool_input: {} }, ["a.txt", "b.txt"])).toEqual({
+      type: "write-result",
+      tool: "apply_patch",
+      writes: ["a.txt", "b.txt"],
+    });
+    expect(writeResultEvent({ tool_name: "apply_patch", tool_input: {} }, [])).toBeUndefined();
   });
 
   test("a PostToolUse with a matching start reports the command and its seconds", () => {

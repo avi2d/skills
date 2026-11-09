@@ -1,7 +1,8 @@
 import { expect, test } from "bun:test";
 import { type Action, type Event, type Index } from "../../src/dispatcher/dispatch";
 import type { Change } from "../../src/dispatcher/forbid";
-import { RERUN_REFUSAL, bashLooksMutating, outputGoesToFile, stripped } from "../../src/dispatcher/rerun";
+import { RERUN_REFUSAL, bashLooksMutating, outputGoesToFile, savesStdout, stripped } from "../../src/dispatcher/rerun";
+import { decodeRunState } from "../../src/dispatcher/run-state";
 import { ruled, run } from "../lib/dispatch";
 
 const index = ruled([]);
@@ -31,6 +32,8 @@ const refusedWrite: Event = {
   changes: [changeOf("const a = 1;\n// @ts-expect-error x\n")],
 };
 const wrote = (path: string): Event => ({ type: "tool-call", tool: "write", input: { path, content: "x" }, writes: [path] });
+const written = (path: string): Event => ({ type: "write-result", tool: "write", writes: [path] });
+const failedWrite = (path: string): Event => ({ type: "write-result", tool: "write", writes: [path], failed: true });
 
 const after = (events: readonly Event[]): { actions: Action[]; refused: string[] } => {
   const done = run(index, events);
@@ -57,13 +60,41 @@ test("a first save of unsaved output passes once, and the next save to another f
   expect(after([...saved, call(`${SLOW} > /tmp/third.log`)]).refused).toEqual([RERUN_REFUSAL]);
 });
 
-test("an identical rerun settles a flake, and a rerun after an edit passes", () => {
+test("an identical rerun settles a flake, and a rerun after a confirmed write passes", () => {
   expect(after([...slowSince(400), call(SLOW)]).refused).toEqual([]);
-  expect(after([...slowSince(400), wrote("src/a.ts"), call(`${SLOW} 2>&1 | tail -5`)]).refused).toEqual([]);
+  expect(after([...slowSince(400), wrote("src/a.ts"), written("src/a.ts"), call(`${SLOW} 2>&1 | tail -5`)]).refused).toEqual([]);
+});
+
+test("an attempted write and a failed write result keep the slow command, so the next filtered rerun is still refused", () => {
+  expect(after([...slowSince(400), wrote("src/a.ts"), call(`${SLOW} 2>&1 | tail -5`)]).refused).toEqual([RERUN_REFUSAL]);
+  expect(after([...slowSince(400), failedWrite("src/a.ts"), call(`${SLOW} 2>&1 | tail -5`)]).refused).toEqual([RERUN_REFUSAL]);
 });
 
 test("a fast run keeps no command, so its filter-rerun passes", () => {
   expect(after([...slowSince(12), call(`${SLOW} 2>&1 | tail -5`)]).refused).toEqual([]);
+});
+
+test("a failed slow run still guards its rerun, and a fast recovery completion keeps the guard for a second save", () => {
+  expect(after([call(SLOW), failed(SLOW, 400), call(`${SLOW} 2>&1 | tail -5`)]).refused).toEqual([RERUN_REFUSAL]);
+  const asked = [...slowSince(400), call(`${SLOW} > /tmp/first.log`)];
+  expect(after(asked).refused).toEqual([]);
+  const recovered = [...asked, result(`${SLOW} > /tmp/first.log`, 10)];
+  expect(after([...recovered, call(`${SLOW} > /tmp/second.log`)]).refused).toEqual([RERUN_REFUSAL]);
+});
+
+test("an older slow command stays guarded beside a newer one until a confirmed write, and a sixth slow command evicts the oldest guard", () => {
+  const second = [...slowSince(400), call("bun run other"), result("bun run other", 400)];
+  expect(after([...second, call(`${SLOW} 2>&1 | tail -1`)]).refused).toEqual([RERUN_REFUSAL]);
+  expect(after([...second, call("bun run other 2>&1 | tail -1")]).refused).toEqual([RERUN_REFUSAL]);
+  expect(after([...second, written("src/a.ts"), call(`${SLOW} 2>&1 | tail -1`)]).refused).toEqual([]);
+  let events: Event[] = [];
+  for (let at = 0; at < 6; at += 1) events = [...events, call(`slow-${at}`), result(`slow-${at}`, 400)];
+  expect(after([...events, call("slow-0 | tail -1")]).refused).toEqual([]);
+  expect(after([...events, call("slow-5 | tail -1")]).refused).toEqual([RERUN_REFUSAL]);
+});
+
+test("a persisted single slow guard still loads as one entry", () => {
+  expect(decodeRunState({ rules: {}, slow: { full: "a", canon: "b" } })?.slow).toEqual([{ full: "a", canon: "b" }]);
 });
 
 test("a read-only bash result keeps the slow command, and a confirmed file-mutating one clears it", () => {
@@ -93,9 +124,30 @@ test("stripping keeps chained commands and inputs apart, so an unrelated chain o
   expect(stripped(`${SLOW} > /tmp/eval.log 2>&1`)).toBe(SLOW);
   expect(stripped(`EVAL_CONCURRENCY=3 ${SLOW}`)).toBe(`EVAL_CONCURRENCY=3 ${SLOW}`);
   expect(stripped("cd /repo && bun test tests/a.test.ts")).toBe("cd /repo && bun test tests/a.test.ts");
+  expect(stripped("cat batches.json | python tools/reconcile.py --dry-run")).not.toBe(
+    stripped("cat batches.json | python tools/reconcile.py --apply"),
+  );
+  expect(stripped(`${SLOW} 2>&1 | tail -3`)).toBe(stripped(`${SLOW} | grep -i fail`));
+  expect(stripped(`${SLOW} 2> errors.log`)).toBe(SLOW);
+  expect(stripped("cmd < a | cat")).toBe("cmd < a");
   expect(stripped("cd /repo && bun test tests/a.test.ts")).not.toBe(stripped("cd /repo && git status"));
   expect(stripped("bun run eval < first.json")).not.toBe(stripped("bun run eval < second.json"));
   expect(stripped('echo "a b"')).not.toBe(stripped("echo a b"));
+});
+
+test("only relevant stdout sent to a real file counts as saved", () => {
+  expect(savesStdout(`${SLOW} > /tmp/eval.log 2>&1`)).toBe(true);
+  expect(savesStdout(`${SLOW} > /tmp/x | tail -3`)).toBe(true);
+  expect(savesStdout(`${SLOW} 2>&1 | tee /tmp/eval.log | tail -3`)).toBe(true);
+  expect(savesStdout(`${SLOW} | tee -a out.txt | tail -1`)).toBe(true);
+  expect(savesStdout(`${SLOW} | cat > out.txt`)).toBe(true);
+  expect(savesStdout(`${SLOW} | python tools/reconcile.py --apply > out.txt`)).toBe(true);
+  expect(savesStdout(`${SLOW} 2>&1 | tail -3`)).toBe(false);
+  expect(savesStdout(`${SLOW} 2> errors.log`)).toBe(false);
+  expect(savesStdout(`${SLOW} 2> errors.log | awk '{ print $1 }'`)).toBe(false);
+  expect(savesStdout(`${SLOW} | tail -3 > filtered.log`)).toBe(false);
+  expect(savesStdout(`${SLOW} > /dev/null 2>&1`)).toBe(false);
+  expect(savesStdout('echo "a > b"')).toBe(false);
 });
 
 test("only an output sent to a real file counts as saved", () => {
