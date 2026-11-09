@@ -245,7 +245,7 @@ function eventFor(
   adapter: HookAdapter,
   lookups: Lookups,
   model: string | undefined,
-  take: (command: string) => number | undefined,
+  take: (command: string) => PendingBash | undefined,
 ): Event | undefined {
   switch (hook) {
     case "SessionStart":
@@ -274,15 +274,14 @@ function eventFor(
   }
 }
 
-async function judged(index: Index, done: Step, session: string, settle: (state: RunState) => void): Promise<Action[]> {
+async function judged(index: Index, done: Step, session: string): Promise<Step> {
   const asked = done.actions.find((action) => action.type === "verify");
-  if (!asked) return [];
+  if (!asked) return { actions: [], state: done.state };
   const { seconds, verdict } = await verify(asked.root, asked.checks, VERIFY_BUDGET_SECONDS, asked.base);
   const after = fingerprint(asked.root) ?? asked.tree;
   const step = dispatch(index, { type: "verdict", tree: asked.tree, after, seconds, verdict }, done.state);
-  settle(step.state);
   for (const action of step.actions) note(session, logLine(action));
-  return step.actions;
+  return step;
 }
 
 function steeredCall(adapter: HookAdapter, payload: Payload): Steered | undefined {
@@ -344,14 +343,15 @@ export async function handle(adapter: HookAdapter, index: Index, hook: Hook, pay
   }
 
   const respond = async (): Promise<string | undefined> => {
-    const actions = [...done.actions, ...(await judged(index, done, session, settle))];
+    const verdict = await judged(index, done, session);
+    const actions = [...done.actions, ...verdict.actions];
     const reply = merge(actions.map(speak));
     const mode = modeOf(hook, reply, actions);
     const told = reply.told.join("\n");
     const steered = hook === "PreToolUse" && mode !== "deny" ? steeredCall(adapter, payload) : undefined;
     if (steered?.type === "queue") tracking.moved(steered.command);
     else if (reply.refuse || steered?.type === "refuse") tracking.dropStarted();
-    settle(done.state);
+    settle(verdict.state);
     for (const line of [...done.actions.map(logLine), ...listening.notes]) note(session, line);
     if (steered?.type === "refuse") return hookOutput(hook, steered.text, "deny", told);
     if (steered?.type === "queue") return rewriteOutput(adapter, { ...payload.tool_input, command: steered.command }, told);

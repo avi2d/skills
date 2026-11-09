@@ -3,6 +3,8 @@ import type { Verdict } from "./ablation";
 import { commentsIn, syntaxOf } from "../dispatcher/comments";
 import { bytesOf, type Call, type Transcript } from "./eval-transcript";
 import { judged, reads, type Standing } from "../dispatcher/forbid";
+import { outputGoesToFile } from "../dispatcher/rerun";
+import { segments } from "../dispatcher/shell-words";
 
 export type Change = { path: string; before: string | undefined; after: string };
 
@@ -170,22 +172,44 @@ export const reproducedBeforeFix = (source: RegExp, runs: RegExp, input: string,
   },
 });
 
+const EXECUTORS = new Set(["bash", "sh", "dash", "zsh", "ksh", "ash", "env", "time", "timeout", "nice", "nohup"]);
+
+const slowExecutions = (command: string, slow: RegExp): number => {
+  let runs = 0;
+  for (const segment of segments(command)) {
+    const words = segment.map((word) => word.text);
+    const hit = words.findIndex((word) => slow.test(word));
+    if (hit === -1) continue;
+    if (hit === 0 || EXECUTORS.has(words[0] ?? "")) runs += 1;
+    else if (words.slice(0, hit).some((word) => EXECUTORS.has(word))) runs += 1;
+  }
+  return runs;
+};
+
 export const answeredFromSavedOutput = (first: RegExp, second: RegExp, slow: RegExp, budget: number): ProgramJudge => ({
   name: "answered-from-saved-output",
   judge: ({ transcript }) => {
     const missing = [first, second].filter((asked) => !asked.test(transcript.answer));
     if (missing.length > 0) return { unjudged: `the final answer matches no ${missing.join(" and ")}, so the run did not answer both questions` };
-    const runs = calls(transcript).filter((placed) => slow.test(commandOf(placed.call)));
-    if (runs.length === 0) return { unjudged: `no command matching ${slow} ran, so the run never produced the report it answers from` };
-    const steps = runs.map(({ at }) => at).join(", ");
-    if (runs.length > 1) {
-      return { passed: false, evidence: [`the slow command ran ${runs.length} times, at steps ${steps}; the second answer should have come from the saved file`] };
+    const executions = calls(transcript).flatMap((placed) => {
+      const command = commandOf(placed.call);
+      const runs = command === "" ? 0 : slowExecutions(command, slow);
+      return runs === 0 ? [] : [{ at: placed.at, runs, saved: outputGoesToFile(command) }];
+    });
+    if (executions.length === 0) return { unjudged: `no command matching ${slow} ran, so the run never produced the report it answers from` };
+    const total = executions.reduce((sum, execution) => sum + execution.runs, 0);
+    const steps = executions.map(({ at }) => at).join(", ");
+    if (total > 1) {
+      return { passed: false, evidence: [`the slow command ran ${total} times, at steps ${steps}; the second answer should have come from the saved file`] };
+    }
+    if (executions.some((execution) => !execution.saved)) {
+      return { passed: false, evidence: [`the slow command ran once, at step ${steps}, without saving its output to a file; the second answer should have come from the saved file`] };
     }
     const entered = calls(transcript).reduce((sum, { call }) => sum + bytesOf(call.result), 0);
     return {
       passed: entered <= budget,
       evidence: [
-        `the slow command ran once, at step ${steps}`,
+        `the slow command ran once, at step ${steps}, and saved its output to a file`,
         `${entered} bytes of tool output entered the context, against a budget of ${budget}`,
       ],
     };

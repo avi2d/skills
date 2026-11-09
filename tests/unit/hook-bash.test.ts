@@ -1,12 +1,13 @@
 import { describe, expect, test } from "bun:test";
 import { isPending, resultEvent, trackBash } from "../../src/dispatcher/hook-bash";
+import { digestCommand, stripped } from "../../src/dispatcher/rerun";
 
 const bash = (command: string) => ({ tool_name: "Bash", tool_input: { command } });
 
 describe("bash start tracking", () => {
   test("a PreToolUse bash start is taken once, not twice", () => {
     const tracking = trackBash(true, bash("sleep 70"), []);
-    expect(typeof tracking.take("sleep 70")).toBe("number");
+    expect(typeof tracking.take("sleep 70")?.at).toBe("number");
     expect(tracking.take("sleep 70")).toBeUndefined();
   });
 
@@ -22,11 +23,22 @@ describe("bash start tracking", () => {
     expect(tracking.take("sleep 70")).toBeUndefined();
   });
 
-  test("a queued rewrite moves the start to the rewritten command", () => {
+  test("a queued rewrite keeps the original digests, so its completion still enforces a filtered rerun", () => {
     const tracking = trackBash(true, bash("bunx checks-test"), []);
     tracking.moved("pueue add -- bunx checks-test");
     expect(tracking.take("bunx checks-test")).toBeUndefined();
-    expect(typeof tracking.take("pueue add -- bunx checks-test")).toBe("number");
+    const taken = tracking.take("pueue add -- bunx checks-test");
+    expect(taken?.digest).toBe(digestCommand("pueue add -- bunx checks-test"));
+    expect(taken?.full).toBe(digestCommand("bunx checks-test"));
+    expect(taken?.canon).toBe(digestCommand(stripped("bunx checks-test")));
+    const retry = trackBash(true, bash("bunx checks-test"), []);
+    retry.moved("pueue add -- bunx checks-test");
+    const event = resultEvent({ tool_name: "Bash", tool_input: { command: "pueue add -- bunx checks-test" } }, retry.take);
+    expect(event?.type).toBe("tool-result");
+    if (event?.type !== "tool-result") return;
+    expect(event.command).toBe("pueue add -- bunx checks-test");
+    expect(event.full).toBe(digestCommand("bunx checks-test"));
+    expect(event.canon).toBe(digestCommand(stripped("bunx checks-test")));
   });
 
   test("a PostToolUse without a matching start is a read, not a tool result", () => {
@@ -34,7 +46,7 @@ describe("bash start tracking", () => {
   });
 
   test("a PostToolUse with a matching start reports the command and its seconds", () => {
-    const event = resultEvent(bash("sleep 70"), () => Date.now() - 70_000);
+    const event = resultEvent(bash("sleep 70"), () => ({ digest: "x", at: Date.now() - 70_000 }));
     expect(event?.type).toBe("tool-result");
     if (event?.type !== "tool-result") return;
     expect(event.command).toBe("sleep 70");
@@ -56,5 +68,7 @@ describe("bash start tracking", () => {
     expect("command" in entry).toBe(false);
     expect(entry.digest).toMatch(/^[0-9a-f]{64}$/);
     expect(JSON.stringify(tracking.pending)).not.toContain("secret");
+    expect(entry.full).toMatch(/^[0-9a-f]{64}$/);
+    expect(entry.canon).toMatch(/^[0-9a-f]{64}$/);
   });
 });

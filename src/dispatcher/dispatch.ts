@@ -16,7 +16,7 @@ import {
   type Verdict,
 } from "./verdict";
 import { handedBack, scopedFor, trimming, type IndexedProfile, type Trim } from "./model-scope";
-import { checkedRerun, slowResult } from "./rerun";
+import { checkedRerun, clearedSlow, slowResult } from "./rerun";
 import { lifecycleOf, type RuleLifecycle, type RunState } from "./run-state";
 
 export type { IndexedProfile } from "./model-scope";
@@ -51,7 +51,17 @@ export type Event =
       changes?: readonly Change[];
     }
   | { type: "read"; tool: string; paths: readonly string[] }
-  | { type: "tool-result"; tool: string; command: string; seconds: number }
+  | {
+      type: "tool-result";
+      tool: string;
+      command: string;
+      seconds: number;
+      failed?: boolean;
+      full?: string;
+      canon?: string;
+      mutating?: boolean;
+      saved?: boolean;
+    }
   | { type: "requested"; carrying: string; read: "request" | "transcript"; rules?: readonly string[] }
   | { type: "compaction" }
   | Settled
@@ -302,9 +312,9 @@ function onRequested(index: Index, event: Extract<Event, { type: "requested" }>,
 function onToolCall(index: Index, event: Extract<Event, { type: "tool-call" }>, state: RunState): Step {
   const checked = checkedRerun(event, state);
   if (checked.refused !== undefined) return { actions: [checked.refused], state };
-  state = checked.state;
+  const before = checked.state;
   const actions: Action[] = [];
-  let rules = state.rules;
+  let rules = before.rules;
 
   const deliver = (rule: IndexedRule, why: string) => {
     const lifecycle = lifecycleOf(rules, rule.name);
@@ -313,7 +323,7 @@ function onToolCall(index: Index, event: Extract<Event, { type: "tool-call" }>, 
     actions.push({ type: "deliver", rule: rule.name, why, text: rule.text });
   };
 
-  const switched = index.rules.filter((rule) => switchedOn(rule, state.project) && eligible(index, rule, state.model, state.project));
+  const switched = index.rules.filter((rule) => switchedOn(rule, before.project) && eligible(index, rule, before.model, before.project));
   for (const rule of switched) {
     for (const trigger of rule.triggers) {
       const fired = toolCallFired(trigger, event);
@@ -322,8 +332,11 @@ function onToolCall(index: Index, event: Extract<Event, { type: "tool-call" }>, 
     }
   }
   // A refusal spends no context, so only a project's switch stands it down.
-  for (const rule of index.rules.filter((r) => !switchedOff(r, state.project))) actions.push(...forbidding(rule, index.harness, event.changes ?? []));
-  return { actions, state: { ...state, rules } };
+  for (const rule of index.rules.filter((r) => !switchedOff(r, before.project)))
+    actions.push(...forbidding(rule, index.harness, event.changes ?? []));
+  const refused = actions.some((action) => action.type === "refuse");
+  const rest = !refused && (event.writes?.length ?? 0) > 0 ? clearedSlow(before) : before;
+  return { actions, state: { ...rest, rules } };
 }
 
 function onRead(index: Index, event: Extract<Event, { type: "read" }>, state: RunState): Step {

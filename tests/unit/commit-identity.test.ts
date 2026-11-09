@@ -40,6 +40,13 @@ test("a non-bash tool and a non-string command pass", () => {
 const fixture = mkdtempSync(join(tmpdir(), "skills-commit-identity-"));
 afterAll(() => rmSync(fixture, { recursive: true, force: true }));
 
+test("a commit aimed into the temp directory stays exempt, and one aimed out of it is refused", () => {
+  expect(refused(`git -C ${fixture} commit --author=spark -m 'x'`)).toBeUndefined();
+  expect(refused(`git -C ${repo} commit --author=spark -m 'x'`, fixture)).toBe(COMMIT_IDENTITY_REFUSAL);
+  expect(refused(`cd ${fixture} && git commit --author=spark -m 'x'`)).toBeUndefined();
+  expect(refused(`cd ${repo} && git commit --author=spark -m 'x'`, fixture)).toBe(COMMIT_IDENTITY_REFUSAL);
+});
+
 test("a fixture repository under the temp directory stays exempt", () => {
   expect(refused("git commit --author=spark -m 'x'", fixture)).toBeUndefined();
   mkdirSync(join(fixture, "repo"), { recursive: true });

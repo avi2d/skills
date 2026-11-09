@@ -15,7 +15,41 @@ type RerunRefused = { type: "rerun-refused"; why: string; text: string };
 
 type ToolCall = { tool: string; input: Record<string, unknown>; writes?: readonly string[] };
 
-export const stripped = (command: string): string => (segments(command)[0] ?? []).map((word) => word.text).join(" ");
+const SHELL_SAFE = /^[A-Za-z0-9_@%+=:,./-]+$/;
+
+const quoteWord = (word: string): string => (SHELL_SAFE.test(word) ? word : JSON.stringify(word));
+
+const chainJoin = (gap: string): string => {
+  if (gap.includes(";")) return ";";
+  if (gap.includes("||")) return "||";
+  if (gap.includes("&&")) return "&&";
+  return "&";
+};
+
+export const stripped = (command: string): string => {
+  const found = segments(command);
+  if (found.length === 0) return "";
+  const parts: string[] = [];
+  for (let at = 0; at < found.length; at += 1) {
+    const words = (found[at] ?? []).map((word) => word.text);
+    if (at > 0) {
+      const gap = command.slice(found[at - 1]?.at(-1)?.to ?? 0, found[at]?.[0]?.from ?? 0);
+      if (/(^|[^|])\|(?![|])/.test(gap)) continue;
+      parts.push(chainJoin(gap));
+    }
+    parts.push(words.map(quoteWord).join(" "));
+  }
+  const inside = quoted(command);
+  const inputs: string[] = [];
+  for (const match of command.matchAll(/<(?![<>|&])\s*("[^"]*"|'[^']*'|[^\s|&;()<>]+)/g)) {
+    if (inside[match.index] === true) continue;
+    if (/[<|>][ \t]*$/.test(command.slice(0, match.index))) continue;
+    const target = match[1] ?? "";
+    if (target !== "") inputs.push(target);
+  }
+  const core = parts.join(" ").replace(/\s+/g, " ").trim();
+  return inputs.length === 0 ? core : `${core} ${inputs.map((target) => `< ${target}`).join(" ")}`;
+};
 
 const quoted = (command: string): boolean[] => {
   const inside = new Array<boolean>(command.length).fill(false);
@@ -67,7 +101,6 @@ const GIT_WRITES = new Set([
   "restore",
   "reset",
   "clean",
-  "stash",
   "apply",
   "am",
   "rebase",
@@ -79,8 +112,38 @@ const GIT_WRITES = new Set([
   "push",
   "clone",
   "init",
-  "config",
 ]);
+
+const GIT_CONFIG_WRITES = new Set(["--add", "--replace-all", "--unset", "--remove-section", "--rename-section"]);
+
+const GIT_CONFIG_READS = new Set([
+  "--get",
+  "--get-all",
+  "--get-regexp",
+  "--get-urlmatch",
+  "--list",
+  "-l",
+  "--show-origin",
+  "--show-scope",
+  "--name-only",
+  "--get-color",
+  "--get-colorbool",
+]);
+
+const GIT_STASH_READS = new Set(["list", "show"]);
+
+const gitConfigWrites = (after: readonly string[]): boolean => {
+  if (after.some((word) => GIT_CONFIG_WRITES.has(word))) return true;
+  if (after.some((word) => GIT_CONFIG_READS.has(word))) return false;
+  return after.filter((word) => !word.startsWith("-")).length >= 2;
+};
+
+const gitStashWrites = (after: readonly string[]): boolean => {
+  if (after.some((word) => word === "-h" || word === "--help")) return false;
+  const action = after.find((word) => !word.startsWith("-"));
+  if (action === undefined) return true;
+  return !GIT_STASH_READS.has(action);
+};
 
 const TREE_WRITES = new Set([
   "mkdir",
@@ -106,7 +169,10 @@ const segmentWrites = (words: readonly string[]): boolean => {
   const [program, ...rest] = words;
   if (program === undefined) return false;
   if (program === "git") {
-    const sub = rest.find((word, at) => !word.startsWith("-") && rest[at - 1] !== "-c" && rest[at - 1] !== "--config");
+    const at = rest.findIndex((word, index) => !word.startsWith("-") && rest[index - 1] !== "-c" && rest[index - 1] !== "--config");
+    const sub = at === -1 ? undefined : rest[at];
+    if (sub === "config") return gitConfigWrites(rest.slice(at + 1));
+    if (sub === "stash") return gitStashWrites(rest.slice(at + 1));
     return sub !== undefined && GIT_WRITES.has(sub);
   }
   if (program === "sed" && rest.some((word) => word === "-i" || word === "--in-place")) return true;
@@ -133,21 +199,37 @@ export const checkedRerun = (event: ToolCall, state: RunState): { refused?: Reru
     if (decision === "recover") return { state: { ...state, slow: { ...slow, recovered: true } } };
     if (decision !== undefined) return { refused: decision, state };
   }
-  const changed =
-    command !== undefined ? digestCommand(stripped(command)) !== slow?.canon && bashLooksMutating(command) : (event.writes?.length ?? 0) > 0;
-  if (!changed) return { state };
-  const { slow: _settled, ...rest } = state;
-  return { state: { ...rest } };
+  return { state };
 };
 
-export const slowResult = (
-  event: { tool: string; command: string; seconds: number },
-  state: RunState,
-): { actions: []; state: RunState } => {
-  if (event.tool.toLowerCase() !== "bash" || event.seconds < SLOW_SECONDS) return { actions: [], state };
+export const clearedSlow = (state: RunState): RunState => {
+  if (state.slow === undefined) return state;
+  const { slow: _dropped, ...rest } = state;
+  return { ...rest };
+};
+
+export type SlowResult = {
+  tool: string;
+  command: string;
+  seconds: number;
+  failed?: boolean;
+  full?: string;
+  canon?: string;
+  mutating?: boolean;
+  saved?: boolean;
+};
+
+export const slowResult = (event: SlowResult, state: RunState): { actions: []; state: RunState } => {
+  if (event.tool.toLowerCase() !== "bash" || event.failed === true) return { actions: [], state };
+  const mutating = event.mutating ?? bashLooksMutating(event.command);
+  const base = mutating ? clearedSlow(state) : state;
+  if (event.seconds < SLOW_SECONDS) return { actions: [], state: base };
+  const full = event.full ?? digestCommand(event.command);
+  const canon = event.canon ?? digestCommand(stripped(event.command));
+  const saved = event.saved ?? outputGoesToFile(event.command);
   return {
     actions: [],
-    state: { ...state, slow: { full: digestCommand(event.command), canon: digestCommand(stripped(event.command)) } },
+    state: { ...base, slow: { full, canon, ...(saved ? { recovered: true } : {}) } },
   };
 };
 

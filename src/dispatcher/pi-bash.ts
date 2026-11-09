@@ -20,6 +20,7 @@ export const bashCall = (
   }
   note(steeredLine(steered));
   if (steered.type === "refuse") return { block: true, reason: steered.text };
+  clock.set(event.toolCallId, { command, at: Date.now() });
   event.input.command = steered.command;
   return undefined;
 };
@@ -29,5 +30,11 @@ export const finishedBash = (clock: BashClock, event: ToolResultEvent): Extract<
   if (started === undefined) return undefined;
   clock.delete(event.toolCallId);
   if (event.toolName.toLowerCase() !== "bash" || typeof event.input.command !== "string") return undefined;
-  return { type: "tool-result", tool: event.toolName, command: started.command, seconds: (Date.now() - started.at) / 1000 };
+  return {
+    type: "tool-result",
+    tool: event.toolName,
+    command: started.command,
+    seconds: (Date.now() - started.at) / 1000,
+    ...(event.isError ? { failed: true } : {}),
+  };
 };
