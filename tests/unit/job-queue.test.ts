@@ -166,22 +166,6 @@ describe("the evals group", () => {
 });
 
 describe("the heavy shapes the queue plan adds", () => {
-  test("checks-test --changed queues with priority in the tests group", () => {
-    expect(steer("checks-test --changed", work, () => ["default", "tests"])).toEqual({
-      type: "queue",
-      group: "tests",
-      command: queued("checks-test --changed", "tests", 1),
-    });
-  });
-
-  test("bin/fm-test-run.sh --changed queues with priority in the tests group", () => {
-    expect(steer("bin/fm-test-run.sh --changed", work, () => ["default", "tests"])).toEqual({
-      type: "queue",
-      group: "tests",
-      command: queued("bin/fm-test-run.sh --changed", "tests", 1),
-    });
-  });
-
   test.each([
     "checks-test",
     "checks-test --changed",
