@@ -41,6 +41,15 @@ describe("a record", () => {
     expect(message).toContain("no `## Status` section");
   });
 
+  test("opening with a governs front matter is indexed by its heading rather than refused as untitled", () => {
+    const record = value(parseRecord("0007-a-record.md", `---\ngoverns: [src/parts.ts]\n---\n${recorded(7, "A thing", "Accepted.")}`));
+    expect([record.number, record.title, record.state]).toEqual([7, "A thing", "Accepted"]);
+  });
+
+  test("with a front matter fence left open is refused rather than read as its heading", () => {
+    expect(said(parseRecord("0007-a-record.md", "---\ngoverns: [src/parts.ts]\n# 7. A thing\n\n## Status\n\nAccepted.\n"))).toContain("heading");
+  });
+
   test("with no numbered heading is refused rather than indexed untitled", () => {
     expect(said(parseRecord("0007-a-record.md", "A thing\n\n## Status\n\nAccepted.\n"))).toContain("heading");
   });

@@ -15,13 +15,13 @@ Tool definitions are absent from this repository and have no character size in t
 
 | Part | Characters | Share of Rules by characters |
 | --- | ---: | ---: |
-| rule: `comment-discipline` | 2671 | 30.1% |
-| rule: `fix-what-you-see` | 328 | 3.7% |
-| rule: `prove-it-works` | 2760 | 31.1% |
-| rule: `typescript-best-practices` | 1768 | 19.9% |
-| rule: `agents-md-router` | 311 | 3.5% |
-| rule: `readme-front-door` | 678 | 7.6% |
-| rule: `credential-files` | 369 | 4.2% |
+| rule: `comment-discipline` | 2671 | 28.6% |
+| rule: `fix-what-you-see` | 328 | 3.5% |
+| rule: `prove-it-works` | 2760 | 29.6% |
+| rule: `typescript-best-practices` | 1768 | 19.0% |
+| rule: `agents-md-router` | 754 | 8.1% |
+| rule: `readme-front-door` | 678 | 7.3% |
+| rule: `credential-files` | 369 | 4.0% |
 | skill: `build-and-review-motion` | 5794 |  |
 | skill: `develop-a-website` | 8421 |  |
 | skill: `grilling` | 3528 |  |
@@ -37,7 +37,7 @@ Tool definitions are absent from this repository and have no character size in t
 | reference: `plain-words` | 3646 |  |
 | reference: `punctuation` | 2443 |  |
 | reference: `russian-prose` | 1858 |  |
-| reference: `technical-writing` | 7186 |  |
+| reference: `technical-writing` | 7200 |  |
 | reference: `typography` | 4272 |  |
 | reference: `ui-principles` | 8674 |  |
 | reference: `unslop` | 2761 |  |
@@ -52,15 +52,15 @@ Tool definitions are absent from this repository and have no character size in t
 
 | Part | Characters | Share of Rules by characters |
 | --- | ---: | ---: |
-| rule: `comment-discipline` | 2671 | 26.4% |
-| rule: `fix-what-you-see` | 328 | 3.2% |
-| rule: `guard-the-context-window` | 353 | 3.5% |
-| rule: `prove-it-works` | 2760 | 27.3% |
-| rule: `typescript-best-practices` | 1768 | 17.5% |
-| rule: `agents-md-router` | 311 | 3.1% |
-| rule: `readme-front-door` | 678 | 6.7% |
-| rule: `credential-files` | 369 | 3.7% |
-| rule: `writing-for-people` | 861 | 8.5% |
+| rule: `comment-discipline` | 2671 | 25.3% |
+| rule: `fix-what-you-see` | 328 | 3.1% |
+| rule: `guard-the-context-window` | 353 | 3.3% |
+| rule: `prove-it-works` | 2760 | 26.2% |
+| rule: `typescript-best-practices` | 1768 | 16.8% |
+| rule: `agents-md-router` | 754 | 7.2% |
+| rule: `readme-front-door` | 678 | 6.4% |
+| rule: `credential-files` | 369 | 3.5% |
+| rule: `writing-for-people` | 861 | 8.2% |
 | skill: `build-and-review-motion` | 5794 |  |
 | skill: `develop-a-website` | 8421 |  |
 | skill: `grilling` | 3528 |  |
@@ -76,7 +76,7 @@ Tool definitions are absent from this repository and have no character size in t
 | reference: `plain-words` | 3646 |  |
 | reference: `punctuation` | 2443 |  |
 | reference: `russian-prose` | 1858 |  |
-| reference: `technical-writing` | 7186 |  |
+| reference: `technical-writing` | 7200 |  |
 | reference: `typography` | 4272 |  |
 | reference: `ui-principles` | 8674 |  |
 | reference: `unslop` | 2761 |  |
@@ -85,21 +85,21 @@ Tool definitions are absent from this repository and have no character size in t
 
 ## gpt-6
 
-Models: `openai-codex/gpt-6-luna`, `openai/gpt-6-luna`, `openai-codex/gpt-6.1-sol`, `openai/gpt-6.1-sol`.
+Models: `openai-codex/gpt-6-luna`, `openai/gpt-6-luna`, `openai-codex/gpt-6.1-sol`, `openai/gpt-6.1-sol`, `openai/gpt-6-astra`, `openai/gpt-6.1-terra`.
 Tools: set by the harness.
 Tool definitions are absent from this repository and have no character size in this table.
 
 | Part | Characters | Share of Rules by characters |
 | --- | ---: | ---: |
-| rule: `comment-discipline` | 2671 | 27.7% |
-| rule: `fix-what-you-see` | 328 | 3.4% |
-| rule: `force-determinism` | 647 | 6.7% |
+| rule: `comment-discipline` | 2671 | 26.5% |
+| rule: `fix-what-you-see` | 328 | 3.3% |
+| rule: `force-determinism` | 647 | 6.4% |
 | rule: `git-hygiene` | 100 | 1.0% |
-| rule: `prove-it-works` | 2760 | 28.7% |
-| rule: `typescript-best-practices` | 1768 | 18.4% |
-| rule: `agents-md-router` | 311 | 3.2% |
-| rule: `readme-front-door` | 678 | 7.0% |
-| rule: `credential-files` | 369 | 3.8% |
+| rule: `prove-it-works` | 2760 | 27.4% |
+| rule: `typescript-best-practices` | 1768 | 17.5% |
+| rule: `agents-md-router` | 754 | 7.5% |
+| rule: `readme-front-door` | 678 | 6.7% |
+| rule: `credential-files` | 369 | 3.7% |
 | skill: `build-and-review-motion` | 5794 |  |
 | skill: `develop-a-website` | 8421 |  |
 | skill: `grilling` | 3528 |  |
@@ -115,7 +115,7 @@ Tool definitions are absent from this repository and have no character size in t
 | reference: `plain-words` | 3646 |  |
 | reference: `punctuation` | 2443 |  |
 | reference: `russian-prose` | 1858 |  |
-| reference: `technical-writing` | 7186 |  |
+| reference: `technical-writing` | 7200 |  |
 | reference: `typography` | 4272 |  |
 | reference: `ui-principles` | 8674 |  |
 | reference: `unslop` | 2761 |  |
@@ -130,14 +130,14 @@ Tool definitions are absent from this repository and have no character size in t
 
 | Part | Characters | Share of Rules by characters |
 | --- | ---: | ---: |
-| rule: `comment-discipline` | 2671 | 29.7% |
-| rule: `fix-what-you-see` | 328 | 3.6% |
+| rule: `comment-discipline` | 2671 | 28.3% |
+| rule: `fix-what-you-see` | 328 | 3.5% |
 | rule: `git-hygiene-co-author` | 112 | 1.2% |
-| rule: `prove-it-works` | 2760 | 30.7% |
-| rule: `typescript-best-practices` | 1768 | 19.7% |
-| rule: `agents-md-router` | 311 | 3.5% |
-| rule: `readme-front-door` | 678 | 7.5% |
-| rule: `credential-files` | 369 | 4.1% |
+| rule: `prove-it-works` | 2760 | 29.2% |
+| rule: `typescript-best-practices` | 1768 | 18.7% |
+| rule: `agents-md-router` | 754 | 8.0% |
+| rule: `readme-front-door` | 678 | 7.2% |
+| rule: `credential-files` | 369 | 3.9% |
 | skill: `build-and-review-motion` | 5794 |  |
 | skill: `develop-a-website` | 8421 |  |
 | skill: `grilling` | 3528 |  |
@@ -153,7 +153,7 @@ Tool definitions are absent from this repository and have no character size in t
 | reference: `plain-words` | 3646 |  |
 | reference: `punctuation` | 2443 |  |
 | reference: `russian-prose` | 1858 |  |
-| reference: `technical-writing` | 7186 |  |
+| reference: `technical-writing` | 7200 |  |
 | reference: `typography` | 4272 |  |
 | reference: `ui-principles` | 8674 |  |
 | reference: `unslop` | 2761 |  |
@@ -168,11 +168,11 @@ Tool definitions are absent from this repository and have no character size in t
 
 | Part | Characters | Share of Rules by characters |
 | --- | ---: | ---: |
-| rule: `guard-the-context-window` | 353 | 7.9% |
-| rule: `prove-it-works` | 2760 | 61.7% |
-| rule: `agents-md-router` | 311 | 7.0% |
-| rule: `readme-front-door` | 678 | 15.2% |
-| rule: `credential-files` | 369 | 8.3% |
+| rule: `guard-the-context-window` | 353 | 7.2% |
+| rule: `prove-it-works` | 2760 | 56.2% |
+| rule: `agents-md-router` | 754 | 15.3% |
+| rule: `readme-front-door` | 678 | 13.8% |
+| rule: `credential-files` | 369 | 7.5% |
 | skill: `build-and-review-motion` | 5794 |  |
 | skill: `develop-a-website` | 8421 |  |
 | skill: `grilling` | 3528 |  |
@@ -188,7 +188,7 @@ Tool definitions are absent from this repository and have no character size in t
 | reference: `plain-words` | 3646 |  |
 | reference: `punctuation` | 2443 |  |
 | reference: `russian-prose` | 1858 |  |
-| reference: `technical-writing` | 7186 |  |
+| reference: `technical-writing` | 7200 |  |
 | reference: `typography` | 4272 |  |
 | reference: `ui-principles` | 8674 |  |
 | reference: `unslop` | 2761 |  |

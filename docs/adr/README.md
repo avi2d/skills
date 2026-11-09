@@ -109,9 +109,10 @@ Read those before acting on the record they revise.
 | [0099](0099-writing-for-people-is-switched-on-for-muse-spark-alone.md) | Writing for people is switched on for Muse Spark alone | Accepted |  |
 | [0100](0100-codex-reviewer-ruling-moved.md) | Codex reviewer ruling moved | Retired | [0102](0102-the-main-account-reviews-first-codex-second-and-the-second-account-last-with-no-floor.md) |
 | [0101](0101-claude-reviewer-ruling-moved.md) | Claude reviewer ruling moved | Retired | [0102](0102-the-main-account-reviews-first-codex-second-and-the-second-account-last-with-no-floor.md) |
-| [0102](0102-the-main-account-reviews-first-codex-second-and-the-second-account-last-with-no-floor.md) | The main account reviews first, Codex second, and the second account last with no floor | Accepted |  |
+| [0102](0102-the-main-account-reviews-first-codex-second-and-the-second-account-last-with-no-floor.md) | The main account reviews first, Codex second, and the second account last with no floor | Accepted | [0108](0108-astra-reviews-first-with-no-floor-and-codex-models-join-four-dispatch-rules.md) |
 | [0103](0103-a-read-of-a-known-credential-file-is-refused-by-the-dispatcher.md) | A read of a known credential file is refused by the Dispatcher | Accepted |  |
 | [0104](0104-tool-output-is-scrubbed-at-the-harness-with-the-checks-kits-gitleaks-rules.md) | Tool output is scrubbed at the harness with the checks kit's gitleaks rules | Accepted |  |
 | [0105](0105-the-mutation-config-is-the-kits-preset-and-the-unit-test-files.md) | The mutation config is the kit's preset and the unit test files | Accepted |  |
 | [0106](0106-a-type-that-repeats-a-schema-or-asserts-outside-data-is-refused-at-every-write-by-oxlint.md) | A type that repeats a schema or asserts outside data is refused at every write, by oxlint | Accepted |  |
 | [0107](0107-a-push-to-main-starts-no-ci-run-and-the-fleet-names-scan-runs-alone-only-on-a-docs-only-change.md) | A push to main starts no ci run, and the fleet-names scan runs alone only on a docs-only change | Accepted |  |
+| [0108](0108-astra-reviews-first-with-no-floor-and-codex-models-join-four-dispatch-rules.md) | Astra reviews first with no floor, and Codex models join four dispatch rules | Accepted |  |

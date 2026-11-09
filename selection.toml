@@ -12,7 +12,7 @@ models = ["opencode-go/muse-spark-1.3-contributor"]
 add = ["guard-the-context-window", "writing-for-people"]
 
 [profiles.gpt-6]
-models = ["openai-codex/gpt-6-luna", "openai/gpt-6-luna", "openai-codex/gpt-6.1-sol", "openai/gpt-6.1-sol"]
+models = ["openai-codex/gpt-6-luna", "openai/gpt-6-luna", "openai-codex/gpt-6.1-sol", "openai/gpt-6.1-sol", "openai/gpt-6-astra", "openai/gpt-6.1-terra"]
 
 [profiles.gpt-6.rules]
 add = ["force-determinism", "git-hygiene"]

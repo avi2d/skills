@@ -6,14 +6,19 @@ import { SCANNER_CONFIG, SCANNER_PIN } from "../dispatcher/redact";
 import { UnloadableBundle, type FileFailure } from "../platform/failures";
 import { attempt } from "../platform/files";
 
-// The kit exports none of its gitleaks files, so they are reached beside a file it does export.
-const KIT_ANCHOR = "@avi2dg/checks/core/git.ts";
+const KIT_CONFIG = "@avi2dg/checks/delivery/gitleaks.toml";
+
+const KIT_PIN_SOURCE = "@avi2dg/checks/delivery/gitleaks.ts";
 
 const KIT_PIN = /^const GITLEAKS_VERSION = "([^"]+)";$/m;
 
-const kitDelivery = Effect.try({
-  try: () => new URL("../delivery/", import.meta.resolve(KIT_ANCHOR)).pathname,
-  catch: () => new UnloadableBundle({ message: `no installed package resolves ${KIT_ANCHOR}, so the secret scan has no rules` }),
+const kitFiles = Effect.try({
+  try: () => ({
+    config: new URL(import.meta.resolve(KIT_CONFIG)).pathname,
+    source: new URL(import.meta.resolve(KIT_PIN_SOURCE)).pathname,
+  }),
+  catch: () =>
+    new UnloadableBundle({ message: `no installed package resolves ${KIT_CONFIG} or ${KIT_PIN_SOURCE}, so the secret scan has no rules` }),
 });
 
 export const installScanner = Effect.gen(function* () {
@@ -25,15 +30,15 @@ export const scannerFiles = Effect.fnUntraced(function* (): Effect.fn.Return<
   UnloadableBundle | FileFailure,
   FileSystem.FileSystem
 > {
-  const delivery = yield* kitDelivery;
-  const config = yield* attempt(`${delivery}gitleaks.toml`, (fs) => fs.readFile(`${delivery}gitleaks.toml`));
-  const pinned = yield* attempt(`${delivery}gitleaks.ts`, (fs) => fs.readFileString(`${delivery}gitleaks.ts`));
+  const { config, source } = yield* kitFiles;
+  const rules = yield* attempt(config, (fs) => fs.readFile(config));
+  const pinned = yield* attempt(source, (fs) => fs.readFileString(source));
   const [, version] = KIT_PIN.exec(pinned) ?? [];
   if (version === undefined) {
-    return yield* new UnloadableBundle({ message: `${delivery}gitleaks.ts pins no gitleaks version this generator can read` });
+    return yield* new UnloadableBundle({ message: `${source} pins no gitleaks version this generator can read` });
   }
   return new Map([
-    [SCANNER_CONFIG, config],
+    [SCANNER_CONFIG, rules],
     [SCANNER_PIN, new TextEncoder().encode(`${JSON.stringify({ gitleaks: version })}\n`)],
   ]);
 });
