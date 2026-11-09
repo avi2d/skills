@@ -104,6 +104,7 @@ test.each([...MACHINES])("on the %s machine, every Claude model lists once on ea
   expect(claude.length, "no rule names a Claude profile, so this checks nothing").toBeGreaterThan(0);
   for (const { profile } of claude) {
     expect(profile.provider).toBe("claude");
+    if (profile.claude_account === undefined) expect.unreachable("a Claude profile names no clauth account");
     expect(["main", "second"]).toContain(profile.claude_account);
   }
   expect(placed.filter(({ profile }) => profile.claude_account !== undefined && !profile.model?.startsWith("claude-bridge/"))).toEqual([]);
