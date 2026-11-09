@@ -83,9 +83,9 @@ Both files set `array_order` to `preference`, so firstmate takes the first candi
 A Haiku 5.5 candidate and a Muse candidate each carry a `floor` on the `all_models` scope of their provider, so firstmate skips each while that scope holds under 15%.
 Every Claude model lists once with `main` and once with `second` in `claude_account`, which `src/generate/claude-accounts.ts` names `MAIN_ACCOUNT` and `SECOND_ACCOUNT`.
 Firstmate launches each candidate with `--claude-account` and picks the usable one by quota.
-GPT-6 Astra at high follows Opus 5.5 in the bounded investigation rule and the unknown cause rule.
+The bounded investigation rule and the unknown cause rule list Opus 5.5 at high on both accounts.
 GPT-6.1 Terra at high follows Muse in the two clearly specified implementation rules.
-Both spend the `codex` provider and carry no floor.
+It spends the `codex` provider and carries no floor.
 `bun run link` links the Mac's file on macOS and the other one on every other platform.
 It links the three pins on macOS only.
 `tests/unit/crew-dispatch.test.ts` fails on a profile whose effort pi would run at another level.
