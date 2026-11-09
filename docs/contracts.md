@@ -9,7 +9,6 @@ A harness's Contract is the settings, hooks and extensions `harness/<name>/` hol
 ## Hand-written settings
 
 Every file in a Contract is written by hand, never generated.
-The [firstmate](#firstmate) files are the exception, and `bun run generate` writes them, as their section says.
 The [no-mistakes](#no-mistakes) config is not in `harness/` at all, because it names the machine's own home.
 A harness rewrites its settings at runtime, and a generated file with a second writer would fail the suite on every launch.
 
