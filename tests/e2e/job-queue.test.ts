@@ -246,10 +246,10 @@ describe("pi running a command through its tool_call event", () => {
     expect(input.command).toBe("llama-bench -m model.gguf && bun test");
   });
 
-  test("a heavy command left running directly carries the reason where pueue has no such group", async () => {
+  test("a heavy command runs directly with no model notice where pueue has no such group, and the reason stays in the dispatch log", async () => {
     const { input, result } = await called("llama-bench -m model.gguf", stubPueue(["default", "tests"]).path);
     expect(input.command).toBe("llama-bench -m model.gguf");
-    expect(result).toEqual({ reason: expect.stringContaining("pueue has no gpu group") });
+    expect(result).toBeUndefined();
   });
 });
 
@@ -400,7 +400,7 @@ test.skipIf(!claude)(
   ),
   async () => {
     const result = await claudeRuns("bun run test");
-    expect(result).toContain("ran: bun run test");
+    expect(result).toContain("ran: nice -n 19 bash -c 'bun run test'");
   },
   120_000,
 );

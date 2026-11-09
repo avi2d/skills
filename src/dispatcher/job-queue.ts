@@ -247,7 +247,7 @@ export const LOG_LINES = 40;
 
 export function queued(command: string, group: Group, priority?: number): string {
   const selected = priority === undefined ? "" : ` --priority ${priority}`;
-  const workload = `nice -n 19 sh -c ${quoted(command)}`;
+  const workload = `nice -n 19 bash -c ${quoted(command)}`;
   return [
     `id=$(pueue add${selected} --print-task-id --group ${group} -- ${quoted(workload)}) && {`,
     `echo "queued as pueue task $id in group ${group}"`,
@@ -313,7 +313,8 @@ export function steer(command: string, _cwd: string, available: () => readonly s
   if (missing !== undefined) return unavailable(missing, `pueue has no ${missing} group`);
   if (groups.length > 1) return { type: "refuse", groups, text: groups.includes("evals") ? SEPARATE_EVAL_CALLS : SEPARATE_CALLS };
   if (group === "evals") return { type: "queue", group, command: queued(edited(command, found.flatMap(evalCapEdits)), group) };
-  return { type: "queue", group, command: queued(command, group, 1) };
+  if (group === "tests") return { type: "queue", group, command: queued(command, group, 1) };
+  return { type: "queue", group, command: queued(command, group) };
 }
 
 export const steeredLine = (steered: Steered): string => {

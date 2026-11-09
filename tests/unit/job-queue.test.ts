@@ -409,7 +409,7 @@ describe("reading the shell around a command", () => {
 describe("the queued command", () => {
   test("it adds the command under nice with priority, in one pair of single quotes, then waits and shows the log", () => {
     const wrapped = queued("bun run test", "tests", 1);
-    expect(wrapped).toContain("pueue add --priority 1 --print-task-id --group tests -- 'nice -n 19 sh -c");
+    expect(wrapped).toContain("pueue add --priority 1 --print-task-id --group tests -- 'nice -n 19 bash -c");
     expect(wrapped).toContain("bun run test");
     expect(wrapped).toContain('pueue wait --quiet --status success "$id"');
     expect(wrapped).toContain(`pueue log --lines ${LOG_LINES} "$id"`);
@@ -417,7 +417,7 @@ describe("the queued command", () => {
 
   test("a compound command stays whole under the one nice invocation", () => {
     const wrapped = queued("bun test && cargo test", "tests", 1);
-    expect(wrapped).toContain("nice -n 19 sh -c");
+    expect(wrapped).toContain("nice -n 19 bash -c");
     expect(wrapped).toContain("bun test && cargo test");
   });
 

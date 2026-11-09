@@ -136,7 +136,7 @@ Every Dispatcher asks `src/dispatcher/job-queue.ts` about each shell command bef
 That module is no Rule, so it costs the model no context.
 Its table sends every test suite, such as `bun test` or `bun run test`, and every mutation run to the `tests` group.
 It also sends the other heavy shapes to the `tests` group: `checks-test`, `bin/fm-test-run.sh`, any `bin/*.test.sh` script, `go test`, the `test:fast` script, a `lint`, `typecheck` or `build` executable in any directory, `xcrun simctl boot`, `xcrun simctl io` and `fm-sim-boot.sh`.
-Every heavy shape queues with `pueue add --priority 1`.
+Every heavy shape in the `tests` group queues with `pueue add --priority 1`, and the `gpu` group keeps its default scheduling.
 Only an enabled watch mode, `--watch`, `-w` or `--watchAll` with no value or `=true`, runs as it is, because a queued job would hold its slot forever, so `--watch=false` and `--no-watch` still queue.
 A mutation run is heavy whatever it names.
 A prefix such as `env`, `nice`, `timeout`, `npx` or `pnpm exec` is skipped with its own options and operands before the table is read.
@@ -156,14 +156,15 @@ A call that mixes an eval with another queued command is refused with a message 
 A command that already calls pueue hands its work over as one quoted word, which the table never names, so the queued command is never queued twice.
 A command that runs inside a pueue worker carries `PUEUE_GROUP` or `PUEUE_WORKER_ID`, so it runs as it is and is never queued twice.
 
-A queued command becomes `pueue add --priority 1 --print-task-id --group <group>` with the workload `nice -n 19 sh -c '<command>'`, then a wait on that task and the last 40 lines of its log.
+A queued command becomes `pueue add --print-task-id --group <group>`, with `--priority 1` for the `tests` group, with the workload `nice -n 19 bash -c '<command>'`, then a wait on that task and the last 40 lines of its log.
 The agent sees the task's output, and the command fails when the task fails.
 pi rewrites the call's input at `tool_call`.
 Claude Code and Codex rewrite it through `updatedInput` in their PreToolUse reply.
 Codex applies a rewrite only beside an `allow`.
 Claude Code applies it bare, so its own permission check still runs on the queued command.
 When `pueue` is not installed, its daemon is down, or it lacks a group the command needs, the command runs as it is.
-Each harness tells the model why the command runs directly, pi through the call result and Claude Code and Codex through the hook reply, and every harness leaves a `job-queue <group>: not queued (<reason>)` line in the dispatch log.
+Claude Code and Codex tell the model why the command runs directly through the hook reply, and every harness leaves a `job-queue <group>: not queued (<reason>)` line in the dispatch log.
+Pi logs the reason and runs the command directly with no model notice, since the agent loop reads a `tool_call` reason only beside a block.
 A queued job runs under the pueue daemon, outside any sandbox, so Codex queues or refuses a command only in a full-access turn and never overrides a restricted sandbox, whatever its network setting.
 The Dispatcher reads that sandbox from the latest `turn_context` in the rollout, and runs the command as it is under any other sandbox or a rollout it cannot read.
 Each queued or refused call is a `job-queue` line in the dispatch log naming its groups, and never the command, which can carry a credential.
