@@ -37,6 +37,13 @@ describe("the tests group", () => {
     },
   );
 
+  test.each(["bunx checks-test", "checks-test --changed", "bunx checks-test --changed", "bunx checks-test -t slow-report"])(
+    "%s queues whatever it filters by, because --changed can widen to the whole suite",
+    (command) => {
+      expect(q(command)).toBe("tests");
+    },
+  );
+
   test.each(["stryker run", "npx stryker run --mutate src/a.ts", "./node_modules/.bin/stryker run"])(
     "%s runs the suite once per mutant even when it mutates one file",
     (command) => {

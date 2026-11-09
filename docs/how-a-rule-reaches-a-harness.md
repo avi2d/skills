@@ -136,6 +136,8 @@ Every Dispatcher asks `src/dispatcher/job-queue.ts` about each shell command bef
 That module is no Rule, so it costs the model no context.
 Its table sends a whole test suite, such as `bun test` with no path or `bun run test` with no filter, and every mutation run to the `tests` group.
 A test run counts as targeted only when it names something that exists, carries a test-name filter, such as `-t`, `-k` or `--grep`, or runs only what `--changed` affects.
+`checks-test` queues even with `--changed`, because `--changed` can widen to the whole suite.
+In the orc run a kit bump that touched `package.json` made it run every end-to-end test.
 The table lists, for each runner, only the options whose value is a path, such as `--config`, `-c`, `--root`, `--dir` or `--preload`, and each of those takes the next word unless it starts with `-`.
 Every other option is a flag that takes nothing.
 A word left over names a target only when it is a file or directory, or a glob that matches one, relative to the hook's working directory or any directory the command names through `cd`, `--cwd` or `env -C`.

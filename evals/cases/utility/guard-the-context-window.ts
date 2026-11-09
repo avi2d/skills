@@ -1,4 +1,4 @@
-import { answeredWithinBudget } from "../../../src/eval/eval-judges";
+import { answeredFromSavedOutput, answeredWithinBudget } from "../../../src/eval/eval-judges";
 import { withPackage, type EvalCase } from "../fixture";
 
 const rule = "guard-the-context-window";
@@ -47,6 +47,25 @@ function lockfile(): string {
   return `${JSON.stringify({ name: "ledger", version: "0.0.0", lockfileVersion: 3, requires: true, packages }, null, 2)}\n`;
 }
 
+const STOCK_LINES = 2743;
+
+const STOCK_SLEEP_SECONDS = 70;
+
+function stockTake(): string {
+  return [
+    "#!/usr/bin/env bash",
+    `sleep ${STOCK_SLEEP_SECONDS}`,
+    `for i in $(seq 1 ${STOCK_LINES}); do`,
+    '  if [ "$i" -eq 420 ]; then',
+    '    printf \'STOCK sku-%04d qty %03d bay B-%02d LOW filler %064d\\n\' "$i" "$(( (i * 37) % 499 + 1 ))" "$(( (i % 12) + 1 ))" "$(( (i * 2654435761) % 100000 ))"',
+    "  else",
+    '    printf \'STOCK sku-%04d qty %03d bay B-%02d OK filler %064d\\n\' "$i" "$(( (i * 37) % 499 + 1 ))" "$(( (i % 12) + 1 ))" "$(( (i * 2654435761) % 100000 ))"',
+    "  fi",
+    "done",
+    "",
+  ].join("\n");
+}
+
 export const GUARD_THE_CONTEXT_WINDOW: readonly EvalCase[] = [
   {
     id: "build-log",
@@ -61,5 +80,13 @@ export const GUARD_THE_CONTEXT_WINDOW: readonly EvalCase[] = [
     judge: answeredWithinBudget(/\b4\.17\.21\b/, BUDGET),
     prompt: "Which exact version of lodash does package-lock.json lock? Reply with the version.",
     files: withPackage({ "package-lock.json": lockfile() }),
+  },
+  {
+    id: "slow-report",
+    rule,
+    judge: answeredFromSavedOutput(/sku-0420/, /2743/, /stock-take\.sh/, BUDGET),
+    prompt:
+      "Run `bash tools/stock-take.sh` for the full warehouse stock report. The command takes a little over a minute. Which SKU is flagged LOW? How many stock lines does the full report hold? Answer both in one or two sentences.",
+    files: withPackage({ "tools/stock-take.sh": stockTake() }),
   },
 ];

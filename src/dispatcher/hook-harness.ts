@@ -2,8 +2,10 @@ import { appendFileSync, mkdirSync, readFileSync, realpathSync, rmSync, writeFil
 import { homedir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { dispatch, placed, repoGlobs, type Action, type Event, type Index, type Step } from "./dispatch";
+import { isPending, resultEvent, trackBash, type PendingBash } from "./hook-bash";
 import { decodeRunState, isRecord, START, type RunState } from "./run-state";
 import { logLine } from "./dispatch-log";
+import { COMMIT_IDENTITY_LINE, commitIdentity } from "./commit-identity";
 import { credentialRead, refusedLine, refusedText } from "./credential-reads";
 import type { Change } from "./forbid";
 import { VERIFY_BUDGET_SECONDS, fingerprint, sight, unreadableNote, verify } from "./gate";
@@ -52,6 +54,7 @@ function speak(action: Action): Reply {
     case "deliver":
       return { ...SILENT, rules: [action.rule], refuse: true };
     case "refuse":
+    case "rerun-refused":
       return { ...SILENT, text: [action.text], refuse: true };
     case "hold":
       return { ...SILENT, text: [action.text] };
@@ -90,25 +93,30 @@ export function note(session: string, line: string): void {
   }
 }
 
-type Held = { state: RunState; awaiting: Place[] };
+type Held = { state: RunState; awaiting: Place[]; pending: PendingBash[] };
 
 function readState(path: string): Held {
   try {
     const parsed: unknown = JSON.parse(readFileSync(path, "utf8"));
-    if (!isRecord(parsed)) return { state: START, awaiting: [] };
-    const { awaiting, ...state } = parsed;
+    if (!isRecord(parsed)) return { state: START, awaiting: [], pending: [] };
+    const { awaiting, pending, ...state } = parsed;
     const decoded = decodeRunState(state);
-    if (decoded === undefined) return { state: START, awaiting: [] };
-    return { state: decoded, awaiting: Array.isArray(awaiting) ? awaiting.filter(isPlace) : [] };
+    if (decoded === undefined) return { state: START, awaiting: [], pending: [] };
+    return {
+      state: decoded,
+      awaiting: Array.isArray(awaiting) ? awaiting.filter(isPlace) : [],
+      pending: Array.isArray(pending) ? pending.filter(isPending) : [],
+    };
   } catch {
   }
-  return { state: START, awaiting: [] };
+  return { state: START, awaiting: [], pending: [] };
 }
 
-function writeState(path: string, session: string, { state, awaiting }: Held): void {
+function writeState(path: string, session: string, { state, awaiting, pending }: Held): void {
   try {
     mkdirSync(dirname(path), { recursive: true });
-    writeFileSync(path, `${JSON.stringify(awaiting.length > 0 ? { ...state, awaiting } : state, null, 2)}\n`);
+    const held = { ...state, ...(awaiting.length > 0 ? { awaiting } : {}), ...(pending.length > 0 ? { pending } : {}) };
+    writeFileSync(path, `${JSON.stringify(held, null, 2)}\n`);
   } catch (e) {
     note(session, `broken dispatcher: this session's state could not be written down: ${because(e)}`);
   }
@@ -231,7 +239,14 @@ function toolCallEvent(payload: Payload, { writes, changes }: Writes): Event {
   };
 }
 
-function eventFor(hook: Hook, payload: Payload, adapter: HookAdapter, lookups: Lookups, model: string | undefined): Event | undefined {
+function eventFor(
+  hook: Hook,
+  payload: Payload,
+  adapter: HookAdapter,
+  lookups: Lookups,
+  model: string | undefined,
+  take: (command: string) => number | undefined,
+): Event | undefined {
   switch (hook) {
     case "SessionStart":
       return payload.source === "compact"
@@ -242,7 +257,7 @@ function eventFor(hook: Hook, payload: Payload, adapter: HookAdapter, lookups: L
     case "PreToolUse":
       return toolCallEvent(payload, adapter.writes(payload));
     case "PostToolUse":
-      return { type: "read", tool: payload.tool_name ?? "", paths: readOf(payload) };
+      return resultEvent(payload, take) ?? { type: "read", tool: payload.tool_name ?? "", paths: readOf(payload) };
     case "PreCompact":
       return { type: "compaction" };
     case "Stop": {
@@ -303,7 +318,8 @@ export async function handle(adapter: HookAdapter, index: Index, hook: Hook, pay
   const checked = heard.state;
   const lookups = lookupsFor(index, hook, payload, checked);
   const model = adapter.model(payload);
-  const event = eventFor(hook, payload, adapter, lookups, model);
+  const tracking = trackBash(hook === "PreToolUse", payload, before.pending);
+  const event = eventFor(hook, payload, adapter, lookups, model, tracking.take);
 
   const switched =
     hook !== "SessionStart" && model !== undefined && model !== checked.model
@@ -320,28 +336,51 @@ export async function handle(adapter: HookAdapter, index: Index, hook: Hook, pay
     }
     const walked = lookups.walked();
     const kept = walked === undefined || walked === checked.walked ? state : { ...state, walked };
-    writeState(path, session, { state: kept, awaiting: listening.awaiting });
+    writeState(path, session, { state: kept, awaiting: listening.awaiting, pending: tracking.pending });
   };
-  settle(done.state);
-  for (const line of [...done.actions.map(logLine), ...listening.notes]) note(session, line);
-  if (!event) return undefined;
+  if (!event) {
+    settle(done.state);
+    return undefined;
+  }
 
-  const actions = [...done.actions, ...(await judged(index, done, session, settle))];
-  const reply = merge(actions.map(speak));
-  const mode = modeOf(hook, reply, actions);
-  const told = reply.told.join("\n");
-  const steered = hook === "PreToolUse" && mode !== "deny" ? steeredCall(adapter, payload) : undefined;
-  if (steered?.type === "refuse") return hookOutput(hook, steered.text, "deny", told);
-  if (steered?.type === "queue") return rewriteOutput(adapter, { ...payload.tool_input, command: steered.command }, told);
-  return hookOutput(hook, adapter.say(reply, index, hook, payload), mode, told);
+  const respond = async (): Promise<string | undefined> => {
+    const actions = [...done.actions, ...(await judged(index, done, session, settle))];
+    const reply = merge(actions.map(speak));
+    const mode = modeOf(hook, reply, actions);
+    const told = reply.told.join("\n");
+    const steered = hook === "PreToolUse" && mode !== "deny" ? steeredCall(adapter, payload) : undefined;
+    if (steered?.type === "queue") tracking.moved(steered.command);
+    else if (reply.refuse || steered?.type === "refuse") tracking.dropStarted();
+    settle(done.state);
+    for (const line of [...done.actions.map(logLine), ...listening.notes]) note(session, line);
+    if (steered?.type === "refuse") return hookOutput(hook, steered.text, "deny", told);
+    if (steered?.type === "queue") return rewriteOutput(adapter, { ...payload.tool_input, command: steered.command }, told);
+    return hookOutput(hook, adapter.say(reply, index, hook, payload), mode, told);
+  };
+  return respond();
 }
 
 export function refusedRead(hook: Hook, payload: Payload): string | undefined {
   if (hook !== "PreToolUse") return undefined;
-  const path = credentialRead(payload.tool_name ?? "", payload.tool_input ?? {}, payload.cwd ?? process.cwd());
-  if (path === undefined) return undefined;
-  note(sessionOf(payload), refusedLine(path));
-  return hookOutput(hook, refusedText(path), "deny");
+  const input = payload.tool_input ?? {};
+  const cwd = payload.cwd ?? process.cwd();
+  const path = credentialRead(payload.tool_name ?? "", input, cwd);
+  if (path !== undefined) {
+    note(sessionOf(payload), refusedLine(path));
+    return hookOutput(hook, refusedText(path), "deny");
+  }
+  const identity = commitIdentity(payload.tool_name ?? "", input, cwd);
+  if (identity === undefined) return undefined;
+  note(sessionOf(payload), COMMIT_IDENTITY_LINE);
+  return hookOutput(hook, identity, "deny");
+}
+
+export function refusedCommit(hook: Hook, payload: Payload): string | undefined {
+  if (hook !== "PreToolUse") return undefined;
+  const text = commitIdentity(payload.tool_name ?? "", payload.tool_input ?? {}, payload.cwd ?? process.cwd());
+  if (text === undefined) return undefined;
+  note(sessionOf(payload), COMMIT_IDENTITY_LINE);
+  return hookOutput(hook, text, "deny");
 }
 
 export async function answer(payload: Payload, reply: () => Promise<string | undefined>): Promise<void> {

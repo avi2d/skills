@@ -32,9 +32,10 @@ import { START, type RunState } from "./run-state";
 import { logLine } from "./dispatch-log";
 import { releasedText } from "./verdict";
 import { VERIFY_BUDGET_SECONDS, fingerprint, sight, unreadableNote, verify } from "./gate";
+import { COMMIT_IDENTITY_LINE, commitIdentity } from "./commit-identity";
 import { credentialRead, refusedLine, refusedText } from "./credential-reads";
 import type { Change, ClaudeEdit } from "./forbid";
-import { steer, steeredLine } from "./job-queue";
+import { bashCall, finishedBash } from "./pi-bash";
 import { readProject } from "./project";
 import { readIndex } from "./read-index";
 import { redaction } from "./pi-redact";
@@ -95,6 +96,7 @@ type DispatcherBase = {
   shutDown: boolean;
   inForce: Set<string>;
   looked: { cwd: string; files: string[]; walked?: Listed } | undefined;
+  bashStarted: Map<string, { command: string; at: number }>;
 };
 
 type Dispatcher =
@@ -157,6 +159,7 @@ function perform(dispatcher: Dispatcher, action: Action, ui: ExtensionUIContext 
     case "ignored":
     case "dropped":
     case "refuse":
+    case "rerun-refused":
       return;
     default:
       action satisfies never;
@@ -186,6 +189,7 @@ function onSessionStart(dispatcher: Dispatcher, event: SessionStartEvent, ctx: E
   dispatcher.shutDown = false;
   note(dispatcher, `build ${BUILD_ID}`);
   dispatcher.inForce.clear();
+  dispatcher.bashStarted.clear();
   dispatcher.failed = undefined;
 
   switch (dispatcher.status) {
@@ -246,6 +250,11 @@ function onToolCall(dispatcher: Dispatcher, event: ToolCallEvent, ctx: Extension
     note(dispatcher, refusedLine(credential));
     return { block: true, reason: refusedText(credential) };
   }
+  const identity = commitIdentity(event.toolName, event.input, ctx.cwd);
+  if (identity !== undefined) {
+    note(dispatcher, COMMIT_IDENTITY_LINE);
+    return { block: true, reason: identity };
+  }
   const writing = isToolCallEventType("write", event) || isToolCallEventType("edit", event);
   const changes: Change[] = [];
   if (isToolCallEventType("write", event)) {
@@ -262,9 +271,9 @@ function onToolCall(dispatcher: Dispatcher, event: ToolCallEvent, ctx: Extension
     input: event.input,
     ...(writing ? { writes: [event.input.path] } : {}),
     changes,
-  }).flatMap((action) => (action.type === "refuse" ? [action.text] : []));
+  }).flatMap((action) => (action.type === "refuse" || action.type === "rerun-refused" ? [action.text] : []));
   if (refusals.length > 0) return { block: true, reason: refusals.join("\n\n") };
-  return isToolCallEventType("bash", event) ? queue(dispatcher, event.input, ctx.cwd) : undefined;
+  return bashCall(dispatcher.bashStarted, event, ctx.cwd, (line) => note(dispatcher, line));
 }
 
 function readOf(event: ToolResultEvent, cwd: string): string | undefined {
@@ -280,6 +289,8 @@ function readOf(event: ToolResultEvent, cwd: string): string | undefined {
 function onToolResult(dispatcher: Dispatcher, event: ToolResultEvent, ctx: ExtensionContext): void {
   const read = event.isError ? undefined : readOf(event, ctx.cwd);
   if (read !== undefined) step(dispatcher, { type: "read", tool: event.toolName, paths: [read] });
+  const finished = finishedBash(dispatcher.bashStarted, event);
+  if (finished !== undefined) step(dispatcher, finished);
 }
 
 async function redact(dispatcher: Dispatcher, event: ToolResultEvent, ctx: ExtensionContext): Promise<ToolResultEventResult | undefined> {
@@ -287,15 +298,6 @@ async function redact(dispatcher: Dispatcher, event: ToolResultEvent, ctx: Exten
   if (redacted === undefined) return undefined;
   note(dispatcher, scrubbedLine(event.toolName, redacted.scrubbed));
   return redacted.result;
-}
-
-function queue(dispatcher: Dispatcher, input: { command: string }, cwd: string): ToolCallEventResult | undefined {
-  const steered = steer(input.command, cwd);
-  if (steered === undefined) return undefined;
-  note(dispatcher, steeredLine(steered));
-  if (steered.type === "refuse") return { block: true, reason: steered.text };
-  input.command = steered.command;
-  return undefined;
 }
 
 function onMessageEnd(dispatcher: Dispatcher, event: MessageEndEvent): void {
@@ -362,6 +364,7 @@ function loaded(pi: ExtensionAPI): Dispatcher {
     shutDown: false,
     inForce: new Set<string>(),
     looked: undefined,
+    bashStarted: new Map(),
   };
   try {
     return { ...base, status: "loaded", index: readIndex(INDEX_PATH, "pi") };

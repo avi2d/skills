@@ -48,11 +48,15 @@ const CORE_FILES = {
   "src/dispatcher/gate-config.ts": "gate-config.ts",
   "src/dispatcher/read-index.ts": "read-index.ts",
   "src/dispatcher/job-queue.ts": "job-queue.ts",
+  "src/dispatcher/rerun.ts": "rerun.ts",
   "src/dispatcher/credential-reads.ts": "credential-reads.ts",
+  "src/dispatcher/commit-identity.ts": "commit-identity.ts",
   "src/dispatcher/shell-words.ts": "shell-words.ts",
+  "src/dispatcher/tool-call-fired.ts": "tool-call-fired.ts",
 };
 
 const HOOK_FILES = {
+  "src/dispatcher/hook-bash.ts": "hook-bash.ts",
   ...CORE_FILES,
   "src/dispatcher/hook-harness.ts": "hook-harness.ts",
   "src/dispatcher/transcript.ts": "transcript.ts",
@@ -63,6 +67,7 @@ export const PI_BUNDLE: Bundle = {
   files: {
     "src/dispatcher/pi-dispatcher.ts": ENTRY,
     ...CORE_FILES,
+    "src/dispatcher/pi-bash.ts": "pi-bash.ts",
     "src/dispatcher/pi-redact.ts": "pi-redact.ts",
     "src/dispatcher/redact.ts": "redact.ts",
   },

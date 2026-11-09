@@ -1,9 +1,10 @@
 import { judged, type Change, type Forbid } from "./forbid";
 import { createTypesBudget } from "./types";
-import { compileGlob, matchesGlob } from "./glob";
+import { compileGlob } from "./glob";
 import type { Harness } from "./harness";
 import type { Project } from "./project";
 import type { ScopeCondition } from "./scope-condition";
+import { toolCallFired } from "./tool-call-fired";
 import {
   onSettled,
   onVerdict,
@@ -15,6 +16,7 @@ import {
   type Verdict,
 } from "./verdict";
 import { handedBack, scopedFor, trimming, type IndexedProfile, type Trim } from "./model-scope";
+import { checkedRerun, slowResult } from "./rerun";
 import { lifecycleOf, type RuleLifecycle, type RunState } from "./run-state";
 
 export type { IndexedProfile } from "./model-scope";
@@ -49,6 +51,7 @@ export type Event =
       changes?: readonly Change[];
     }
   | { type: "read"; tool: string; paths: readonly string[] }
+  | { type: "tool-result"; tool: string; command: string; seconds: number }
   | { type: "requested"; carrying: string; read: "request" | "transcript"; rules?: readonly string[] }
   | { type: "compaction" }
   | Settled
@@ -67,6 +70,7 @@ export type Action =
   | { type: "ignored"; why: string }
   | { type: "pull"; body: string; why: string }
   | { type: "refuse"; rule: string; why: string; text: string }
+  | { type: "rerun-refused"; why: string; text: string }
   | { type: "withdraw"; rule: string; why: string }
   | Trim
   | GateAction;
@@ -296,6 +300,9 @@ function onRequested(index: Index, event: Extract<Event, { type: "requested" }>,
 }
 
 function onToolCall(index: Index, event: Extract<Event, { type: "tool-call" }>, state: RunState): Step {
+  const checked = checkedRerun(event, state);
+  if (checked.refused !== undefined) return { actions: [checked.refused], state };
+  state = checked.state;
   const actions: Action[] = [];
   let rules = state.rules;
 
@@ -326,25 +333,6 @@ function onRead(index: Index, event: Extract<Event, { type: "read" }>, state: Ru
     return body === undefined ? [] : [{ type: "pull", body: body.name, why: `${event.tool} ${body.name}/SKILL.md` }];
   });
   return { actions, state };
-}
-
-function toolCallFired(trigger: ScopeCondition, event: Extract<Event, { type: "tool-call" }>): { deliver: string } | { broken: string } | undefined {
-  if (trigger.predicate === "file-matches") {
-    const hit = event.writes?.find((path) => matchesGlob(trigger.glob, path));
-    return hit === undefined ? undefined : { deliver: `file-matches matched ${hit}` };
-  }
-  if (trigger.predicate !== "tool-call" || trigger.tool.toLowerCase() !== event.tool.toLowerCase()) return undefined;
-  const value = event.input[trigger.argument];
-  if (typeof value === "string") {
-    return matchesGlob(trigger.matches, value) ? { deliver: `tool-call matched ${trigger.tool}.${trigger.argument} against ${trigger.matches}` } : undefined;
-  }
-  const held = Object.keys(event.input).join(", ") || "nothing";
-  return {
-    broken:
-      value === undefined
-        ? `trigger names argument \`${trigger.argument}\`, and ${event.tool} was called with ${held}`
-        : `trigger names argument \`${trigger.argument}\`, which ${event.tool} was called with as a ${typeof value}`,
-  };
 }
 
 function forbidding(rule: IndexedRule, harness: Harness, changes: readonly Change[]): Action[] {
@@ -385,6 +373,8 @@ export function dispatch(index: Index, event: Event, state: RunState): Step {
       return onCompaction(index, state);
     case "tool-call":
       return onToolCall(index, event, state);
+    case "tool-result":
+      return slowResult(event, state);
     case "read":
       return onRead(index, event, state);
     case "settled":

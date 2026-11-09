@@ -15,13 +15,14 @@ Tool definitions are absent from this repository and have no character size in t
 
 | Part | Characters | Share of Rules by characters |
 | --- | ---: | ---: |
-| rule: `comment-discipline` | 2671 | 28.6% |
-| rule: `fix-what-you-see` | 328 | 3.5% |
-| rule: `prove-it-works` | 2760 | 29.6% |
-| rule: `typescript-best-practices` | 1768 | 19.0% |
-| rule: `agents-md-router` | 754 | 8.1% |
-| rule: `readme-front-door` | 678 | 7.3% |
-| rule: `credential-files` | 369 | 4.0% |
+| rule: `comment-discipline` | 2671 | 27.1% |
+| rule: `fix-what-you-see` | 328 | 3.3% |
+| rule: `prove-it-works` | 2760 | 28.0% |
+| rule: `typescript-best-practices` | 1768 | 18.0% |
+| rule: `agents-md-router` | 754 | 7.7% |
+| rule: `readme-front-door` | 678 | 6.9% |
+| rule: `credential-files` | 369 | 3.7% |
+| rule: `git-hygiene-stash` | 516 | 5.2% |
 | skill: `build-and-review-motion` | 5794 |  |
 | skill: `develop-a-website` | 8421 |  |
 | skill: `grilling` | 3528 |  |
@@ -52,15 +53,17 @@ Tool definitions are absent from this repository and have no character size in t
 
 | Part | Characters | Share of Rules by characters |
 | --- | ---: | ---: |
-| rule: `comment-discipline` | 2671 | 25.3% |
-| rule: `fix-what-you-see` | 328 | 3.1% |
-| rule: `guard-the-context-window` | 353 | 3.3% |
-| rule: `prove-it-works` | 2760 | 26.2% |
-| rule: `typescript-best-practices` | 1768 | 16.8% |
-| rule: `agents-md-router` | 754 | 7.2% |
-| rule: `readme-front-door` | 678 | 6.4% |
-| rule: `credential-files` | 369 | 3.5% |
-| rule: `writing-for-people` | 861 | 8.2% |
+| rule: `comment-discipline` | 2671 | 22.9% |
+| rule: `finish-the-task` | 362 | 3.1% |
+| rule: `fix-what-you-see` | 328 | 2.8% |
+| rule: `guard-the-context-window` | 609 | 5.2% |
+| rule: `prove-it-works` | 2760 | 23.6% |
+| rule: `typescript-best-practices` | 1768 | 15.1% |
+| rule: `agents-md-router` | 754 | 6.5% |
+| rule: `readme-front-door` | 678 | 5.8% |
+| rule: `credential-files` | 369 | 3.2% |
+| rule: `git-hygiene-stash` | 516 | 4.4% |
+| rule: `writing-for-people` | 861 | 7.4% |
 | skill: `build-and-review-motion` | 5794 |  |
 | skill: `develop-a-website` | 8421 |  |
 | skill: `grilling` | 3528 |  |
@@ -91,15 +94,16 @@ Tool definitions are absent from this repository and have no character size in t
 
 | Part | Characters | Share of Rules by characters |
 | --- | ---: | ---: |
-| rule: `comment-discipline` | 2671 | 26.5% |
-| rule: `fix-what-you-see` | 328 | 3.3% |
-| rule: `force-determinism` | 647 | 6.4% |
-| rule: `git-hygiene` | 100 | 1.0% |
-| rule: `prove-it-works` | 2760 | 27.4% |
-| rule: `typescript-best-practices` | 1768 | 17.5% |
-| rule: `agents-md-router` | 754 | 7.5% |
-| rule: `readme-front-door` | 678 | 6.7% |
-| rule: `credential-files` | 369 | 3.7% |
+| rule: `comment-discipline` | 2671 | 25.2% |
+| rule: `fix-what-you-see` | 328 | 3.1% |
+| rule: `force-determinism` | 647 | 6.1% |
+| rule: `git-hygiene` | 100 | 0.9% |
+| rule: `prove-it-works` | 2760 | 26.1% |
+| rule: `typescript-best-practices` | 1768 | 16.7% |
+| rule: `agents-md-router` | 754 | 7.1% |
+| rule: `readme-front-door` | 678 | 6.4% |
+| rule: `credential-files` | 369 | 3.5% |
+| rule: `git-hygiene-stash` | 516 | 4.9% |
 | skill: `build-and-review-motion` | 5794 |  |
 | skill: `develop-a-website` | 8421 |  |
 | skill: `grilling` | 3528 |  |
@@ -130,14 +134,15 @@ Tool definitions are absent from this repository and have no character size in t
 
 | Part | Characters | Share of Rules by characters |
 | --- | ---: | ---: |
-| rule: `comment-discipline` | 2671 | 28.3% |
-| rule: `fix-what-you-see` | 328 | 3.5% |
-| rule: `git-hygiene-co-author` | 112 | 1.2% |
-| rule: `prove-it-works` | 2760 | 29.2% |
-| rule: `typescript-best-practices` | 1768 | 18.7% |
-| rule: `agents-md-router` | 754 | 8.0% |
-| rule: `readme-front-door` | 678 | 7.2% |
-| rule: `credential-files` | 369 | 3.9% |
+| rule: `comment-discipline` | 2671 | 26.8% |
+| rule: `fix-what-you-see` | 328 | 3.3% |
+| rule: `git-hygiene-co-author` | 112 | 1.1% |
+| rule: `prove-it-works` | 2760 | 27.7% |
+| rule: `typescript-best-practices` | 1768 | 17.8% |
+| rule: `agents-md-router` | 754 | 7.6% |
+| rule: `readme-front-door` | 678 | 6.8% |
+| rule: `credential-files` | 369 | 3.7% |
+| rule: `git-hygiene-stash` | 516 | 5.2% |
 | skill: `build-and-review-motion` | 5794 |  |
 | skill: `develop-a-website` | 8421 |  |
 | skill: `grilling` | 3528 |  |
@@ -168,11 +173,12 @@ Tool definitions are absent from this repository and have no character size in t
 
 | Part | Characters | Share of Rules by characters |
 | --- | ---: | ---: |
-| rule: `guard-the-context-window` | 353 | 7.2% |
-| rule: `prove-it-works` | 2760 | 56.2% |
-| rule: `agents-md-router` | 754 | 15.3% |
-| rule: `readme-front-door` | 678 | 13.8% |
-| rule: `credential-files` | 369 | 7.5% |
+| rule: `guard-the-context-window` | 609 | 10.7% |
+| rule: `prove-it-works` | 2760 | 48.5% |
+| rule: `agents-md-router` | 754 | 13.3% |
+| rule: `readme-front-door` | 678 | 11.9% |
+| rule: `credential-files` | 369 | 6.5% |
+| rule: `git-hygiene-stash` | 516 | 9.1% |
 | skill: `build-and-review-motion` | 5794 |  |
 | skill: `develop-a-website` | 8421 |  |
 | skill: `grilling` | 3528 |  |

@@ -26,6 +26,8 @@ function narrate(action: Action): string {
       return `pull ${action.body}: ${action.why}`;
     case "refuse":
       return `refuse ${action.rule}: ${action.why}`;
+    case "rerun-refused":
+      return `rerun-refused: ${action.why}`;
     case "withdraw":
       return `withdraw ${action.rule}: ${action.why}`;
     case "trim":

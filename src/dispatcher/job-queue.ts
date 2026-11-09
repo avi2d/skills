@@ -183,6 +183,7 @@ const TABLE: readonly Entry[] = [
   { group: "evals", runs: ["vitest", "run"], when: evalConfig },
   { group: "tests", runs: ["vitest", "run"], when: whole(VITEST) },
   { group: "tests", runs: ["stryker", "run"], when: always },
+  { group: "tests", runs: ["checks-test"], when: always },
   { group: "tests", runs: ["cargo", "test"], when: whole(CARGO) },
   { group: "tests", runs: ["pytest"], when: whole(PYTEST) },
   { group: "gpu", runs: ["llama-bench"], when: always },

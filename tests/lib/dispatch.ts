@@ -66,7 +66,9 @@ export const subject = (action: Action): string =>
         ? "dispatcher"
         : action.type === "trim"
           ? action.profile
-          : action.tree;
+          : action.type === "rerun-refused"
+            ? action.type
+            : action.tree;
 
 export const prompt: Event = { type: "prompt" };
 export const promptIn = (...files: string[]): Event => ({ type: "prompt", files });

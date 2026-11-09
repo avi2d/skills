@@ -155,7 +155,7 @@ const ANSWERS: Record<string, { answer: string; times: number }> = {
 };
 
 test("a context-window case's file is far larger than its budget, and holds its answer only in its own entry", () => {
-  const cases = CASES.filter((x) => x.rule === "guard-the-context-window");
+  const cases = CASES.filter((x) => x.rule === "guard-the-context-window" && x.id !== "slow-report");
   expect(cases.map((c) => c.id).toSorted()).toEqual(Object.keys(ANSWERS).toSorted());
   for (const c of cases) {
     const [path, text] = Object.entries(c.files).find(([, t]) => bytesOf(t) > 100_000) ?? [];
@@ -164,6 +164,19 @@ test("a context-window case's file is far larger than its budget, and holds its 
     const { answer, times } = ANSWERS[c.id] ?? { answer: "", times: 0 };
     expect((text ?? "").split(answer).length - 1, `${c.id}: ${path} holds ${answer} somewhere besides its own entry`).toBe(times);
   }
+});
+
+test("slow-report's script sleeps past a minute and prints past four budgets, so a whole read never fits", () => {
+  const found = CASES.find((x) => x.id === "slow-report") ?? expect.unreachable("no slow-report case");
+  const script = found.files["tools/stock-take.sh"] ?? expect.unreachable("slow-report seeds no script");
+  const [, sleep] = /sleep (\d+)/.exec(script) ?? [];
+  expect(Number(sleep), "slow-report's command finishes inside a minute, so the Rule never fires on it").toBeGreaterThanOrEqual(60);
+  const [, lines] = /seq 1 (\d+)/.exec(script) ?? [];
+  const widths = [...script.matchAll(/%0(\d+)d/g)].map((match) => Number(match[1]));
+  expect(
+    Number(lines) * Math.max(...widths),
+    "slow-report's whole output fits four budgets, so reading it whole costs nothing",
+  ).toBeGreaterThan(16 * 1024 * 4);
 });
 
 test("a run that did nothing is never a pass, so no case can be won by doing nothing", () => {

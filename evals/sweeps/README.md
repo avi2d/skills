@@ -110,6 +110,7 @@ A zero cost without a matching rate appears as not measured.
 | [2026-10-11T20:09:36Z](2026-10-11T20-09-36Z-470a2003-7ffd-4232-9905-9d62575127a7.json) | `claude-bridge/claude-opus-5-5` | high | 2 | 32 of 32 | 314 | 92030 | 1214406 | 381754 | estimated $3.9935 | `c964b22` | as committed |
 | [2026-10-12T14:14:27Z](2026-10-12T14-14-27Z-7cfb5e78-f0b8-4f29-b857-4b5030210031.json) | `opencode-go/muse-spark-1.3-contributor` | high | 5 | 120 of 120 | 1546574 | 883877 | 7812219 | 0 | $0.3471 | `b133b41` | as committed |
 | [2026-10-12T16:21:59Z](2026-10-12T16-21-59Z-7bcaf5ef-6348-4f05-9585-23409b7d8e8d.json) | `claude-bridge/claude-opus-5-5` | high | 2 | 48 of 48 | 528 | 155336 | 2223569 | 603056 | estimated $6.5688 | `b133b41` | as committed |
+| [2026-11-09T10:53:57Z](2026-11-09T10-53-57Z-5e21b076-f207-4738-a2ef-1dab7e6415ff.json) | `opencode-go/muse-spark-1.3-contributor` | high | 2 | 4 of 4 | 50527 | 3284 | 62397 | 0 | $0.0058 | `3aff7f2` | uncommitted |
 
 ## agent-docs
 
@@ -263,6 +264,8 @@ A zero cost without a matching rate appears as not measured.
 | [2026-09-25T18:48:33Z](2026-09-25T18-48-33Z-0f5d5c8d-61a6-4cc4-8bf7-e7866855f894.json) | `claude-bridge/claude-opus-5-5` | xhigh | all | 10/10, 100% | 10/10, 100% | +0 pp | 1.000 |
 | | | | build-log | 5/5, 100% | 5/5, 100% | +0 pp | 1.000 |
 | | | | lockfile | 5/5, 100% | 5/5, 100% | +0 pp | 1.000 |
+| [2026-11-09T10:53:57Z](2026-11-09T10-53-57Z-5e21b076-f207-4738-a2ef-1dab7e6415ff.json) | `opencode-go/muse-spark-1.3-contributor` | high | all | 2/2, 100% | 0/2, 0% | +100 pp | 0.333 |
+| | | | slow-report | 2/2, 100% | 0/2, 0% | +100 pp | 0.333 |
 
 ## plain-sentences
 
