@@ -56,7 +56,7 @@ test("a copy edit that keeps the subtler tells fails, and one that clears them p
   expect(judged(plainOverview, "docs/overview.md", before, "# Import ledger entries\n\nRun the import.\n")).toBe("unjudged");
 });
 
-test("a refusal kept only outside VISION.md fails, and a duplicated principle fails", () => {
+test("a refusal kept only outside VISION.md fails, a duplicated principle fails, and a pointer passes", () => {
   const vision = "# Vision\n\nLedger stays a small explicit tool.\n";
   const refusal = "Plugin support is refused: plugins hide data flow, which breaks the explicit over implicit principle.\n";
   const owned = verdictOf(whatGoesWhere, run([], [{ path: "VISION.md", before: vision, after: `${vision}${refusal}` }]));
@@ -80,6 +80,30 @@ test("a refusal kept only outside VISION.md fails, and a duplicated principle fa
     ]),
   );
   expect(duplicated.outcome).toBe("fail");
+  const pointer = verdictOf(
+    whatGoesWhere,
+    run([], [
+      { path: "VISION.md", before: vision, after: `${vision}${refusal}` },
+      { path: "AGENTS.md", before: "# Agent notes\n", after: "# Agent notes\n\nFor plugin requests, read VISION.md.\n" },
+    ]),
+  );
+  expect(pointer.outcome).toBe("pass");
+  const readmePointer = verdictOf(
+    whatGoesWhere,
+    run([], [
+      { path: "VISION.md", before: vision, after: `${vision}${refusal}` },
+      { path: "README.md", before: "# ledger\n", after: "# ledger\n\nFor plugin requests, read VISION.md.\n" },
+    ]),
+  );
+  expect(readmePointer.outcome).toBe("pass");
+  const linked = verdictOf(
+    whatGoesWhere,
+    run([], [
+      { path: "VISION.md", before: vision, after: `${vision}${refusal}` },
+      { path: "AGENTS.md", before: "# Agent notes\n", after: "# Agent notes\n\nPlugin support is refused: see VISION.md.\n" },
+    ]),
+  );
+  expect(linked.outcome).toBe("fail");
   expect(verdictOf(whatGoesWhere, run([], [{ path: "VISION.md", before: vision, after: vision }])).outcome).toBe("unjudged");
   expect(verdictOf(whatGoesWhere, run([], [])).outcome).toBe("unjudged");
 });

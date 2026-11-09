@@ -53,7 +53,7 @@ export const whatGoesWhere: ProgramJudge = {
     const stray = changes
       .filter((change) => change.path === "README.md" || change.path === "AGENTS.md")
       .flatMap(addedLines)
-      .filter((line) => /plugin|refus|explicit over implicit/i.test(line));
+      .filter((line) => /refus|explicit over implicit/i.test(line) || (/plugin/i.test(line) && !/vision\.md/i.test(line)));
     if (stray.length > 0) return { passed: false, evidence: ["the refusal landed outside VISION.md:", ...stray] };
     const vision = changes.find((change) => change.path === "VISION.md");
     if (vision === undefined) return { unjudged: "VISION.md was not changed" };
