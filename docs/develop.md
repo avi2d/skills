@@ -19,11 +19,11 @@ To run the checks before a push:
 1. Run `bun run build`, and commit what it rewrites, because CI fails on a diff the build leaves.
 1. Run `bun run lint`.
 1. Run `bun run typecheck`.
-1. Run `bun run test:fast`.
+1. Run `bunx checks-test --changed`.
 
 `bun run build` writes `CHANGELOG.md` from the conventional commits since the last release, and the Effect scope in `tsconfig.json`.
 
-`.github/workflows/ci.yml` runs the same steps on every pull request and on the release pull request's dispatched run, on a clone, with the full `bun run test` in place of `bun run test:fast`.
+`.github/workflows/ci.yml` runs the same steps on every pull request and on the release pull request's dispatched run, on a clone, with the full `bun run test` in place of `bunx checks-test --changed`.
 It installs `claude` and a pinned `sqlite3` before `bun run test`.
 It runs `bun run test` with `TMPDIR` set to an empty directory under the runner's per-job temp, then `scripts/check-tmp-clean.sh`, which fails the job naming anything the suite left there.
 Every job runs on `ubuntu-latest`.
@@ -43,10 +43,11 @@ It fails on a skipped test that declares no reason with `skipReason` at its test
 A skip only a local machine meets, one without `claude` on `PATH` or without the `repos/effect` link, passes `"local"` as the third argument, so only a local run accepts it.
 A test that reads `$HOME` passes against a home nothing was installed into, or skips and says why.
 
-`bun run test:fast` is `scripts/test-fast.ts`, and `.no-mistakes.yaml` names it as the push gate's test step.
-It runs `tests/unit/`, then the e2e test files the branch touches since it left `origin/main`, committed, uncommitted or untracked.
-It runs as many workers as the machine has cores, and judges skips the way `bun run test` does.
-It fails before running anything when `origin/main` is missing, because then the touched files are unknown.
+`bunx checks-test --changed` runs only the unit and e2e test files the change reaches.
+The change is every path between where `HEAD` branched from `origin/main` and `HEAD`, plus the working tree edits and untracked files.
+A changed test file runs on its own, and a shared file never widens the run to the whole suite.
+The run fails before any test runs when `origin/main` is missing, because then the reached files are unknown.
+`.no-mistakes.yaml` names `bunx checks-test --changed` as the push gate test step.
 
 `bun test` preloads `tests/lib/emitted.ts`, which generates into a `generated-<pid>/` of the test process's own.
 A fresh clone and a fresh worktree are green without a command anyone has to remember, parallel test processes never read each other's output, and the suite writes none of the `generated/` tree the harnesses load.

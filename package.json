@@ -11,7 +11,6 @@
     "build": "checks-effect-scope && checks-changelog",
     "test": "checks-test",
     "test:local": "bun scripts/test-local.ts",
-    "test:fast": "bun scripts/test-fast.ts",
     "lint": "oxlint && checks-lint",
     "typecheck": "tsc --noEmit && effect-tsgo diagnostics --project tsconfig.json --format text --strict",
     "link": "bun run src/generate/link.ts",
@@ -40,7 +39,7 @@
     "vitest-evals": "0.17.0"
   },
   "dependencies": {
-    "@avi2dg/checks": "^0.86.1",
+    "@avi2dg/checks": "^0.90.0",
     "@effect/platform-bun": "4.0.0",
     "effect": "4.0.0"
   },

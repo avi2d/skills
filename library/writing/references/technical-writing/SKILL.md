@@ -107,6 +107,7 @@ The kit ships these:
 - `readme.md`
 - `reference.md`
 - `tutorial.md`
+- `vision.md`
 <!-- The list above ends here. -->
 
 ## Title a heading by what the reader does or looks up

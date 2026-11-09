@@ -15,7 +15,7 @@ describe("reading the checks a repository declares", () => {
   test("this repository's own file reads as the commands no-mistakes runs", () => {
     expect(readConfig(readFileSync(join(repo, CONFIG), "utf8"))).toEqual({
       allowRepoCommands: true,
-      commands: { lint: "bun run lint && bun run typecheck", test: "bun run test:fast" },
+      commands: { lint: "bun run lint && bun run typecheck", test: "bunx checks-test --changed" },
     });
   });
 
