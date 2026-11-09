@@ -139,7 +139,7 @@ Only the default Profile lists Skills and References, and every other Profile sh
 The default Profile holds the full Rules list, and every other Profile names only additions in `add` and removals in `drop` against it.
 Rules absent from every Profile remain in the Dispatcher catalogue for repository switches.
 `default_models` names the models that run the default Profile on purpose, and no model can appear both there and in a Profile.
-`tests/unit/selection-models.test.ts` fails on a model that a generated crew-dispatch or no-mistakes config names when neither a Profile nor `default_models` lists it.
+`tests/unit/selection-models.test.ts` fails on a model that a generated no-mistakes config names when neither a Profile nor `default_models` lists it.
 
 A repository can override that default for itself, switching a catalogued Rule on or off in the `skills.rules` of its `package.json`.
 A switch changes whether a Rule is active there, not when it fires: its trigger still decides that.

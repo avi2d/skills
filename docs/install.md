@@ -47,12 +47,8 @@ These paths in $HOME then belong to the checkout:
 - `~/.claude/skills`
 - `~/.claude/skills-dispatch`
 - `~/.codex/skills-dispatch`
-- `~/Projects/firstmate/config/crew-dispatch.json`
 - `~/.no-mistakes/config.yaml`
 - `~/.orc/orchestrator.md`
-- `~/Projects/firstmate/config/secondmate-harness`
-- `~/Projects/firstmate/config/supervision-branch-model`
-- `~/Projects/firstmate/config/supervision-branch-effort`
 - `~/.pi/agent/settings.json`, written from `harness/pi/settings.json` rather than linked
 - `~/<dir>/settings.json` for each `<dir>` in the config's `claudeConfigDirs`, given `hooks` from `harness/claude-code/settings.json` and keeping every other key
 <!-- The list above ends here. -->
@@ -86,12 +82,8 @@ for path in \
   '.claude/skills' \
   '.claude/skills-dispatch' \
   '.codex/skills-dispatch' \
-  'Projects/firstmate/config/crew-dispatch.json' \
   '.no-mistakes/config.yaml' \
   '.orc/orchestrator.md' \
-  'Projects/firstmate/config/secondmate-harness' \
-  'Projects/firstmate/config/supervision-branch-model' \
-  'Projects/firstmate/config/supervision-branch-effort' \
   '.pi/agent/effect-codemode' \
   '.claude/agents' \
   '.claude/CLAUDE.md' \
