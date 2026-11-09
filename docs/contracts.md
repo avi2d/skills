@@ -95,9 +95,8 @@ pi silently moves an effort a model does not support to the next level up that i
 
 `bun run generate` writes the no-mistakes global config to `generated/no-mistakes/config.yaml` from `src/generate/no-mistakes-config.ts`, for the `$HOME` it runs under, and `bun run link` links `~/.no-mistakes/config.yaml` to it.
 The schema knows only the fields no-mistakes reads, because no-mistakes refuses a config file with a field it does not know.
-In `reviewer_chain`, the review step tries GPT-6 Astra on the Codex sign-in first, then Opus 5.5 on the clauth account `main`, then Opus 5.5 on the clauth account `second` last.
-No entry carries a floor, so the review step moves to the next entry only after a usage limit, as [record 0108](adr/0108-astra-reviews-first-with-no-floor-and-codex-models-join-four-dispatch-rules.md) records.
-pi names Astra `openai/gpt-6-astra` on both machines.
+In `reviewer_chain`, the review step tries Opus 5.5 on the clauth account `main` first, then Opus 5.5 on the clauth account `second` last.
+No entry carries a floor, so the review step moves to the next entry only after a usage limit.
 The login folders of `second` and `main` sit under `~/.claude-accounts/`.
 `review` holds one path instruction over every changed file that reviews added comments against comment discipline as warnings that never fix or block.
 It flags a comment that restates its line or carries a measured number that will go stale, and it keeps a comment that gives a reason the code cannot show.

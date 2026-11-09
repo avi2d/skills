@@ -8,8 +8,6 @@ const Count = Schema.Int.check(Schema.isGreaterThanOrEqualTo(0));
 
 const Effort = Schema.Literals(["minimal", "low", "medium", "high", "xhigh", "max"]);
 
-const ASTRA = "openai/gpt-6-astra";
-
 const OPUS = "claude-bridge/claude-opus-5-5";
 
 const SPARK = "opencode-go/muse-spark-1.3-contributor";
@@ -20,9 +18,6 @@ const accountDirOf = (account: ClaudeAccount) =>
   });
 
 const ReviewerChain = Schema.Tuple([
-  Schema.Struct({ agent: Schema.Literal("pi"), model: Schema.Literal(ASTRA), effort: Effort }).annotate({
-    description: "GPT-6 Astra on the Codex sign-in, whose plan has only a weekly window",
-  }),
   Schema.Struct({
     agent: Schema.Literal("pi"),
     model: Schema.Literal(OPUS),
@@ -121,7 +116,6 @@ export const noMistakesConfigOf = (home: string): NoMistakesConfig => ({
     pi: { model: SPARK, effort: "high" },
   },
   reviewer_chain: [
-    { agent: "pi", model: ASTRA, effort: "high" },
     { agent: "pi", model: OPUS, effort: "high", env: { CLAUDE_CONFIG_DIR: loginDir(home, MAIN_ACCOUNT) } },
     { agent: "pi", model: OPUS, effort: "high", env: { CLAUDE_CONFIG_DIR: loginDir(home, SECOND_ACCOUNT) } },
   ],
