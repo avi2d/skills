@@ -72,19 +72,17 @@ test.each([...MACHINES])("on the %s machine, the large tier keeps Muse first, Te
   expect(familiesIn(await dispatchOn(machine), ABOVE_150)).toEqual(["muse", "terra", "opus", "opus"]);
 });
 
-test.each([...MACHINES])("on the %s machine, the investigation and unknown cause rules list Opus on both accounts then Astra, so neither drops Astra or Opus", async (machine) => {
+test.each([...MACHINES])("on the %s machine, the investigation and unknown cause rules list Opus on both accounts with no Astra, so neither drops Opus", async (machine) => {
   const dispatch = await dispatchOn(machine);
-  for (const opening of [INVESTIGATION, UNKNOWN_CAUSE]) expect(familiesIn(dispatch, opening), opening).toEqual(["opus", "opus", "astra"]);
+  for (const opening of [INVESTIGATION, UNKNOWN_CAUSE]) expect(familiesIn(dispatch, opening), opening).toEqual(["opus", "opus"]);
 });
 
-test.each([...MACHINES])("on the %s machine, Astra and Terra sit only in their two rules each, at high effort on Codex", async (machine) => {
-  const placed = naming(/astra|terra/i)(await profilesOn(machine));
+test.each([...MACHINES])("on the %s machine, Terra sits only in the small and large tiers, at high effort on Codex", async (machine) => {
+  const placed = naming(/terra/i)(await profilesOn(machine));
   const openingOf = (at: string) => [ORDINARY, ABOVE_150, INVESTIGATION, UNKNOWN_CAUSE].find((opening) => at.startsWith(opening.slice(0, at.length))) ?? at;
   expect(placed.map(({ at, profile }) => [familyOf(profile.model), openingOf(at), profile.effort, profile.provider, profile.floor])).toEqual([
     ["terra", ORDINARY, "high", "codex", undefined],
     ["terra", ABOVE_150, "high", "codex", undefined],
-    ["astra", INVESTIGATION, "high", "codex", undefined],
-    ["astra", UNKNOWN_CAUSE, "high", "codex", undefined],
   ]);
 });
 
@@ -189,7 +187,7 @@ test.each([...MACHINES])("on the %s machine, pi runs every dispatched effort as 
   expect(held.flatMap(misrun)).toEqual([]);
 });
 
-test("on the mac machine, a code change whose cause is not yet known dispatches Opus 5.5 on both accounts then Astra at high, after the narrower shared rules", async () => {
+test("on the mac machine, a code change whose cause is not yet known dispatches Opus 5.5 on both accounts with no Astra, after the narrower shared rules", async () => {
   const dispatch = await dispatchOn("mac");
   const found = dispatch.rules.filter(({ when }) => when.includes(UNKNOWN_CAUSE));
   expect(found, "the mac dispatch carries no unknown-cause rule, so one falls to the default").toHaveLength(1);
@@ -200,6 +198,5 @@ test("on the mac machine, a code change whose cause is not yet known dispatches 
   expect(listed(rule.use)).toEqual([
     { harness: "pi", model: "claude-bridge/claude-opus-5-5", effort: "high", provider: "claude", claude_account: "main" },
     { harness: "pi", model: "claude-bridge/claude-opus-5-5", effort: "high", provider: "claude", claude_account: "second" },
-    { harness: "pi", model: "openai/gpt-6-astra", effort: "high", provider: "codex" },
   ]);
 });
