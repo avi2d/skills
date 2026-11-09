@@ -5,9 +5,9 @@ import { segments, type Word } from "./shell-words";
 
 export type Group = "tests" | "gpu" | "evals";
 
-export type Steered = { type: "queue"; group: Group; command: string } | { type: "refuse"; groups: readonly Group[]; text: string };
+export type Steered = { type: "queue"; group: Group; command: string } | { type: "refuse"; groups: readonly Group[]; text: string } | { type: "pass"; group: Group; reason: string; text: string };
 
-type Entry = { group: Group; runs: readonly string[]; when: (args: readonly string[], dirs: readonly string[]) => boolean };
+type Entry = { group: Group; runs: readonly string[]; when: (args: readonly string[], dirs: readonly string[]) => boolean; targeted?: (args: readonly string[], dirs: readonly string[]) => boolean };
 
 const WATCH_OPTIONS = ["-w", "--watch", "--watchAll"];
 
@@ -46,6 +46,8 @@ const whole =
 
 const always = (): boolean => true;
 
+const narrowed = (options: Options) => (args: readonly string[], dirs: readonly string[]): boolean => !whole(options)(args, dirs);
+
 const prompted = (args: readonly string[]): boolean => args.filter((arg) => !arg.startsWith("-")).length >= 2;
 
 const BUN: Options = {
@@ -73,8 +75,22 @@ const PYTEST: Options = {
   filters: ["-k"],
 };
 
+const GO: Options = {
+  paths: ["-o"],
+  filters: ["--changed"],
+};
+
+const goTargeted = (args: readonly string[], dirs: readonly string[]): boolean => {
+  if (args.some((arg) => arg === "-run" || arg.startsWith("-run=") || arg === "-skip" || arg.startsWith("-skip="))) return true;
+  return narrowed(GO)(args, dirs);
+};
+
 const scripts = (...runner: string[]): Entry[] => [
-  { group: "tests", runs: [...runner, "test"], when: whole(SCRIPT) },
+  { group: "tests", runs: [...runner, "test"], when: exits, targeted: narrowed(SCRIPT) },
+  { group: "tests", runs: [...runner, "test:fast"], when: exits, targeted: narrowed(SCRIPT) },
+  { group: "tests", runs: [...runner, "lint"], when: exits, targeted: narrowed(SCRIPT) },
+  { group: "tests", runs: [...runner, "typecheck"], when: exits, targeted: narrowed(SCRIPT) },
+  { group: "tests", runs: [...runner, "build"], when: exits, targeted: narrowed(SCRIPT) },
   { group: "tests", runs: [...runner, "mutate"], when: always },
   { group: "tests", runs: [...runner, "mutate:incremental"], when: always },
 ];
@@ -166,7 +182,7 @@ const runsInference: Gate = (args) => {
 const runsInferenceModule: Gate = (args) => pythonRunsInference(args, []);
 
 const TABLE: readonly Entry[] = [
-  { group: "tests", runs: ["bun", "test"], when: whole(BUN) },
+  { group: "tests", runs: ["bun", "test"], when: exits, targeted: narrowed(BUN) },
   ...scripts("bun", "run"),
   ...scripts("npm", "run"),
   ...scripts("pnpm", "run"),
@@ -181,10 +197,14 @@ const TABLE: readonly Entry[] = [
   ...evalScripts("pnpm"),
   ...evalScripts("yarn"),
   { group: "evals", runs: ["vitest", "run"], when: evalConfig },
-  { group: "tests", runs: ["vitest", "run"], when: whole(VITEST) },
+  { group: "tests", runs: ["vitest", "run"], when: exits, targeted: narrowed(VITEST) },
   { group: "tests", runs: ["stryker", "run"], when: always },
-  { group: "tests", runs: ["cargo", "test"], when: whole(CARGO) },
-  { group: "tests", runs: ["pytest"], when: whole(PYTEST) },
+  { group: "tests", runs: ["cargo", "test"], when: exits, targeted: narrowed(CARGO) },
+  { group: "tests", runs: ["pytest"], when: exits, targeted: narrowed(PYTEST) },
+  { group: "tests", runs: ["checks-test"], when: exits, targeted: narrowed(BUN) },
+  { group: "tests", runs: ["go", "test"], when: exits, targeted: goTargeted },
+  { group: "tests", runs: ["xcrun", "simctl", "boot"], when: always },
+  { group: "tests", runs: ["xcrun", "simctl", "io"], when: always },
   { group: "gpu", runs: ["llama-bench"], when: always },
   { group: "gpu", runs: ["llama-batched-bench"], when: always },
   { group: "gpu", runs: ["ollama", "run"], when: prompted },
@@ -258,7 +278,23 @@ function directoriesNamed(words: readonly string[]): string[] {
   });
 }
 
-type Queued = { group: Group; words: readonly Word[]; prefix: number };
+type Queued = { group: Group; priority: number | undefined; words: readonly Word[]; prefix: number };
+
+const base = (word: string): string => word.slice(word.lastIndexOf("/") + 1);
+
+const SCRIPT_RUNNERS = ["bun", "node", "sh", "bash", "zsh", "dash"];
+
+const scripted = (named: readonly string[], dirs: readonly string[]): Pick<Queued, "group" | "priority"> | undefined => {
+  const [head = "", ...rest] = named;
+  const through = SCRIPT_RUNNERS.includes(head) ? rest : named;
+  const [first = "", ...args] = through;
+  if (args.some(watching)) return undefined;
+  const name = base(first);
+  if (name === "fm-sim-boot.sh") return { group: "tests", priority: undefined };
+  if (name === "fm-test-run.sh") return { group: "tests", priority: narrowed(SCRIPT)(args, dirs) ? 1 : undefined };
+  if (name.endsWith(".test.sh")) return { group: "tests", priority: 1 };
+  return undefined;
+};
 
 function queuedSegments(command: string, cwd: string): Queued[] {
   const raw = segments(command);
@@ -266,7 +302,12 @@ function queuedSegments(command: string, cwd: string): Queued[] {
   return raw.flatMap((words) => {
     const named = unwrapped(texts(words));
     const entry = TABLE.find(({ runs, when }) => startsWith(named, runs) && when(named.slice(runs.length), dirs));
-    return entry === undefined ? [] : [{ group: entry.group, words, prefix: words.length - named.length }];
+    if (entry !== undefined) {
+      const args = named.slice(entry.runs.length);
+      return [{ group: entry.group, priority: entry.targeted?.(args, dirs) ? 1 : undefined, words, prefix: words.length - named.length }];
+    }
+    const fallback = scripted(named, dirs);
+    return fallback === undefined ? [] : [{ ...fallback, words, prefix: words.length - named.length }];
   });
 }
 
@@ -278,9 +319,10 @@ const quoted = (text: string): string => `'${text.replaceAll("'", `'\\''`)}'`;
 
 export const LOG_LINES = 40;
 
-export function queued(command: string, group: Group): string {
+export function queued(command: string, group: Group, priority?: number): string {
+  const selected = priority === undefined ? "" : ` --priority ${priority}`;
   return [
-    `id=$(pueue add --print-task-id --group ${group} -- ${quoted(command)}) && {`,
+    `id=$(pueue add${selected} --print-task-id --group ${group} -- ${quoted(command)}) && {`,
     `echo "queued as pueue task $id in group ${group}"`,
     `pueue wait --quiet --status success "$id"; ok=$?`,
     `pueue log --lines ${LOG_LINES} "$id"`,
@@ -325,17 +367,31 @@ function evalCapEdits({ words, prefix }: Queued): Edit[] {
 const edited = (command: string, edits: readonly Edit[]): string =>
   [...edits].sort((a, b) => b.from - a.from).reduce((out, { from, to, text }) => out.slice(0, from) + text + out.slice(to), command);
 
+const unavailable = (group: Group, reason: string): Steered => ({
+  type: "pass",
+  group,
+  reason,
+  text: `The ${group} queue is unavailable because ${reason}, so the command runs directly.`,
+});
+
 export function steer(command: string, cwd: string, available: () => readonly string[] | undefined = pueueGroups): Steered | undefined {
+  if (process.env.PUEUE_GROUP !== undefined || process.env.PUEUE_WORKER_ID !== undefined) return undefined;
   const found = queuedSegments(command, cwd);
   const groups = groupsOf(found);
   const [group] = groups;
   if (group === undefined) return undefined;
   const listed = available();
-  if (!groups.every((wanted) => listed?.includes(wanted))) return undefined;
+  if (listed === undefined) return unavailable(group, "the pueue group listing failed");
+  const [missing] = groups.filter((wanted) => !listed.includes(wanted));
+  if (missing !== undefined) return unavailable(missing, `pueue has no ${missing} group`);
   if (groups.length > 1) return { type: "refuse", groups, text: groups.includes("evals") ? SEPARATE_EVAL_CALLS : SEPARATE_CALLS };
   if (group === "evals") return { type: "queue", group, command: queued(edited(command, found.flatMap(evalCapEdits)), group) };
-  return { type: "queue", group, command: queued(command, group) };
+  const urgent = found.some(({ priority }) => priority === 1) ? 1 : undefined;
+  return { type: "queue", group, command: queued(command, group, urgent) };
 }
 
-export const steeredLine = (steered: Steered): string =>
-  steered.type === "queue" ? `job-queue ${steered.group}: queued the command through pueue` : `job-queue ${steered.groups.join(" and ")}: refused a call that mixes groups`;
+export const steeredLine = (steered: Steered): string => {
+  if (steered.type === "queue") return `job-queue ${steered.group}: queued the command through pueue`;
+  if (steered.type === "refuse") return `job-queue ${steered.groups.join(" and ")}: refused a call that mixes groups`;
+  return `job-queue ${steered.group}: not queued (${steered.reason})`;
+};

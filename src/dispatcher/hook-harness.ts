@@ -333,6 +333,7 @@ export async function handle(adapter: HookAdapter, index: Index, hook: Hook, pay
   const steered = hook === "PreToolUse" && mode !== "deny" ? steeredCall(adapter, payload) : undefined;
   if (steered?.type === "refuse") return hookOutput(hook, steered.text, "deny", told);
   if (steered?.type === "queue") return rewriteOutput(adapter, { ...payload.tool_input, command: steered.command }, told);
+  if (steered?.type === "pass") return hookOutput(hook, adapter.say(reply, index, hook, payload), mode, told === "" ? steered.text : `${told}\n${steered.text}`);
   return hookOutput(hook, adapter.say(reply, index, hook, payload), mode, told);
 }
 

@@ -135,7 +135,11 @@ A whole test suite, an eval run, or a GPU benchmark or model inference an agent 
 Every Dispatcher asks `src/dispatcher/job-queue.ts` about each shell command before it runs.
 That module is no Rule, so it costs the model no context.
 Its table sends a whole test suite, such as `bun test` with no path or `bun run test` with no filter, and every mutation run to the `tests` group.
-A test run counts as targeted only when it names something that exists, carries a test-name filter, such as `-t`, `-k` or `--grep`, or runs only what `--changed` affects.
+It also sends the other heavy shapes to the `tests` group: `checks-test`, `bin/fm-test-run.sh`, any `bin/*.test.sh` script, `go test`, the `test:fast` script, the `lint`, `typecheck` and `build` scripts, `xcrun simctl boot`, `xcrun simctl io` and `fm-sim-boot.sh`.
+A targeted run queues too, with `pueue add --priority 1` so it starts before whole suites.
+A run counts as targeted when it names something that exists, carries a test name filter such as `-t`, `-k` or `--grep`, runs only what `--changed` affects, or is itself a single `.test.sh` script.
+A whole run queues without the priority flag.
+`go test` reads `-run` and `-skip` as its name filters and `-o` as its path option.
 The table lists, for each runner, only the options whose value is a path, such as `--config`, `-c`, `--root`, `--dir` or `--preload`, and each of those takes the next word unless it starts with `-`.
 Every other option is a flag that takes nothing.
 A word left over names a target only when it is a file or directory, or a glob that matches one, relative to the hook's working directory or any directory the command names through `cd`, `--cwd` or `env -C`.
@@ -158,14 +162,17 @@ The table recognises the common spellings listed here, and other spellings, such
 A call that needs the `tests` and the `gpu` group, such as `bun test && llama-bench -m model.gguf`, is refused with a message to run the tests and the GPU command as separate tool calls, since one queued job holds one group's slot.
 A call that mixes an eval with another queued command is refused with a message to run the eval and the other command as separate tool calls.
 A command that already calls pueue hands its work over as one quoted word, which the table never names, so the queued command is never queued twice.
+A command that runs inside a pueue worker carries `PUEUE_GROUP` or `PUEUE_WORKER_ID`, so it runs as it is and is never queued twice.
 
 A queued command becomes `pueue add --print-task-id --group <group> -- '<command>'`, then a wait on that task and the last 40 lines of its log.
+A targeted run adds `--priority 1` after `add`.
 The agent sees the task's output, and the command fails when the task fails.
 pi rewrites the call's input at `tool_call`.
 Claude Code and Codex rewrite it through `updatedInput` in their PreToolUse reply.
 Codex applies a rewrite only beside an `allow`.
 Claude Code applies it bare, so its own permission check still runs on the queued command.
 When `pueue` is not installed, its daemon is down, or it lacks a group the command needs, the command runs as it is.
+Claude Code and Codex hear why in the hook reply, and every harness leaves a `job-queue <group>: not queued (<reason>)` line in the dispatch log.
 A queued job runs under the pueue daemon, outside any sandbox, so Codex queues or refuses a command only in a full-access turn and never overrides a restricted sandbox, whatever its network setting.
 The Dispatcher reads that sandbox from the latest `turn_context` in the rollout, and runs the command as it is under any other sandbox or a rollout it cannot read.
 Each queued or refused call is a `job-queue` line in the dispatch log naming its groups, and never the command, which can carry a credential.

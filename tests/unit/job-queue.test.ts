@@ -166,6 +166,31 @@ describe("the heavy shapes the queue plan adds", () => {
       command: expect.stringContaining("pueue add --priority 1 --print-task-id --group tests -- 'bin/fm-test-run.sh --changed'"),
     });
   });
+
+  test.each([
+    ["checks-test", undefined],
+    ["bin/fm-test-run.sh", undefined],
+    ["bin/worker.test.sh", 1],
+    ["go test ./...", undefined],
+    ["go test -run TestFoo ./...", 1],
+    ["bun run lint src/foo.ts", 1],
+    ["xcrun simctl boot 1234-ABCD", undefined],
+    ["xcrun simctl io booted screenshot screen.png", undefined],
+    ["fm-sim-boot.sh", undefined],
+  ] as const)(
+    "%s queues in the tests group instead of running directly",
+    (command, priority) => {
+      expect(steer(command, work, () => ["default", "tests"])).toEqual({ type: "queue", group: "tests", command: queued(command, "tests", priority) });
+    },
+  );
+
+  test.each(["bun run lint", "npm run typecheck", "pnpm run build", "yarn run test:fast"])(
+    "%s queues in the tests group instead of running directly",
+    (command) => {
+      expect(steer(command, work, () => ["default", "tests"])).toEqual({ type: "queue", group: "tests", command: queued(command, "tests") });
+    },
+  );
+
 });
 
 describe("model inference in the gpu group", () => {
@@ -250,26 +275,36 @@ describe("a model run that never exits on its own", () => {
   );
 });
 
-describe("what runs as it is", () => {
+describe("targeted runs queue instead of running directly", () => {
   test.each(["bun test tests/unit/glob.test.ts", "bun test --timeout 20000 tests/unit/glob.test.ts", "bun test --randomize tests/unit/glob.test.ts", "vitest run --coverage src/a.test.ts", "vitest run --no-isolate src/a.test.ts", "bun run test tests/unit/a.test.ts", "vitest run src/a.test.ts", "cargo test --test cli", "pytest tests/test_a.py", "pytest -n 4 tests/test_a.py", "pytest tests/test_a.py::test_x", "vitest run src/a.test.ts:12", "bun test 'tests/**/*.test.ts'", "bun run test -- --randomize tests/unit/a.test.ts", "pytest 'tests/[id]/test_page.py'"])(
-    "%s names what it runs, so it is a quick targeted test",
+    "%s names what it runs, so it queues instead of running directly",
     (command) => {
-      expect(q(command)).toBeUndefined();
+      expect(q(command)).toBe("tests");
     },
   );
-
-  test.each(["bun test --watch", "bun run test --watch", "vitest", "npm test -- -w", "vitest run -u --watch", "vitest run -c --watch", "vitest run -w=true", "vitest run --watch=true"])("%s never exits, so a queued job would hold its slot forever", (command) => {
-    expect(q(command)).toBeUndefined();
-  });
 
   test.each(["bun test -t 'a literal'", "bun test --test-name-pattern=one-small-test", "bun test --test-name-pattern one-small-test", "bun run test -- -t parses", "npm test -- --grep parses", "vitest run -t parses", "vitest run --test-name-pattern parses", "vitest run --tagsFilter slow", "pytest -k parses", "pytest -kparses"])(
-    "%s filters by test name, so it is a quick targeted test",
+    "%s filters by test name, so it queues instead of running directly",
     (command) => {
-      expect(q(command)).toBeUndefined();
+      expect(q(command)).toBe("tests");
     },
   );
 
-  test.each(["bun test --changed", "bun test --changed=main", "vitest run --changed"])("%s runs only the files a change affects, so it is a quick targeted test", (command) => {
+  test.each(["bun test --changed", "bun test --changed=main", "vitest run --changed"])("%s runs only the files a change affects, so it queues instead of running directly", (command) => {
+    expect(q(command)).toBe("tests");
+  });
+
+  test.each(["bun test tests/unit/a.test.ts", "bun test --changed"])(
+    "%s queues with priority 1 instead of waiting behind whole suites",
+    (command) => {
+      expect(steer(command, work, () => ["default", "tests"])).toEqual({ type: "queue", group: "tests", command: queued(command, "tests", 1) });
+    },
+  );
+});
+
+describe("what runs as it is", () => {
+
+  test.each(["bun test --watch", "bun run test --watch", "vitest", "npm test -- -w", "vitest run -u --watch", "vitest run -c --watch", "vitest run -w=true", "vitest run --watch=true"])("%s never exits, so a queued job would hold its slot forever", (command) => {
     expect(q(command)).toBeUndefined();
   });
 
@@ -280,7 +315,7 @@ describe("what runs as it is", () => {
     },
   );
 
-  test.each(["ls", "git status", "bun run lint", "bun run typecheck", "bun install", "echo bun test", "grep -r 'bun test' docs"])(
+  test.each(["ls", "git status", "bun install", "echo bun test", "grep -r 'bun test' docs"])(
     "%s is not a test suite or a GPU run",
     (command) => {
       expect(q(command)).toBeUndefined();
@@ -303,11 +338,11 @@ describe("reading the shell around a command", () => {
     ["bun test # the whole suite", "tests"],
     ["(cd sub && bun test)", "tests"],
     ["bun test tests/b.test.ts", "tests"],
-    ["cd sub && bun test tests/b.test.ts", undefined],
-    ["cd -- sub && bun test tests/b.test.ts", undefined],
-    ["(cd sub && bun test tests/b.test.ts); bun test tests/unit/a.test.ts", undefined],
-    ["bun test --cwd sub tests/b.test.ts", undefined],
-    ["env -C sub bun test tests/b.test.ts", undefined],
+    ["cd sub && bun test tests/b.test.ts", "tests"],
+    ["cd -- sub && bun test tests/b.test.ts", "tests"],
+    ["(cd sub && bun test tests/b.test.ts); bun test tests/unit/a.test.ts", "tests"],
+    ["bun test --cwd sub tests/b.test.ts", "tests"],
+    ["env -C sub bun test tests/b.test.ts", "tests"],
     ["bun test \\\n  --coverage", "tests"],
     ["nice -n 10 bun test", "tests"],
     ["nice -10 bun test", "tests"],
@@ -363,6 +398,15 @@ describe("the queued command", () => {
     expect(steeredLine({ type: "queue", group: "evals", command: "EVAL_CONCURRENCY=3 bun run eval" })).toBe("job-queue evals: queued the command through pueue");
     expect(steeredLine({ type: "refuse", groups: ["evals", "gpu"], text: SEPARATE_EVAL_CALLS })).toBe("job-queue evals and gpu: refused a call that mixes groups");
   });
+
+  test("a targeted run queues with priority 1 instead of waiting behind whole suites", () => {
+    expect(queued("bun test tests/unit/a.test.ts", "tests", 1)).toContain("pueue add --priority 1 --print-task-id --group tests -- 'bun test tests/unit/a.test.ts'");
+  });
+
+  test("the log line names the missing queue and the reason, and never the command", () => {
+    expect(steeredLine({ type: "pass", group: "tests", reason: "the pueue group listing failed", text: "runs directly" })).toBe("job-queue tests: not queued (the pueue group listing failed)");
+    expect(steeredLine({ type: "pass", group: "gpu", reason: "pueue has no gpu group", text: "runs directly" })).toBe("job-queue gpu: not queued (pueue has no gpu group)");
+  });
 });
 
 describe("steer", () => {
@@ -370,9 +414,6 @@ describe("steer", () => {
     expect(steer("bun test", work, () => ["default", "tests"])).toEqual({ type: "queue", group: "tests", command: queued("bun test", "tests") });
   });
 
-  test("a heavy command runs as it is when pueue has no such group", () => {
-    expect(steer("llama-bench -m m.gguf", work, () => ["default", "tests"])).toBeUndefined();
-  });
 
   test("a bare eval run queues with EVAL_CONCURRENCY=3 added, since the harness default runs 4 abreast", () => {
     expect(steer("bun run eval", work, () => ["default", "tests", "gpu", "evals"])).toEqual({
@@ -415,9 +456,6 @@ describe("steer", () => {
     expect(settingsFrom({}).concurrency).toBeGreaterThan(EVAL_CONCURRENCY_CAP);
   });
 
-  test("an eval run passes through untouched where pueue has no evals group", () => {
-    expect(steer("bun run eval", work, () => ["default", "tests", "gpu"])).toBeUndefined();
-  });
 
   test.each(["bun run eval && bun run test", "bun run eval && llama-bench -m model.gguf"])(
     "%s needs the evals group and another, so it is refused with a word to run them as separate calls",
@@ -437,23 +475,55 @@ describe("steer", () => {
     },
   );
 
-  test("a call that needs two groups runs as it is when pueue lacks either of them", () => {
-    expect(steer("bun test && llama-bench -m model.gguf", work, () => ["default", "tests"])).toBeUndefined();
-    expect(steer("llama-bench -m model.gguf && bun test", work, () => ["default", "gpu"])).toBeUndefined();
-  });
+  test.each([
+    ["llama-bench -m m.gguf", ["default", "tests"], "gpu", "pueue has no gpu group"],
+    ["bun run eval", ["default", "tests", "gpu"], "evals", "pueue has no evals group"],
+    ["bun test && llama-bench -m model.gguf", ["default", "tests"], "gpu", "pueue has no gpu group"],
+    ["llama-bench -m model.gguf && bun test", ["default", "gpu"], "tests", "pueue has no tests group"],
+  ] as const)(
+    "%s left running directly names the missing queue instead of failing silently",
+    (command, listed, group, reason) => {
+      expect(steer(command, work, () => listed)).toEqual({
+        type: "pass",
+        group,
+        reason,
+        text: `The ${group} queue is unavailable because ${reason}, so the command runs directly.`,
+      });
+    },
+  );
 
   test("two heavy commands in one group queue together as one job", () => {
     expect(steer("bun run lint && bun test && cargo test", work, () => ["tests"])).toEqual({ type: "queue", group: "tests", command: queued("bun run lint && bun test && cargo test", "tests") });
   });
 
-  test("a heavy command runs as it is when pueue is missing or its daemon is down", () => {
-    expect(steer("bun test", work, () => undefined)).toBeUndefined();
+  test("a heavy command left running directly names the failed listing instead of failing silently", () => {
+    expect(steer("bun test", work, () => undefined)).toEqual({
+      type: "pass",
+      group: "tests",
+      reason: "the pueue group listing failed",
+      text: "The tests queue is unavailable because the pueue group listing failed, so the command runs directly.",
+    });
   });
 
-  test("a quick command never asks pueue", () => {
+  test("a heavy command inside a pueue worker runs directly instead of queueing twice", () => {
+    process.env.PUEUE_GROUP = "tests";
+    try {
+      expect(steer("bun test", work, () => ["default", "tests"])).toBeUndefined();
+    } finally {
+      delete process.env.PUEUE_GROUP;
+    }
+    process.env.PUEUE_WORKER_ID = "7";
+    try {
+      expect(steer("bun test", work, () => ["default", "tests"])).toBeUndefined();
+    } finally {
+      delete process.env.PUEUE_WORKER_ID;
+    }
+  });
+
+  test("a plain command never asks pueue", () => {
     const asked: string[] = [];
     expect(
-      steer("bun test tests/unit/a.test.ts", work, () => {
+      steer("git status", work, () => {
         asked.push("groups");
         return ["tests"];
       }),
