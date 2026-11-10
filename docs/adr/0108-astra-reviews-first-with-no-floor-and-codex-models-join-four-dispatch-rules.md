@@ -8,6 +8,7 @@ Date: 2026-11-08
 ## Status
 
 Superseded by 0111, which keeps one dispatch file for the one Mac firstmate home.
+Amends 0102: the reviewer chain runs Astra on Codex first, then Opus on the account main, then Opus on the account second, and no entry carries a floor.
 What follows is left as it was written.
 
 ## Context
