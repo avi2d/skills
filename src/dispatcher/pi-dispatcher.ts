@@ -1,7 +1,5 @@
-import { createHash } from "node:crypto";
-import { appendFileSync, mkdirSync, readFileSync, readdirSync, realpathSync } from "node:fs";
-import { homedir } from "node:os";
-import { dirname, join, resolve } from "node:path";
+import { appendFileSync, mkdirSync, realpathSync } from "node:fs";
+import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
   isReadToolResult,
@@ -28,43 +26,26 @@ import {
   type Event,
   type Index,
 } from "./dispatch";
+import { because, buildId, HOME, mintName, model, onDisk } from "./pi-support";
 import { START, type RunState } from "./run-state";
 import { logLine } from "./dispatch-log";
 import { releasedText } from "./verdict";
 import { VERIFY_BUDGET_SECONDS, fingerprint, sight, unreadableNote, verify } from "./gate";
+import { COMMIT_IDENTITY_LINE, commitIdentity } from "./commit-identity";
 import { credentialRead, refusedLine, refusedText } from "./credential-reads";
 import type { Change, ClaudeEdit } from "./forbid";
-import { steer, steeredLine } from "./job-queue";
+import { bashCall, finishedBash } from "./pi-bash";
 import { readProject } from "./project";
 import { readIndex } from "./read-index";
 import { redaction } from "./pi-redact";
 import { scrubbedLine } from "./redact";
 import { cappedNote, repoFiles, standing, type Listed } from "./repo-walk";
 
-const because = (e: unknown): string => (e instanceof Error ? e.message : String(e));
-
 const INDEX_PATH = fileURLToPath(new URL("./dispatch.json", import.meta.url));
 
 const BUNDLE_DIR = dirname(fileURLToPath(import.meta.url));
 
-function buildId(dir: string): string {
-  try {
-    const files = readdirSync(dir).sort();
-    const hash = createHash("sha256");
-    for (const file of files) {
-      hash.update(file);
-      hash.update(readFileSync(join(dir, file)));
-    }
-    return hash.digest("hex").slice(0, 12);
-  } catch (e) {
-    return `unreadable(${because(e)})`;
-  }
-}
-
 const BUILD_ID = buildId(BUNDLE_DIR);
-
-// node's `homedir()` reads `$HOME` every time, bun's answers from what the process started with.
-const HOME = process.env.HOME ?? homedir();
 
 const STATE = join(process.env.XDG_STATE_HOME ?? join(HOME, ".local", "state"), "skills");
 
@@ -73,17 +54,6 @@ const LOG_PATH = join(STATE, "dispatch.log");
 const RULES = "skills-rule";
 
 const GATE = "skills-gate";
-
-const model = (ctx: { model: { provider: string; id: string } | undefined }): { model?: string } =>
-  ctx.model ? { model: `${ctx.model.provider}/${ctx.model.id}` } : {};
-
-// pi's own tools strip a leading `@` and expand `~` before they touch a path.
-function onDisk(path: string, cwd: string): string {
-  const bare = path.startsWith("@") ? path.slice(1) : path;
-  return resolve(cwd, bare === "~" || bare.startsWith("~/") ? join(HOME, bare.slice(1)) : bare);
-}
-
-const mintName = (): string => `unnamed-${Math.random().toString(16).slice(2, 10)}`;
 
 type DispatcherBase = {
   pi: ExtensionAPI;
@@ -95,6 +65,7 @@ type DispatcherBase = {
   shutDown: boolean;
   inForce: Set<string>;
   looked: { cwd: string; files: string[]; walked?: Listed } | undefined;
+  bashStarted: Map<string, { command: string; at: number }>;
 };
 
 type Dispatcher =
@@ -157,6 +128,7 @@ function perform(dispatcher: Dispatcher, action: Action, ui: ExtensionUIContext 
     case "ignored":
     case "dropped":
     case "refuse":
+    case "rerun-refused":
       return;
     default:
       action satisfies never;
@@ -186,6 +158,7 @@ function onSessionStart(dispatcher: Dispatcher, event: SessionStartEvent, ctx: E
   dispatcher.shutDown = false;
   note(dispatcher, `build ${BUILD_ID}`);
   dispatcher.inForce.clear();
+  dispatcher.bashStarted.clear();
   dispatcher.failed = undefined;
 
   switch (dispatcher.status) {
@@ -246,6 +219,11 @@ function onToolCall(dispatcher: Dispatcher, event: ToolCallEvent, ctx: Extension
     note(dispatcher, refusedLine(credential));
     return { block: true, reason: refusedText(credential) };
   }
+  const identity = commitIdentity(event.toolName, event.input, ctx.cwd);
+  if (identity !== undefined) {
+    note(dispatcher, COMMIT_IDENTITY_LINE);
+    return { block: true, reason: identity };
+  }
   const writing = isToolCallEventType("write", event) || isToolCallEventType("edit", event);
   const changes: Change[] = [];
   if (isToolCallEventType("write", event)) {
@@ -262,9 +240,9 @@ function onToolCall(dispatcher: Dispatcher, event: ToolCallEvent, ctx: Extension
     input: event.input,
     ...(writing ? { writes: [event.input.path] } : {}),
     changes,
-  }).flatMap((action) => (action.type === "refuse" ? [action.text] : []));
+  }).flatMap((action) => (action.type === "refuse" || action.type === "rerun-refused" ? [action.text] : []));
   if (refusals.length > 0) return { block: true, reason: refusals.join("\n\n") };
-  return isToolCallEventType("bash", event) ? queue(dispatcher, event.input, ctx.cwd) : undefined;
+  return bashCall(dispatcher.bashStarted, event, ctx.cwd, (line) => note(dispatcher, line));
 }
 
 function readOf(event: ToolResultEvent, cwd: string): string | undefined {
@@ -280,6 +258,15 @@ function readOf(event: ToolResultEvent, cwd: string): string | undefined {
 function onToolResult(dispatcher: Dispatcher, event: ToolResultEvent, ctx: ExtensionContext): void {
   const read = event.isError ? undefined : readOf(event, ctx.cwd);
   if (read !== undefined) step(dispatcher, { type: "read", tool: event.toolName, paths: [read] });
+  const written = event.toolName.toLowerCase();
+  if (written === "write" || written === "edit") {
+    const path = event.input.path;
+    if (typeof path === "string") {
+      step(dispatcher, { type: "write-result", tool: event.toolName, writes: [path], ...(event.isError ? { failed: true } : {}) });
+    }
+  }
+  const finished = finishedBash(dispatcher.bashStarted, event);
+  if (finished !== undefined) step(dispatcher, finished);
 }
 
 async function redact(dispatcher: Dispatcher, event: ToolResultEvent, ctx: ExtensionContext): Promise<ToolResultEventResult | undefined> {
@@ -287,16 +274,6 @@ async function redact(dispatcher: Dispatcher, event: ToolResultEvent, ctx: Exten
   if (redacted === undefined) return undefined;
   note(dispatcher, scrubbedLine(event.toolName, redacted.scrubbed));
   return redacted.result;
-}
-
-function queue(dispatcher: Dispatcher, input: { command: string }, cwd: string): ToolCallEventResult | undefined {
-  const steered = steer(input.command, cwd);
-  if (steered === undefined) return undefined;
-  note(dispatcher, steeredLine(steered));
-  if (steered.type === "refuse") return { block: true, reason: steered.text };
-  if (steered.type === "pass") return undefined;
-  input.command = steered.command;
-  return undefined;
 }
 
 function onMessageEnd(dispatcher: Dispatcher, event: MessageEndEvent): void {
@@ -363,6 +340,7 @@ function loaded(pi: ExtensionAPI): Dispatcher {
     shutDown: false,
     inForce: new Set<string>(),
     looked: undefined,
+    bashStarted: new Map(),
   };
   try {
     return { ...base, status: "loaded", index: readIndex(INDEX_PATH, "pi") };

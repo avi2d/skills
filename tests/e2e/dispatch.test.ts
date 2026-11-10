@@ -74,7 +74,8 @@ test("each model Profile scopes only its named Rules", () => {
     promptOn(muse, ...thisRepo),
     { type: "tool-call", tool: "write", input: { path: changelog }, writes: [changelog] },
   ]).actions;
-  expect(injected(museActions)).toContain("guard-the-context-window");
+  expect(injected(museActions)).toContain("guard-the-context-window-spark");
+  expect(injected(museActions)).toContain("finish-the-task");
   expect(injected(museActions)).toContain("writing-for-people");
   expect(injected(museActions)).toContain("typescript-best-practices");
   expect(injected(museActions)).not.toContain("force-determinism");

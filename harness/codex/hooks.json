@@ -67,6 +67,18 @@
         ]
       }
     ],
+    "PostToolUse": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun \"$HOME/.codex/skills-dispatch/index.ts\" PostToolUse",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
     "PreCompact": [
       {
         "matcher": "",

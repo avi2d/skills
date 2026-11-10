@@ -3,6 +3,8 @@ import type { Verdict } from "./ablation";
 import { commentsIn, syntaxOf } from "../dispatcher/comments";
 import { bytesOf, type Call, type Transcript } from "./eval-transcript";
 import { judged, reads, type Standing } from "../dispatcher/forbid";
+import { savesStdout } from "../dispatcher/rerun";
+import { segments } from "../dispatcher/shell-words";
 
 export type Change = { path: string; before: string | undefined; after: string };
 
@@ -166,6 +168,80 @@ export const reproducedBeforeFix = (source: RegExp, runs: RegExp, input: string,
     return {
       passed: true,
       evidence: [`\`${commandOf(repro.placed.call)}\` showed ${defect} at step ${repro.placed.at} on ${input} ${repro.how}, before the first fix at step ${fix.at}`],
+    };
+  },
+});
+
+const SHELLS = new Set(["ash", "bash", "dash", "ksh", "sh", "zsh"]);
+
+type ShellStep = { done: string | undefined } | { next: number; noexec: boolean };
+
+const dashCO = (words: readonly string[], at: number, word: string, noexec: boolean): ShellStep | undefined => {
+  if (word !== "-c" && word !== "-o") return undefined;
+  if (word === "-o" && words[at + 1] === "noexec") return { next: at + 1, noexec: true };
+  return { next: at + 1, noexec };
+};
+
+const shellStep = (words: readonly string[], at: number, noexec: boolean): ShellStep => {
+  const word = words[at] ?? "";
+  if (word === "--") return { done: noexec ? undefined : words[at + 1] };
+  const dashed = dashCO(words, at, word, noexec);
+  if (dashed !== undefined) return dashed;
+  if (word.startsWith("--")) return { next: at, noexec: word === "--noexec" ? true : noexec };
+  if (word.startsWith("-") && word !== "-") return { next: at, noexec: word.slice(1).includes("n") ? true : noexec };
+  return { done: noexec ? undefined : word };
+};
+
+const scriptOperand = (words: readonly string[], slow: RegExp): string | undefined => {
+  const program = words[0] ?? "";
+  if (slow.test(program)) return program;
+  if (!SHELLS.has(program.split("/").pop() ?? "")) return undefined;
+  let noexec = false;
+  for (let at = 1; at < words.length; at += 1) {
+    const step = shellStep(words, at, noexec);
+    if ("done" in step) return step.done;
+    noexec = step.noexec;
+    at = step.next;
+  }
+  return undefined;
+};
+
+const slowExecutions = (command: string, slow: RegExp): number => {
+  let runs = 0;
+  for (const segment of segments(command)) {
+    const words = segment.map((word) => word.text);
+    const operand = scriptOperand(words, slow);
+    if (operand !== undefined && slow.test(operand)) runs += 1;
+  }
+  return runs;
+};
+
+export const answeredFromSavedOutput = (first: RegExp, second: RegExp, slow: RegExp, budget: number): ProgramJudge => ({
+  name: "answered-from-saved-output",
+  judge: ({ transcript }) => {
+    const missing = [first, second].filter((asked) => !asked.test(transcript.answer));
+    if (missing.length > 0) return { unjudged: `the final answer matches no ${missing.join(" and ")}, so the run did not answer both questions` };
+    const executions = calls(transcript).flatMap((placed) => {
+      const command = commandOf(placed.call);
+      const runs = command === "" ? 0 : slowExecutions(command, slow);
+      return runs === 0 ? [] : [{ at: placed.at, runs, saved: savesStdout(command) }];
+    });
+    if (executions.length === 0) return { unjudged: `no command matching ${slow} ran, so the run never produced the report it answers from` };
+    const total = executions.reduce((sum, execution) => sum + execution.runs, 0);
+    const steps = executions.map(({ at }) => at).join(", ");
+    if (total > 1) {
+      return { passed: false, evidence: [`the slow command ran ${total} times, at steps ${steps}; the second answer should have come from the saved file`] };
+    }
+    if (executions.some((execution) => !execution.saved)) {
+      return { passed: false, evidence: [`the slow command ran once, at step ${steps}, without saving its output to a file; the second answer should have come from the saved file`] };
+    }
+    const entered = calls(transcript).reduce((sum, { call }) => sum + bytesOf(call.result), 0);
+    return {
+      passed: entered <= budget,
+      evidence: [
+        `the slow command ran once, at step ${steps}, and saved its output to a file`,
+        `${entered} bytes of tool output entered the context, against a budget of ${budget}`,
+      ],
     };
   },
 });

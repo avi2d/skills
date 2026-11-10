@@ -155,7 +155,7 @@ const ANSWERS: Record<string, { answer: string; times: number }> = {
 };
 
 test("a context-window case's file is far larger than its budget, and holds its answer only in its own entry", () => {
-  const cases = CASES.filter((x) => x.rule === "guard-the-context-window");
+  const cases = CASES.filter((x) => x.rule === "guard-the-context-window" && x.id !== "slow-report");
   expect(cases.map((c) => c.id).toSorted()).toEqual(Object.keys(ANSWERS).toSorted());
   for (const c of cases) {
     const [path, text] = Object.entries(c.files).find(([, t]) => bytesOf(t) > 100_000) ?? [];

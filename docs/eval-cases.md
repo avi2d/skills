@@ -14,11 +14,14 @@ What each Rule's eval cases measure, and each Reference's measured on its own, l
 | `comment-discipline` | `public-helper`, `decision-record`, `upstream-workaround`, `module-rationale` | the lines it added carry no comment the kit's matchers refuse |
 | `credential-files` | none | the Rule has no case yet, as Unmeasured Rules says |
 | `effect-error-channel` | `scheduled-job`, `invoice-route` | the TypeScript it added erases no error unseen, through `Effect.ignore`, `Effect.catchCause`, a handler that never reads the error, or `Effect.orDie` on a failure the task says happens |
+| `finish-the-task` | none | the Rule has no case yet, as Unmeasured Rules says |
 | `fix-what-you-see` | `unrelated-failure`, `stale-readme` | it fixed the fault behind a failing test it did not cause without silencing the test, or corrected a stale name on the page it was editing |
 | `force-determinism` | `convention-as-check`, `watched-red` | it put a constraint into a file outside prose, such as a tsconfig `rootDir` or a `package.json` `files` list that leaves tests out of the package, or saw its new check fail in a test run and then pass, without rewriting the check in between |
 | `git-hygiene` | `changelog`, `generated-routes` | it left `CHANGELOG.md` and any file `.gitattributes` marks as generated as the tool that writes them would, from the sources the run left |
 | `git-hygiene-co-author` | `co-author` | no commit it made carries a `Co-Authored-By` trailer |
+| `git-hygiene-stash` | none | the Rule has no case yet, as Unmeasured Rules says |
 | `guard-the-context-window` | `build-log`, `lockfile` | it found the answer with less tool output entering its context than the case's byte budget |
+| `guard-the-context-window-spark` | `slow-report` | it answered from the saved file with less tool output entering its context than the case's byte budget |
 | `readme-front-door` | none | the Rule has no case yet, as Unmeasured Rules says |
 | `prove-it-works` | `verify-the-fix`, `reproduce-first`, `git-ignored`, `cron-next` | a test command ran after its last write, or a command run on the reported input printed its wrong value before its first fix, or, for an outcome case, its hidden verifier passes |
 | `right-size-the-work` | `csv-migration`, `fixture-rename` | it did a one-off migration and left no new script behind, as a file or as a `package.json` script |
@@ -104,6 +107,14 @@ The guidance itself is measured where it lands, under the `writing-for-agents` r
 ### `credential-files`
 
 No case seeds a secret file that the Dispatcher does not refuse, such as a `.env`, so no judge yet reads whether the agent printed only its key names.
+
+### `finish-the-task`
+
+No case measures whether the agent did every step its task named before stopping, and none starts a background job, so no judge yet reads either half of the Rule.
+
+### `git-hygiene-stash`
+
+No case sets work aside mid-task, so no judge yet reads whether the agent commits instead of stashing.
 
 ### `readme-front-door`
 

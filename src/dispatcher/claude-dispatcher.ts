@@ -15,6 +15,7 @@ import {
   note,
   readOf,
   readPayload,
+  refusedCommit,
   refusedRead,
   sessionOf,
   type Hook,
@@ -204,7 +205,9 @@ if (import.meta.main) {
   if (name === REDACT) await answer(payload, () => redacted(payload));
   else if (isHook(name)) {
     await answer(payload, async () =>
-      carrier ? carry(payload, slot) : (refusedRead(name, payload) ?? handle(CLAUDE, readIndex(INDEX_PATH, "claude-code"), name, payload)),
+      carrier
+        ? carry(payload, slot)
+        : (refusedRead(name, payload) ?? refusedCommit(name, payload) ?? handle(CLAUDE, readIndex(INDEX_PATH, "claude-code"), name, payload)),
     );
     if (name === "UserPromptSubmit" && !carrier) release(payload);
   }

@@ -11,7 +11,12 @@ export type RunState = {
   walked?: Record<string, Listed>;
   gate?: GateState;
   project?: Project;
+  slow?: SlowGuard[];
 };
+
+type SlowGuard = { full: string[]; canon: string; recovered?: boolean };
+
+export const SLOW_KEEP = 5;
 
 export const START: RunState = { rules: {} };
 
@@ -100,16 +105,27 @@ const isProject = (value: unknown): value is Project => {
   );
 };
 
+const isSlowGuard = (value: unknown): value is SlowGuard =>
+  isRecord(value) &&
+  Array.isArray(value.full) &&
+  value.full.every((entry) => typeof entry === "string") &&
+  typeof value.canon === "string" &&
+  (value.recovered === undefined || typeof value.recovered === "boolean");
+
+const isSlowEntries = (value: unknown): value is SlowGuard[] =>
+  Array.isArray(value) && value.length <= SLOW_KEEP && value.every(isSlowGuard);
+
 const hasSessionFields = (value: Record<string, unknown>): boolean =>
   (value.model === undefined || typeof value.model === "string") &&
   (value.holding === undefined || isStrings(value.holding)) &&
   (value.walked === undefined || isWalked(value.walked)) &&
   (value.gate === undefined || isGateState(value.gate)) &&
-  (value.project === undefined || isProject(value.project));
+  (value.project === undefined || isProject(value.project)) &&
+  (value.slow === undefined || isSlowEntries(value.slow));
 
 export const isRunState = (value: unknown): value is RunState =>
   isRecord(value) &&
-  hasOnly(value, ["rules", "model", "holding", "walked", "gate", "project"]) &&
+  hasOnly(value, ["rules", "model", "holding", "walked", "gate", "project", "slow"]) &&
   isRules(value.rules) &&
   hasSessionFields(value);
 

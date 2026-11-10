@@ -150,12 +150,34 @@
         ]
       },
       {
+        "matcher": "Bash|Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun \"$HOME/.claude/skills-dispatch/index.ts\" PostToolUse",
+            "timeout": 10
+          }
+        ]
+      },
+      {
         "matcher": "*",
         "hooks": [
           {
             "type": "command",
             "command": "bun \"$HOME/.claude/skills-dispatch/index.ts\" redact",
             "timeout": 30
+          }
+        ]
+      }
+    ],
+    "PostToolUseFailure": [
+      {
+        "matcher": "Bash|Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun \"$HOME/.claude/skills-dispatch/index.ts\" PostToolUse",
+            "timeout": 10
           }
         ]
       }
