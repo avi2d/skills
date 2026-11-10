@@ -6,7 +6,6 @@ import { MalformedBody, MalformedRecord, fileFailure, type FileFailure, type Mal
 import { attempt } from "../platform/files";
 import { active } from "../generate/generate";
 import { CLAUDE_CONFIG_GRAFT, MERGED, REPO, RETIRED, claudeSettingsIn, linksUnder, type Graft, type LinkMap, type Merge } from "../generate/link";
-import { MACHINES, type Machine } from "../generate/machine";
 import { main } from "../platform/platform";
 
 export const RECORDS = "docs/adr";
@@ -136,15 +135,6 @@ const inHome = (rel: string) => `\`~/${rel}\``;
 
 type MergeMap = Readonly<Record<string, Merge>>;
 
-type MachineLinks = Readonly<Record<Machine, LinkMap>>;
-
-const ON_MACHINE: Readonly<Record<Machine, string>> = {
-  mac: "on the Mac",
-  windows: "on the Windows machine and any other",
-};
-
-const linksOnEveryMachine = (root: string): MachineLinks => ({ mac: linksUnder(root, "mac"), windows: linksUnder(root, "windows") });
-
 const codeList = (keys: readonly string[]): string => keys.map((key) => `\`${key}\``).join(", ");
 
 const CONFIG_DIR = "<dir>";
@@ -154,20 +144,7 @@ const graftedFile = inHome(claudeSettingsIn(CONFIG_DIR));
 const graftItem = ({ from, keys }: Graft): string =>
   `- ${graftedFile} for each \`${CONFIG_DIR}\` in the config's \`claudeConfigDirs\`, given ${codeList(keys)} from \`${from}\` and keeping every other key`;
 
-const pointsAt = (links: MachineLinks, rel: string): string => {
-  if (links.mac[rel] === links.windows[rel]) return `\`${links.windows[rel]}\``;
-  return MACHINES.flatMap((machine) => {
-    const target = links[machine][rel];
-    return target === undefined ? [] : [`\`${target}\` ${ON_MACHINE[machine]}`];
-  }).join(", ");
-};
-
-const everyRel = (links: MachineLinks): readonly string[] => [
-  ...Object.keys(links.windows),
-  ...Object.keys(links.mac).filter((rel) => !(rel in links.windows)),
-];
-
-export const linkPage = (links: MachineLinks, merged: MergeMap, graft: Graft, retired: readonly string[]): string =>
+export const linkPage = (links: LinkMap, merged: MergeMap, graft: Graft, retired: readonly string[]): string =>
   [
     "---",
     "kind: reference",
@@ -181,13 +158,11 @@ export const linkPage = (links: MachineLinks, merged: MergeMap, graft: Graft, re
     "",
     "`bun run link` makes each path below a symbolic link to the path beside it in this checkout, creating the directories that hold it.",
     "It repoints a link that points anywhere else, and refuses a path that holds anything other than a link.",
-    "A path with a target for each machine points at the Mac's target on macOS and at the other one everywhere else.",
-    "A path only one machine links names only that machine's target.",
     `A target under \`${DEFAULT_GENERATED_ROOT}/\` is written by the same run, because a clone arrives without it.`,
     "",
     "| In $HOME | Points at, in this checkout |",
     "| --- | --- |",
-    ...everyRel(links).map((rel) => `| ${inHome(rel)} | ${pointsAt(links, rel)} |`),
+    ...Object.entries(links).map(([rel, target]) => `| ${inHome(rel)} | \`${target}\` |`),
     "",
     "## The files it writes",
     "",
@@ -307,12 +282,7 @@ const installPageWithLinks = Effect.fnUntraced(function* (
   repo: string,
 ): Effect.fn.Return<string, FileFailure | MalformedBody, FileSystem.FileSystem> {
   const path = `${repo}${INSTALL_PAGE}`;
-  const windows = linksUnder(DEFAULT_GENERATED_ROOT, "windows");
-  const links: Record<string, string> = { ...windows };
-  for (const [rel, target] of Object.entries(linksUnder(DEFAULT_GENERATED_ROOT, "mac"))) {
-    if (!(rel in links)) links[rel] = target;
-  }
-  return yield* withLinks(yield* attempt(path, (fs) => fs.readFileString(path)), links, MERGED, CLAUDE_CONFIG_GRAFT, RETIRED);
+  return yield* withLinks(yield* attempt(path, (fs) => fs.readFileString(path)), linksUnder(DEFAULT_GENERATED_ROOT), MERGED, CLAUDE_CONFIG_GRAFT, RETIRED);
 });
 
 const writingReference = Effect.fnUntraced(function* (
@@ -345,7 +315,7 @@ export const pages = Effect.fnUntraced(function* (
   const { bodies, profiles } = yield* active(repo);
   return [
     { path: RECORD_INDEX, text: recordIndex(yield* records(repo)) },
-    { path: LINK_PAGE, text: linkPage(linksOnEveryMachine(DEFAULT_GENERATED_ROOT), MERGED, CLAUDE_CONFIG_GRAFT, RETIRED) },
+    { path: LINK_PAGE, text: linkPage(linksUnder(DEFAULT_GENERATED_ROOT), MERGED, CLAUDE_CONFIG_GRAFT, RETIRED) },
     { path: INSTALL_PAGE, text: yield* installPageWithLinks(repo) },
     { path: WRITING_REFERENCE, text: yield* writingReference(repo) },
     { path: SWEEP_PAGE, text: sweepPage(yield* sweepRecords(`${repo}${SWEEPS}`)) },

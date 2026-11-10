@@ -10,8 +10,6 @@ The link map is every path in $HOME that `bun run link` writes or takes back, an
 
 `bun run link` makes each path below a symbolic link to the path beside it in this checkout, creating the directories that hold it.
 It repoints a link that points anywhere else, and refuses a path that holds anything other than a link.
-A path with a target for each machine points at the Mac's target on macOS and at the other one everywhere else.
-A path only one machine links names only that machine's target.
 A target under `generated/` is written by the same run, because a clone arrives without it.
 
 | In $HOME | Points at, in this checkout |
@@ -36,9 +34,6 @@ A target under `generated/` is written by the same run, because a clone arrives 
 | `~/.codex/skills-dispatch` | `generated/codex/dispatcher` |
 | `~/.no-mistakes/config.yaml` | `generated/no-mistakes/config.yaml` |
 | `~/.orc/orchestrator.md` | `harness/orc/orchestrator.md` |
-| `~/Projects/firstmate/config/crew-dispatch.json` | `harness/firstmate/crew-dispatch.json` on the Mac |
-| `~/Projects/firstmate/config/supervision-branch-model` | `harness/firstmate/supervision-branch-model` on the Mac |
-| `~/Projects/firstmate/config/supervision-branch-effort` | `harness/firstmate/supervision-branch-effort` on the Mac |
 
 ## The files it writes
 
@@ -77,6 +72,9 @@ Each path below was once in the map.
 - `~/.pi/agent/extensions/compaction-points.ts`
 - `~/.pi/agent/extensions/transcript-style.ts`
 - `~/Projects/firstmate/config/secondmate-harness`
+- `~/Projects/firstmate/config/crew-dispatch.json`
+- `~/Projects/firstmate/config/supervision-branch-model`
+- `~/Projects/firstmate/config/supervision-branch-effort`
 
 ## Related topics
 

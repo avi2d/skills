@@ -10,8 +10,7 @@ import { MACOS_INDEX, filesUnder } from "../../src/platform/files";
 import { active, checkout } from "../../src/generate/generate";
 import { dormantRules, loadSelection, selected, type Selection } from "../../src/bodies/selection";
 import { hub, reconcile, type HubOutcome } from "../../src/generate/hub";
-import { MERGED, REPO, RETIRED, install, link, linksUnder } from "../../src/generate/link";
-import { MACHINES, machineOn } from "../../src/generate/machine";
+import { MERGED, REPO, RETIRED, install, link } from "../../src/generate/link";
 import { piLoads } from "../../src/generate/preflight";
 import { GENERATED_ROOT, HUB, LINKS } from "../lib/generated-root";
 import { isLinked } from "../lib/home";
@@ -95,6 +94,9 @@ describe("a path $HOME used to take from here", () => {
   test.each([
     [".claude/agents", HUB],
     ["Projects/firstmate/config/secondmate-harness", "harness/firstmate/secondmate-harness"],
+    ["Projects/firstmate/config/crew-dispatch.json", "harness/firstmate/crew-dispatch.json"],
+    ["Projects/firstmate/config/supervision-branch-model", "harness/firstmate/supervision-branch-model"],
+    ["Projects/firstmate/config/supervision-branch-effort", "harness/firstmate/supervision-branch-effort"],
   ])("a link this repo put at %s is removed, and reported as retired", async (rel, target) => {
     const home = await seeded(`${REPO}${target}`, rel);
     try {
@@ -129,8 +131,8 @@ describe("a path $HOME used to take from here", () => {
   });
 });
 
-test("every file under harness/ is reachable through the map of some machine", async () => {
-  const targets = [...MACHINES.flatMap((machine) => Object.values(linksUnder(GENERATED_ROOT, machine))), ...Object.values(MERGED).map(({ from }) => from)];
+test("every file under harness/ is reachable through the link map", async () => {
+  const targets = [...Object.values(LINKS), ...Object.values(MERGED).map(({ from }) => from)];
   const covered = (path: string) => targets.some((t) => t === path || path.startsWith(`${t}/`));
   const inert: string[] = [];
   for (const rel of await valueOf(filesUnder(`${REPO}harness`))) {
@@ -164,24 +166,8 @@ test("pi loads haiku-compaction from a lone extension symlink and it registers t
   }
 });
 
-test("only macOS links the one dispatch rules file and the supervision pins into the Mac firstmate home", () => {
-  const pins = {
-    "Projects/firstmate/config/crew-dispatch.json": "harness/firstmate/crew-dispatch.json",
-    "Projects/firstmate/config/supervision-branch-model": "harness/firstmate/supervision-branch-model",
-    "Projects/firstmate/config/supervision-branch-effort": "harness/firstmate/supervision-branch-effort",
-  };
-  const mac = linksUnder(GENERATED_ROOT, machineOn("darwin"));
-  for (const [rel, target] of Object.entries(pins)) expect(mac[rel]).toBe(target);
-  for (const os of ["linux", "win32"] as const) {
-    const other = linksUnder(GENERATED_ROOT, machineOn(os));
-    for (const rel of Object.keys(pins)) expect(rel in other, `${os} links a pin only the Mac home carries`).toBe(false);
-  }
-});
-
-test("every platform links the no-mistakes config generation writes for that machine", () => {
-  for (const os of ["darwin", "linux", "win32"] as const) {
-    expect(linksUnder(GENERATED_ROOT, machineOn(os))[".no-mistakes/config.yaml"], os).toBe(`${GENERATED_ROOT}/no-mistakes/config.yaml`);
-  }
+test("the link map points the no-mistakes config at the copy generation writes", () => {
+  expect(LINKS[".no-mistakes/config.yaml"]).toBe(`${GENERATED_ROOT}/no-mistakes/config.yaml`);
 });
 
 test("a no-mistakes config kept by hand is refused and left as it was, rather than replaced by the link", async () => {

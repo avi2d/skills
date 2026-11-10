@@ -1,6 +1,4 @@
 import { expect, test } from "bun:test";
-import { CREW_DISPATCH_RULES } from "../../src/generate/crew-dispatch-config";
-import { CREW_DISPATCH } from "../../src/generate/machine-files";
 import { noMistakesConfigOf } from "../../src/generate/no-mistakes-config";
 import { selection } from "../lib/tree";
 
@@ -9,9 +7,6 @@ const from = new Map<string, Set<string>>();
 const at = (model: string, config: string): void => {
   from.set(model, (from.get(model) ?? new Set()).add(config));
 };
-
-const { rules, ownRules, default: fallback } = CREW_DISPATCH_RULES;
-for (const profile of [...rules.flatMap((rule) => rule.use), ...ownRules.flatMap((rule) => rule.use), ...fallback]) at(profile.model, CREW_DISPATCH);
 
 const mistakes = noMistakesConfigOf("/home/someone");
 at(mistakes.agent_config.claude.model, "the no-mistakes config agent_config.claude");

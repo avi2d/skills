@@ -9,7 +9,6 @@ A harness's Contract is the settings, hooks and extensions `harness/<name>/` hol
 ## Hand-written settings
 
 Every file in a Contract is written by hand, never generated.
-The [firstmate](#firstmate) files are the exception, and `bun run generate` writes them, as their section says.
 The [no-mistakes](#no-mistakes) config is not in `harness/` at all, because it names the machine's own home.
 A harness rewrites its settings at runtime, and a generated file with a second writer would fail the suite on every launch.
 
@@ -60,33 +59,6 @@ The first prompt hook cuts the Rules into parts within that limit, and hands eac
 
 `harness/codex/hooks.json` holds the hooks that run the Dispatcher at `~/.codex/skills-dispatch`.
 Codex trusts a hook by its hash, so installing or changing the file also needs one pass through `/hooks` in Codex.
-
-## firstmate
-
-| File | Holds |
-| --- | --- |
-| `harness/firstmate/crew-dispatch.json` | firstmate's dispatch rules on the Mac: the five task kind rules, the unknown cause rule and the live configuration rule |
-| `harness/firstmate/supervision-branch-model` | firstmate's supervision branch model pin on the Mac |
-| `harness/firstmate/supervision-branch-effort` | firstmate's supervision branch effort pin on the Mac |
-
-firstmate is not a harness this repository serves, and the files are kept here only so that a file git-ignored in firstmate's own checkout has a history.
-`bun run generate` writes the dispatch file from `src/generate/crew-dispatch-config.ts`, which holds the rules.
-It writes the two pins from `src/generate/firstmate-pins.ts`.
-`src/generate/crew-dispatch.ts` holds the schema, which keeps every harness, model, effort, provider and `claude_account` to the values firstmate can run.
-It also holds the five task kinds, each with one fixed `when` and one fixed description.
-A kind rule names only its kind and its candidates, and an own rule, such as the live configuration rule, carries its own `when` and description.
-A description says what a rule is for and why, names no model or effort, and stays out of the written file.
-Change a rule there and regenerate, because `tests/unit/machine-files.test.ts` and `bun run generate --check` fail on a committed file that differs from what the source writes.
-The file sets `array_order` to `preference`, so firstmate takes the first candidate that quota-axi shows usable.
-A Haiku 5.5 candidate and a Muse candidate each carry a `floor` on the `all_models` scope of their provider, so firstmate skips each while that scope holds under 15%.
-Every Claude model lists once with `main` and once with `second` in `claude_account`, which `src/generate/claude-accounts.ts` names `MAIN_ACCOUNT` and `SECOND_ACCOUNT`.
-Firstmate launches each candidate with `--claude-account` and picks the usable one by quota.
-The ambiguous, bounded investigation and unknown cause rules list Fable 5.2 at high on both accounts first, then Opus 5.5 at high on both accounts.
-The three implementation rules list the Claude candidates first, then Muse, and GPT-6.1 Terra at high last in the two clearly specified ones.
-It spends the `codex` provider and carries no floor.
-`bun run link` links the dispatch file and the two pins on macOS only.
-`tests/unit/crew-dispatch.test.ts` fails on a profile whose effort pi would run at another level.
-pi silently moves an effort a model does not support to the next level up that it supports, or else down.
 
 ## no-mistakes
 

@@ -7,9 +7,9 @@ Date: 2026-11-10
 
 ## Status
 
-Accepted.
+Superseded by 0112, which moves the firstmate dispatch rules and pins to the dotfiles repository.
 Supersedes 0108, 0109 and 0110, which spread the dispatch rules across machines and named reviewers the chain no longer runs.
-What follows states the one file dispatch that the move to remote workers leaves behind.
+What follows is left as it was written.
 
 ## Context
 

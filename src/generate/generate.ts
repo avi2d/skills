@@ -8,7 +8,6 @@ import { attempt, filesUnder, unlessAbsent } from "../platform/files";
 import { consultable, hubUnder, hubs, type HubOutcome } from "./hub";
 import { dormantRules, loadSelection, profilesOf, selected } from "../bodies/selection";
 import { main } from "../platform/platform";
-import { machineDrift, writeMachineFiles } from "./machine-files";
 import { noMistakesConfigOf, noMistakesConfigUnder, noMistakesYaml, readHome } from "./no-mistakes-config";
 
 export const DISPATCHERS: { harness: Harness; bundle: Bundle }[] = [
@@ -115,19 +114,18 @@ if (import.meta.main) {
     Effect.gen(function* () {
       const root = yield* readGeneratedRoot;
       if (process.argv.includes("--check")) {
-        const problems = [...(yield* drift(repo, yield* generated(repo))), ...(yield* machineDrift(repo))];
+        const problems = yield* drift(repo, yield* generated(repo));
         if (problems.length > 0) {
           for (const problem of problems) console.error(problem);
           process.exitCode = 1;
           return;
         }
-        console.log(`${root}/ matches the Bodies, and harness/ the machine sources`);
+        console.log(`${root}/ matches the Bodies`);
         return;
       }
       const { wrote, hubs: built } = yield* checkout(repo);
       console.log(`wrote ${wrote} files under ${root}/`);
       console.log(tally(root, built));
-      console.log(`wrote ${yield* writeMachineFiles(repo)} machine files under harness/`);
     }),
   );
 }
