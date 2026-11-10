@@ -96,6 +96,7 @@ export function rescoreReport(
       cases: undefined,
       maxOutputTokens: 0,
       rescore: undefined,
+      unmasked: fieldOf(parsed, "toolOutputHidden") !== true,
     }, done, [...failures], summary);
     yield* Console.log(script + ": wrote " + dir);
     return true;

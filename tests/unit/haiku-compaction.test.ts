@@ -50,6 +50,31 @@ const responseOf = (text: string, usage: Usage = usageOf(10, 20)): AssistantMess
 
 const userOf = (text: string): AgentMessage => ({ role: "user", content: text, timestamp: 0 });
 
+const readCallOf = (path: string): AgentMessage => ({
+  ...responseOf(""),
+  content: [{ type: "toolCall", id: "call-" + path, name: "read", arguments: { path } }],
+  stopReason: "toolUse",
+});
+
+const readResultOf = (path: string, text: string, isError = false): AgentMessage => ({
+  role: "toolResult",
+  toolCallId: "call-" + path,
+  toolName: "read",
+  content: [{ type: "text", text }],
+  isError,
+  timestamp: 0,
+});
+
+const promptsSent = async (event: Event): Promise<string[]> => {
+  const seen: string[] = [];
+  const { registry } = registryOf(async (_model, context) => {
+    seen.push(context.messages[0]?.content[0]?.text ?? expect.unreachable("a user message is sent"));
+    return responseOf("## Goal\nSummary.");
+  });
+  await settled(event, { model: OPUS, modelRegistry: registry }, true);
+  return seen;
+};
+
 const preparationOf = (
   messages: AgentMessage[],
   overrides: Partial<Event["preparation"]> = {},
@@ -393,6 +418,30 @@ describe("haiku-compaction", () => {
       [priorHookOf(["a.ts"], ["b.ts"]), priorHookOf(["d.ts"], ["e.ts"])],
     );
     expect(fileListsOf(merged)).toEqual({ readFiles: ["a.ts", "c.ts", "d.ts"], modifiedFiles: ["b.ts", "e.ts"] });
+  });
+
+  test("a finished turn's tool output reaches Haiku as a stub with its size, not the output itself", async () => {
+    const [history] = await promptsSent(eventOf([userOf("read the notes"), readCallOf("notes.txt"), readResultOf("notes.txt", "alpha-bravo")]));
+    expect(history).not.toContain("alpha-bravo");
+    expect(history).toContain("[Tool result]: [output hidden before summarizing: 11 chars]");
+    expect(history).toContain('read(path="notes.txt")');
+  });
+
+  test("a failed tool call's error reaches Haiku whole instead of as a stub", async () => {
+    const [history] = await promptsSent(eventOf([userOf("read it"), readCallOf("gone.txt"), readResultOf("gone.txt", "ENOENT: no such file gone.txt", true)]));
+    expect(history).toContain("ENOENT: no such file gone.txt");
+    expect(history).not.toContain("output hidden");
+  });
+
+  test("the split turn's prefix keeps its tool output while the history before it is hidden", async () => {
+    const [history, prefix] = await promptsSent(
+      eventOf([userOf("earlier"), readCallOf("old.txt"), readResultOf("old.txt", "old-body")], {
+        isSplitTurn: true,
+        turnPrefixMessages: [userOf("current"), readCallOf("new.txt"), readResultOf("new.txt", "new-body")],
+      }),
+    );
+    expect(history).not.toContain("old-body");
+    expect(prefix).toContain("new-body");
   });
 
   test("reads the kill switch the way pi holds it", () => {

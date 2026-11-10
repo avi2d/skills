@@ -12,6 +12,9 @@ import type {
   SummaryModel,
   SummaryRegistry,
 } from "./haiku-compaction/file-ops";
+import { historyConversationOf } from "./haiku-compaction/tool-output";
+
+export { historyConversationOf } from "./haiku-compaction/tool-output";
 
 export type {
   BranchEntries,
@@ -313,7 +316,7 @@ async function summarizeHistory(
   const done = await summarize(
     registry,
     haiku,
-    historyPromptOf(conversationOf(preparation.messagesToSummarize), preparation.previousSummary, customInstructions, keepUrls),
+    historyPromptOf(historyConversationOf(preparation.messagesToSummarize), preparation.previousSummary, customInstructions, keepUrls),
     historyBudget(preparation.settings.reserveTokens, haiku.maxTokens),
     signal,
   );
