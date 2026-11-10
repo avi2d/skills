@@ -10,6 +10,7 @@ Date: 2026-11-10
 Accepted.
 Supersedes 0111, which kept the firstmate dispatch rules and the two supervision pins in this repository.
 Supersedes 0102, whose reviewer chain this record states as it now holds.
+Amends 0020: the dispatch rules path and the two supervision pin paths leave the map without moving to `RETIRED`.
 
 ## Context
 
