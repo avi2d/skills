@@ -91,7 +91,7 @@ test.each([
   expect(await saidBy(noMistakesYaml({ ...noMistakesConfigOf(HOME), ...change }))).toMatch(named);
 });
 
-test("the config rejects a missing or misplaced Pages project", async () => {
+test("the generated config names the avi2d-nm-evidence Pages project", async () => {
   expect(Bun.YAML.parse(await valueOf(noMistakesYaml(noMistakesConfigOf(HOME))))).toMatchObject({
     test: { evidence: { cloudflare_pages: { project: "avi2d-nm-evidence" } } },
   });
