@@ -7,6 +7,11 @@ const opusOn = (effort: Effort, claude_account: ClaudeAccount) =>
 
 const opusBoth = (effort: Effort): Profiles => [opusOn(effort, MAIN_ACCOUNT), opusOn(effort, SECOND_ACCOUNT)];
 
+const fableOn = (effort: Effort, claude_account: ClaudeAccount) =>
+  ({ harness: "pi", model: "claude-bridge/claude-fable-5-2", effort, provider: "claude", claude_account }) as const satisfies Profile;
+
+const fableBoth = (effort: Effort): Profiles => [fableOn(effort, MAIN_ACCOUNT), fableOn(effort, SECOND_ACCOUNT)];
+
 const terra = (effort: Effort) => ({ harness: "pi", model: "openai/gpt-6.1-terra", effort, provider: "codex" }) as const satisfies Profile;
 
 const muse = (effort: Effort) =>
@@ -35,7 +40,7 @@ const SMALL_EFFORTS = { muse: "high", haiku: "high", opus: "medium" } as const;
 const unknownCause: OwnRule = {
   description: "An unexplained cause needs the strongest reasoning class.",
   when: "A code change whose cause or scope is not yet known: a bug, flaky check, environment-only failure, or unexplained regression that must first be diagnosed across systems, processes or machines before the fix is clear. A fix the brief already locates takes a smaller rule.",
-  use: [...opusBoth("high")],
+  use: [...fableBoth("high"), ...opusBoth("high")],
 };
 
 const macOnly: OwnRule = {
@@ -48,8 +53,8 @@ const shared: CrewDispatch["rules"] = [
   { kind: "trivial", use: workhorse(TRIVIAL_EFFORTS) },
   { kind: "small", use: [...haikuBoth(SMALL_EFFORTS.haiku), ...opusBoth(SMALL_EFFORTS.opus), muse(SMALL_EFFORTS.muse), terra("high")] },
   { kind: "large", use: [...opusBoth("medium"), muse("high"), terra("high")] },
-  { kind: "ambiguous", use: [...opusBoth("high")] },
-  { kind: "investigation", use: [...opusBoth("high")] },
+  { kind: "ambiguous", use: [...fableBoth("high"), ...opusBoth("high")] },
+  { kind: "investigation", use: [...fableBoth("high"), ...opusBoth("high")] },
 ];
 
 const windows: CrewDispatch = {

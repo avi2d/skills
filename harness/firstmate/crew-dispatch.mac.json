@@ -149,6 +149,20 @@
       "use": [
         {
           "harness": "pi",
+          "model": "claude-bridge/claude-fable-5-2",
+          "effort": "high",
+          "provider": "claude",
+          "claude_account": "main"
+        },
+        {
+          "harness": "pi",
+          "model": "claude-bridge/claude-fable-5-2",
+          "effort": "high",
+          "provider": "claude",
+          "claude_account": "second"
+        },
+        {
+          "harness": "pi",
           "model": "claude-bridge/claude-opus-5-5",
           "effort": "high",
           "provider": "claude",
@@ -168,6 +182,20 @@
       "use": [
         {
           "harness": "pi",
+          "model": "claude-bridge/claude-fable-5-2",
+          "effort": "high",
+          "provider": "claude",
+          "claude_account": "main"
+        },
+        {
+          "harness": "pi",
+          "model": "claude-bridge/claude-fable-5-2",
+          "effort": "high",
+          "provider": "claude",
+          "claude_account": "second"
+        },
+        {
+          "harness": "pi",
           "model": "claude-bridge/claude-opus-5-5",
           "effort": "high",
           "provider": "claude",
@@ -185,6 +213,20 @@
     {
       "when": "A code change whose cause or scope is not yet known: a bug, flaky check, environment-only failure, or unexplained regression that must first be diagnosed across systems, processes or machines before the fix is clear. A fix the brief already locates takes a smaller rule.",
       "use": [
+        {
+          "harness": "pi",
+          "model": "claude-bridge/claude-fable-5-2",
+          "effort": "high",
+          "provider": "claude",
+          "claude_account": "main"
+        },
+        {
+          "harness": "pi",
+          "model": "claude-bridge/claude-fable-5-2",
+          "effort": "high",
+          "provider": "claude",
+          "claude_account": "second"
+        },
         {
           "harness": "pi",
           "model": "claude-bridge/claude-opus-5-5",
