@@ -53,6 +53,40 @@ const OUTPUT_FILTERS = new Set([
 
 const programOf = (word: string | undefined): string => word?.split("/").pop() ?? "";
 
+const WAITS: readonly (readonly string[])[] = [
+  ["sleep"],
+  ["no-mistakes", "axi", "run"], ["no-mistakes", "axi", "respond"], ["no-mistakes", "axi", "status"],
+  ["gh", "run", "watch"], ["gh", "pr", "checks"], ["gh-axi", "run", "watch"], ["gh-axi", "pr", "checks"],
+  ["pueue", "wait"], ["pueue", "follow"], ["pueue", "status"], ["pueue", "log"],
+];
+
+const TIMEOUT_VALUED = new Set(["-s", "-k", "--signal", "--kill-after"]);
+
+const unwrapped = (words: readonly string[]): readonly string[] => {
+  let at = 0;
+  while (/^[A-Za-z_][A-Za-z0-9_]*=/.test(words[at] ?? "")) at += 1;
+  for (;;) {
+    const program = programOf(words[at]);
+    if (program === "nohup") at += 1;
+    else if (program === "timeout") {
+      at += 1;
+      while ((words[at] ?? "").startsWith("-")) at += TIMEOUT_VALUED.has(words[at] ?? "") ? 2 : 1;
+      at += 1;
+    } else return words.slice(at);
+  }
+};
+
+const stageWaits = (words: readonly string[]): boolean => {
+  const [program, ...args] = unwrapped(words);
+  const plain = args.filter((arg) => !arg.startsWith("-"));
+  return WAITS.some(
+    ([head, ...tail]) =>
+      head === programOf(program) && (tail.length === 0 || plain.some((_, at) => tail.every((word, offset) => plain[at + offset] === word))),
+  );
+};
+
+const waitsOnState = (command: string): boolean => splitStages(command).some((stage) => stageWaits(stage.words));
+
 type AnalyzedStage = SplitStage & { kept: boolean };
 
 const analyze = (command: string): AnalyzedStage[] => {
@@ -312,6 +346,7 @@ export const slowResult = (event: SlowResult, state: RunState): { actions: []; s
     return { actions: [], state: clearedSlow(state) };
   }
   const base = mutating && !failed ? [] : entries;
+  if (waitsOnState(event.command)) return { actions: [], state: base === entries ? state : clearedSlow(state) };
   const slow = [...base, { full: [full], canon, ...(saved ? { recovered: true } : {}) }].slice(-SLOW_KEEP);
   return { actions: [], state: { ...state, slow } };
 };

@@ -119,6 +119,31 @@ test("a rerun to /dev/null is refused, and a hook-cased Bash call is refused too
   expect(after([...slowSince(400), call(`${SLOW} 2>&1 | tail -5`, "Bash")]).refused).toEqual([RERUN_REFUSAL]);
 });
 
+const slowThenCall = (first: string, second: string): string[] => after([call(first), result(first, 300), call(second)]).refused;
+
+test.each([
+  ["no-mistakes axi run 2>&1 | tail -30", "no-mistakes axi run 2>&1 | tail -25"],
+  ["no-mistakes axi respond --action fix --findings lint-1 2>&1 | tail -30", "no-mistakes axi respond --action fix --findings lint-1 2>&1 | tail -20"],
+  ["sleep 240; no-mistakes axi status 2>&1 | sed -n '1,22p'", "sleep 240; no-mistakes axi status 2>&1 | sed -n '7,20p'"],
+  ["sleep 300; gh-axi pr checks 42 2>&1 | tail -n 7", "sleep 300; gh-axi pr checks 42 2>&1 | tail -n 12"],
+  ["sleep 170; cat /tmp/run/progress.log | tail -6", "sleep 170; cat /tmp/run/progress.log | tail -9"],
+  [
+    'timeout 580 pueue wait 1670 >/dev/null 2>&1; pueue status -g browser 2>&1 | grep " 1670 " | cut -c1-40',
+    'timeout 580 pueue wait 1670 >/dev/null 2>&1; pueue status -g browser 2>&1 | grep " 1670 " | cut -c1-80',
+  ],
+])("a wait on changing state is not refused as a stale rerun: %s then a new filter", (first, second) => {
+  expect(slowThenCall(first, second)).toEqual([]);
+});
+
+test.each([
+  ["bun test 2>&1 | tail -5", "bun test 2>&1 | grep '(fail)' | sort -u | head"],
+  ["go test -race ./... 2>&1 | grep -E FAIL", "go test -race ./... 2>&1 | tail -20"],
+  ['bun run lint 2>&1 | grep -A6 "repetition:"', 'bun run lint 2>&1 | grep -A8 "repetition:"'],
+  ["timeout 300 bun run build 2>&1 | tail -5", "timeout 300 bun run build 2>&1 | tail -40"],
+])("a test or build rerun is still refused though waits pass: %s then a new filter", (first, second) => {
+  expect(slowThenCall(first, second)).toEqual([RERUN_REFUSAL]);
+});
+
 test("stripping keeps chained commands and inputs apart, so an unrelated chain or a different input never shares a guard", () => {
   expect(stripped(`${SLOW} 2>&1 | tail -3`)).toBe(SLOW);
   expect(stripped(`${SLOW} > /tmp/eval.log 2>&1`)).toBe(SLOW);
