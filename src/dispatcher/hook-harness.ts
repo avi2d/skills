@@ -340,10 +340,9 @@ export async function handle(adapter: HookAdapter, index: Index, hook: Hook, pay
     const kept = walked === undefined || walked === checked.walked ? state : { ...state, walked };
     writeState(path, session, { state: kept, awaiting: listening.awaiting, pending: tracking.pending });
   };
-  if (!event) {
-    settle(done.state);
-    return undefined;
-  }
+  settle(done.state);
+  for (const line of [...done.actions.map(logLine), ...listening.notes]) note(session, line);
+  if (!event) return undefined;
 
   const respond = async (): Promise<string | undefined> => {
     const verdict = await judged(index, done, session);
@@ -355,7 +354,6 @@ export async function handle(adapter: HookAdapter, index: Index, hook: Hook, pay
     if (steered?.type === "queue") tracking.moved(steered.command);
     else if (reply.refuse || steered?.type === "refuse") tracking.dropStarted();
     settle(verdict.state);
-    for (const line of [...done.actions.map(logLine), ...listening.notes]) note(session, line);
     if (steered?.type === "refuse") return hookOutput(hook, steered.text, "deny", told);
     if (steered?.type === "queue") return rewriteOutput(adapter, { ...payload.tool_input, command: steered.command }, told);
     if (steered?.type === "pass") {
