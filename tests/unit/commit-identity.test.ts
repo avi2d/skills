@@ -91,9 +91,36 @@ test("a not yet created path under /tmp stays exempt through its nearest existin
   expect(refused("cd /tmp/skills-commit-identity-missing && git commit --author=spark -m 'x'")).toBeUndefined();
 });
 
-test("a target holding an unexpanded variable stays refused even from a temp working directory", () => {
-  expect(refused("d=$(mktemp -d) && cd \"$d\" && git commit --author=spark -m 'x'")).toBe(COMMIT_IDENTITY_REFUSAL);
+test("a target holding a variable the command never assigns stays refused even from a temp working directory", () => {
   expect(refused("cd \"$d\" && git commit --author=spark -m 'x'", fixture)).toBe(COMMIT_IDENTITY_REFUSAL);
+});
+
+test.each([
+  "d=$(mktemp -d); cd \"$d\" && git init -q && git -c user.name=t -c user.email=t@example.com commit -q -m x",
+  "d=$(mktemp -d) && cd \"$d\" && git commit --author=spark -m 'x'",
+  "d=\"$(mktemp -d)\"; cd $d && git -c user.name=t commit -m x",
+  "d=`mktemp -d`; git -C \"$d\" -c user.name=t commit -m x",
+  "d=$(mktemp -d -t fixture.XXXXXX); git -C \"${d}\" -c user.name=t commit -m x",
+  "d=$(mktemp -d /tmp/fixture.XXXXXX); cd \"$d\"; git -c user.name=t commit -m x",
+  "R=$(mktemp -d); G=$R/repo; mkdir -p $G && cd $G && git init -q && git -c user.name=t commit -m x",
+  "G=/tmp/x/repo; git -C $G -c user.name=t -c user.email=t@example.com commit -m x",
+])("a commit into a temp directory held in a shell variable stays exempt: %s", (command) => {
+  expect(refused(command)).toBeUndefined();
+});
+
+test.each([
+  "d=/repo; cd \"$d\" && git -c user.name=t commit -m x",
+  "d=$(pwd); cd \"$d\" && git -c user.name=t commit -m x",
+  "d=$(git rev-parse --show-toplevel); git -C \"$d\" -c user.name=t commit -m x",
+  "d=$(mktemp -d -p /repo); cd \"$d\" && git -c user.name=t commit -m x",
+  "d=$(mktemp -d --tmpdir=/repo); cd \"$d\" && git -c user.name=t commit -m x",
+  "d=$(mktemp -d /repo/fixture.XXXXXX); cd \"$d\" && git -c user.name=t commit -m x",
+  "d=/tmp/x; d=/repo; cd \"$d\" && git -c user.name=t commit -m x",
+  "d=$(mktemp -d) | cat; cd \"$d\" && git -c user.name=t commit -m x",
+  "d=/tmp/x git -C $d -c user.name=t commit -m x",
+  "git -c user.name=\"$(git config user.name)\" -c user.email=\"$(git config user.email)\" commit -m x",
+])("a variable that does not resolve into the temp directory leaves the commit refused: %s", (command) => {
+  expect(refused(command)).toBe(COMMIT_IDENTITY_REFUSAL);
 });
 
 test("a not yet created path under an unexpanded temp variable stays refused", () => {

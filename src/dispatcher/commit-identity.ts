@@ -2,6 +2,7 @@ import { existsSync, readFileSync, realpathSync } from "node:fs";
 import { homedir, tmpdir } from "node:os";
 import { dirname, join, resolve, sep } from "node:path";
 import { isPipeGap, quoted, splitStages, type SplitStage } from "./rerun";
+import { UNRESOLVED, expandVars, mktempAssignment } from "./shell-vars";
 
 export const COMMIT_IDENTITY_REFUSAL =
   "This commit sets its own author or committer. Commit as the identity the repository already resolves to, which git config user.name and git config user.email print. Set an identity only inside a throwaway repository a test creates under the temp directory.";
@@ -236,18 +237,30 @@ const recordExports = (track: Track, bare: readonly string[], piped: boolean): v
   if (piped) return;
   for (const word of bare.slice(1)) {
     const cut = word.indexOf("=");
-    if (cut > 0) track.vars[word.slice(0, cut)] = word.slice(cut + 1);
+    if (cut > 0) assign(track, word.slice(0, cut), word.slice(cut + 1));
   }
 };
 
 const isAssignmentStage = (words: readonly string[]): boolean => words.length > 0 && words.every((word) => LEADING_ASSIGNMENT.test(word));
 
+const assign = (track: Track, name: string, value: string): void => {
+  const held = track.vars[name];
+  track.vars[name] = held === undefined || held === value ? value : UNRESOLVED;
+};
+
 const recordAssignments = (track: Track, words: readonly string[], piped: boolean): void => {
   if (piped) return;
   for (const word of words) {
     const cut = word.indexOf("=");
-    track.vars[word.slice(0, cut)] = word.slice(cut + 1);
+    assign(track, word.slice(0, cut), word.slice(cut + 1));
   }
+};
+
+const recordMktemp = (track: Track, command: string, stage: SplitStage, piped: boolean): boolean => {
+  const made = mktempAssignment(command, stage);
+  if (made === undefined) return false;
+  if (!piped && !made.piped) assign(track, made.name, made.dir);
+  return true;
 };
 
 const resolveFrom = (track: Track, index: number, stages: readonly SplitStage[]): string => {
@@ -277,11 +290,11 @@ const commitDirs = (stages: readonly SplitStage[], command: string, cwd: string,
     if (stage === undefined) continue;
     if (insideBody(stage.start)) continue;
     applyGapParens(track, stage, stage.start - stage.gap.length, inside, insideBody);
-    const words = stage.words;
+    const words = stage.words.map((word) => expandVars(word, track.vars));
     const bare = withoutEnv(words);
     const next = stages[index + 1];
     const piped = isPipeGap(stage.gap) || (next !== undefined && isPipeGap(next.gap));
-    if (applyCd(track, words, bare, piped, home, index)) continue;
+    if (recordMktemp(track, command, stage, piped) || applyCd(track, words, bare, piped, home, index)) continue;
     if (bare[0] === "export") recordExports(track, bare, piped);
     else if (isAssignmentStage(words)) {
       recordAssignments(track, words, piped);

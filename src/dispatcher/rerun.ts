@@ -107,7 +107,7 @@ const previousSignificant = (text: string, at: number): string => {
   return back >= 0 ? (text[back] ?? "") : "";
 };
 
-const unquote = (target: string): string =>
+export const unquote = (target: string): string =>
   target.length >= 2 &&
   ((target.startsWith('"') && target.endsWith('"')) || (target.startsWith("'") && target.endsWith("'")))
     ? target.slice(1, -1)
