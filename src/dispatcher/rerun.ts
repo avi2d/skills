@@ -56,8 +56,8 @@ const programOf = (word: string | undefined): string => word?.split("/").pop() ?
 const WAITS: readonly (readonly string[])[] = [
   ["sleep"],
   ["no-mistakes", "axi", "run"], ["no-mistakes", "axi", "respond"], ["no-mistakes", "axi", "status"],
-  ["gh", "run", "watch"], ["gh", "pr", "checks"], ["gh-axi", "run", "watch"], ["gh-axi", "pr", "checks"],
-  ["pueue", "wait"], ["pueue", "follow"], ["pueue", "status"], ["pueue", "log"],
+  ["gh-axi", "pr", "checks"],
+  ["pueue", "wait"], ["pueue", "status"],
 ];
 
 const TIMEOUT_VALUED = new Set(["-s", "-k", "--signal", "--kill-after"]);
@@ -67,8 +67,7 @@ const unwrapped = (words: readonly string[]): readonly string[] => {
   while (/^[A-Za-z_][A-Za-z0-9_]*=/.test(words[at] ?? "")) at += 1;
   for (;;) {
     const program = programOf(words[at]);
-    if (program === "nohup") at += 1;
-    else if (program === "timeout") {
+    if (program === "timeout") {
       at += 1;
       while ((words[at] ?? "").startsWith("-")) at += TIMEOUT_VALUED.has(words[at] ?? "") ? 2 : 1;
       at += 1;

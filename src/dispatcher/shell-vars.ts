@@ -17,7 +17,8 @@ const mktempDir = (args: readonly string[]): string | undefined => {
   if (templates.some((arg) => arg.startsWith("-"))) return undefined;
   const [template, ...rest] = templates;
   if (rest.length > 0) return undefined;
-  if (template === undefined || !template.includes("/")) return tmpdir();
+  if (template === undefined) return tmpdir();
+  if (!template.includes("/")) return args.includes("-t") ? tmpdir() : undefined;
   return template.startsWith("/") ? dirname(template) : undefined;
 };
 
