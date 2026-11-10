@@ -343,7 +343,7 @@ export const checkedRerun = (event: ToolCall, state: RunState): { refused?: Reru
   const entries = state.slow;
   if (command === undefined || entries === undefined || entries.length === 0) return { state };
   for (const entry of entries) {
-    if (digestCommand(command) === entry.full) return { state };
+    if (entry.full.includes(digestCommand(command))) return { state };
   }
   for (const entry of entries) {
     if (digestCommand(stripped(command)) !== entry.canon) continue;
@@ -379,7 +379,11 @@ export const slowResult = (event: SlowResult, state: RunState): { actions: []; s
   const entries = state.slow ?? [];
   const saved = event.saved ?? savesStdout(event.command);
   if (entries.some((entry) => entry.canon === canon)) {
-    const slow = entries.map((entry) => (entry.canon === canon && saved ? { ...entry, recovered: true } : entry));
+    const slow = entries.map((entry) =>
+      entry.canon === canon && saved
+        ? { ...entry, full: entry.full.includes(full) ? entry.full : [...entry.full, full], recovered: true }
+        : entry,
+    );
     return { actions: [], state: { ...state, slow } };
   }
   const failed = event.failed === true;
@@ -389,7 +393,7 @@ export const slowResult = (event: SlowResult, state: RunState): { actions: []; s
     return { actions: [], state: clearedSlow(state) };
   }
   const base = mutating && !failed ? [] : entries;
-  const slow = [...base, { full, canon, ...(saved ? { recovered: true } : {}) }].slice(-SLOW_KEEP);
+  const slow = [...base, { full: [full], canon, ...(saved ? { recovered: true } : {}) }].slice(-SLOW_KEEP);
   return { actions: [], state: { ...state, slow } };
 };
 

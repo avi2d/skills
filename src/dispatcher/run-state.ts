@@ -14,7 +14,7 @@ export type RunState = {
   slow?: SlowGuard[];
 };
 
-export type SlowGuard = { full: string; canon: string; recovered?: boolean };
+export type SlowGuard = { full: string[]; canon: string; recovered?: boolean };
 
 export const SLOW_KEEP = 5;
 
@@ -107,7 +107,8 @@ const isProject = (value: unknown): value is Project => {
 
 const isSlowGuard = (value: unknown): value is SlowGuard =>
   isRecord(value) &&
-  typeof value.full === "string" &&
+  Array.isArray(value.full) &&
+  value.full.every((entry) => typeof entry === "string") &&
   typeof value.canon === "string" &&
   (value.recovered === undefined || typeof value.recovered === "boolean");
 

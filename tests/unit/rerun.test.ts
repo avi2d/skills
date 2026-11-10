@@ -59,6 +59,11 @@ test("a first save of unsaved output passes once, and the next save to another f
   expect(after([...saved, call(`${SLOW} > /tmp/third.log`)]).refused).toEqual([RERUN_REFUSAL]);
 });
 
+test("an identical rerun of a saved command passes, so a flake check on the log is allowed", () => {
+  const saved = [...slowSince(400), call(`${SLOW} > /tmp/first.log`), result(`${SLOW} > /tmp/first.log`, 400)];
+  expect(after([...saved, call(`${SLOW} > /tmp/first.log`)]).refused).toEqual([]);
+});
+
 test("an identical rerun settles a flake, and a rerun after a confirmed write passes", () => {
   expect(after([...slowSince(400), call(SLOW)]).refused).toEqual([]);
   expect(after([...slowSince(400), wrote("src/a.ts"), written("src/a.ts"), call(`${SLOW} 2>&1 | tail -5`)]).refused).toEqual([]);
