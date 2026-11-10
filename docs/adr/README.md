@@ -27,7 +27,7 @@
 | [0017](0017-a-fan-out-declares-its-branches.md) | A fan-out declares its branches | Superseded |  |
 | [0018](0018-the-subagent-steer-is-pinned-rather-than-left-to-a-remote-gate.md) | The subagent steer is pinned, rather than left to a remote gate | Accepted |  |
 | [0019](0019-a-rule-that-falls-due-mid-turn-arrives-as-a-refusal.md) | A Rule that falls due mid-turn arrives as a refusal | Accepted |  |
-| [0020](0020-a-path-home-took-from-here-is-retired-rather-than-forgotten.md) | A path $HOME took from here is retired, rather than forgotten | Accepted |  |
+| [0020](0020-a-path-home-took-from-here-is-retired-rather-than-forgotten.md) | A path $HOME took from here is retired, rather than forgotten | Accepted | `src/generate/link.ts`, `tests/unit/link.test.ts` |
 | [0021](0021-the-emitted-tree-reaches-a-clone-through-the-generator.md) | The emitted tree reaches a clone through the generator | Accepted |  |
 | [0022](0022-codex-hooks-like-claude-codes-and-a-hub-that-is-pis.md) | Codex's hooks are Claude Code's, and its Hub is pi's | Accepted |  |
 | [0023](0023-a-comment-survives-on-two-rows-and-nothing-in-the-code-points-at-a-record.md) | A comment survives on two rows, and nothing in the code points at a record | Accepted |  |
@@ -109,7 +109,7 @@
 | [0099](0099-writing-for-people-is-switched-on-for-muse-spark-alone.md) | Writing for people is switched on for Muse Spark alone | Accepted |  |
 | [0100](0100-codex-reviewer-ruling-moved.md) | Codex reviewer ruling moved | Retired |  |
 | [0101](0101-claude-reviewer-ruling-moved.md) | Claude reviewer ruling moved | Retired |  |
-| [0102](0102-the-main-account-reviews-first-codex-second-and-the-second-account-last-with-no-floor.md) | The main account reviews first, Codex second, and the second account last with no floor | Accepted | `src/generate/no-mistakes-config.ts`, `tests/unit/machine-files.test.ts` |
+| [0102](0102-the-main-account-reviews-first-codex-second-and-the-second-account-last-with-no-floor.md) | The main account reviews first, Codex second, and the second account last with no floor | Superseded | `src/generate/no-mistakes-config.ts`, `tests/unit/machine-files.test.ts` |
 | [0103](0103-a-read-of-a-known-credential-file-is-refused-by-the-dispatcher.md) | A read of a known credential file is refused by the Dispatcher | Accepted |  |
 | [0104](0104-tool-output-is-scrubbed-at-the-harness-with-the-checks-kits-gitleaks-rules.md) | Tool output is scrubbed at the harness with the checks kit's gitleaks rules | Accepted |  |
 | [0105](0105-the-mutation-config-is-the-kits-preset-and-the-unit-test-files.md) | The mutation config is the kit's preset and the unit test files | Accepted |  |
@@ -118,6 +118,7 @@
 | [0108](0108-astra-reviews-first-with-no-floor-and-codex-models-join-four-dispatch-rules.md) | Astra reviews first with no floor, and Codex models join four dispatch rules | Superseded | `src/generate/no-mistakes-config.ts`, `src/generate/crew-dispatch-config.ts`, `src/generate/crew-dispatch.ts`, `harness/firstmate/crew-dispatch.json`, `tests/unit/crew-dispatch.test.ts`, `tests/unit/machine-files.test.ts` |
 | [0109](0109-claude-candidates-lead-the-three-implementation-dispatch-rules.md) | Claude candidates lead the three implementation dispatch rules | Superseded | `src/generate/crew-dispatch-config.ts`, `harness/firstmate/crew-dispatch.json`, `tests/unit/crew-dispatch.test.ts`, `tests/unit/machine-files.test.ts` |
 | [0110](0110-fable-5-2-leads-the-ambiguous-investigation-and-unknown-cause-dispatch-rules.md) | Fable 5.2 leads the ambiguous, investigation and unknown-cause dispatch rules | Superseded | `src/generate/crew-dispatch-config.ts`, `src/generate/crew-dispatch.ts`, `selection.toml`, `harness/firstmate/crew-dispatch.json`, `tests/unit/crew-dispatch.test.ts`, `harness/pi/settings.json` |
-| [0111](0111-one-crew-dispatch-file-holds-the-mac-rules.md) | One crew dispatch file holds the Mac rules | Accepted | `src/generate/crew-dispatch-config.ts`, `src/generate/machine-files.ts`, `src/generate/link.ts`, `src/generate/firstmate-pins.ts`, `harness/firstmate/crew-dispatch.json`, `tests/unit/crew-dispatch.test.ts`, `tests/unit/machine-files.test.ts` |
+| [0111](0111-one-crew-dispatch-file-holds-the-mac-rules.md) | One crew dispatch file holds the Mac rules | Superseded | `src/generate/crew-dispatch-config.ts`, `src/generate/machine-files.ts`, `src/generate/link.ts`, `src/generate/firstmate-pins.ts`, `harness/firstmate/crew-dispatch.json`, `tests/unit/crew-dispatch.test.ts`, `tests/unit/machine-files.test.ts` |
+| [0112](0112-the-firstmate-dispatch-rules-and-pins-move-to-the-dotfiles-repository.md) | The firstmate dispatch rules and pins move to the dotfiles repository | Accepted | `src/generate/link.ts`, `src/generate/no-mistakes-config.ts`, `tests/unit/link.test.ts`, `tests/unit/no-mistakes-config.test.ts` |
 
 <!-- end generated adr-index -->

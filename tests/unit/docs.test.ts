@@ -103,32 +103,11 @@ const MERGED_FILES = { ".b/settings.json": { from: "harness/b/settings.json", ow
 const CONFIG_GRAFT = { from: "harness/a/settings.json", keys: ["hooks", "env"] };
 
 describe("the link page", () => {
-  const page = linkPage(
-    { mac: { ...LINKED, ".b/rules.json": "harness/b/rules.mac.json" }, windows: { ...LINKED, ".b/rules.json": "harness/b/rules.json" } },
-    MERGED_FILES,
-    CONFIG_GRAFT,
-    [".a/old"],
-  );
+  const page = linkPage(LINKED, MERGED_FILES, CONFIG_GRAFT, [".a/old"]);
 
   test("pairs each path in $HOME with the path in this checkout it points at", () => {
     expect(page).toContain("| `~/.a/settings.json` | `harness/a/settings.json` |");
     expect(page).toContain("| `~/it's/here` | `generated/skills` |");
-  });
-
-  test("names only the Mac's target for a path only the Mac links", () => {
-    const macOnly = linkPage(
-      { mac: { ...LINKED, "only/mac": "harness/only/mac" }, windows: { ...LINKED } },
-      MERGED_FILES,
-      CONFIG_GRAFT,
-      [],
-    );
-    expect(macOnly).toContain("| `~/only/mac` | `harness/only/mac` on the Mac |");
-  });
-
-  test("names each machine's target for a path whose target differs by machine", () => {
-    expect(page).toContain(
-      "| `~/.b/rules.json` | `harness/b/rules.mac.json` on the Mac, `harness/b/rules.json` on the Windows machine and any other |",
-    );
   });
 
   test("pairs each file the linker writes with its source in this checkout and the keys it keeps from the file there", () => {
