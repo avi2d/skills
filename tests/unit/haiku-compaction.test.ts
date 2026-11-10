@@ -445,6 +445,22 @@ describe("haiku-compaction", () => {
     }
   });
 
+  test("a result that is mostly URLs reaches Haiku whole when its stub would be longer", async () => {
+    const links = ["https://example.com/alpha/pull/1", "https://example.com/beta/pull/22", "https://example.com/gamma/pull/333", "https://example.com/delta/pull/4444"].join(" ");
+    const [history] = await promptsSent(eventOf([userOf("list the pulls"), readCallOf("pulls.txt"), readResultOf("pulls.txt", links)]));
+    expect(history).toContain(links);
+    expect(history).not.toContain("output hidden");
+  });
+
+  test("a stubbed result carries markdown-wrapped URLs without the wrapping", async () => {
+    const body = `${"changelog entries ".repeat(20)}\`https://example.com/docs\` and **https://example.com/api**`;
+    const [history] = await promptsSent(eventOf([userOf("read the changelog"), readCallOf("notes.txt"), readResultOf("notes.txt", body)]));
+    expect(history).toContain("https://example.com/docs");
+    expect(history).toContain("https://example.com/api");
+    expect(history).not.toContain("docs`");
+    expect(history).not.toContain("api**");
+  });
+
   test("a result with no text leaves Haiku no stub line instead of a zero-char stub", async () => {
     const shot: AgentMessage = {
       role: "toolResult",
@@ -460,7 +476,7 @@ describe("haiku-compaction", () => {
   });
 
   test("a failed tool call's error reaches Haiku whole instead of as a stub", async () => {
-    const [history] = await promptsSent(eventOf([userOf("read it"), readCallOf("gone.txt"), readResultOf("gone.txt", "ENOENT: no such file gone.txt", true)]));
+    const [history] = await promptsSent(eventOf([userOf("read it"), readCallOf("gone.txt"), readResultOf("gone.txt", "ENOENT: no such file gone.txt\n    at openSync (node:internal/fs:594:3)\n".repeat(4), true)]));
     expect(history).toContain("ENOENT: no such file gone.txt");
     expect(history).not.toContain("output hidden");
   });
@@ -469,11 +485,12 @@ describe("haiku-compaction", () => {
     const [history, prefix] = await promptsSent(
       eventOf([userOf("earlier"), readCallOf("old.txt"), readResultOf("old.txt", "old-body ".repeat(20))], {
         isSplitTurn: true,
-        turnPrefixMessages: [userOf("current"), readCallOf("new.txt"), readResultOf("new.txt", "new-body")],
+        turnPrefixMessages: [userOf("current"), readCallOf("new.txt"), readResultOf("new.txt", "new-body ".repeat(20))],
       }),
     );
     expect(history).not.toContain("old-body");
     expect(prefix).toContain("new-body");
+    expect(prefix).not.toContain("output hidden");
   });
 
   test("reads the kill switch the way pi holds it", () => {

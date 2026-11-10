@@ -5,8 +5,8 @@ import type { AgentMessage } from "@earendil-works/pi-agent-core";
 const TOOL_OUTPUT_STUB_MIN_CHARS = 100;
 
 function urlsOf(text: string): string[] {
-  const found = text.match(/https?:\/\/[^\s<>\])"']+/g) ?? [];
-  return [...new Set(found.map((url) => url.replace(/[.,;:!?]+$/, "")))];
+  const found = text.match(/https?:\/\/[^\s<>\])"'`*]+/g) ?? [];
+  return [...new Set(found.map((url) => url.replace(/[.,;:!?*`]+$/, "")))];
 }
 
 function toolOutputStubOf(chars: number, urls: readonly string[]): string {
@@ -20,7 +20,9 @@ function hideToolOutput(messages: readonly AgentMessage[]): AgentMessage[] {
     if (message.role !== "toolResult" || message.isError) return message;
     const text = contentText(message.content, "");
     if (text.length <= TOOL_OUTPUT_STUB_MIN_CHARS) return message;
-    return { ...message, content: [{ type: "text", text: toolOutputStubOf(text.length, urlsOf(text)) }] };
+    const stub = toolOutputStubOf(text.length, urlsOf(text));
+    if (stub.length >= text.length) return message;
+    return { ...message, content: [{ type: "text", text: stub }] };
   });
 }
 
