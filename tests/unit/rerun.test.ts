@@ -164,6 +164,13 @@ test("a save by a command chained around the slow one does not count as the slow
   expect(savesStdout("echo start > /tmp/marker; bash tools/stock-take.sh > /tmp/stock.log", stockTake)).toBe(true);
 });
 
+test("a save by an unrelated chained command does not count on the default path", () => {
+  expect(savesStdout("echo start > /tmp/marker; npm test 2>&1 | tail -3")).toBe(false);
+  expect(savesStdout("npm test | tail -3; echo ok > /tmp/flag")).toBe(false);
+  expect(savesStdout("npm test > /tmp/full.log 2>&1")).toBe(true);
+  expect(savesStdout("npm test > /tmp/full.log 2>&1; echo done")).toBe(true);
+});
+
 test("only an output sent to a real file counts as saved", () => {
   expect(outputGoesToFile(`${SLOW} > /tmp/eval.log 2>&1`)).toBe(true);
   expect(outputGoesToFile(`${SLOW} 2>&1 | tee /tmp/eval.log | tail -3`)).toBe(true);

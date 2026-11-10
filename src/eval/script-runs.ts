@@ -20,43 +20,7 @@ const shellStep = (words: readonly string[], at: number, noexec: boolean): Shell
   return { done: noexec ? undefined : word };
 };
 
-const OPTION_VALUES: Readonly<Record<string, ReadonlySet<string>>> = {
-  timeout: new Set(["-s", "-k", "--signal", "--kill-after"]),
-  nice: new Set(["-n", "--adjustment"]),
-  env: new Set(["-u", "--unset", "-C", "--chdir"]),
-  nohup: new Set(),
-  time: new Set(["-f", "--format", "-o", "--output"]),
-};
-
-const OPERAND_FIRST = new Set(["timeout"]);
-
-const unwrapOnce = (words: readonly string[]): readonly string[] | undefined => {
-  const program = words[0] ?? "";
-  if (/^[A-Za-z_][A-Za-z0-9_]*=/.test(program)) return words.slice(1);
-  const valued = OPTION_VALUES[program.split("/").pop() ?? ""];
-  if (valued === undefined) return undefined;
-  let at = 1;
-  while (at < words.length) {
-    const word = words[at] ?? "";
-    if (word === "--") {
-      at += 1;
-      break;
-    }
-    if (program.endsWith("env") && /^[A-Za-z_][A-Za-z0-9_]*=/.test(word)) at += 1;
-    else if (word.startsWith("-") && word !== "-") at += valued.has(word) ? 2 : 1;
-    else break;
-  }
-  return words.slice(OPERAND_FIRST.has(program.split("/").pop() ?? "") ? at + 1 : at);
-};
-
-const launched = (words: readonly string[]): readonly string[] => {
-  let current = words;
-  for (let unwrapped = unwrapOnce(current); unwrapped !== undefined && unwrapped.length > 0; unwrapped = unwrapOnce(current)) current = unwrapped;
-  return current;
-};
-
-const scriptOperand = (wrapped: readonly string[], slow: RegExp): string | undefined => {
-  const words = launched(wrapped);
+const scriptOperand = (words: readonly string[], slow: RegExp): string | undefined => {
   const program = words[0] ?? "";
   if (slow.test(program)) return program;
   if (!SHELLS.has(program.split("/").pop() ?? "")) return undefined;

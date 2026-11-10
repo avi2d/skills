@@ -260,7 +260,11 @@ const pipelineSaves = (command: string, inside: readonly boolean[], pipeline: re
   return pipeline.slice(pipeline.indexOf(last) + 1).some((stage) => PASSTHROUGH.has(programOf(stage.words[0])) && spanSaves(stage));
 };
 
-export const savesStdout = (command: string, runsSlow: (words: readonly string[]) => boolean = () => true): boolean => {
+const TRIVIAL_PROGRAMS = new Set(["echo", "printf", "cd", "true", ":"]);
+
+const runsNonTrivial = (words: readonly string[]): boolean => !TRIVIAL_PROGRAMS.has(programOf(words[0]));
+
+export const savesStdout = (command: string, runsSlow: (words: readonly string[]) => boolean = runsNonTrivial): boolean => {
   const inside = quoted(command);
   return pipelines(analyze(command)).some(
     (pipeline) => pipeline.some((stage) => runsSlow(stage.words)) && pipelineSaves(command, inside, pipeline),
