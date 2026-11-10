@@ -1,5 +1,5 @@
 ---
-governs: [src/generate/no-mistakes-config.ts, src/generate/crew-dispatch-config.ts, src/generate/crew-dispatch.ts, harness/firstmate/crew-dispatch.json, harness/firstmate/crew-dispatch.mac.json, tests/unit/crew-dispatch.test.ts, tests/unit/machine-files.test.ts]
+governs: [src/generate/no-mistakes-config.ts, src/generate/crew-dispatch-config.ts, src/generate/crew-dispatch.ts, harness/firstmate/crew-dispatch.json, tests/unit/crew-dispatch.test.ts, tests/unit/machine-files.test.ts]
 ---
 # 108. Astra reviews first with no floor, and Codex models join four dispatch rules
 

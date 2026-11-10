@@ -1,5 +1,5 @@
 ---
-governs: [src/generate/crew-dispatch-config.ts, src/generate/crew-dispatch.ts, selection.toml, harness/firstmate/crew-dispatch.json, harness/firstmate/crew-dispatch.mac.json, tests/unit/crew-dispatch.test.ts, harness/pi/settings.json]
+governs: [src/generate/crew-dispatch-config.ts, src/generate/crew-dispatch.ts, selection.toml, harness/firstmate/crew-dispatch.json, tests/unit/crew-dispatch.test.ts, harness/pi/settings.json]
 ---
 # 110. Fable 5.2 leads the ambiguous, investigation and unknown-cause dispatch rules
 

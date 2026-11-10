@@ -1,5 +1,5 @@
 ---
-governs: [src/generate/crew-dispatch-config.ts, harness/firstmate/crew-dispatch.json, harness/firstmate/crew-dispatch.mac.json, tests/unit/crew-dispatch.test.ts, tests/unit/machine-files.test.ts]
+governs: [src/generate/crew-dispatch-config.ts, harness/firstmate/crew-dispatch.json, tests/unit/crew-dispatch.test.ts, tests/unit/machine-files.test.ts]
 ---
 # 109. Claude candidates lead the three implementation dispatch rules
 
