@@ -83,7 +83,7 @@ Both files set `array_order` to `preference`, so firstmate takes the first candi
 A Haiku 5.5 candidate and a Muse candidate each carry a `floor` on the `all_models` scope of their provider, so firstmate skips each while that scope holds under 15%.
 Every Claude model lists once with `main` and once with `second` in `claude_account`, which `src/generate/claude-accounts.ts` names `MAIN_ACCOUNT` and `SECOND_ACCOUNT`.
 Firstmate launches each candidate with `--claude-account` and picks the usable one by quota.
-The bounded investigation rule and the unknown cause rule list Opus 5.5 at high on both accounts.
+The ambiguous, bounded investigation and unknown cause rules list Fable 5.2 at high on both accounts first, then Opus 5.5 at high on both accounts.
 The three implementation rules list the Claude candidates first, then Muse, and GPT-6.1 Terra at high last in the two clearly specified ones.
 It spends the `codex` provider and carries no floor.
 `bun run link` links the Mac's file on macOS and the other one on every other platform.
