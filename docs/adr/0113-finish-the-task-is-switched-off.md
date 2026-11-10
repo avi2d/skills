@@ -1,4 +1,4 @@
-# 113. Finish the task is switched off for Muse Spark alone
+# 113. Finish the task is switched off
 
 Date: 2026-11-10
 

@@ -120,6 +120,6 @@
 | [0110](0110-fable-5-2-leads-the-ambiguous-investigation-and-unknown-cause-dispatch-rules.md) | Fable 5.2 leads the ambiguous, investigation and unknown-cause dispatch rules | Superseded | `src/generate/crew-dispatch-config.ts`, `src/generate/crew-dispatch.ts`, `selection.toml`, `harness/firstmate/crew-dispatch.json`, `tests/unit/crew-dispatch.test.ts`, `harness/pi/settings.json` |
 | [0111](0111-one-crew-dispatch-file-holds-the-mac-rules.md) | One crew dispatch file holds the Mac rules | Superseded | `src/generate/crew-dispatch-config.ts`, `src/generate/machine-files.ts`, `src/generate/link.ts`, `src/generate/firstmate-pins.ts`, `harness/firstmate/crew-dispatch.json`, `tests/unit/crew-dispatch.test.ts`, `tests/unit/machine-files.test.ts` |
 | [0112](0112-the-firstmate-dispatch-rules-and-pins-move-to-the-dotfiles-repository.md) | The firstmate dispatch rules and pins move to the dotfiles repository | Accepted | `src/generate/link.ts`, `src/generate/no-mistakes-config.ts`, `tests/unit/link.test.ts`, `tests/unit/no-mistakes-config.test.ts` |
-| [0113](0113-finish-the-task-is-switched-off-for-muse-spark-alone.md) | Finish the task is switched off for Muse Spark alone | Accepted |  |
+| [0113](0113-finish-the-task-is-switched-off.md) | Finish the task is switched off | Accepted |  |
 
 <!-- end generated adr-index -->
