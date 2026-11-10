@@ -65,13 +65,13 @@ const readResultOf = (path: string, text: string, isError = false): AgentMessage
   timestamp: 0,
 });
 
-const promptsSent = async (event: Event): Promise<string[]> => {
+const promptsSent = async (event: Event, model = OPUS): Promise<string[]> => {
   const seen: string[] = [];
   const { registry } = registryOf(async (_model, context) => {
     seen.push(context.messages[0]?.content[0]?.text ?? expect.unreachable("a user message is sent"));
     return responseOf("## Goal\nSummary.");
   });
-  await settled(event, { model: OPUS, modelRegistry: registry }, true);
+  await settled(event, { model, modelRegistry: registry }, true);
   return seen;
 };
 
@@ -421,10 +421,42 @@ describe("haiku-compaction", () => {
   });
 
   test("a finished turn's tool output reaches Haiku as a stub with its size, not the output itself", async () => {
-    const [history] = await promptsSent(eventOf([userOf("read the notes"), readCallOf("notes.txt"), readResultOf("notes.txt", "alpha-bravo")]));
+    const [history] = await promptsSent(eventOf([userOf("read the notes"), readCallOf("notes.txt"), readResultOf("notes.txt", "alpha-bravo ".repeat(20))]));
     expect(history).not.toContain("alpha-bravo");
-    expect(history).toContain("[Tool result]: [output hidden before summarizing: 11 chars]");
+    expect(history).toContain("[Tool result]: [output hidden before summarizing: 240 chars]");
     expect(history).toContain('read(path="notes.txt")');
+  });
+
+  test("a short tool result reaches Haiku whole instead of as a stub", async () => {
+    const sha = "da39a3ee5e6b4b0d3255bfef95601890afd80709";
+    const [history] = await promptsSent(eventOf([userOf("what changed"), readCallOf("sha.txt"), readResultOf("sha.txt", sha)]));
+    expect(history).toContain(sha);
+    expect(history).not.toContain("output hidden");
+  });
+
+  test("a stubbed tool result keeps every URL the output held, in every session kind", async () => {
+    const body = `${"release notes ".repeat(20)}https://github.com/o/r/pull/123${" packed changes ".repeat(20)}https://example.com/docs`;
+    for (const model of [OPUS, MUSE]) {
+      const [history] = await promptsSent(eventOf([userOf("read the notes"), readCallOf("notes.txt"), readResultOf("notes.txt", body)]), model);
+      expect(history).toContain("https://github.com/o/r/pull/123");
+      expect(history).toContain("https://example.com/docs");
+      expect(history).not.toContain("release notes release notes");
+      expect(history).toContain("output hidden before summarizing:");
+    }
+  });
+
+  test("a result with no text leaves Haiku no stub line instead of a zero-char stub", async () => {
+    const shot: AgentMessage = {
+      role: "toolResult",
+      toolCallId: "call-shot",
+      toolName: "read",
+      content: [{ type: "image", data: "aGk=", mimeType: "image/png" }],
+      isError: false,
+      timestamp: 0,
+    };
+    const [history] = await promptsSent(eventOf([userOf("look at this"), readCallOf("shot.png"), shot]));
+    expect(history).not.toContain("output hidden");
+    expect(history).not.toContain("0 chars");
   });
 
   test("a failed tool call's error reaches Haiku whole instead of as a stub", async () => {
@@ -435,7 +467,7 @@ describe("haiku-compaction", () => {
 
   test("the split turn's prefix keeps its tool output while the history before it is hidden", async () => {
     const [history, prefix] = await promptsSent(
-      eventOf([userOf("earlier"), readCallOf("old.txt"), readResultOf("old.txt", "old-body")], {
+      eventOf([userOf("earlier"), readCallOf("old.txt"), readResultOf("old.txt", "old-body ".repeat(20))], {
         isSplitTurn: true,
         turnPrefixMessages: [userOf("current"), readCallOf("new.txt"), readResultOf("new.txt", "new-body")],
       }),
