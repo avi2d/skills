@@ -13,6 +13,8 @@ const MKTEMP_ASSIGNMENT = /^([A-Za-z_][A-Za-z0-9_]*)=("?)(?:\$\(|`)\s*mktemp((?:
 const MKTEMP_FLAGS = new Set(["-d", "--directory", "-q", "--quiet", "-u", "--dry-run", "-t"]);
 
 const mktempDir = (args: readonly string[]): string | undefined => {
+  if (!args.some((arg) => arg === "-d" || arg === "--directory")) return undefined;
+  if (args.some((arg) => arg === "-u" || arg === "--dry-run")) return undefined;
   const templates = args.filter((arg) => !MKTEMP_FLAGS.has(arg));
   if (templates.some((arg) => arg.startsWith("-"))) return undefined;
   const [template, ...rest] = templates;
