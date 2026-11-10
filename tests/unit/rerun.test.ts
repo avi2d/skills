@@ -172,11 +172,21 @@ test("a save by an unrelated chained command does not count on the default path"
   expect(savesStdout("cat > /tmp/t.test.ts <<'EOF'\nimport { test } from \"bun:test\"\nEOF\nbun test /tmp/t.test.ts 2>&1 | tail -20")).toBe(false);
   expect(savesStdout("npm test > /tmp/full.log 2>&1")).toBe(true);
   expect(savesStdout("npm test > /tmp/full.log 2>&1; echo done")).toBe(true);
+  expect(savesStdout("rg -n TODO /big/monorepo > /tmp/rg.log")).toBe(true);
+  expect(savesStdout("grep -rn foo . > /tmp/grep.log 2>&1")).toBe(true);
+  expect(savesStdout("sort -u huge.txt > /tmp/sorted.txt")).toBe(true);
+  expect(savesStdout("jq '.[]' huge.json > /tmp/out.json")).toBe(true);
 });
 
 test("an unsaved build-then-test run still allows its fully saved rerun", () => {
   const first = "npm run build > /tmp/build.log 2>&1; npm test 2>&1 | tail -30";
   const saved = "npm run build > /tmp/build.log 2>&1; npm test > /tmp/test.log 2>&1";
+  expect(after([call(first), result(first, 400), call(saved)]).refused).toEqual([]);
+});
+
+test("an unsaved filter-program run still allows its saved rerun", () => {
+  const first = "rg -n TODO /big/monorepo 2>&1 | head -50";
+  const saved = "rg -n TODO /big/monorepo > /tmp/rg.log";
   expect(after([call(first), result(first, 400), call(saved)]).refused).toEqual([]);
 });
 

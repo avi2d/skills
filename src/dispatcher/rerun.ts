@@ -270,9 +270,10 @@ export const savesStdout = (command: string, runsSlow?: (words: readonly string[
   if (runsSlow !== undefined) {
     return lines.some((pipeline) => pipeline.some((stage) => runsSlow(stage.words)) && pipelineSaves(command, inside, pipeline));
   }
-  const significant = lines.filter((pipeline) => !TRIVIAL_PROGRAMS.has(firstProgram(pipeline)) && !OUTPUT_FILTERS.has(firstProgram(pipeline)));
-  const last = significant.at(-1);
-  return last !== undefined && pipelineSaves(command, inside, last);
+  const commands = lines.filter((pipeline) => !TRIVIAL_PROGRAMS.has(firstProgram(pipeline)));
+  const significant = commands.filter((pipeline) => !OUTPUT_FILTERS.has(firstProgram(pipeline)));
+  const judged = significant.length > 0 ? significant.at(-1) : commands.at(0);
+  return judged !== undefined && pipelineSaves(command, inside, judged);
 };
 
 export const checkedRerun = (event: ToolCall, state: RunState): { refused?: RerunRefused; state: RunState } => {
