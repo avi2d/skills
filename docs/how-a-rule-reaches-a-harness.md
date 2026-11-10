@@ -30,6 +30,7 @@ A change to `harness/pi/settings.json` reaches pi only at the next `bun run link
 On a machine where home-manager still owns these paths, the previous owner has to let go before the new one takes hold, as [record 0004](adr/0004-the-repo-installs-itself-and-the-contract-stays-hand-written.md) records.
 The linker removes only the paths `RETIRED` in `src/generate/link.ts` names, each one only while it is still a link into this checkout.
 Dropping an entry from the map says nothing to any machine, so a path leaves the map by moving to `RETIRED`, and every machine that runs the linker again lets go of it, as [record 0020](adr/0020-a-path-home-took-from-here-is-retired-rather-than-forgotten.md) records.
+The dispatch rules path and the two supervision pin paths left the map without moving to `RETIRED`, as [record 0112](adr/0112-the-firstmate-dispatch-rules-and-pins-move-to-the-dotfiles-repository.md) records.
 
 ## The Hub
 
