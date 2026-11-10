@@ -1,3 +1,6 @@
+---
+governs: [src/generate/link.ts, tests/unit/link.test.ts]
+---
 # 20. A path $HOME took from here is retired, rather than forgotten
 
 Date: 2026-09-14
