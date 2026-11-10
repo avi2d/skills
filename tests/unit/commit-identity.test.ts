@@ -131,6 +131,18 @@ test.each([
   "d=/tmp/x; read d < /tmp/f; git -C $d -c user.name=t commit -m x",
   "d=/tmp/x; f() { d=/repo; }; f; git -C $d -c user.name=t commit -m x",
   "test -n \"$CI\" && d=/tmp/x; git -C \"$d\" -c user.name=t commit -m x",
+  "false && d=/tmp/x; git -C \"$d\" -c user.name=t commit -m x",
+  "grep -q x f && d=/tmp/x; git -C \"$d\" -c user.name=t commit -m x",
+  "d=/tmp/x; IFS= read -r d < f; git -C $d -c user.name=t commit -m x",
+  "d=/tmp/x; printf -v d %s /repo; git -C $d -c user.name=t commit -m x",
+  "d=/tmp/x; mapfile -t d < f; git -C $d -c user.name=t commit -m x",
+  "d=/tmp/x; readarray -t d < f; git -C $d -c user.name=t commit -m x",
+  "d=/tmp/x; getopts a d; git -C $d -c user.name=t commit -m x",
+  "d=/tmp/x; d+=/../../repo; git -C $d -c user.name=t commit -m x",
+  "d=/tmp/x; unset d; git -C \"$d\" -c user.name=t commit -m x",
+  "d=/tmp/x; source ./f; git -C $d -c user.name=t commit -m x",
+  "d=/tmp/x; . ./f; git -C $d -c user.name=t commit -m x",
+  "d=$(mktemp -d); eval \"$(cat f)\"; git -C $d -c user.name=t commit -m x",
   "git -c user.name=\"$(git config user.name)\" -c user.email=\"$(git config user.email)\" commit -m x",
 ])("a variable that does not resolve into the temp directory leaves the commit refused: %s", (command) => {
   expect(refused(command)).toBe(COMMIT_IDENTITY_REFUSAL);

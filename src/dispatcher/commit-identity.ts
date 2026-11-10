@@ -170,10 +170,8 @@ const gitDirOf = (
 };
 
 const ASSIGN_WORD = /^([A-Za-z_][A-Za-z0-9_]*)=/;
-const PLAIN_NAME = /^[A-Za-z_][A-Za-z0-9_]*$/;
-const DECLARERS = new Set(["local", "declare", "typeset", "readonly"]);
 const GAP_KEYWORDS = new Set(["then", "do", "else", "elif", "if", "for", "select", "while", "until", "case", "in", "function", "coproc", "time"]);
-const TEST_COMMANDS = new Set(["test", "[", "[["]);
+const FOLLOW_KEYWORDS = new Set(["then", "do", "else", "elif", "{", "!"]);
 
 const gapHasKeyword = (gap: string): boolean =>
   gap.split(/[\s;&|(){}\n!]+/).some((token) => GAP_KEYWORDS.has(token));
@@ -203,17 +201,28 @@ const parenStateAt = (
   return { depth, unmatched };
 };
 
-const chainHasCondition = (stages: readonly SplitStage[], index: number): boolean => {
-  let start = index;
-  while (start > 0 && !/[;\n]/.test(stages[start]?.gap ?? "")) start -= 1;
-  for (let s = start + 1; s <= index; s += 1) {
-    if ((stages[s]?.gap ?? "").includes("||")) return true;
-  }
-  for (let s = start; s < index; s += 1) {
-    const first = withoutEnv(stages[s]?.words ?? [])[0];
-    if (first !== undefined && TEST_COMMANDS.has(first)) return true;
+const gapHasBlocker = (
+  gap: string,
+  inside: readonly boolean[],
+  base: number,
+  insideBody: (at: number) => boolean,
+): boolean => {
+  if (gapHasKeyword(gap)) return true;
+  for (let o = 0; o < gap.length; o += 1) {
+    const at = base + o;
+    if (inside[at] === true || insideBody(at)) continue;
+    if (gap[o] === "{" || gap[o] === "!") return true;
   }
   return false;
+};
+
+const wordMentionsName = (word: string, name: string): boolean => {
+  if (word.startsWith("-")) return false;
+  const rest = word
+    .replace(new RegExp("\\$\\{" + name + "\\}", "g"), "")
+    .replace(new RegExp("\\$\\{" + name + "(?::)?[-+#?%^/][^}]*\\}", "g"), "")
+    .replace(new RegExp("\\$" + name + "\\b", "g"), "");
+  return new RegExp("(^|[^A-Za-z0-9_])" + name + "($|[^A-Za-z0-9_])").test(rest);
 };
 
 const unstableVars = (
@@ -222,53 +231,52 @@ const unstableVars = (
   inside: readonly boolean[],
   insideBody: (at: number) => boolean,
 ): Set<string> => {
-  const assignments = new Map<string, number[]>();
-  const touched = new Set<string>();
+  const assignments = new Map<string, Array<{ stage: number; word: number }>>();
+  let dynamic = false;
   stages.forEach((stage, index) => {
-    for (const word of stage.words) {
+    stage.words.forEach((word, at) => {
+      if (word === "source" || word === "eval" || word === ".") dynamic = true;
       const found = ASSIGN_WORD.exec(word);
-      if (found !== null) assignments.set(found[1] ?? "", [...(assignments.get(found[1] ?? "") ?? []), index]);
-    }
-    for (let j = 0; j < stage.words.length; j += 1) {
-      if (stage.words[j] === "read" && (j === 0 || (j === 1 && (stage.words[0] === "while" || stage.words[0] === "until" || stage.words[0] === "!")))) {
-        for (const word of stage.words.slice(j + 1)) {
-          if (PLAIN_NAME.test(word)) touched.add(word);
-        }
+      if (found !== null) {
+        const name = found[1] ?? "";
+        assignments.set(name, [...(assignments.get(name) ?? []), { stage: index, word: at }]);
       }
-    }
-    if (stage.words[0] === "for" || stage.words[0] === "select") {
-      if (PLAIN_NAME.test(stage.words[1] ?? "")) touched.add(stage.words[1] ?? "");
-    }
-    if (stage.words[0] !== undefined && DECLARERS.has(stage.words[0] ?? "")) {
-      for (const word of stage.words.slice(1)) {
-        if (PLAIN_NAME.test(word)) touched.add(word);
-        const found = ASSIGN_WORD.exec(word);
-        if (found !== null) touched.add(found[1] ?? "");
-      }
-    }
+    });
   });
   const frozen = new Set<string>();
+  if (dynamic) {
+    for (const name of assignments.keys()) frozen.add(name);
+    return frozen;
+  }
   for (const [name, at] of assignments) {
-    if (at.length !== 1 || touched.has(name)) { frozen.add(name); continue; }
-    const index = at[0] ?? 0;
-    const stage = stages[index];
+    if (at.length !== 1) { frozen.add(name); continue; }
+    const only = at[0];
+    if (only === undefined) { frozen.add(name); continue; }
+    const stage = stages[only.stage];
     if (stage === undefined) { frozen.add(name); continue; }
     const words = stage.words;
     const made = mktempAssignment(command, stage);
     const steady = isAssignmentStage(words) || (made !== undefined && made.name === name) || withoutEnv(words)[0] === "export";
     if (!steady || insideBody(stage.start)) { frozen.add(name); continue; }
-    const state = parenStateAt(stages, inside, insideBody, index);
+    const state = parenStateAt(stages, inside, insideBody, only.stage);
     if (state.depth > 0 || state.unmatched) { frozen.add(name); continue; }
-    if (index !== 0) {
-      const gap = stage.gap;
-      if (/[;\n]/.test(gap)) {
-        if (gapHasKeyword(gap)) frozen.add(name);
-      } else if (gap.includes("&&")) {
-        if (gapHasKeyword(gap) || chainHasCondition(stages, index)) frozen.add(name);
-      } else {
-        frozen.add(name);
+    for (let s = 0; s < stages.length && !frozen.has(name); s += 1) {
+      const other = stages[s];
+      if (other === undefined) continue;
+      for (let w = 0; w < other.words.length; w += 1) {
+        if (s === only.stage && w === only.word) continue;
+        if (wordMentionsName(other.words[w] ?? "", name)) { frozen.add(name); break; }
       }
     }
+    if (frozen.has(name) || only.stage === 0) continue;
+    const gap = stage.gap;
+    if (gap.includes("&&") || gap.includes("||")) { frozen.add(name); continue; }
+    if (!/[;\n]/.test(gap)) { frozen.add(name); continue; }
+    const base = stage.start - gap.length;
+    if (gapHasBlocker(gap, inside, base, insideBody)) { frozen.add(name); continue; }
+    const prev = stages[only.stage - 1]?.words ?? [];
+    const last = prev[prev.length - 1];
+    if (last !== undefined && FOLLOW_KEYWORDS.has(last)) frozen.add(name);
   }
   return frozen;
 };
