@@ -27,7 +27,7 @@
 | [0017](0017-a-fan-out-declares-its-branches.md) | A fan-out declares its branches | Superseded |  |
 | [0018](0018-the-subagent-steer-is-pinned-rather-than-left-to-a-remote-gate.md) | The subagent steer is pinned, rather than left to a remote gate | Accepted |  |
 | [0019](0019-a-rule-that-falls-due-mid-turn-arrives-as-a-refusal.md) | A Rule that falls due mid-turn arrives as a refusal | Accepted |  |
-| [0020](0020-a-path-home-took-from-here-is-retired-rather-than-forgotten.md) | A path $HOME took from here is retired, rather than forgotten | Accepted |  |
+| [0020](0020-a-path-home-took-from-here-is-retired-rather-than-forgotten.md) | A path $HOME took from here is retired, rather than forgotten | Accepted | `src/generate/link.ts`, `tests/unit/link.test.ts` |
 | [0021](0021-the-emitted-tree-reaches-a-clone-through-the-generator.md) | The emitted tree reaches a clone through the generator | Accepted |  |
 | [0022](0022-codex-hooks-like-claude-codes-and-a-hub-that-is-pis.md) | Codex's hooks are Claude Code's, and its Hub is pi's | Accepted |  |
 | [0023](0023-a-comment-survives-on-two-rows-and-nothing-in-the-code-points-at-a-record.md) | A comment survives on two rows, and nothing in the code points at a record | Accepted |  |
