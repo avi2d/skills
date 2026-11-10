@@ -85,19 +85,22 @@ test("a clone whose Bodies do not generate installs nothing at all", async () =>
 }, CLONE_TEST_MS);
 
 describe("a path $HOME used to take from here", () => {
-  const seeded = async (target: string) => {
+  const seeded = async (target: string, rel = ".claude/agents") => {
     const home = await mkdtemp(join(tmpdir(), "skills-retire-"));
-    await mkdir(join(home, ".claude"), { recursive: true });
-    await symlink(target, join(home, ".claude/agents"));
+    await mkdir(join(home, rel, ".."), { recursive: true });
+    await symlink(target, join(home, rel));
     return home;
   };
 
-  test("a link this repo put there is removed, and reported as retired", async () => {
-    const home = await seeded(`${REPO}${HUB}`);
+  test.each([
+    [".claude/agents", HUB],
+    ["Projects/firstmate/config/secondmate-harness", "harness/firstmate/secondmate-harness"],
+  ])("a link this repo put at %s is removed, and reported as retired", async (rel, target) => {
+    const home = await seeded(`${REPO}${target}`, rel);
     try {
       const outcomes = await valueOf(link(REPO, home));
-      expect(outcomes.find((o) => o.home === ".claude/agents")?.state).toBe("retired");
-      expect(existsSync(join(home, ".claude/agents")), "a link into this repo outlived the entry that made it").toBe(false);
+      expect(outcomes.find((o) => o.home === rel)?.state).toBe("retired");
+      expect(() => lstatSync(join(home, rel)), "a link into this repo outlived the entry that made it").toThrow();
     } finally {
       await rm(home, { recursive: true, force: true });
     }
@@ -161,17 +164,9 @@ test("pi loads haiku-compaction from a lone extension symlink and it registers t
   }
 });
 
-test("macOS links the Mac's crew dispatch rules, and every other platform the Windows machine's", () => {
-  const rules = "Projects/firstmate/config/crew-dispatch.json";
-  expect(linksUnder(GENERATED_ROOT, machineOn("darwin"))[rules]).toBe("harness/firstmate/crew-dispatch.mac.json");
-  for (const os of ["linux", "win32"] as const) {
-    expect(linksUnder(GENERATED_ROOT, machineOn(os))[rules], `${os} links the Mac's rules`).toBe("harness/firstmate/crew-dispatch.json");
-  }
-});
-
-test("only macOS links the secondmate and supervision pins into the Mac firstmate home", () => {
+test("only macOS links the one dispatch rules file and the supervision pins into the Mac firstmate home", () => {
   const pins = {
-    "Projects/firstmate/config/secondmate-harness": "harness/firstmate/secondmate-harness",
+    "Projects/firstmate/config/crew-dispatch.json": "harness/firstmate/crew-dispatch.json",
     "Projects/firstmate/config/supervision-branch-model": "harness/firstmate/supervision-branch-model",
     "Projects/firstmate/config/supervision-branch-effort": "harness/firstmate/supervision-branch-effort",
   };
@@ -277,6 +272,7 @@ test("pi compacts each claude-bridge model and each per-token worker model at ab
     shouldCompact(tokens, contextWindow, settings.getCompactionSettings({ provider: "claude-bridge", id }));
   for (const claude of [
     getBuiltinModel("anthropic", "claude-fable-5-1"),
+    getBuiltinModel("anthropic", "claude-fable-5-2"),
     getBuiltinModel("anthropic", "claude-opus-5"),
     getBuiltinModel("anthropic", "claude-opus-5-5"),
     getBuiltinModel("anthropic", "claude-sonnet-5"),

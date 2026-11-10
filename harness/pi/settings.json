@@ -9,7 +9,7 @@
   "fullscreenCopyOnSelect": false,
   "packages": [
     "npm:@ff-labs/pi-fff@0.10.5",
-    "git:github.com/avi2d/pi-claude-bridge@v0.10.0+avi2d.3",
+    "git:github.com/avi2d/pi-claude-bridge@v0.11.0+avi2d.1",
     "npm:pi-web-access@0.34.0"
   ],
   "extensions": [
@@ -21,6 +21,10 @@
   "compaction": {
     "modelOverrides": {
       "claude-bridge/claude-fable-5-1": {
+        "reserveTokens": 850000,
+        "keepRecentTokens": 10000
+      },
+      "claude-bridge/claude-fable-5-2": {
         "reserveTokens": 850000,
         "keepRecentTokens": 10000
       },

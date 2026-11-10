@@ -1,13 +1,11 @@
 import { spawnSync } from "node:child_process";
-import { existsSync, globSync } from "node:fs";
-import { resolve } from "node:path";
 import { segments, type Word } from "./shell-words";
 
 export type Group = "tests" | "gpu" | "evals";
 
-export type Steered = { type: "queue"; group: Group; command: string } | { type: "refuse"; groups: readonly Group[]; text: string };
+export type Steered = { type: "queue"; group: Group; command: string } | { type: "refuse"; groups: readonly Group[]; text: string } | { type: "pass"; group: Group; reason: string; text: string };
 
-type Entry = { group: Group; runs: readonly string[]; when: (args: readonly string[], dirs: readonly string[]) => boolean };
+type Entry = { group: Group; runs: readonly string[]; when: (args: readonly string[]) => boolean };
 
 const WATCH_OPTIONS = ["-w", "--watch", "--watchAll"];
 
@@ -16,70 +14,18 @@ const watching = (arg: string): boolean => {
   return WATCH_OPTIONS.includes(name) && value !== "false";
 };
 
-type Options = { paths: readonly string[]; filters: readonly string[] };
-
-const optionName = (arg: string): string => (arg.startsWith("--") ? arg.replace(/=.*/, "") : arg.slice(0, 2));
-
-const GLOB = /[*?[{]/;
-
-const exists = (dirs: readonly string[], word: string): boolean => {
-  const path = word.replace(/(?:::.*|:\d+)$/, "");
-  return dirs.some((cwd) => existsSync(resolve(cwd, path)) || (GLOB.test(path) && globSync(path, { cwd }).length > 0));
-};
-
-const whole =
-  ({ paths, filters }: Options) =>
-  (args: readonly string[], dirs: readonly string[]): boolean => {
-    for (let at = 0; at < args.length; at += 1) {
-      const arg = args[at] ?? "";
-      if (watching(arg)) return false;
-      if (!arg.startsWith("-")) {
-        if (exists(dirs, arg)) return false;
-        continue;
-      }
-      const name = optionName(arg);
-      if (filters.includes(name)) return false;
-      if (name === arg && paths.includes(name) && !(args[at + 1] ?? "-").startsWith("-")) at += 1;
-    }
-    return true;
-  };
-
 const always = (): boolean => true;
 
 const prompted = (args: readonly string[]): boolean => args.filter((arg) => !arg.startsWith("-")).length >= 2;
 
-const BUN: Options = {
-  paths: ["-c", "--config", "-r", "--preload", "--require", "--import", "--coverage-dir", "--reporter-outfile", "--env-file", "--cwd", "--tsconfig-override", "--timings", "--path-ignore-patterns"],
-  filters: ["-t", "--test-name-pattern", "--changed"],
-};
-
-const VITEST: Options = {
-  paths: ["-c", "--config", "-r", "--root", "--dir", "--setupFiles", "--globalSetup", "--outputFile", "--exclude", "--attachmentsDir", "--mergeReports", "--coverage.reportsDirectory", "--coverage.include", "--coverage.exclude"],
-  filters: ["-t", "--testNamePattern", "--test-name-pattern", "--tagsFilter", "--tags-filter", "--changed"],
-};
-
-const SCRIPT: Options = {
-  paths: [...BUN.paths, ...VITEST.paths],
-  filters: [...BUN.filters, ...VITEST.filters, "-g", "--grep", "--fgrep"],
-};
-
-const CARGO: Options = {
-  paths: ["-m", "--manifest-path", "--target-dir", "--config", "--logfile"],
-  filters: ["--test", "--bin", "--example", "--bench"],
-};
-
-const PYTEST: Options = {
-  paths: ["-c", "--config-file", "--rootdir", "--basetemp", "--confcutdir", "--junitxml", "--junit-xml", "--ignore", "--ignore-glob", "--deselect", "--log-file"],
-  filters: ["-k"],
-};
+const exits = (args: readonly string[]): boolean => !args.some(watching);
 
 const scripts = (...runner: string[]): Entry[] => [
-  { group: "tests", runs: [...runner, "test"], when: whole(SCRIPT) },
+  { group: "tests", runs: [...runner, "test"], when: exits },
+  { group: "tests", runs: [...runner, "test:fast"], when: exits },
   { group: "tests", runs: [...runner, "mutate"], when: always },
   { group: "tests", runs: [...runner, "mutate:incremental"], when: always },
 ];
-
-const exits = (args: readonly string[]): boolean => !args.some(watching);
 
 const evalScripts = (...runner: string[]): Entry[] => [{ group: "evals", runs: [...runner, "eval"], when: exits }];
 
@@ -166,7 +112,7 @@ const runsInference: Gate = (args) => {
 const runsInferenceModule: Gate = (args) => pythonRunsInference(args, []);
 
 const TABLE: readonly Entry[] = [
-  { group: "tests", runs: ["bun", "test"], when: whole(BUN) },
+  { group: "tests", runs: ["bun", "test"], when: exits },
   ...scripts("bun", "run"),
   ...scripts("npm", "run"),
   ...scripts("pnpm", "run"),
@@ -181,11 +127,14 @@ const TABLE: readonly Entry[] = [
   ...evalScripts("pnpm"),
   ...evalScripts("yarn"),
   { group: "evals", runs: ["vitest", "run"], when: evalConfig },
-  { group: "tests", runs: ["vitest", "run"], when: whole(VITEST) },
+  { group: "tests", runs: ["vitest", "run"], when: exits },
   { group: "tests", runs: ["stryker", "run"], when: always },
-  { group: "tests", runs: ["checks-test"], when: always },
-  { group: "tests", runs: ["cargo", "test"], when: whole(CARGO) },
-  { group: "tests", runs: ["pytest"], when: whole(PYTEST) },
+  { group: "tests", runs: ["cargo", "test"], when: exits },
+  { group: "tests", runs: ["pytest"], when: exits },
+  { group: "tests", runs: ["checks-test"], when: exits },
+  { group: "tests", runs: ["go", "test"], when: exits },
+  { group: "tests", runs: ["xcrun", "simctl", "boot"], when: always },
+  { group: "tests", runs: ["xcrun", "simctl", "io"], when: always },
   { group: "gpu", runs: ["llama-bench"], when: always },
   { group: "gpu", runs: ["llama-batched-bench"], when: always },
   { group: "gpu", runs: ["ollama", "run"], when: prompted },
@@ -238,50 +187,69 @@ function unwrapOnce(words: readonly string[]): string[] | undefined {
   return wrapper === undefined ? undefined : pastWrapper(words, wrapper);
 }
 
-function unwrapped(words: readonly string[]): string[] {
+function stripped(words: readonly string[]): string[] {
   let rest = [...words];
   for (let inner = unwrapOnce(rest); inner !== undefined; inner = unwrapOnce(rest)) rest = inner;
-  return rest.map((word, at) => (at === 0 ? program(word) : word));
+  return rest;
+}
+
+function unwrapped(words: readonly string[]): string[] {
+  return stripped(words).map((word, at) => (at === 0 ? program(word) : word));
 }
 
 const texts = (words: readonly Word[]): string[] => words.map(({ text }) => text);
 
 export const simpleCommands = (command: string): string[][] => segments(command).map((words) => unwrapped(texts(words)));
 
-const DIRECTORY_OPTIONS = ["--cwd", "-C", "--chdir"];
-
-function directoriesNamed(words: readonly string[]): string[] {
-  if (program(words[0] ?? "") === "cd") return words.slice(1).filter((word) => !word.startsWith("-")).slice(0, 1);
-  return words.flatMap((word, at) => {
-    if (DIRECTORY_OPTIONS.includes(word)) return words.slice(at + 1, at + 2);
-    const [name = "", value] = word.split(/=(.*)/s);
-    return DIRECTORY_OPTIONS.includes(name) && value !== undefined ? [value] : [];
-  });
-}
-
 type Queued = { group: Group; words: readonly Word[]; prefix: number };
 
-function queuedSegments(command: string, cwd: string): Queued[] {
+const base = (word: string): string => word.slice(word.lastIndexOf("/") + 1);
+
+const SCRIPT_RUNNERS = ["bun", "node", "sh", "bash", "zsh", "dash"];
+
+const BIN_TEST_RUN = /(^|\/)bin\/fm-test-run\.sh$/;
+
+const BIN_TEST_SCRIPT = /(^|\/)bin\/[^/]*\.test\.sh$/;
+
+const TOOL_PATHS = new Set(["lint", "typecheck", "build"]);
+
+const scripted = (bare: readonly string[]): { group: Group } | undefined => {
+  const [rawHead = "", ...rawRest] = bare;
+  const through = SCRIPT_RUNNERS.includes(program(rawHead)) ? rawRest : bare;
+  const [first = "", ...args] = through;
+  if (args.some(watching)) return undefined;
+  if (first.includes("/") && TOOL_PATHS.has(base(first))) return { group: "tests" };
+  if (base(first) === "fm-sim-boot.sh") return { group: "tests" };
+  if (BIN_TEST_RUN.test(first)) return { group: "tests" };
+  if (BIN_TEST_SCRIPT.test(first)) return { group: "tests" };
+  return undefined;
+};
+
+function queuedSegments(command: string): Queued[] {
   const raw = segments(command);
-  const dirs = [cwd, ...raw.flatMap((words) => directoriesNamed(texts(words))).map((dir) => resolve(cwd, dir))];
   return raw.flatMap((words) => {
-    const named = unwrapped(texts(words));
-    const entry = TABLE.find(({ runs, when }) => startsWith(named, runs) && when(named.slice(runs.length), dirs));
-    return entry === undefined ? [] : [{ group: entry.group, words, prefix: words.length - named.length }];
+    const bare = stripped(texts(words));
+    const named = bare.map((word, at) => (at === 0 ? program(word) : word));
+    const entry = TABLE.find(({ runs, when }) => startsWith(named, runs) && when(named.slice(runs.length)));
+    if (entry !== undefined) return [{ group: entry.group, words, prefix: words.length - bare.length }];
+    const fallback = scripted(bare);
+    return fallback === undefined ? [] : [{ ...fallback, words, prefix: words.length - bare.length }];
   });
 }
 
 const groupsOf = (found: readonly Queued[]): Group[] => [...new Set(found.map(({ group }) => group))];
 
-export const queueFor = (command: string, cwd: string): Group[] => groupsOf(queuedSegments(command, cwd));
+export const queueFor = (command: string, _cwd: string): Group[] => groupsOf(queuedSegments(command));
 
 const quoted = (text: string): string => `'${text.replaceAll("'", `'\\''`)}'`;
 
 export const LOG_LINES = 40;
 
-export function queued(command: string, group: Group): string {
+export function queued(command: string, group: Group, priority?: number): string {
+  const selected = priority === undefined ? "" : ` --priority ${priority}`;
+  const workload = `nice -n 19 bash -c ${quoted(command)}`;
   return [
-    `id=$(pueue add --print-task-id --group ${group} -- ${quoted(command)}) && {`,
+    `id=$(pueue add${selected} --print-task-id --group ${group} -- ${quoted(workload)}) && {`,
     `echo "queued as pueue task $id in group ${group}"`,
     `pueue wait --quiet --status success "$id"; ok=$?`,
     `pueue log --lines ${LOG_LINES} "$id"`,
@@ -326,17 +294,31 @@ function evalCapEdits({ words, prefix }: Queued): Edit[] {
 const edited = (command: string, edits: readonly Edit[]): string =>
   [...edits].sort((a, b) => b.from - a.from).reduce((out, { from, to, text }) => out.slice(0, from) + text + out.slice(to), command);
 
-export function steer(command: string, cwd: string, available: () => readonly string[] | undefined = pueueGroups): Steered | undefined {
-  const found = queuedSegments(command, cwd);
+const unavailable = (group: Group, reason: string): Steered => ({
+  type: "pass",
+  group,
+  reason,
+  text: `The ${group} queue is unavailable because ${reason}, so the command runs directly.`,
+});
+
+export function steer(command: string, _cwd: string, available: () => readonly string[] | undefined = pueueGroups): Steered | undefined {
+  if (process.env.PUEUE_GROUP !== undefined || process.env.PUEUE_WORKER_ID !== undefined) return undefined;
+  const found = queuedSegments(command);
   const groups = groupsOf(found);
   const [group] = groups;
   if (group === undefined) return undefined;
   const listed = available();
-  if (!groups.every((wanted) => listed?.includes(wanted))) return undefined;
+  if (listed === undefined) return unavailable(group, "the pueue group listing failed");
+  const [missing] = groups.filter((wanted) => !listed.includes(wanted));
+  if (missing !== undefined) return unavailable(missing, `pueue has no ${missing} group`);
   if (groups.length > 1) return { type: "refuse", groups, text: groups.includes("evals") ? SEPARATE_EVAL_CALLS : SEPARATE_CALLS };
   if (group === "evals") return { type: "queue", group, command: queued(edited(command, found.flatMap(evalCapEdits)), group) };
+  if (group === "tests") return { type: "queue", group, command: queued(command, group, 1) };
   return { type: "queue", group, command: queued(command, group) };
 }
 
-export const steeredLine = (steered: Steered): string =>
-  steered.type === "queue" ? `job-queue ${steered.group}: queued the command through pueue` : `job-queue ${steered.groups.join(" and ")}: refused a call that mixes groups`;
+export const steeredLine = (steered: Steered): string => {
+  if (steered.type === "queue") return `job-queue ${steered.group}: queued the command through pueue`;
+  if (steered.type === "refuse") return `job-queue ${steered.groups.join(" and ")}: refused a call that mixes groups`;
+  return `job-queue ${steered.group}: not queued (${steered.reason})`;
+};

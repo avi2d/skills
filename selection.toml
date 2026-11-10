@@ -23,6 +23,12 @@ models = ["claude-bridge/claude-opus-5-5", "claude-code/claude-opus-5-5"]
 [profiles.claude-opus-5-5.rules]
 add = ["git-hygiene-co-author"]
 
+[profiles.claude-fable-5-2]
+models = ["claude-bridge/claude-fable-5-2"]
+
+[profiles.claude-fable-5-2.rules]
+add = ["git-hygiene-co-author"]
+
 [profiles.ollama-qwen]
 models = ["ollama/qwen3.6:35b-a3b-iq3s"]
 tools = ["read", "write", "edit", "bash"]

@@ -23,7 +23,7 @@ To install skills:
    Then it links each path below to the checkout, or writes it from the checkout where the list says so.
    [The skills config](config.md), when there is one, names the Claude config directories it also writes into.
 
-`bun run link` prints the version and path of the pi it checked, such as `pi 1.5.0 at /usr/local/bin/pi loaded every extension in a temporary $HOME first`.
+`bun run link` prints the version and path of the pi it checked, such as `pi 1.5.1 at /usr/local/bin/pi loaded every extension in a temporary $HOME first`.
 It then ends with one line per path, such as `linked   ~/.claude/settings.json`, and exits 0.
 On a machine without pi, the line about pi reads `pi is not on $PATH, so no pi extension was load-checked`.
 These paths in $HOME then belong to the checkout:
@@ -47,10 +47,9 @@ These paths in $HOME then belong to the checkout:
 - `~/.claude/skills`
 - `~/.claude/skills-dispatch`
 - `~/.codex/skills-dispatch`
-- `~/Projects/firstmate/config/crew-dispatch.json`
 - `~/.no-mistakes/config.yaml`
 - `~/.orc/orchestrator.md`
-- `~/Projects/firstmate/config/secondmate-harness`
+- `~/Projects/firstmate/config/crew-dispatch.json`
 - `~/Projects/firstmate/config/supervision-branch-model`
 - `~/Projects/firstmate/config/supervision-branch-effort`
 - `~/.pi/agent/settings.json`, written from `harness/pi/settings.json` rather than linked
@@ -86,10 +85,9 @@ for path in \
   '.claude/skills' \
   '.claude/skills-dispatch' \
   '.codex/skills-dispatch' \
-  'Projects/firstmate/config/crew-dispatch.json' \
   '.no-mistakes/config.yaml' \
   '.orc/orchestrator.md' \
-  'Projects/firstmate/config/secondmate-harness' \
+  'Projects/firstmate/config/crew-dispatch.json' \
   'Projects/firstmate/config/supervision-branch-model' \
   'Projects/firstmate/config/supervision-branch-effort' \
   '.pi/agent/effect-codemode' \
@@ -99,7 +97,8 @@ for path in \
   '.config/opencode/AGENTS.md' \
   '.pi/agent/AGENTS.md' \
   '.pi/agent/extensions/compaction-points.ts' \
-  '.pi/agent/extensions/transcript-style.ts'
+  '.pi/agent/extensions/transcript-style.ts' \
+  'Projects/firstmate/config/secondmate-harness'
 do
   case "$(readlink "$HOME/$path")" in "$root"/*) rm "$HOME/$path" ;; esac
 done

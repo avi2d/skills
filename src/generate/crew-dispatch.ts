@@ -54,6 +54,7 @@ const ClaudeAccount = Schema.Literals([MAIN_ACCOUNT, SECOND_ACCOUNT]).annotate({
 
 const Profile = Schema.Union([
   Schema.Struct({ ...profileOf("claude-bridge/claude-opus-5-5", "claude").fields, claude_account: ClaudeAccount }),
+  Schema.Struct({ ...profileOf("claude-bridge/claude-fable-5-2", "claude").fields, claude_account: ClaudeAccount }),
   profileOf("openai/gpt-6-astra", "codex"),
   profileOf("openai/gpt-6.1-terra", "codex"),
   Schema.Struct({ ...profileOf("claude-bridge/claude-haiku-5-5", "claude").fields, floor: Floor, claude_account: ClaudeAccount }).annotate({

@@ -1,13 +1,15 @@
 import { MAIN_ACCOUNT, SECOND_ACCOUNT, type ClaudeAccount } from "./claude-accounts";
 import type { CrewDispatch, Effort, OwnRule, Profile, Profiles } from "./crew-dispatch";
-import type { Machine } from "./machine";
 
 const opusOn = (effort: Effort, claude_account: ClaudeAccount) =>
   ({ harness: "pi", model: "claude-bridge/claude-opus-5-5", effort, provider: "claude", claude_account }) as const satisfies Profile;
 
 const opusBoth = (effort: Effort): Profiles => [opusOn(effort, MAIN_ACCOUNT), opusOn(effort, SECOND_ACCOUNT)];
 
-const astra = (effort: Effort) => ({ harness: "pi", model: "openai/gpt-6-astra", effort, provider: "codex" }) as const satisfies Profile;
+const fableOn = (effort: Effort, claude_account: ClaudeAccount) =>
+  ({ harness: "pi", model: "claude-bridge/claude-fable-5-2", effort, provider: "claude", claude_account }) as const satisfies Profile;
+
+const fableBoth = (effort: Effort): Profiles => [fableOn(effort, MAIN_ACCOUNT), fableOn(effort, SECOND_ACCOUNT)];
 
 const terra = (effort: Effort) => ({ harness: "pi", model: "openai/gpt-6.1-terra", effort, provider: "codex" }) as const satisfies Profile;
 
@@ -28,7 +30,7 @@ const haikuOn = (effort: Effort, claude_account: ClaudeAccount) =>
 
 const haikuBoth = (effort: Effort): Profiles => [haikuOn(effort, MAIN_ACCOUNT), haikuOn(effort, SECOND_ACCOUNT)];
 
-const workhorse = (efforts: { muse: Effort; haiku: Effort; opus: Effort }): Profiles => [muse(efforts.muse), ...haikuBoth(efforts.haiku), ...opusBoth(efforts.opus)];
+const workhorse = (efforts: { muse: Effort; haiku: Effort; opus: Effort }): Profiles => [...haikuBoth(efforts.haiku), ...opusBoth(efforts.opus), muse(efforts.muse)];
 
 const TRIVIAL_EFFORTS = { muse: "low", haiku: "low", opus: "low" } as const;
 
@@ -37,7 +39,7 @@ const SMALL_EFFORTS = { muse: "high", haiku: "high", opus: "medium" } as const;
 const unknownCause: OwnRule = {
   description: "An unexplained cause needs the strongest reasoning class.",
   when: "A code change whose cause or scope is not yet known: a bug, flaky check, environment-only failure, or unexplained regression that must first be diagnosed across systems, processes or machines before the fix is clear. A fix the brief already locates takes a smaller rule.",
-  use: [...opusBoth("high"), astra("high")],
+  use: [...fableBoth("high"), ...opusBoth("high")],
 };
 
 const macOnly: OwnRule = {
@@ -46,26 +48,15 @@ const macOnly: OwnRule = {
   use: [...opusBoth("high")],
 };
 
-const shared: CrewDispatch["rules"] = [
-  { kind: "trivial", use: workhorse(TRIVIAL_EFFORTS) },
-  { kind: "small", use: [muse(SMALL_EFFORTS.muse), terra("high"), ...haikuBoth(SMALL_EFFORTS.haiku), ...opusBoth(SMALL_EFFORTS.opus)] },
-  { kind: "large", use: [muse("high"), terra("high"), ...opusBoth("medium")] },
-  { kind: "ambiguous", use: [...opusBoth("high")] },
-  { kind: "investigation", use: [...opusBoth("high"), astra("high")] },
-];
-
-const windows: CrewDispatch = {
+export const CREW_DISPATCH_RULES: CrewDispatch = {
   array_order: "preference",
-  rules: shared,
-  ownRules: [unknownCause],
-  default: [...opusBoth("high")],
-};
-
-const mac: CrewDispatch = {
-  array_order: "preference",
-  rules: shared,
+  rules: [
+    { kind: "trivial", use: workhorse(TRIVIAL_EFFORTS) },
+    { kind: "small", use: [...haikuBoth(SMALL_EFFORTS.haiku), ...opusBoth(SMALL_EFFORTS.opus), muse(SMALL_EFFORTS.muse), terra("high")] },
+    { kind: "large", use: [...opusBoth("medium"), muse("high"), terra("high")] },
+    { kind: "ambiguous", use: [...fableBoth("high"), ...opusBoth("high")] },
+    { kind: "investigation", use: [...fableBoth("high"), ...opusBoth("high")] },
+  ],
   ownRules: [unknownCause, macOnly],
   default: [muse(SMALL_EFFORTS.muse), ...opusBoth(SMALL_EFFORTS.opus)],
 };
-
-export const crewDispatchOf = (machine: Machine): CrewDispatch => ({ windows, mac })[machine];

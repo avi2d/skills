@@ -165,6 +165,45 @@ Tool definitions are absent from this repository and have no character size in t
 | reference: `visitor-job` | 4085 |  |
 | reference: `writing-for-agents` | 9651 |  |
 
+## claude-fable-5-2
+
+Models: `claude-bridge/claude-fable-5-2`.
+Tools: set by the harness.
+Tool definitions are absent from this repository and have no character size in this table.
+
+| Part | Characters | Share of Rules by characters |
+| --- | ---: | ---: |
+| rule: `comment-discipline` | 2671 | 26.8% |
+| rule: `fix-what-you-see` | 328 | 3.3% |
+| rule: `git-hygiene-co-author` | 112 | 1.1% |
+| rule: `prove-it-works` | 2760 | 27.7% |
+| rule: `typescript-best-practices` | 1768 | 17.8% |
+| rule: `agents-md-router` | 754 | 7.6% |
+| rule: `readme-front-door` | 678 | 6.8% |
+| rule: `credential-files` | 369 | 3.7% |
+| rule: `git-hygiene-stash` | 516 | 5.2% |
+| skill: `build-and-review-motion` | 5794 |  |
+| skill: `develop-a-website` | 8421 |  |
+| skill: `grilling` | 3528 |  |
+| skill: `refine-design` | 5708 |  |
+| skill: `stress-test-content` | 6585 |  |
+| skill: `teach` | 9519 |  |
+| reference: `effect-patterns` | 8780 |  |
+| reference: `interface-copy` | 4435 |  |
+| reference: `mobile-web` | 5740 |  |
+| reference: `motion` | 8490 |  |
+| reference: `motion-vocabulary` | 9011 |  |
+| reference: `plain-sentences` | 3314 |  |
+| reference: `plain-words` | 3646 |  |
+| reference: `punctuation` | 2443 |  |
+| reference: `russian-prose` | 1858 |  |
+| reference: `technical-writing` | 7200 |  |
+| reference: `typography` | 4272 |  |
+| reference: `ui-principles` | 8674 |  |
+| reference: `unslop` | 2761 |  |
+| reference: `visitor-job` | 4085 |  |
+| reference: `writing-for-agents` | 9651 |  |
+
 ## ollama-qwen
 
 Models: `ollama/qwen3.6:35b-a3b-iq3s`.

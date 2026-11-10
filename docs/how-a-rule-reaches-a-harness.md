@@ -131,19 +131,13 @@ A Rule that is not there whole reads as `broken`, and a transcript the Dispatche
 
 ## Heavy commands go to the job queue
 
-A whole test suite, an eval run, or a GPU benchmark or model inference an agent starts goes through pueue, so sessions on one machine take turns at it.
+A test run, an eval run, or a GPU benchmark or model inference an agent starts goes through pueue, so sessions on one machine take turns at it.
 Every Dispatcher asks `src/dispatcher/job-queue.ts` about each shell command before it runs.
 That module is no Rule, so it costs the model no context.
-Its table sends a whole test suite, such as `bun test` with no path or `bun run test` with no filter, and every mutation run to the `tests` group.
-A test run counts as targeted only when it names something that exists, carries a test-name filter, such as `-t`, `-k` or `--grep`, or runs only what `--changed` affects.
-`checks-test` queues even with `--changed`, because `--changed` can widen to the whole suite.
-In the orc run a kit bump that touched `package.json` made it run every end-to-end test.
-The table lists, for each runner, only the options whose value is a path, such as `--config`, `-c`, `--root`, `--dir` or `--preload`, and each of those takes the next word unless it starts with `-`.
-Every other option is a flag that takes nothing.
-A word left over names a target only when it is a file or directory, or a glob that matches one, relative to the hook's working directory or any directory the command names through `cd`, `--cwd` or `env -C`.
-Only an enabled watch mode, `--watch`, `-w` or `--watchAll` with no value or `=true`, runs as it is, because a queued job would hold its slot forever, so `--watch=false` and `--no-watch` are still the whole suite.
-So `bun test --timeout 20000` and `vitest run --reporters dot` are the whole suite because `20000` and `dot` are no paths, and `bun run test -- --randomize tests/unit/a.test.ts` is targeted because that file exists.
-A package script's runner is unknown, so it takes the path options and filters of Bun and Vitest together.
+Its table sends every test run, such as `bun test` or `bun run test`, and every mutation run to the `tests` group.
+It also sends the other heavy shapes to the `tests` group: `checks-test`, `bin/fm-test-run.sh`, any `bin/*.test.sh` script, `go test`, the `test:fast` script, a `lint`, `typecheck` or `build` executable in any directory, `xcrun simctl boot`, `xcrun simctl io` and `fm-sim-boot.sh`.
+Every heavy shape in the `tests` group queues with `pueue add --priority 1`, and the `gpu` group keeps its default scheduling.
+Only an enabled watch mode, `--watch`, `-w` or `--watchAll` with no value or `=true`, runs as it is, because a queued job would hold its slot forever, so `--watch=false` and `--no-watch` still queue.
 A mutation run is heavy whatever it names.
 A prefix such as `env`, `nice`, `timeout`, `npx` or `pnpm exec` is skipped with its own options and operands before the table is read.
 It sends an eval run, `bun run eval`, `pnpm eval`, `yarn eval` or `vitest run` with `--config evals/vitest.config.ts`, to the `evals` group whatever it filters, since every run starts sandboxed agents, and only watch mode runs as it is.
@@ -155,22 +149,25 @@ A python script queues when its `uv run` declares an inference package through `
 A declared package counts only for a `.py` script, so `-m` and `-c` with declared packages, a GPU distribution such as `onnxruntime-gpu`, and an interpreter flag ahead of `-m` or the script are left alone and run as they are.
 A plain `python script.py` declares nothing, so it runs as it is, because the table never reads a script.
 `tests/unit/job-queue.test.ts` names the reason for each entry.
-A command the table does not name runs as it is.
-The table recognises the common spellings listed here, and other spellings, such as uv option aliases, uvx package specs, `uv tool run`, and commands joined with `&` or `|`, run as written, with the per-group memory caps on the Windows machine as the backstop.
+A command neither the table nor the script fallback names runs as it is.
+The queue recognises the common spellings listed here, and other spellings, such as uv option aliases, uvx package specs, `uv tool run`, and commands joined with `&` or `|`, run as written, with the per-group memory caps on the Windows machine as the backstop.
 A call that needs the `tests` and the `gpu` group, such as `bun test && llama-bench -m model.gguf`, is refused with a message to run the tests and the GPU command as separate tool calls, since one queued job holds one group's slot.
 A call that mixes an eval with another queued command is refused with a message to run the eval and the other command as separate tool calls.
-A command that already calls pueue hands its work over as one quoted word, which the table never names, so the queued command is never queued twice.
+A command that already calls pueue hands its work over as one quoted word, which the queue never names, so the queued command is never queued twice.
+A command that runs inside a pueue worker carries `PUEUE_GROUP` or `PUEUE_WORKER_ID`, so it runs as it is and is never queued twice.
 
-A queued command becomes `pueue add --print-task-id --group <group> -- '<command>'`, then a wait on that task and the last 40 lines of its log.
+A queued command becomes `pueue add --print-task-id --group <group>`, with `--priority 1` for the `tests` group, with the workload `nice -n 19 bash -c '<command>'`, then a wait on that task and the last 40 lines of its log.
 The agent sees the task's output, and the command fails when the task fails.
 pi rewrites the call's input at `tool_call`.
 Claude Code and Codex rewrite it through `updatedInput` in their PreToolUse reply.
 Codex applies a rewrite only beside an `allow`.
 Claude Code applies it bare, so its own permission check still runs on the queued command.
 When `pueue` is not installed, its daemon is down, or it lacks a group the command needs, the command runs as it is.
+Claude Code and Codex tell the model why the command runs directly through the hook reply, and every harness leaves a `job-queue <group>: not queued (<reason>)` line in the dispatch log.
+Pi logs the reason and runs the command directly with no model notice, since the agent loop reads a `tool_call` reason only beside a block.
 A queued job runs under the pueue daemon, outside any sandbox, so Codex queues or refuses a command only in a full-access turn and never overrides a restricted sandbox, whatever its network setting.
 The Dispatcher reads that sandbox from the latest `turn_context` in the rollout, and runs the command as it is under any other sandbox or a rollout it cannot read.
-Each queued or refused call is a `job-queue` line in the dispatch log naming its groups, and never the command, which can carry a credential.
+Each queued, refused, or not queued call is a `job-queue` line in the dispatch log naming its groups, and never the command, which can carry a credential.
 
 ## Tool output is scrubbed for credentials
 

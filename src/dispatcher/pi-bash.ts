@@ -21,6 +21,7 @@ export const bashCall = (
   note(steeredLine(steered));
   if (steered.type === "refuse") return { block: true, reason: steered.text };
   clock.set(event.toolCallId, { command, at: Date.now() });
+  if (steered.type === "pass") return undefined;
   event.input.command = steered.command;
   return undefined;
 };

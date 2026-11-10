@@ -6,7 +6,7 @@ import { FileFailure, fileFailure } from "../platform/failures";
 import { attempt, entryAt, outputOf, unlessAbsent } from "../platform/files";
 import { checkout, tally } from "./generate";
 import { hubUnder } from "./hub";
-import { SECOND_MATE_HARNESS, SUPERVISION_BRANCH_EFFORT, SUPERVISION_BRANCH_MODEL } from "./firstmate-pins";
+import { SUPERVISION_BRANCH_EFFORT, SUPERVISION_BRANCH_MODEL } from "./firstmate-pins";
 import { CREW_DISPATCH } from "./machine-files";
 import { noMistakesConfigUnder } from "./no-mistakes-config";
 import { machineOn, type Machine } from "./machine";
@@ -55,10 +55,9 @@ export const linksUnder = (root: string, machine: Machine): LinkMap => ({
   ".claude/skills": hubUnder(root),
   ".claude/skills-dispatch": `${root}/claude-code/dispatcher`,
   ".codex/skills-dispatch": `${root}/codex/dispatcher`,
-  "Projects/firstmate/config/crew-dispatch.json": CREW_DISPATCH[machine],
   ...(machine === "mac"
     ? {
-        "Projects/firstmate/config/secondmate-harness": SECOND_MATE_HARNESS,
+        "Projects/firstmate/config/crew-dispatch.json": CREW_DISPATCH,
         "Projects/firstmate/config/supervision-branch-model": SUPERVISION_BRANCH_MODEL,
         "Projects/firstmate/config/supervision-branch-effort": SUPERVISION_BRANCH_EFFORT,
       }
@@ -99,6 +98,7 @@ export const RETIRED: readonly string[] = [
   ".pi/agent/AGENTS.md",
   ".pi/agent/extensions/compaction-points.ts",
   ".pi/agent/extensions/transcript-style.ts",
+  "Projects/firstmate/config/secondmate-harness",
 ];
 
 export const REPO = new URL("../../", import.meta.url).pathname;

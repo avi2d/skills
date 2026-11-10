@@ -358,6 +358,10 @@ export async function handle(adapter: HookAdapter, index: Index, hook: Hook, pay
     for (const line of [...done.actions.map(logLine), ...listening.notes]) note(session, line);
     if (steered?.type === "refuse") return hookOutput(hook, steered.text, "deny", told);
     if (steered?.type === "queue") return rewriteOutput(adapter, { ...payload.tool_input, command: steered.command }, told);
+    if (steered?.type === "pass") {
+      const said = adapter.say(reply, index, hook, payload);
+      return hookOutput(hook, said === "" ? steered.text : `${said}\n${steered.text}`, mode, told);
+    }
     return hookOutput(hook, adapter.say(reply, index, hook, payload), mode, told);
   };
   return respond();

@@ -1,3 +1,6 @@
+---
+governs: [harness/pi/settings.json]
+---
 # 43. A compaction point is a per-model reserve in pi's settings
 
 Date: 2026-09-23
@@ -40,6 +43,7 @@ model pays for it out of the plan's five-hour window, so both compact near
 | key | point | reserveTokens |
 | --- | --- | --- |
 | `claude-bridge/claude-fable-5-1` | 150,000 | 1,000,000 - 150,000 = 850,000 |
+| `claude-bridge/claude-fable-5-2` | 150,000 | 1,000,000 - 150,000 = 850,000 |
 | `claude-bridge/claude-opus-5` | 150,000 | 1,000,000 - 150,000 = 850,000 |
 | `claude-bridge/claude-opus-5-5` | 150,000 | 1,000,000 - 150,000 = 850,000 |
 | `claude-bridge/claude-sonnet-5` | 150,000 | 1,000,000 - 150,000 = 850,000 |
