@@ -1,6 +1,5 @@
 import { MAIN_ACCOUNT, SECOND_ACCOUNT, type ClaudeAccount } from "./claude-accounts";
 import type { CrewDispatch, Effort, OwnRule, Profile, Profiles } from "./crew-dispatch";
-import type { Machine } from "./machine";
 
 const opusOn = (effort: Effort, claude_account: ClaudeAccount) =>
   ({ harness: "pi", model: "claude-bridge/claude-opus-5-5", effort, provider: "claude", claude_account }) as const satisfies Profile;
@@ -49,26 +48,15 @@ const macOnly: OwnRule = {
   use: [...opusBoth("high")],
 };
 
-const shared: CrewDispatch["rules"] = [
-  { kind: "trivial", use: workhorse(TRIVIAL_EFFORTS) },
-  { kind: "small", use: [...haikuBoth(SMALL_EFFORTS.haiku), ...opusBoth(SMALL_EFFORTS.opus), muse(SMALL_EFFORTS.muse), terra("high")] },
-  { kind: "large", use: [...opusBoth("medium"), muse("high"), terra("high")] },
-  { kind: "ambiguous", use: [...fableBoth("high"), ...opusBoth("high")] },
-  { kind: "investigation", use: [...fableBoth("high"), ...opusBoth("high")] },
-];
-
-const windows: CrewDispatch = {
+export const CREW_DISPATCH_RULES: CrewDispatch = {
   array_order: "preference",
-  rules: shared,
-  ownRules: [unknownCause],
-  default: [...opusBoth("high")],
-};
-
-const mac: CrewDispatch = {
-  array_order: "preference",
-  rules: shared,
+  rules: [
+    { kind: "trivial", use: workhorse(TRIVIAL_EFFORTS) },
+    { kind: "small", use: [...haikuBoth(SMALL_EFFORTS.haiku), ...opusBoth(SMALL_EFFORTS.opus), muse(SMALL_EFFORTS.muse), terra("high")] },
+    { kind: "large", use: [...opusBoth("medium"), muse("high"), terra("high")] },
+    { kind: "ambiguous", use: [...fableBoth("high"), ...opusBoth("high")] },
+    { kind: "investigation", use: [...fableBoth("high"), ...opusBoth("high")] },
+  ],
   ownRules: [unknownCause, macOnly],
   default: [muse(SMALL_EFFORTS.muse), ...opusBoth(SMALL_EFFORTS.opus)],
 };
-
-export const crewDispatchOf = (machine: Machine): CrewDispatch => ({ windows, mac })[machine];

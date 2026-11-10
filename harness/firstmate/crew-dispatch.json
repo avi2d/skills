@@ -242,20 +242,49 @@
           "claude_account": "second"
         }
       ]
+    },
+    {
+      "when": "Work that must run on this Mac against its live configuration (terminal, Herdr, WezTerm, pi setup or home network) and changes or proves that live state. A repository change that only targets Mac software and is proved in its isolated copy takes the size rules.",
+      "use": [
+        {
+          "harness": "pi",
+          "model": "claude-bridge/claude-opus-5-5",
+          "effort": "high",
+          "provider": "claude",
+          "claude_account": "main"
+        },
+        {
+          "harness": "pi",
+          "model": "claude-bridge/claude-opus-5-5",
+          "effort": "high",
+          "provider": "claude",
+          "claude_account": "second"
+        }
+      ]
     }
   ],
   "default": [
     {
       "harness": "pi",
-      "model": "claude-bridge/claude-opus-5-5",
+      "model": "opencode-go/muse-spark-1.3-contributor",
       "effort": "high",
+      "provider": "opencode-go",
+      "floor": {
+        "scope": "all_models",
+        "min_percent": 15
+      }
+    },
+    {
+      "harness": "pi",
+      "model": "claude-bridge/claude-opus-5-5",
+      "effort": "medium",
       "provider": "claude",
       "claude_account": "main"
     },
     {
       "harness": "pi",
       "model": "claude-bridge/claude-opus-5-5",
-      "effort": "high",
+      "effort": "medium",
       "provider": "claude",
       "claude_account": "second"
     }
