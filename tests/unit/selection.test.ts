@@ -117,6 +117,7 @@ describe("profile selection", () => {
       "fix-what-you-see",
       "force-determinism",
       "git-hygiene",
+      "guard-the-context-window-spark",
       "prove-it-works",
       "typescript-best-practices",
       "agents-md-router",
@@ -135,8 +136,31 @@ describe("profile selection", () => {
       "credential-files",
       "git-hygiene-stash",
     ]);
+    expect(resolved.get("claude-fable-5-2")).toEqual([
+      "comment-discipline",
+      "fix-what-you-see",
+      "git-hygiene-co-author",
+      "guard-the-context-window-spark",
+      "prove-it-works",
+      "typescript-best-practices",
+      "agents-md-router",
+      "readme-front-door",
+      "credential-files",
+      "git-hygiene-stash",
+    ]);
+    expect(resolved.get("claude-haiku-5-5")).toEqual([
+      "comment-discipline",
+      "fix-what-you-see",
+      "guard-the-context-window-spark",
+      "prove-it-works",
+      "typescript-best-practices",
+      "agents-md-router",
+      "readme-front-door",
+      "credential-files",
+      "git-hygiene-stash",
+    ]);
     expect(resolved.get("ollama-qwen")).toEqual([
-      "guard-the-context-window",
+      "guard-the-context-window-spark",
       "prove-it-works",
       "agents-md-router",
       "readme-front-door",
