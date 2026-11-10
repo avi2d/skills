@@ -63,25 +63,29 @@ const cdTarget = (words: readonly string[], home: string): string | undefined =>
   return expandHome(target, home);
 };
 
+const bodyEnd = (command: string, inside: readonly boolean[], open: number): number | undefined => {
+  let depth = 0;
+  for (let at = open; at < command.length; at += 1) {
+    if (inside[at]) continue;
+    if (command.charAt(at) === "{") depth += 1;
+    else if (command.charAt(at) === "}") {
+      depth -= 1;
+      if (depth === 0) return at + 1;
+    }
+  }
+  return undefined;
+};
+
 const functionBodies = (command: string): Array<{ from: number; to: number }> => {
   const inside = quoted(command);
   const bodies: Array<{ from: number; to: number }> = [];
   const header = /(^|[;&|()\s])(function\s+[A-Za-z_][A-Za-z0-9_]*|[A-Za-z_][A-Za-z0-9_]*\(\s*\))(\s*\(\s*\))?\s*\{/g;
   for (const match of command.matchAll(header)) {
-    const open = (match.index ?? 0) + match[0].lastIndexOf("{");
+    const open = match.index + match[0].lastIndexOf("{");
     if (inside[open]) continue;
-    let depth = 0;
-    let at = open;
-    for (; at < command.length; at += 1) {
-      if (inside[at]) continue;
-      if (command.charAt(at) === "{") depth += 1;
-      else if (command.charAt(at) === "}") {
-        depth -= 1;
-        if (depth === 0) break;
-      }
-    }
-    if (depth !== 0) continue;
-    bodies.push({ from: match.index ?? 0, to: at + 1 });
+    const end = bodyEnd(command, inside, open);
+    if (end === undefined) continue;
+    bodies.push({ from: match.index, to: end });
   }
   return bodies;
 };
@@ -115,6 +119,41 @@ const discoverGitDir = (base: string): string => {
   }
 };
 
+const applyGitFlag = (
+  flag: string,
+  value: string | undefined,
+  dir: string,
+  explicit: string | undefined,
+  home: string,
+): { dir: string; explicit: string | undefined; skip: boolean } => {
+  if (flag === "-C" || flag === "--git-dir") {
+    if (value === undefined) return { dir, explicit, skip: false };
+    if (flag === "-C") return { dir: resolve(dir, expandHome(value, home)), explicit, skip: true };
+    return { dir, explicit: expandHome(value, home), skip: true };
+  }
+  if (flag.startsWith("-C") && flag.length > 2) return { dir: resolve(dir, expandHome(flag.slice(2), home)), explicit, skip: false };
+  if (flag.startsWith("--git-dir=")) return { dir, explicit: expandHome(flag.slice("--git-dir=".length), home), skip: false };
+  return { dir, explicit, skip: false };
+};
+
+const gitGlobals = (globals: readonly string[], current: string, home: string): { dir: string; explicit: string | undefined } => {
+  let dir = current;
+  let explicit: string | undefined;
+  for (let at = 0; at < globals.length; at += 1) {
+    const next = applyGitFlag(globals[at] ?? "", globals[at + 1], dir, explicit, home);
+    dir = next.dir;
+    explicit = next.explicit;
+    if (next.skip) at += 1;
+  }
+  return { dir, explicit };
+};
+
+const envGitDir = (words: readonly string[], bare: readonly string[], vars: Record<string, string>, home: string): string | undefined => {
+  const local = words.slice(0, words.length - bare.length).reverse().find((word) => word.startsWith("GIT_DIR="));
+  const envDir = (local === undefined ? vars.GIT_DIR : local.slice("GIT_DIR=".length)) ?? "";
+  return envDir === "" ? undefined : expandHome(envDir, home);
+};
+
 const gitDirOf = (
   words: readonly string[],
   bare: readonly string[],
@@ -124,117 +163,132 @@ const gitDirOf = (
   vars: Record<string, string>,
   home: string,
 ): string => {
-  let dir = current;
-  let explicit: string | undefined;
   const globals = bare.slice(git + 1, commitAt);
-  for (let at = 0; at < globals.length; at += 1) {
-    const flag = globals[at] ?? "";
-    if (flag === "-C" || flag === "--git-dir") {
-      const value = globals[at + 1];
-      if (value === undefined) continue;
-      if (flag === "-C") dir = resolve(dir, expandHome(value, home));
-      else explicit = expandHome(value, home);
-      at += 1;
-    } else if (flag.startsWith("-C") && flag.length > 2) {
-      dir = resolve(dir, expandHome(flag.slice(2), home));
-    } else if (flag.startsWith("--git-dir=")) {
-      explicit = expandHome(flag.slice("--git-dir=".length), home);
-    }
-  }
-  const local = words.slice(0, words.length - bare.length).reverse().find((word) => word.startsWith("GIT_DIR="));
-  const envDir = (local === undefined ? vars.GIT_DIR : local.slice("GIT_DIR=".length)) ?? "";
-  const fromEnv = envDir === "" ? undefined : expandHome(envDir, home);
-  return explicit ?? fromEnv ?? discoverGitDir(dir);
+  const { dir, explicit } = gitGlobals(globals, current, home);
+  return explicit ?? envGitDir(words, bare, vars, home) ?? discoverGitDir(dir);
 };
 
 const andOnly = (gap: string): boolean =>
   gap.includes("&&") && !gap.includes(";") && !gap.includes("||") && !gap.includes("\n");
 
+type Track = {
+  current: string;
+  effective: string;
+  missingSince: number | undefined;
+  vars: Record<string, string>;
+  dirStack: string[];
+  effectiveStack: string[];
+  missingStack: Array<number | undefined>;
+  varStack: Array<Record<string, string>>;
+};
+
+const makeTrack = (cwd: string): Track => ({
+  current: cwd,
+  effective: cwd,
+  missingSince: undefined,
+  vars: {},
+  dirStack: [],
+  effectiveStack: [],
+  missingStack: [],
+  varStack: [],
+});
+
+const pushScope = (track: Track): void => {
+  track.dirStack.push(track.current);
+  track.effectiveStack.push(track.effective);
+  track.missingStack.push(track.missingSince);
+  track.varStack.push(track.vars);
+  track.vars = { ...track.vars };
+};
+
+const popScope = (track: Track): void => {
+  track.current = track.dirStack.pop() ?? track.current;
+  track.effective = track.effectiveStack.pop() ?? track.effective;
+  track.missingSince = track.missingStack.pop();
+  track.vars = track.varStack.pop() ?? track.vars;
+};
+
+const applyGapParens = (track: Track, stage: SplitStage, base: number, inside: readonly boolean[], insideBody: (at: number) => boolean): void => {
+  for (let offset = 0; offset < stage.gap.length; offset += 1) {
+    const at = base + offset;
+    if (inside[at] || insideBody(at)) continue;
+    if (stage.gap[offset] === "(") pushScope(track);
+    else if (stage.gap[offset] === ")") popScope(track);
+  }
+};
+
+const applyCd = (track: Track, words: readonly string[], bare: readonly string[], piped: boolean, home: string, index: number): boolean => {
+  if (bare[0] !== "cd") return false;
+  if (piped) return true;
+  const target = cdTarget(words, home);
+  if (target === undefined) return true;
+  track.current = resolve(track.current, target);
+  if (!existsSync(track.current)) {
+    track.missingSince = index;
+    return true;
+  }
+  track.effective = track.current;
+  track.missingSince = undefined;
+  return true;
+};
+
+const recordExports = (track: Track, bare: readonly string[], piped: boolean): void => {
+  if (piped) return;
+  for (const word of bare.slice(1)) {
+    const cut = word.indexOf("=");
+    if (cut > 0) track.vars[word.slice(0, cut)] = word.slice(cut + 1);
+  }
+};
+
+const isAssignmentStage = (words: readonly string[]): boolean => words.length > 0 && words.every((word) => LEADING_ASSIGNMENT.test(word));
+
+const recordAssignments = (track: Track, words: readonly string[], piped: boolean): void => {
+  if (piped) return;
+  for (const word of words) {
+    const cut = word.indexOf("=");
+    track.vars[word.slice(0, cut)] = word.slice(cut + 1);
+  }
+};
+
+const resolveFrom = (track: Track, index: number, stages: readonly SplitStage[]): string => {
+  if (track.missingSince === undefined) return track.current;
+  for (let at = track.missingSince + 1; at <= index; at += 1) {
+    if (!andOnly(stages[at]?.gap ?? "")) return track.effective;
+  }
+  return track.current;
+};
+
+const commitDirFor = (track: Track, words: readonly string[], bare: readonly string[], index: number, stages: readonly SplitStage[], home: string): string | undefined => {
+  const git = bare.indexOf("git");
+  if (git === -1) return undefined;
+  const commitAt = bare.indexOf("commit", git + 1);
+  if (commitAt === -1) return undefined;
+  return gitDirOf(words, bare, git, commitAt, resolveFrom(track, index, stages), track.vars, home);
+};
+
 const commitDirs = (stages: readonly SplitStage[], command: string, cwd: string, home: string): string[] => {
   const inside = quoted(command);
   const bodies = functionBodies(command);
   const insideBody = (at: number): boolean => bodies.some(({ from, to }) => at >= from && at < to);
+  const track = makeTrack(cwd);
   const targets: string[] = [];
-  let current = cwd;
-  let effective = cwd;
-  let missingSince: number | undefined;
-  let vars: Record<string, string> = {};
-  const dirStack: string[] = [];
-  const effectiveStack: string[] = [];
-  const missingStack: Array<number | undefined> = [];
-  const varStack: Array<Record<string, string>> = [];
   for (let index = 0; index < stages.length; index += 1) {
     const stage = stages[index];
     if (stage === undefined) continue;
     if (insideBody(stage.start)) continue;
-    const base = stage.start - stage.gap.length;
-    for (let offset = 0; offset < stage.gap.length; offset += 1) {
-      const at = base + offset;
-      if (inside[at] || insideBody(at)) continue;
-      if (stage.gap[offset] === "(") {
-        dirStack.push(current);
-        effectiveStack.push(effective);
-        missingStack.push(missingSince);
-        varStack.push(vars);
-        vars = { ...vars };
-      } else if (stage.gap[offset] === ")") {
-        current = dirStack.pop() ?? current;
-        effective = effectiveStack.pop() ?? effective;
-        missingSince = missingStack.pop();
-        vars = varStack.pop() ?? vars;
-      }
-    }
+    applyGapParens(track, stage, stage.start - stage.gap.length, inside, insideBody);
     const words = stage.words;
     const bare = withoutEnv(words);
     const next = stages[index + 1];
     const piped = isPipeGap(stage.gap) || (next !== undefined && isPipeGap(next.gap));
-    if (bare[0] === "cd") {
-      if (!piped) {
-        const target = cdTarget(words, home);
-        if (target !== undefined) {
-          current = resolve(current, target);
-          if (existsSync(current)) {
-            effective = current;
-            missingSince = undefined;
-          } else {
-            missingSince = index;
-          }
-        }
-      }
+    if (applyCd(track, words, bare, piped, home, index)) continue;
+    if (bare[0] === "export") recordExports(track, bare, piped);
+    else if (isAssignmentStage(words)) {
+      recordAssignments(track, words, piped);
       continue;
     }
-    if (bare[0] === "export") {
-      if (!piped) {
-        for (const word of bare.slice(1)) {
-          const cut = word.indexOf("=");
-          if (cut > 0) vars[word.slice(0, cut)] = word.slice(cut + 1);
-        }
-      }
-    } else if (words.length > 0 && words.every((word) => LEADING_ASSIGNMENT.test(word))) {
-      if (!piped) {
-        for (const word of words) {
-          const cut = word.indexOf("=");
-          vars[word.slice(0, cut)] = word.slice(cut + 1);
-        }
-      }
-      continue;
-    }
-    const git = bare.indexOf("git");
-    if (git === -1) continue;
-    const commitAt = bare.indexOf("commit", git + 1);
-    if (commitAt === -1) continue;
-    let from = current;
-    if (missingSince !== undefined) {
-      let guarded = true;
-      for (let at = missingSince + 1; at <= index; at += 1) {
-        if (!andOnly(stages[at]?.gap ?? "")) {
-          guarded = false;
-          break;
-        }
-      }
-      if (!guarded) from = effective;
-    }
-    targets.push(gitDirOf(words, bare, git, commitAt, from, vars, home));
+    const found = commitDirFor(track, words, bare, index, stages, home);
+    if (found !== undefined) targets.push(found);
   }
   return targets;
 };
@@ -243,17 +297,28 @@ const IDENTITY_KEYS = ["author.email=", "author.name=", "committer.email=", "com
 
 const hasIdentityKey = (value: string): boolean => IDENTITY_KEYS.some((key) => value.startsWith(key));
 
+const spacedIdentityValue = (word: string, next: string): string | undefined => {
+  if (word === "-c" || word === "--config" || word === "--config-env") return next;
+  return undefined;
+};
+
+const joinedIdentityValue = (word: string): string | undefined => {
+  if (word.startsWith("--config=") || word.startsWith("--config-env=")) return word.slice(word.indexOf("=") + 1);
+  if (word.startsWith("-c") && word.length > 2) return word.slice(2);
+  return undefined;
+};
+
+const wordSetsIdentity = (word: string, next: string): boolean => {
+  if (word === "--author" || word.startsWith("--author=")) return true;
+  const spaced = spacedIdentityValue(word, next);
+  if (spaced !== undefined) return hasIdentityKey(spaced);
+  const joined = joinedIdentityValue(word);
+  return joined !== undefined && hasIdentityKey(joined);
+};
+
 const setsIdentity = (words: readonly string[]): boolean => {
   for (let at = 0; at < words.length; at += 1) {
-    const word = words[at] ?? "";
-    if (word === "--author" || word.startsWith("--author=")) return true;
-    if (word === "-c" || word === "--config" || word === "--config-env") {
-      if (hasIdentityKey(words[at + 1] ?? "")) return true;
-    } else if (word.startsWith("--config=") || word.startsWith("--config-env=")) {
-      if (hasIdentityKey(word.slice(word.indexOf("=") + 1))) return true;
-    } else if (word.startsWith("-c") && word.length > 2) {
-      if (hasIdentityKey(word.slice(2))) return true;
-    }
+    if (wordSetsIdentity(words[at] ?? "", words[at + 1] ?? "")) return true;
   }
   return false;
 };

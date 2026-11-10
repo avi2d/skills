@@ -1,7 +1,5 @@
-import { createHash } from "node:crypto";
-import { appendFileSync, mkdirSync, readFileSync, readdirSync, realpathSync } from "node:fs";
-import { homedir } from "node:os";
-import { dirname, join, resolve } from "node:path";
+import { appendFileSync, mkdirSync, realpathSync } from "node:fs";
+import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
   isReadToolResult,
@@ -28,6 +26,7 @@ import {
   type Event,
   type Index,
 } from "./dispatch";
+import { because, buildId, HOME, mintName, model, onDisk } from "./pi-support";
 import { START, type RunState } from "./run-state";
 import { logLine } from "./dispatch-log";
 import { releasedText } from "./verdict";
@@ -42,30 +41,11 @@ import { redaction } from "./pi-redact";
 import { scrubbedLine } from "./redact";
 import { cappedNote, repoFiles, standing, type Listed } from "./repo-walk";
 
-const because = (e: unknown): string => (e instanceof Error ? e.message : String(e));
-
 const INDEX_PATH = fileURLToPath(new URL("./dispatch.json", import.meta.url));
 
 const BUNDLE_DIR = dirname(fileURLToPath(import.meta.url));
 
-function buildId(dir: string): string {
-  try {
-    const files = readdirSync(dir).sort();
-    const hash = createHash("sha256");
-    for (const file of files) {
-      hash.update(file);
-      hash.update(readFileSync(join(dir, file)));
-    }
-    return hash.digest("hex").slice(0, 12);
-  } catch (e) {
-    return `unreadable(${because(e)})`;
-  }
-}
-
 const BUILD_ID = buildId(BUNDLE_DIR);
-
-// node's `homedir()` reads `$HOME` every time, bun's answers from what the process started with.
-const HOME = process.env.HOME ?? homedir();
 
 const STATE = join(process.env.XDG_STATE_HOME ?? join(HOME, ".local", "state"), "skills");
 
@@ -74,17 +54,6 @@ const LOG_PATH = join(STATE, "dispatch.log");
 const RULES = "skills-rule";
 
 const GATE = "skills-gate";
-
-const model = (ctx: { model: { provider: string; id: string } | undefined }): { model?: string } =>
-  ctx.model ? { model: `${ctx.model.provider}/${ctx.model.id}` } : {};
-
-// pi's own tools strip a leading `@` and expand `~` before they touch a path.
-function onDisk(path: string, cwd: string): string {
-  const bare = path.startsWith("@") ? path.slice(1) : path;
-  return resolve(cwd, bare === "~" || bare.startsWith("~/") ? join(HOME, bare.slice(1)) : bare);
-}
-
-const mintName = (): string => `unnamed-${Math.random().toString(16).slice(2, 10)}`;
 
 type DispatcherBase = {
   pi: ExtensionAPI;

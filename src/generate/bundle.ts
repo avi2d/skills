@@ -33,6 +33,7 @@ export type Bundle = {
 
 const CORE_FILES = {
   "src/dispatcher/dispatch.ts": "dispatch.ts",
+  "src/dispatcher/dispatch-types.ts": "dispatch-types.ts",
   "src/dispatcher/dispatch-log.ts": "dispatch-log.ts",
   "src/dispatcher/model-scope.ts": "model-scope.ts",
   "src/dispatcher/verdict.ts": "verdict.ts",
@@ -49,6 +50,7 @@ const CORE_FILES = {
   "src/dispatcher/read-index.ts": "read-index.ts",
   "src/dispatcher/job-queue.ts": "job-queue.ts",
   "src/dispatcher/rerun.ts": "rerun.ts",
+  "src/dispatcher/rerun-mutation.ts": "rerun-mutation.ts",
   "src/dispatcher/credential-reads.ts": "credential-reads.ts",
   "src/dispatcher/commit-identity.ts": "commit-identity.ts",
   "src/dispatcher/shell-words.ts": "shell-words.ts",
@@ -69,6 +71,7 @@ export const PI_BUNDLE: Bundle = {
     "src/dispatcher/pi-dispatcher.ts": ENTRY,
     ...CORE_FILES,
     "src/dispatcher/pi-bash.ts": "pi-bash.ts",
+    "src/dispatcher/pi-support.ts": "pi-support.ts",
     "src/dispatcher/pi-redact.ts": "pi-redact.ts",
     "src/dispatcher/redact.ts": "redact.ts",
   },

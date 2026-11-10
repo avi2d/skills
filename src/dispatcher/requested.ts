@@ -1,4 +1,4 @@
-import type { Action, Event, Index, Step } from "./dispatch";
+import type { Action, Event, Index, Step } from "./dispatch-types";
 import { lifecycleOf, type RuleLifecycle, type RunState } from "./run-state";
 
 export const placed = (state: RunState, states: readonly RuleLifecycle["state"][]): string[] =>

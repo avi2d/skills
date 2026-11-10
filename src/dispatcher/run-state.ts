@@ -14,7 +14,7 @@ export type RunState = {
   slow?: SlowGuard[];
 };
 
-export type SlowGuard = { full: string[]; canon: string; recovered?: boolean };
+type SlowGuard = { full: string[]; canon: string; recovered?: boolean };
 
 export const SLOW_KEEP = 5;
 

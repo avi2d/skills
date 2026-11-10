@@ -1,99 +1,23 @@
-import { judged, type Change, type Forbid } from "./forbid";
+import { judged, type Change } from "./forbid";
 import { createTypesBudget } from "./types";
 import { compileGlob } from "./glob";
 import type { Harness } from "./harness";
 import type { Project } from "./project";
-import type { ScopeCondition } from "./scope-condition";
 import { toolCallFired } from "./tool-call-fired";
-import {
-  onSettled,
-  onVerdict,
-  promptedGate,
-  type GateAction,
-  type Judged,
-  type Settled,
-  type Tree,
-  type Verdict,
-} from "./verdict";
-import { handedBack, scopedFor, trimming, type IndexedProfile, type Trim } from "./model-scope";
+import { onSettled, onVerdict, promptedGate, type Judged } from "./verdict";
+import { handedBack, scopedFor, trimming } from "./model-scope";
 import { onRequested, placed, unchecked } from "./requested";
 import { checkedRerun, clearedSlow, slowResult } from "./rerun";
 import { lifecycleOf, type RuleLifecycle, type RunState } from "./run-state";
 
 export type { IndexedProfile } from "./model-scope";
 export { placed, unchecked };
+export type { RunState };
 
-export type IndexedRule = {
-  name: string;
-  triggers: ScopeCondition[];
-  text: string;
-  forbid?: Forbid;
-  inactive?: true;
-};
+import type { Action, Event, Index, IndexedRule, Step } from "./dispatch-types";
+export type { Action, Event, Index, IndexedRule, Step };
+export type { HubBody } from "./dispatch-types";
 
-export type HubBody = { name: string; skill: string };
-
-export type Index = {
-  harness: Harness;
-  rules: IndexedRule[];
-  profiles: IndexedProfile[];
-  hub: HubBody[];
-};
-
-export type Event =
-  | { type: "session-start"; carrying?: boolean; model?: string; holding?: string[] }
-  | { type: "prompt"; files?: string[]; project?: Project; model?: string; baseline?: Tree; text?: string }
-  | { type: "model-switch"; model?: string }
-  | { type: "session-end" }
-  | {
-      type: "tool-call";
-      tool: string;
-      input: Record<string, unknown>;
-      writes?: readonly string[];
-      changes?: readonly Change[];
-    }
-  | { type: "read"; tool: string; paths: readonly string[] }
-  | {
-      type: "write-result";
-      tool: string;
-      writes: readonly string[];
-      failed?: boolean;
-    }
-  | {
-      type: "tool-result";
-      tool: string;
-      command: string;
-      seconds: number;
-      failed?: boolean;
-      full?: string;
-      canon?: string;
-      mutating?: boolean;
-      saved?: boolean;
-    }
-  | { type: "requested"; carrying: string; read: "request" | "transcript"; rules?: readonly string[] }
-  | { type: "compaction" }
-  | Settled
-  | Verdict;
-
-export type { RuleLifecycle, RunState } from "./run-state";
-
-export type Action =
-  | { type: "inject"; rule: string; why: string; text: string }
-  | { type: "deliver"; rule: string; why: string; text: string }
-  | { type: "queue"; rule: string; why: string }
-  | { type: "dropped"; rule: string; why: string }
-  | { type: "broken"; rule: string; why: string }
-  | { type: "unjudged"; rule: string; why: string }
-  | { type: "switched"; rule: string; to: "on" | "off"; why: string }
-  | { type: "ignored"; why: string }
-  | { type: "pull"; body: string; why: string }
-  | { type: "refuse"; rule: string; why: string; text: string }
-  | { type: "rerun-refused"; why: string; text: string }
-  | { type: "withdraw"; rule: string; why: string }
-  | Trim
-  | GateAction;
-
-export type Step = { actions: Action[]; state: RunState };
 
 const inDeclaredOrder = (index: Index, names: readonly string[]): IndexedRule[] => index.rules.filter((r) => names.includes(r.name));
 

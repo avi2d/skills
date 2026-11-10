@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import { segmentWrites } from "./rerun-mutation";
 import { SLOW_KEEP, type RunState } from "./run-state";
 import { segments } from "./shell-words";
 
@@ -93,22 +94,22 @@ const extendedSpan = (command: string, stage: SplitStage): { text: string; base:
 
 const INPUT_AFTER = new Set(["<", ">", "&", "|", ";", "("]);
 
-const inputAttachments = (text: string, inside: readonly boolean[], base: number, ownStart: number): string[] => {
+const collectInput = (text: string, inside: readonly boolean[], base: number, ownStart: number, pattern: RegExp, prefix: (match: RegExpMatchArray) => string): string[] => {
   const attached: string[] = [];
-  for (const match of text.matchAll(/<(?![<>|&])\s*("[^"]*"|'[^']*'|[^\s|&;()<>]+)/g)) {
-    const offset = match.index ?? 0;
+  for (const match of text.matchAll(pattern)) {
+    const offset = match.index;
     if (inside[base + offset]) continue;
     if (offset >= ownStart && INPUT_AFTER.has(previousSignificant(text, offset))) continue;
-    attached.push(`< ${quoteWord(unquote(match[1] ?? ""))}`);
-  }
-  for (const match of text.matchAll(/<<-?\s*("[^"]*"|'[^']*'|[^\s|&;()<>]+)/g)) {
-    const offset = match.index ?? 0;
-    if (inside[base + offset]) continue;
-    if (offset >= ownStart && INPUT_AFTER.has(previousSignificant(text, offset))) continue;
-    attached.push(`${match[0].startsWith("<<-") ? "<<-" : "<<"} ${quoteWord(unquote(match[1] ?? ""))}`);
+    attached.push(prefix(match));
   }
   return attached;
 };
+
+const inputAttachments = (text: string, inside: readonly boolean[], base: number, ownStart: number): string[] => [
+  ...collectInput(text, inside, base, ownStart, /<(?![<>|&])\s*("[^"]*"|'[^']*'|[^\s|&;()<>]+)/g, (match) => `< ${quoteWord(unquote(match[1] ?? ""))}`),
+  ...collectInput(text, inside, base, ownStart, /<<-?\s*("[^"]*"|'[^']*'|[^\s|&;()<>]+)/g, (match) =>
+    `${match[0].startsWith("<<-") ? "<<-" : "<<"} ${quoteWord(unquote(match[1] ?? ""))}`),
+];
 
 export const stripped = (command: string): string => {
   const stages = analyze(command);
@@ -177,39 +178,48 @@ export const outputGoesToFile = (command: string): boolean => {
     });
 };
 
+const isOwnRedirect = (text: string, offset: number, ownStart: number, prev: string): boolean =>
+  offset >= ownStart && ("<>|;".includes(prev) || (prev === "&" && text[offset - 1] !== "&"));
+
+const isOtherFd = (match: RegExpMatchArray, text: string, offset: number): boolean => {
+  const digit = match[1] ?? "";
+  if (digit === "") return false;
+  const detached = offset === 0 || /[\s;|&()<>]/.test(text[offset - 1] ?? "");
+  const fd = detached ? digit : "";
+  return fd !== "" && fd !== "1";
+};
+
+const redirectionTarget = (match: RegExpMatchArray, text: string, offset: number): string => {
+  const operator = match[2] ?? "";
+  const afterOperator = operator === ">" ? text.slice(offset + match[0].length) : "";
+  const bothName = /^&([^0-9\s|&;()<>-][^\s|&;()<>]*)/.exec(afterOperator)?.[1];
+  return unquote(bothName ?? match[3] ?? "");
+};
+
+const ampFile = (target: string): string | undefined => (target === "" || target === "/dev/null" ? undefined : target);
+
+const dupFile = (target: string, current: string | undefined): string | undefined => {
+  if (target === "2" || target === "-") return undefined;
+  if (/^\d+$/.test(target)) return current;
+  return ampFile(target);
+};
+
+const nextStdoutFile = (operator: string, target: string, amp: boolean, current: string | undefined): string | undefined => {
+  if (amp) return ampFile(target);
+  if (operator === ">&") return dupFile(target, current);
+  return ampFile(target);
+};
+
 const stdoutToFile = (text: string, inside: readonly boolean[], base: number, ownStart: number): string | undefined => {
   let file: string | undefined;
   for (const match of text.matchAll(/([0-9]+)?(>>?\|?|>&)[ \t]*("[^"]*"|'[^']*'|[^\s|&;()<>]+)?/g)) {
-    const offset = match.index ?? 0;
+    const offset = match.index;
     if (inside[base + offset]) continue;
-    const prev = previousSignificant(text, offset);
-    if (offset >= ownStart && ("<>|;".includes(prev) || (prev === "&" && text[offset - 1] !== "&"))) continue;
-    const digit = match[1] ?? "";
-    const detached = offset === 0 || /[\s;|&()<>]/.test(text[offset - 1] ?? "");
-    const fd = digit !== "" && detached ? digit : "";
-    if (fd !== "" && fd !== "1") continue;
+    if (isOwnRedirect(text, offset, ownStart, previousSignificant(text, offset))) continue;
+    if (isOtherFd(match, text, offset)) continue;
     const operator = match[2] ?? "";
-    const afterOperator = operator === ">" ? text.slice(offset + match[0].length) : "";
-    const bothName = /^&([^0-9\s|&;()<>-][^\s|&;()<>]*)/.exec(afterOperator)?.[1];
-    const target = unquote(bothName ?? match[3] ?? "");
-    if ((text[offset - 1] ?? "") === "&") {
-      file = target === "" || target === "/dev/null" ? undefined : target;
-      continue;
-    }
-    if (operator === ">&") {
-      if (target === "2" || target === "-") {
-        file = undefined;
-        continue;
-      }
-      if (/^\d+$/.test(target)) continue;
-      file = target === "" || target === "/dev/null" ? undefined : target;
-      continue;
-    }
-    if (target === "" || target === "/dev/null") {
-      file = undefined;
-      continue;
-    }
-    file = target;
+    const target = redirectionTarget(match, text, offset);
+    file = nextStdoutFile(operator, target, (text[offset - 1] ?? "") === "&", file);
   }
   return file;
 };
@@ -245,97 +255,6 @@ export const savesStdout = (command: string): boolean => {
     const span = extendedSpan(command, stage);
     return stageSaves(stage.words, span.text, inside, span.base, stage.start - span.base);
   });
-};
-
-const GIT_WRITES = new Set([
-  "add",
-  "mv",
-  "rm",
-  "commit",
-  "checkout",
-  "switch",
-  "restore",
-  "reset",
-  "clean",
-  "apply",
-  "am",
-  "rebase",
-  "merge",
-  "cherry-pick",
-  "revert",
-  "pull",
-  "fetch",
-  "push",
-  "clone",
-  "init",
-]);
-
-const GIT_CONFIG_WRITES = new Set(["--add", "--replace-all", "--unset", "--remove-section", "--rename-section"]);
-
-const GIT_CONFIG_READS = new Set([
-  "--get",
-  "--get-all",
-  "--get-regexp",
-  "--get-urlmatch",
-  "--list",
-  "-l",
-  "--show-origin",
-  "--show-scope",
-  "--name-only",
-  "--get-color",
-  "--get-colorbool",
-]);
-
-const GIT_STASH_READS = new Set(["list", "show"]);
-
-const gitConfigWrites = (after: readonly string[]): boolean => {
-  if (after.some((word) => GIT_CONFIG_WRITES.has(word))) return true;
-  if (after.some((word) => GIT_CONFIG_READS.has(word))) return false;
-  return after.filter((word) => !word.startsWith("-")).length >= 2;
-};
-
-const gitStashWrites = (after: readonly string[]): boolean => {
-  if (after.some((word) => word === "-h" || word === "--help")) return false;
-  const action = after.find((word) => !word.startsWith("-"));
-  if (action === undefined) return true;
-  return !GIT_STASH_READS.has(action);
-};
-
-const TREE_WRITES = new Set([
-  "mkdir",
-  "touch",
-  "rm",
-  "mv",
-  "cp",
-  "ln",
-  "install",
-  "chmod",
-  "chown",
-  "truncate",
-]);
-
-const PACKAGE_WRITES = new Map<string, ReadonlySet<string>>([
-  ["bun", new Set(["add", "install", "remove", "update"])],
-  ["npm", new Set(["add", "install", "remove", "uninstall", "update"])],
-  ["pnpm", new Set(["add", "install", "remove", "uninstall", "update"])],
-  ["yarn", new Set(["add", "install", "remove", "upgrade"])],
-]);
-
-const segmentWrites = (words: readonly string[]): boolean => {
-  const [program, ...rest] = words;
-  if (program === undefined) return false;
-  if (program === "git") {
-    const at = rest.findIndex((word, index) => !word.startsWith("-") && rest[index - 1] !== "-c" && rest[index - 1] !== "--config");
-    const sub = at === -1 ? undefined : rest[at];
-    if (sub === "config") return gitConfigWrites(rest.slice(at + 1));
-    if (sub === "stash") return gitStashWrites(rest.slice(at + 1));
-    return sub !== undefined && GIT_WRITES.has(sub);
-  }
-  if (program === "sed" && rest.some((word) => word === "-i" || word === "--in-place")) return true;
-  if (program === "perl" && rest.some((word) => word.startsWith("-") && word.slice(1).includes("i"))) return true;
-  const writes = PACKAGE_WRITES.get(program);
-  if (writes !== undefined && rest.some((word) => !word.startsWith("-") && writes.has(word))) return true;
-  return TREE_WRITES.has(program);
 };
 
 export const checkedRerun = (event: ToolCall, state: RunState): { refused?: RerunRefused; state: RunState } => {
