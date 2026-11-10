@@ -86,3 +86,17 @@ test("a fixture repository under the temp directory stays exempt", () => {
   mkdirSync(join(fixture, "repo"), { recursive: true });
   expect(refused("GIT_AUTHOR_NAME=spark git commit -m 'x'", join(fixture, "repo"))).toBeUndefined();
 });
+
+test("a not yet created path under /tmp stays exempt through its nearest existing ancestor", () => {
+  expect(refused("cd /tmp/skills-commit-identity-missing && git commit --author=spark -m 'x'")).toBeUndefined();
+});
+
+test("a target holding an unexpanded variable stays refused even from a temp working directory", () => {
+  expect(refused("d=$(mktemp -d) && cd \"$d\" && git commit --author=spark -m 'x'")).toBe(COMMIT_IDENTITY_REFUSAL);
+  expect(refused("cd \"$d\" && git commit --author=spark -m 'x'", fixture)).toBe(COMMIT_IDENTITY_REFUSAL);
+});
+
+test("a not yet created path under an unexpanded temp variable stays refused and names a literal path", () => {
+  expect(refused("cd $TMPDIR/new && git commit --author=spark -m 'x'")).toBe(COMMIT_IDENTITY_REFUSAL);
+  expect(refused("cd $TMPDIR/new && git commit --author=spark -m 'x'")).toContain("literal path");
+});

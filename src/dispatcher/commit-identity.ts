@@ -4,15 +4,40 @@ import { dirname, join, resolve, sep } from "node:path";
 import { isPipeGap, quoted, splitStages, type SplitStage } from "./rerun";
 
 export const COMMIT_IDENTITY_REFUSAL =
-  "This commit sets its own author or committer. Commit as the identity the repository already resolves to, which git config user.name and git config user.email print. Set an identity only inside a throwaway repository a test creates under the temp directory.";
+  "This commit sets its own author or committer. Commit as the identity the repository already resolves to, which git config user.name and git config user.email print. Set an identity only inside a throwaway repository a test creates under the temp directory. Name a literal path under a temp directory.";
 
 export const COMMIT_IDENTITY_LINE = "commit-identity: refused a commit that sets its own author or committer";
 
+const tempRoots = (): string[] => {
+  const roots = new Set<string>();
+  for (const candidate of [tmpdir(), "/tmp", "/private/tmp"]) {
+    try {
+      roots.add(realpathSync(candidate));
+    } catch {
+    }
+  }
+  return [...roots];
+};
+
 const underTemp = (cwd: string): boolean => {
+  if (cwd.includes("$") || cwd.includes("`")) return false;
   try {
-    const root = realpathSync(tmpdir());
-    const dir = realpathSync(resolve(cwd));
-    return dir === root || dir.startsWith(root + sep);
+    const roots = tempRoots();
+    try {
+      const dir = realpathSync(resolve(cwd));
+      return roots.some((root) => dir === root || dir.startsWith(root + sep));
+    } catch {
+      let base = resolve(cwd);
+      for (;;) {
+        if (existsSync(base)) {
+          const dir = realpathSync(base);
+          return roots.some((root) => dir === root || dir.startsWith(root + sep));
+        }
+        const parent = dirname(base);
+        if (parent === base) return false;
+        base = parent;
+      }
+    }
   } catch {
     return false;
   }

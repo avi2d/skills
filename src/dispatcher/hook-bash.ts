@@ -6,10 +6,10 @@ type HookPayload = { tool_name?: string; tool_input?: Record<string, unknown>; t
 
 export type PendingBash = {
   digest: string;
-  full?: string;
-  canon?: string;
-  mutating?: boolean;
-  saved?: boolean;
+  full: string;
+  canon: string;
+  mutating: boolean;
+  saved: boolean;
   at: number;
 };
 
@@ -17,10 +17,10 @@ export const isPending = (value: unknown): value is PendingBash =>
   isRecord(value) &&
   typeof value.digest === "string" &&
   typeof value.at === "number" &&
-  (value.full === undefined || typeof value.full === "string") &&
-  (value.canon === undefined || typeof value.canon === "string") &&
-  (value.mutating === undefined || typeof value.mutating === "boolean") &&
-  (value.saved === undefined || typeof value.saved === "boolean");
+  typeof value.full === "string" &&
+  typeof value.canon === "string" &&
+  typeof value.mutating === "boolean" &&
+  typeof value.saved === "boolean";
 
 const bashCommandOf = (payload: HookPayload): string | undefined => {
   if ((payload.tool_name ?? "").toLowerCase() !== "bash") return undefined;
@@ -59,7 +59,7 @@ export const trackBash = (
     if (kept.length > 32) kept.splice(0, kept.length - 32);
   }
   const take = (command: string): PendingBash | undefined => {
-    const position = kept.findIndex((entry) => entry.digest === digestCommand(command));
+    const position = kept.findLastIndex((entry) => entry.digest === digestCommand(command));
     if (position === -1) return undefined;
     const [match] = kept.splice(position, 1);
     return match;
@@ -88,10 +88,10 @@ export const resultEvent = (
     tool: payload.tool_name ?? "",
     command,
     seconds: (Date.now() - found.at) / 1000,
-    ...(found.full === undefined ? {} : { full: found.full }),
-    ...(found.canon === undefined ? {} : { canon: found.canon }),
-    ...(found.mutating === undefined ? {} : { mutating: found.mutating }),
-    ...(found.saved === undefined ? {} : { saved: found.saved }),
+    full: found.full,
+    canon: found.canon,
+    mutating: found.mutating,
+    saved: found.saved,
     ...(failedOf(payload.tool_response) || payload.hook_event_name === "PostToolUseFailure" ? { failed: true } : {}),
   };
 };

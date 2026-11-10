@@ -348,7 +348,7 @@ export const checkedRerun = (event: ToolCall, state: RunState): { refused?: Reru
   for (const entry of entries) {
     if (digestCommand(stripped(command)) !== entry.canon) continue;
     if (savesStdout(command) && entry.recovered !== true) {
-      return { state: { ...state, slow: entries.map((other) => (other === entry ? { ...other, recovered: true } : other)) } };
+      return { state };
     }
     return { refused: { type: "rerun-refused", why: RERUN_REFUSAL_WHY, text: RERUN_REFUSAL }, state };
   }

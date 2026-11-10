@@ -2,7 +2,6 @@ import { expect, test } from "bun:test";
 import { type Action, type Event, type Index } from "../../src/dispatcher/dispatch";
 import type { Change } from "../../src/dispatcher/forbid";
 import { RERUN_REFUSAL, bashLooksMutating, outputGoesToFile, savesStdout, stripped } from "../../src/dispatcher/rerun";
-import { decodeRunState } from "../../src/dispatcher/run-state";
 import { ruled, run } from "../lib/dispatch";
 
 const index = ruled([]);
@@ -91,10 +90,6 @@ test("an older slow command stays guarded beside a newer one until a confirmed w
   for (let at = 0; at < 6; at += 1) events = [...events, call(`slow-${at}`), result(`slow-${at}`, 400)];
   expect(after([...events, call("slow-0 | tail -1")]).refused).toEqual([]);
   expect(after([...events, call("slow-5 | tail -1")]).refused).toEqual([RERUN_REFUSAL]);
-});
-
-test("a persisted single slow guard still loads as one entry", () => {
-  expect(decodeRunState({ rules: {}, slow: { full: "a", canon: "b" } })?.slow).toEqual([{ full: "a", canon: "b" }]);
 });
 
 test("a read-only bash result keeps the slow command, and a confirmed file-mutating one clears it", () => {

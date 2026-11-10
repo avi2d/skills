@@ -53,7 +53,7 @@ describe("bash start tracking", () => {
   test("a PostToolUseFailure marks the bash result failed, so a failed slow run stays recorded without clearing the guard", () => {
     const event = resultEvent(
       { tool_name: "Bash", tool_input: { command: "sleep 70" }, hook_event_name: "PostToolUseFailure" },
-      () => ({ digest: "x", at: Date.now() - 70_000 }),
+      () => ({ digest: "x", full: "x", canon: "x", mutating: false, saved: false, at: Date.now() - 70_000 }),
     );
     expect(event?.type).toBe("tool-result");
     if (event?.type !== "tool-result") return;
@@ -79,7 +79,7 @@ describe("bash start tracking", () => {
   });
 
   test("a PostToolUse with a matching start reports the command and its seconds", () => {
-    const event = resultEvent(bash("sleep 70"), () => ({ digest: "x", at: Date.now() - 70_000 }));
+    const event = resultEvent(bash("sleep 70"), () => ({ digest: "x", full: "x", canon: "x", mutating: false, saved: false, at: Date.now() - 70_000 }));
     expect(event?.type).toBe("tool-result");
     if (event?.type !== "tool-result") return;
     expect(event.command).toBe("sleep 70");
@@ -89,7 +89,8 @@ describe("bash start tracking", () => {
 
   test("a persisted pending entry with a missing clock reading is not restored", () => {
     expect(isPending({ digest: "abc" })).toBe(false);
-    expect(isPending({ digest: "abc", at: 1_700_000_000_000 })).toBe(true);
+    expect(isPending({ digest: "abc", at: 1_700_000_000_000 })).toBe(false);
+    expect(isPending({ digest: "abc", full: "f", canon: "c", mutating: false, saved: false, at: 1_700_000_000_000 })).toBe(true);
   });
 
   test("a persisted entry holds a digest, never the command text", () => {

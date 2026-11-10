@@ -165,10 +165,6 @@ const migratedRules = (legacy: LegacyRunState): Record<string, RuleLifecycle> =>
 
 export const decodeRunState = (value: unknown): RunState | undefined => {
   if (isRunState(value)) return value;
-  if (isRecord(value) && isSlowGuard(value.slow)) {
-    const migrated: unknown = { ...value, slow: [value.slow] };
-    if (isRunState(migrated)) return migrated;
-  }
   if (!isLegacyRunState(value)) return undefined;
   const rules = migratedRules(value);
   return {

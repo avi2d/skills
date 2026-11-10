@@ -150,7 +150,7 @@
         ]
       },
       {
-        "matcher": "Bash",
+        "matcher": "Bash|Write|Edit",
         "hooks": [
           {
             "type": "command",
@@ -172,7 +172,7 @@
     ],
     "PostToolUseFailure": [
       {
-        "matcher": "Bash",
+        "matcher": "Bash|Write|Edit",
         "hooks": [
           {
             "type": "command",
