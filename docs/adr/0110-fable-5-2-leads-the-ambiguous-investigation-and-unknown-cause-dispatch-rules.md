@@ -18,11 +18,11 @@ Fable 5.2 runs through the bridge v0.11.0+avi2d.1 on pi 1.5.1, and a main-accoun
 
 In the ambiguous, bounded investigation and unknown-cause rules, the candidates are Fable 5.2 at high on the account main, then Fable 5.2 at high on the account second, then the existing Opus 5.5 at high pair.
 Opus 5.5 stays as the fallback in each.
-The trivial, small and large rules, the Mac's live configuration rule and both defaults keep their candidates.
+The trivial, small and large rules, the live-machine rule and both defaults keep their candidates.
 
 ## Consequences
 
-Firstmate reaches Fable 5.2 for these three kinds of work whenever an account is usable, and reaches Opus 5.5 only when neither Fable account is usable.
+The dispatch reaches Fable 5.2 for these three kinds of work whenever an account is usable, and reaches Opus 5.5 only when neither Fable account is usable.
 Routine work never names Fable 5.2.
 Fable 5.2 has no floor and runs only at high, as Opus 5.5 does here.
 `selection.toml` gains a profile for the model, because `tests/unit/selection-models.test.ts` requires every model a generated config names to run from a profile.
