@@ -118,6 +118,8 @@ test.each([
   "d=/tmp/x; d=/repo; cd \"$d\" && git -c user.name=t commit -m x",
   "d=$(mktemp -d) | cat; cd \"$d\" && git -c user.name=t commit -m x",
   "d=/tmp/x git -C $d -c user.name=t commit -m x",
+  "d=$(mktemp -d) git -C \"$d\" -c user.name=t commit -m x",
+  "d=$(mktemp -d) cd \"$d\" && git -c user.name=t commit -m x",
   "d=$(mktemp -d fixture.XXXXXX); cd \"$d\" && git -c user.name=t commit -m x",
   "d=$(mktemp -d -t /tmp/x.XXXX); cd \"$d\"; git -c user.name=t commit -m x",
   "git -c user.name=\"$(git config user.name)\" -c user.email=\"$(git config user.email)\" commit -m x",
