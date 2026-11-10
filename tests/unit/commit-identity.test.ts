@@ -119,6 +119,7 @@ test.each([
   "d=$(mktemp -d) | cat; cd \"$d\" && git -c user.name=t commit -m x",
   "d=/tmp/x git -C $d -c user.name=t commit -m x",
   "d=$(mktemp -d fixture.XXXXXX); cd \"$d\" && git -c user.name=t commit -m x",
+  "d=$(mktemp -d -t /tmp/x.XXXX); cd \"$d\"; git -c user.name=t commit -m x",
   "git -c user.name=\"$(git config user.name)\" -c user.email=\"$(git config user.email)\" commit -m x",
 ])("a variable that does not resolve into the temp directory leaves the commit refused: %s", (command) => {
   expect(refused(command)).toBe(COMMIT_IDENTITY_REFUSAL);
