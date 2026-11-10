@@ -15,14 +15,14 @@ Supersedes 0102, whose reviewer chain this record states as it now holds.
 
 The firstmate settings links for the dispatch rules and the supervision pins now point into the dotfiles repository.
 Nothing reads the copies this repository generated, and firstmate is not a harness this repository serves.
-The public UX decision keeps a machine's own fleet settings out of this repository.
+A machine's own fleet settings stay out of this public repository.
 
 ## Decision
 
 This repository holds no firstmate dispatch rules and no firstmate pins.
 `harness/firstmate/` is gone, and so are the generation, drift check and tests that wrote and held its files.
 `bun run generate` writes and checks only `generated/`.
-`bun run link` links nothing into the firstmate home, and retires each link it once made there for `crew-dispatch.json`, `supervision-branch-model`, `supervision-branch-effort` and `secondmate-harness`.
+`bun run link` links nothing into the firstmate home, and retires the link it once made there for `secondmate-harness`.
 The link map is the same on every platform.
 The no-mistakes reviewer chain runs Opus 5.5 at high on the account main first and Opus 5.5 at high on the account second last, each on the pi agent with its account config dir in the environment, and no entry carries a floor.
 

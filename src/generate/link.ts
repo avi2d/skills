@@ -87,9 +87,6 @@ export const RETIRED: readonly string[] = [
   ".pi/agent/extensions/compaction-points.ts",
   ".pi/agent/extensions/transcript-style.ts",
   "Projects/firstmate/config/secondmate-harness",
-  "Projects/firstmate/config/crew-dispatch.json",
-  "Projects/firstmate/config/supervision-branch-model",
-  "Projects/firstmate/config/supervision-branch-effort",
 ];
 
 export const REPO = new URL("../../", import.meta.url).pathname;

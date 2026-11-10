@@ -94,9 +94,6 @@ describe("a path $HOME used to take from here", () => {
   test.each([
     [".claude/agents", HUB],
     ["Projects/firstmate/config/secondmate-harness", "harness/firstmate/secondmate-harness"],
-    ["Projects/firstmate/config/crew-dispatch.json", "harness/firstmate/crew-dispatch.json"],
-    ["Projects/firstmate/config/supervision-branch-model", "harness/firstmate/supervision-branch-model"],
-    ["Projects/firstmate/config/supervision-branch-effort", "harness/firstmate/supervision-branch-effort"],
   ])("a link this repo put at %s is removed, and reported as retired", async (rel, target) => {
     const home = await seeded(`${REPO}${target}`, rel);
     try {

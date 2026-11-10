@@ -72,9 +72,6 @@ Each path below was once in the map.
 - `~/.pi/agent/extensions/compaction-points.ts`
 - `~/.pi/agent/extensions/transcript-style.ts`
 - `~/Projects/firstmate/config/secondmate-harness`
-- `~/Projects/firstmate/config/crew-dispatch.json`
-- `~/Projects/firstmate/config/supervision-branch-model`
-- `~/Projects/firstmate/config/supervision-branch-effort`
 
 ## Related topics
 
