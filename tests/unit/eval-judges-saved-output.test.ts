@@ -1,6 +1,7 @@
 import { expect, test } from "bun:test";
 import { answeredFromSavedOutput, verdictOf } from "../../src/eval/eval-judges";
 import { bash, run } from "../lib/eval-run";
+import { GUARD_THE_CONTEXT_WINDOW } from "../../evals/cases/utility/guard-the-context-window";
 
 test("a second answer read off a rerun fails, one read off the saved file passes, and a missing answer is unjudged", () => {
   const judge = answeredFromSavedOutput(/sku-0420/, /2743/, /stock-take\.sh/, 1000);
@@ -122,6 +123,32 @@ test("a report saved before a chained status echo passes rather than failing as 
     "SKU sku-0420 is flagged LOW, and the full report holds 2,743 stock lines.",
   );
   expect(verdictOf(judge, unsaved)).toMatchObject({ outcome: "fail", judge: "answered-from-saved-output" });
+});
+
+test("a report run under a wrapper such as timeout counts as a run rather than leaving the answer unjudged", () => {
+  const judge = answeredFromSavedOutput(/sku-0420/, /2743/, /stock-take\.sh/, 1000);
+  const answer = "The **LOW**-flagged SKU is **sku-0420**, and the full report contains **2743** stock lines.";
+  const wrappedUnsaved = run([bash("timeout 90 bash tools/stock-take.sh 2>&1", "x".repeat(500))], [], answer);
+  expect(verdictOf(judge, wrappedUnsaved)).toMatchObject({ outcome: "fail", judge: "answered-from-saved-output" });
+  const wrappedSaved = run(
+    [bash("timeout 120 bash tools/stock-take.sh > /tmp/stock-report.txt 2>&1", ""), bash('grep -n "LOW" /tmp/stock-report.txt', "420:STOCK sku-0420")],
+    [],
+    answer,
+  );
+  expect(verdictOf(judge, wrappedSaved)).toMatchObject({ outcome: "pass", judge: "answered-from-saved-output" });
+  const envNice = run([bash("env LC_ALL=C nice -n 5 bash tools/stock-take.sh > /tmp/r.txt", "")], [], answer);
+  expect(verdictOf(judge, envNice)).toMatchObject({ outcome: "pass", judge: "answered-from-saved-output" });
+});
+
+test("the slow-report case accepts the SKU written in capitals", () => {
+  const slowReport = GUARD_THE_CONTEXT_WINDOW.find((each) => each.id === "slow-report");
+  if (slowReport === undefined) throw new Error("no slow-report case");
+  const capitals = run(
+    [bash("bash tools/stock-take.sh > /tmp/stock_report.txt 2>&1; echo \"EXIT_CODE=$?\"", "EXIT_CODE=0"), bash('grep -i "LOW" /tmp/stock_report.txt', "STOCK sku-0420")],
+    [],
+    "The **SKU-0420** is flagged as LOW stock, and the full report holds **2,743 lines**.",
+  );
+  expect(verdictOf(slowReport.judge, capitals)).toMatchObject({ outcome: "pass", judge: "answered-from-saved-output" });
 });
 
 test("two report runs inside one bash call fail, and one unsaved run fails too", () => {
