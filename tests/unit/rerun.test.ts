@@ -150,6 +150,20 @@ test("only relevant stdout sent to a real file counts as saved", () => {
   expect(savesStdout('echo "a > b"')).toBe(false);
 });
 
+test("a save of the slow command is not lost to a command chained after it", () => {
+  expect(savesStdout("bash tools/stock-take.sh > /tmp/stock-take.log 2>&1; echo EXIT:$?")).toBe(true);
+  expect(savesStdout("bash tools/stock-take.sh >/tmp/stock.log 2>&1 && echo done")).toBe(true);
+  expect(savesStdout('cd /repo && bash tools/stock-take.sh > /tmp/stock-take.out 2>&1; echo "exit=$?"; wc -l /tmp/stock-take.out')).toBe(true);
+});
+
+test("a save by a command chained around the slow one does not count as the slow one saving", () => {
+  const stockTake = (words: readonly string[]): boolean => words.includes("tools/stock-take.sh");
+  expect(savesStdout('cd /repo && bash tools/stock-take.sh; echo "EXIT=$?"', stockTake)).toBe(false);
+  expect(savesStdout("echo start > /tmp/marker; bash tools/stock-take.sh 2>&1 | tail -3", stockTake)).toBe(false);
+  expect(savesStdout("bash tools/stock-take.sh | tail -3; wc -l /tmp/old.log > /tmp/count", stockTake)).toBe(false);
+  expect(savesStdout("echo start > /tmp/marker; bash tools/stock-take.sh > /tmp/stock.log", stockTake)).toBe(true);
+});
+
 test("only an output sent to a real file counts as saved", () => {
   expect(outputGoesToFile(`${SLOW} > /tmp/eval.log 2>&1`)).toBe(true);
   expect(outputGoesToFile(`${SLOW} 2>&1 | tee /tmp/eval.log | tail -3`)).toBe(true);

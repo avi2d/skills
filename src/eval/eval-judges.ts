@@ -206,25 +206,26 @@ const scriptOperand = (words: readonly string[], slow: RegExp): string | undefin
   return undefined;
 };
 
-const slowExecutions = (command: string, slow: RegExp): number => {
-  let runs = 0;
-  for (const segment of segments(command)) {
-    const words = segment.map((word) => word.text);
-    const operand = scriptOperand(words, slow);
-    if (operand !== undefined && slow.test(operand)) runs += 1;
-  }
-  return runs;
+const runsScript = (words: readonly string[], slow: RegExp): boolean => {
+  const operand = scriptOperand(words, slow);
+  return operand !== undefined && slow.test(operand);
 };
+
+const slowExecutions = (command: string, slow: RegExp): number =>
+  segments(command).filter((segment) => runsScript(segment.map((word) => word.text), slow)).length;
+
+const withoutDigitGrouping = (answer: string): string => answer.replace(/(?<=\d)[,\u2009\u202f](?=\d{3}(?!\d))/g, "");
 
 export const answeredFromSavedOutput = (first: RegExp, second: RegExp, slow: RegExp, budget: number): ProgramJudge => ({
   name: "answered-from-saved-output",
   judge: ({ transcript }) => {
-    const missing = [first, second].filter((asked) => !asked.test(transcript.answer));
+    const answer = withoutDigitGrouping(transcript.answer);
+    const missing = [first, second].filter((asked) => !asked.test(answer));
     if (missing.length > 0) return { unjudged: `the final answer matches no ${missing.join(" and ")}, so the run did not answer both questions` };
     const executions = calls(transcript).flatMap((placed) => {
       const command = commandOf(placed.call);
       const runs = command === "" ? 0 : slowExecutions(command, slow);
-      return runs === 0 ? [] : [{ at: placed.at, runs, saved: savesStdout(command) }];
+      return runs === 0 ? [] : [{ at: placed.at, runs, saved: savesStdout(command, (words) => runsScript(words, slow)) }];
     });
     if (executions.length === 0) return { unjudged: `no command matching ${slow} ran, so the run never produced the report it answers from` };
     const total = executions.reduce((sum, execution) => sum + execution.runs, 0);

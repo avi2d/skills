@@ -239,22 +239,32 @@ const PASSTHROUGH = new Set(["cat", "tee"]);
 const stageSaves = (words: readonly string[], text: string, inside: readonly boolean[], base: number, ownStart: number): boolean =>
   stdoutToFile(text, inside, base, ownStart) !== undefined || teeFile(words) !== undefined;
 
-export const savesStdout = (command: string): boolean => {
-  const stages = analyze(command);
-  if (stages.length === 0) return false;
-  const inside = quoted(command);
-  const kept = stages.filter((stage) => stage.kept);
-  const last = kept.at(-1);
-  if (last !== undefined) {
-    const span = extendedSpan(command, last);
-    if (stageSaves(last.words, span.text, inside, span.base, last.start - span.base)) return true;
+const pipelines = (stages: readonly AnalyzedStage[]): AnalyzedStage[][] => {
+  const found: AnalyzedStage[][] = [];
+  for (const [at, stage] of stages.entries()) {
+    const current = found.at(-1);
+    if (current === undefined || at === 0 || !isPipeGap(stage.gap)) found.push([stage]);
+    else current.push(stage);
   }
-  const after = last === undefined ? [] : stages.slice(stages.indexOf(last) + 1);
-  return after.some((stage) => {
-    if (!PASSTHROUGH.has(programOf(stage.words[0]))) return false;
+  return found;
+};
+
+const pipelineSaves = (command: string, inside: readonly boolean[], pipeline: readonly AnalyzedStage[]): boolean => {
+  const spanSaves = (stage: AnalyzedStage): boolean => {
     const span = extendedSpan(command, stage);
     return stageSaves(stage.words, span.text, inside, span.base, stage.start - span.base);
-  });
+  };
+  const last = pipeline.findLast((stage) => stage.kept);
+  if (last === undefined) return false;
+  if (spanSaves(last)) return true;
+  return pipeline.slice(pipeline.indexOf(last) + 1).some((stage) => PASSTHROUGH.has(programOf(stage.words[0])) && spanSaves(stage));
+};
+
+export const savesStdout = (command: string, runsSlow: (words: readonly string[]) => boolean = () => true): boolean => {
+  const inside = quoted(command);
+  return pipelines(analyze(command)).some(
+    (pipeline) => pipeline.some((stage) => runsSlow(stage.words)) && pipelineSaves(command, inside, pipeline),
+  );
 };
 
 export const checkedRerun = (event: ToolCall, state: RunState): { refused?: RerunRefused; state: RunState } => {
