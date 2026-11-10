@@ -6,22 +6,25 @@ const TOOL_OUTPUT_STUB_MIN_CHARS = 100;
 
 function balancedParens(url: string): string {
   let open = 0;
-  let close = 0;
+  let end = url.length;
+  let i = 0;
   for (const char of url) {
     if (char === "(") open += 1;
-    else if (char === ")") close += 1;
+    else if (char === ")") {
+      if (open === 0) {
+        end = i;
+        break;
+      }
+      open -= 1;
+    }
+    i += 1;
   }
-  let kept = url;
-  while (kept.endsWith(")") && close > open) {
-    kept = kept.slice(0, -1);
-    close -= 1;
-  }
-  return kept;
+  return url.slice(0, end).replace(/[.,;:!?*`]+$/, "");
 }
 
 function urlsOf(text: string): string[] {
   const found = text.match(/https?:\/\/[^\s<>\]"'`*]+/g) ?? [];
-  return [...new Set(found.map((url) => balancedParens(url.replace(/[.,;:!?*`]+$/, ""))))];
+  return [...new Set(found.map((url) => balancedParens(url)))];
 }
 
 function toolOutputStubOf(chars: number, urls: readonly string[]): string {

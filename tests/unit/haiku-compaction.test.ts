@@ -462,11 +462,20 @@ describe("haiku-compaction", () => {
   });
 
   test("a stubbed result keeps a URL with balanced parentheses whole", async () => {
-    const body = `${"search results ".repeat(20)}https://en.wikipedia.org/wiki/Rust_(programming_language) and [docs](https://example.com/api)`;
+    const body = `${"search results ".repeat(20)}https://en.wikipedia.org/wiki/Rust_(programming_language) and [docs](https://example.com/api) |[pr](https://github.com/o/r/pull/1)| _[more](https://example.com/more)_ [a](https://x.y/a)[b](https://x.y/b) (see https://example.com/notes.)`;
     const [history] = await promptsSent(eventOf([userOf("search the web"), readCallOf("web.txt"), readResultOf("web.txt", body)]));
     expect(history).toContain("https://en.wikipedia.org/wiki/Rust_(programming_language)");
     expect(history).toContain("https://example.com/api");
     expect(history).not.toContain("api)");
+    expect(history).toContain("https://github.com/o/r/pull/1");
+    expect(history).not.toContain("https://github.com/o/r/pull/1)|");
+    expect(history).toContain("https://example.com/more");
+    expect(history).not.toContain("https://example.com/more)_");
+    expect(history).toContain("https://x.y/a");
+    expect(history).toContain("https://x.y/b");
+    expect(history).not.toContain("https://x.y/a)[b");
+    expect(history).toContain("https://example.com/notes");
+    expect(history).not.toContain("https://example.com/notes.");
   });
 
   test("a result with no text leaves Haiku no stub line instead of a zero-char stub", async () => {
