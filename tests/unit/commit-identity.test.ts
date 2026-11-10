@@ -124,6 +124,13 @@ test.each([
   "d=$(mktemp -d -t /tmp/x.XXXX); cd \"$d\"; git -c user.name=t commit -m x",
   "f=$(mktemp -u); cd \"$f\"; git -c user.name=t commit -m x",
   "f=$(mktemp); cd \"$f\"; git -c user.name=t commit -m x",
+  "d=$(mktemp -d); if [ -n \"$KEEP\" ]; then d=/repo; fi; git -C \"$d\" -c user.name=t commit -m x",
+  "d=/tmp/x; for i in 1; do d=/repo; done; git -C $d -c user.name=t commit -m x",
+  "d=$(mktemp -d); { d=/repo; }; git -C $d -c user.name=t commit -m x",
+  "d=$(mktemp -d); ! d=/repo; git -C $d -c user.name=t commit -m x",
+  "d=/tmp/x; read d < /tmp/f; git -C $d -c user.name=t commit -m x",
+  "d=/tmp/x; f() { d=/repo; }; f; git -C $d -c user.name=t commit -m x",
+  "test -n \"$CI\" && d=/tmp/x; git -C \"$d\" -c user.name=t commit -m x",
   "git -c user.name=\"$(git config user.name)\" -c user.email=\"$(git config user.email)\" commit -m x",
 ])("a variable that does not resolve into the temp directory leaves the commit refused: %s", (command) => {
   expect(refused(command)).toBe(COMMIT_IDENTITY_REFUSAL);
