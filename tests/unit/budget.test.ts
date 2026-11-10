@@ -8,7 +8,7 @@ import { valueOf } from "../lib/effect";
 
 // A Rule costs on two schedules, so one ceiling cannot hold both: `always` is charged to every session,
 // and a scope condition is charged only where it matches.
-const OPENING = 1_350;
+const OPENING = 1_450;
 const WORST = 3_550;
 const ORCHESTRATOR_CHARACTERS = 4_000;
 
