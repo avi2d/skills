@@ -9,7 +9,7 @@ Use it to keep one set of agent instructions for every harness you run, and to h
 
 - Bun, at the version `.bun-version` pins, which runs every command below.
 - Git, to clone the repository.
-- At least one harness: pi 1.5.0, Claude Code 2.1.280 or Codex 0.155.0-alpha.16.
+- At least one harness: pi 1.5.1, Claude Code 2.1.280 or Codex 0.155.0-alpha.16.
 
 ## Install
 
