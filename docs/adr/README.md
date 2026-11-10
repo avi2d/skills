@@ -50,7 +50,7 @@
 | [0040](0040-one-command-writes-one-directory.md) | One command writes one directory | Accepted |  |
 | [0041](0041-the-tree-holds-what-something-invokes.md) | The tree holds what something invokes | Accepted |  |
 | [0042](0042-a-compaction-point-is-per-model-and-fires-when-the-agent-is-idle.md) | A compaction point is per model, and fires when the agent is idle | Superseded |  |
-| [0043](0043-a-compaction-point-is-a-per-model-reserve-in-pi-settings.md) | A compaction point is a per-model reserve in pi's settings | Accepted |  |
+| [0043](0043-a-compaction-point-is-a-per-model-reserve-in-pi-settings.md) | A compaction point is a per-model reserve in pi's settings | Accepted | `harness/pi/settings.json` |
 | [0044](0044-the-checks-are-consumed-from-npm-by-range.md) | The checks are consumed from npm, by range | Accepted |  |
 | [0045](0045-a-rate-limited-request-is-retried-inside-the-request.md) | A rate-limited request is retried inside the request | Accepted |  |
 | [0046](0046-a-tool-that-ships-its-own-skill-supplies-it.md) | A tool that ships its own skill supplies it | Accepted |  |

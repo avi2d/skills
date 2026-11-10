@@ -1,3 +1,6 @@
+---
+governs: [harness/pi/settings.json]
+---
 # 43. A compaction point is a per-model reserve in pi's settings
 
 Date: 2026-09-23
