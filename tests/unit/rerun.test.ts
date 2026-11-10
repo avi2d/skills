@@ -140,6 +140,8 @@ test.each([
   ["go test -race ./... 2>&1 | grep -E FAIL", "go test -race ./... 2>&1 | tail -20"],
   ['bun run lint 2>&1 | grep -A6 "repetition:"', 'bun run lint 2>&1 | grep -A8 "repetition:"'],
   ["timeout 300 bun run build 2>&1 | tail -5", "timeout 300 bun run build 2>&1 | tail -40"],
+  ["sleep 5; bun test 2>&1 | tail -5", "sleep 5; bun test 2>&1 | grep fail"],
+  ["bun run build && sleep 1 && bun test 2>&1 | tail -5", "bun run build && sleep 1 && bun test 2>&1 | tail -30"],
 ])("a test or build rerun is still refused though waits pass: %s then a new filter", (first, second) => {
   expect(slowThenCall(first, second)).toEqual([RERUN_REFUSAL]);
 });
