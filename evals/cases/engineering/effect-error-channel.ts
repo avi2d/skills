@@ -1,11 +1,9 @@
 import { keepsTheErrorChannel } from "../../typescript-judges";
-import { manifest, withPackage, type EvalCase } from "../fixture";
+import { EFFECT, withPackage, type EvalCase } from "../fixture";
 
 const rule = "effect-error-channel";
 
 const judge = keepsTheErrorChannel({ failuresHappen: true });
-
-const EFFECT = manifest({ dependencies: { effect: "4.0.0-rc.115" } });
 
 const SYNC = `import { Data, Effect } from "effect";
 

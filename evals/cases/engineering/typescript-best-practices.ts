@@ -1,9 +1,7 @@
 import { noSchemaTwin, noTypeAssertion } from "../../typescript-judges";
-import { manifest, withPackage, type EvalCase } from "../fixture";
+import { EFFECT, withPackage, type EvalCase } from "../fixture";
 
 const rule = "typescript-best-practices";
-
-const EFFECT = manifest({ dependencies: { effect: "4.0.0-rc.115" } });
 
 export const TYPESCRIPT_BEST_PRACTICES: readonly EvalCase[] = [
   {
