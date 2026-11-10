@@ -31,6 +31,7 @@ export default defineConfig({
       "src/dispatcher/repo-walk.ts",
       "src/dispatcher/run-state.ts",
       "src/dispatcher/shell-words.ts",
+      "src/dispatcher/requested.ts",
       "src/dispatcher/tool-call-fired.ts",
       "src/dispatcher/transcript.ts",
       "src/dispatcher/types.ts",

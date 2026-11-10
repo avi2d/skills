@@ -53,6 +53,7 @@ const CORE_FILES = {
   "src/dispatcher/commit-identity.ts": "commit-identity.ts",
   "src/dispatcher/shell-words.ts": "shell-words.ts",
   "src/dispatcher/tool-call-fired.ts": "tool-call-fired.ts",
+  "src/dispatcher/requested.ts": "requested.ts",
 };
 
 const HOOK_FILES = {

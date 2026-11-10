@@ -16,10 +16,12 @@ import {
   type Verdict,
 } from "./verdict";
 import { handedBack, scopedFor, trimming, type IndexedProfile, type Trim } from "./model-scope";
+import { onRequested, placed, unchecked } from "./requested";
 import { checkedRerun, clearedSlow, slowResult } from "./rerun";
 import { lifecycleOf, type RuleLifecycle, type RunState } from "./run-state";
 
 export type { IndexedProfile } from "./model-scope";
+export { placed, unchecked };
 
 export type IndexedRule = {
   name: string;
@@ -94,13 +96,6 @@ export type Action =
 export type Step = { actions: Action[]; state: RunState };
 
 const inDeclaredOrder = (index: Index, names: readonly string[]): IndexedRule[] => index.rules.filter((r) => names.includes(r.name));
-
-export const placed = (state: RunState, states: readonly RuleLifecycle["state"][]): string[] =>
-  Object.entries(state.rules)
-    .filter(([, lifecycle]) => states.includes(lifecycle.state))
-    .map(([name]) => name);
-
-const at = (state: RunState, rule: string): RuleLifecycle["state"] | undefined => lifecycleOf(state.rules, rule)?.state;
 
 export const PREAMBLE = "The following rules are in force for this session. Follow them.";
 
@@ -284,35 +279,6 @@ function onCompaction(index: Index, state: RunState): Step {
     actions: lost.map((rule) => ({ type: "queue", rule: rule.name, why })),
     state: { ...state, rules },
   };
-}
-
-export const unchecked = (state: RunState): string[] => placed(state, ["injected"]);
-
-const WITNESS = 200;
-
-const flatten = (text: string): string => text.replace(/[^a-zA-Z0-9]+/g, "");
-
-const FOLLOWED = { request: "the request that followed carried", transcript: "the transcript that followed recorded" } as const;
-
-function onRequested(index: Index, event: Extract<Event, { type: "requested" }>, state: RunState): Step {
-  const asked = event.rules ?? unchecked(state);
-  const due = index.rules.filter((r) => asked.includes(r.name) && at(state, r.name) === "injected");
-  if (due.length === 0) return { actions: [], state };
-
-  const carrying = flatten(event.carrying);
-  const followed = FOLLOWED[event.read];
-  const actions: Action[] = [];
-  for (const rule of due) {
-    const whole = flatten(rule.text);
-    if (carrying.includes(whole)) continue;
-    const why = carrying.includes(whole.slice(0, WITNESS))
-      ? `it was injected, and ${followed} only the start of it, so the model never had the whole of it`
-      : `it was injected, and ${followed} no trace of it, so it never reached the model`;
-    actions.push({ type: "broken", rule: rule.name, why });
-  }
-  const rules = { ...state.rules };
-  for (const rule of due) rules[rule.name] = { state: "checked" };
-  return { actions, state: { ...state, rules } };
 }
 
 function onToolCall(index: Index, event: Extract<Event, { type: "tool-call" }>, state: RunState): Step {
