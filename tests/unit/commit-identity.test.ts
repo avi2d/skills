@@ -96,7 +96,18 @@ test("a target holding an unexpanded variable stays refused even from a temp wor
   expect(refused("cd \"$d\" && git commit --author=spark -m 'x'", fixture)).toBe(COMMIT_IDENTITY_REFUSAL);
 });
 
-test("a not yet created path under an unexpanded temp variable stays refused and names a literal path", () => {
+test("a not yet created path under an unexpanded temp variable stays refused", () => {
   expect(refused("cd $TMPDIR/new && git commit --author=spark -m 'x'")).toBe(COMMIT_IDENTITY_REFUSAL);
-  expect(refused("cd $TMPDIR/new && git commit --author=spark -m 'x'")).toContain("literal path");
+});
+
+test("a cd to a missing temp path linked with a semicolon never moves the commit target", () => {
+  expect(refused("cd /tmp/skills-commit-identity-missing; git commit --author=spark -m 'x'")).toBe(
+    COMMIT_IDENTITY_REFUSAL,
+  );
+});
+
+test("a missing temp path the same command creates stays exempt through and-only links", () => {
+  expect(
+    refused("mkdir -p /tmp/skills-commit-identity-made && cd /tmp/skills-commit-identity-made && git commit --author=spark -m 'x'"),
+  ).toBeUndefined();
 });

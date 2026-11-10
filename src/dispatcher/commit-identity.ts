@@ -4,7 +4,7 @@ import { dirname, join, resolve, sep } from "node:path";
 import { isPipeGap, quoted, splitStages, type SplitStage } from "./rerun";
 
 export const COMMIT_IDENTITY_REFUSAL =
-  "This commit sets its own author or committer. Commit as the identity the repository already resolves to, which git config user.name and git config user.email print. Set an identity only inside a throwaway repository a test creates under the temp directory. Name a literal path under a temp directory.";
+  "This commit sets its own author or committer. Commit as the identity the repository already resolves to, which git config user.name and git config user.email print. Set an identity only inside a throwaway repository a test creates under the temp directory.";
 
 export const COMMIT_IDENTITY_LINE = "commit-identity: refused a commit that sets its own author or committer";
 
@@ -147,14 +147,21 @@ const gitDirOf = (
   return explicit ?? fromEnv ?? discoverGitDir(dir);
 };
 
+const andOnly = (gap: string): boolean =>
+  gap.includes("&&") && !gap.includes(";") && !gap.includes("||") && !gap.includes("\n");
+
 const commitDirs = (stages: readonly SplitStage[], command: string, cwd: string, home: string): string[] => {
   const inside = quoted(command);
   const bodies = functionBodies(command);
   const insideBody = (at: number): boolean => bodies.some(({ from, to }) => at >= from && at < to);
   const targets: string[] = [];
   let current = cwd;
+  let effective = cwd;
+  let missingSince: number | undefined;
   let vars: Record<string, string> = {};
   const dirStack: string[] = [];
+  const effectiveStack: string[] = [];
+  const missingStack: Array<number | undefined> = [];
   const varStack: Array<Record<string, string>> = [];
   for (let index = 0; index < stages.length; index += 1) {
     const stage = stages[index];
@@ -166,10 +173,14 @@ const commitDirs = (stages: readonly SplitStage[], command: string, cwd: string,
       if (inside[at] || insideBody(at)) continue;
       if (stage.gap[offset] === "(") {
         dirStack.push(current);
+        effectiveStack.push(effective);
+        missingStack.push(missingSince);
         varStack.push(vars);
         vars = { ...vars };
       } else if (stage.gap[offset] === ")") {
         current = dirStack.pop() ?? current;
+        effective = effectiveStack.pop() ?? effective;
+        missingSince = missingStack.pop();
         vars = varStack.pop() ?? vars;
       }
     }
@@ -180,7 +191,15 @@ const commitDirs = (stages: readonly SplitStage[], command: string, cwd: string,
     if (bare[0] === "cd") {
       if (!piped) {
         const target = cdTarget(words, home);
-        if (target !== undefined) current = resolve(current, target);
+        if (target !== undefined) {
+          current = resolve(current, target);
+          if (existsSync(current)) {
+            effective = current;
+            missingSince = undefined;
+          } else {
+            missingSince = index;
+          }
+        }
       }
       continue;
     }
@@ -204,7 +223,18 @@ const commitDirs = (stages: readonly SplitStage[], command: string, cwd: string,
     if (git === -1) continue;
     const commitAt = bare.indexOf("commit", git + 1);
     if (commitAt === -1) continue;
-    targets.push(gitDirOf(words, bare, git, commitAt, current, vars, home));
+    let from = current;
+    if (missingSince !== undefined) {
+      let guarded = true;
+      for (let at = missingSince + 1; at <= index; at += 1) {
+        if (!andOnly(stages[at]?.gap ?? "")) {
+          guarded = false;
+          break;
+        }
+      }
+      if (!guarded) from = effective;
+    }
+    targets.push(gitDirOf(words, bare, git, commitAt, from, vars, home));
   }
   return targets;
 };
