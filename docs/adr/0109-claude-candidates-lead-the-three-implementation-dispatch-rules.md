@@ -1,5 +1,5 @@
 ---
-governs: [src/generate/crew-dispatch-config.ts, harness/firstmate/crew-dispatch.json, harness/firstmate/crew-dispatch.mac.json, tests/unit/crew-dispatch.test.ts, tests/unit/machine-files.test.ts]
+governs: [src/generate/crew-dispatch-config.ts, harness/firstmate/crew-dispatch.json, tests/unit/crew-dispatch.test.ts, tests/unit/machine-files.test.ts]
 ---
 # 109. Claude candidates lead the three implementation dispatch rules
 
@@ -7,8 +7,8 @@ Date: 2026-11-09
 
 ## Status
 
-Accepted. Amends 0108: in the mechanical, ordinary size and above 150 changed lines rules, the Claude candidates come first, then Muse, then Terra where the rule lists it.
-Amended by 0110: the ambiguous, investigation and unknown-cause rules list Fable 5.2 ahead of Opus 5.5.
+Superseded by 0111, which keeps one dispatch file for the one Mac firstmate home.
+What follows is left as it was written.
 
 ## Context
 

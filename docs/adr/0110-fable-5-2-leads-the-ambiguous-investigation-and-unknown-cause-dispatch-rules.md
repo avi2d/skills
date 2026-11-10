@@ -1,5 +1,5 @@
 ---
-governs: [src/generate/crew-dispatch-config.ts, src/generate/crew-dispatch.ts, selection.toml, harness/firstmate/crew-dispatch.json, harness/firstmate/crew-dispatch.mac.json, tests/unit/crew-dispatch.test.ts, harness/pi/settings.json]
+governs: [src/generate/crew-dispatch-config.ts, src/generate/crew-dispatch.ts, selection.toml, harness/firstmate/crew-dispatch.json, tests/unit/crew-dispatch.test.ts, harness/pi/settings.json]
 ---
 # 110. Fable 5.2 leads the ambiguous, investigation and unknown-cause dispatch rules
 
@@ -7,7 +7,8 @@ Date: 2026-11-10
 
 ## Status
 
-Accepted. Amends 0109: the ambiguous, bounded investigation and unknown-cause rules list Fable 5.2 at high ahead of the Opus 5.5 pair.
+Superseded by 0111, which keeps one dispatch file for the one Mac firstmate home.
+What follows is left as it was written.
 
 ## Context
 

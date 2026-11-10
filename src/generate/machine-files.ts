@@ -2,20 +2,13 @@ import { Effect, Option, type FileSystem } from "effect";
 import type { FileFailure, MalformedMachineConfig } from "../platform/failures";
 import { attempt, unlessAbsent } from "../platform/files";
 import { crewDispatchJson } from "./crew-dispatch";
-import { crewDispatchOf } from "./crew-dispatch-config";
+import { CREW_DISPATCH_RULES } from "./crew-dispatch-config";
 import { FIRSTMATE_PINS } from "./firstmate-pins";
-import { MACHINES, type Machine } from "./machine";
 
-export const CREW_DISPATCH: Readonly<Record<Machine, string>> = {
-  mac: "harness/firstmate/crew-dispatch.mac.json",
-  windows: "harness/firstmate/crew-dispatch.json",
-};
+export const CREW_DISPATCH = "harness/firstmate/crew-dispatch.json";
 
 export const machineFiles = Effect.fnUntraced(function* (): Effect.fn.Return<ReadonlyMap<string, string>, MalformedMachineConfig> {
-  const files = new Map<string, string>();
-  for (const machine of MACHINES) {
-    files.set(CREW_DISPATCH[machine], yield* crewDispatchJson(crewDispatchOf(machine)));
-  }
+  const files = new Map<string, string>([[CREW_DISPATCH, yield* crewDispatchJson(CREW_DISPATCH_RULES)]]);
   for (const [rel, text] of Object.entries(FIRSTMATE_PINS)) files.set(rel, text);
   return files;
 });

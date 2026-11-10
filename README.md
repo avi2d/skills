@@ -70,7 +70,7 @@ To see what fired:
 | `library/<domain>/skills/`, `library/<domain>/references/` | the other two Kinds of Body |
 | `selection.toml` | the Rule, Skill and Reference lists of the default Profile, and each model Profile's Rule additions and removals against it, with optional tool limits, and in `default_models` the models that run the default Profile on purpose |
 | `src/dispatcher/` | one Dispatcher adapter per harness, the dispatch core, and every other module a Dispatcher bundle ships |
-| `src/generate/` | the generator, which writes the bundles, the dispatch index, the Hub and each machine's firstmate and no-mistakes files, and the linker |
+| `src/generate/` | the generator, which writes the bundles, the dispatch index, the Hub and the firstmate and no-mistakes files, and the linker |
 | `src/bodies/` | what reads the Bodies and `selection.toml` |
 | `src/eval/` | what `bun run eval` runs to measure a Rule |
 | `src/context/` | what `bun run context-index` and `bun run context-report` run to read the opening context of stored sessions |

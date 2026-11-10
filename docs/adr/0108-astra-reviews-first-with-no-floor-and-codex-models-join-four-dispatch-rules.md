@@ -1,5 +1,5 @@
 ---
-governs: [src/generate/no-mistakes-config.ts, src/generate/crew-dispatch-config.ts, src/generate/crew-dispatch.ts, harness/firstmate/crew-dispatch.json, harness/firstmate/crew-dispatch.mac.json, tests/unit/crew-dispatch.test.ts, tests/unit/machine-files.test.ts]
+governs: [src/generate/no-mistakes-config.ts, src/generate/crew-dispatch-config.ts, src/generate/crew-dispatch.ts, harness/firstmate/crew-dispatch.json, tests/unit/crew-dispatch.test.ts, tests/unit/machine-files.test.ts]
 ---
 # 108. Astra reviews first with no floor, and Codex models join four dispatch rules
 
@@ -7,9 +7,9 @@ Date: 2026-11-08
 
 ## Status
 
-Accepted.
+Superseded by 0111, which keeps one dispatch file for the one Mac firstmate home.
 Amends 0102: the reviewer chain runs Astra on Codex first, then Opus on the account main, then Opus on the account second, and no entry carries a floor.
-Amended by 0109: the three implementation rules list the Claude candidates first, with Muse and then Terra after them.
+What follows is left as it was written.
 
 ## Context
 

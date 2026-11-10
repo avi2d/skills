@@ -4,10 +4,9 @@ import { cp, mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { TASK_KINDS, crewDispatchJson, type Profile } from "../../src/generate/crew-dispatch";
-import { crewDispatchOf } from "../../src/generate/crew-dispatch-config";
+import { CREW_DISPATCH_RULES } from "../../src/generate/crew-dispatch-config";
 import { generated } from "../../src/generate/generate";
 import { REPO } from "../../src/generate/link";
-import { MACHINES } from "../../src/generate/machine";
 import { FIRSTMATE_PINS } from "../../src/generate/firstmate-pins";
 import { CREW_DISPATCH, machineDrift, machineFiles } from "../../src/generate/machine-files";
 import { noMistakesConfigOf, noMistakesConfigUnder, noMistakesYaml, yamlOf } from "../../src/generate/no-mistakes-config";
@@ -24,7 +23,7 @@ test("the drift check names a machine file edited by hand", async () => {
   const repo = `${await mkdtemp(join(tmpdir(), "skills-machine-files-"))}/`;
   try {
     for (const rel of (await valueOf(machineFiles())).keys()) await cp(`${REPO}${rel}`, `${repo}${rel}`);
-    const edited = CREW_DISPATCH.windows;
+    const edited = CREW_DISPATCH;
     await Bun.write(`${repo}${edited}`, (await Bun.file(`${repo}${edited}`).text()).replace('"effort": "low"', '"effort": "xhigh"'));
     expect(await valueOf(machineDrift(repo))).toEqual([`${edited} differs from what \`bun run generate\` writes`]);
   } finally {
@@ -39,9 +38,9 @@ const decodeWritten = Schema.decodeUnknownSync(
   { onExcessProperty: "error" },
 );
 
-test.each([...MACHINES])("the %s crew dispatch file carries each rule's when and use, and no description or why", async (machine) => {
-  const written = decodeWritten(await valueOf(crewDispatchJson(crewDispatchOf(machine))));
-  const source = crewDispatchOf(machine);
+test("the crew dispatch file carries each rule's when and use, and no description or why", async () => {
+  const written = decodeWritten(await valueOf(crewDispatchJson(CREW_DISPATCH_RULES)));
+  const source = CREW_DISPATCH_RULES;
   expect(written.rules).toEqual([
     ...source.rules.map(({ kind, use }) => ({ when: TASK_KINDS[kind].when, use })),
     ...source.ownRules.map(({ when, use }) => ({ when, use })),
@@ -53,15 +52,15 @@ const Models = Schema.Array(Schema.Struct({ model: Schema.String }));
 
 const decodeModels = Schema.decodeUnknownSync(Schema.fromJsonString(Schema.Struct({ rules: Schema.Array(Schema.Struct({ use: Models })), default: Models })));
 
-test.each([...MACHINES])("no profile in the committed %s crew dispatch file names GPT-6 Luna", async (machine) => {
-  const written = decodeModels(await Bun.file(`${REPO}${CREW_DISPATCH[machine]}`).text());
+test("no profile in the committed crew dispatch file names GPT-6 Luna", async () => {
+  const written = decodeModels(await Bun.file(`${REPO}${CREW_DISPATCH}`).text());
   const profiles = [...written.rules.flatMap(({ use }) => use), ...written.default];
   expect(profiles.length).toBeGreaterThan(0);
   expect(profiles.map(({ model }) => model).filter((model) => model.includes("gpt-6-luna"))).toEqual([]);
 });
 
 const withFirstProfile = (change: (profile: Record<string, unknown>) => Record<string, unknown>) => {
-  const source = crewDispatchOf("windows");
+  const source = CREW_DISPATCH_RULES;
   const [first, ...rest] = source.rules;
   if (first === undefined) return expect.unreachable("the source holds no rule");
   const [profile, ...others] = first.use;
@@ -105,7 +104,7 @@ const withoutClaudeAccount = (profile: Profile): Profile | Record<string, unknow
 };
 
 test("generation refuses a Claude profile with no claude_account, which leaves firstmate no login to launch", async () => {
-  const source = crewDispatchOf("windows");
+  const source = CREW_DISPATCH_RULES;
   const [first, ...rest] = source.rules;
   if (first === undefined) return expect.unreachable("the source holds no rule");
   const use = first.use.map(withoutClaudeAccount);
@@ -113,7 +112,7 @@ test("generation refuses a Claude profile with no claude_account, which leaves f
 });
 
 test("generation refuses a claude_account other than main or second, which every Claude spawn carries", async () => {
-  const source = crewDispatchOf("windows");
+  const source = CREW_DISPATCH_RULES;
   const [first, ...rest] = source.rules;
   if (first === undefined) return expect.unreachable("the source holds no rule");
   const use = first.use.map((profile) =>
@@ -127,7 +126,7 @@ test("generation refuses a claude_account on a Muse profile, which spends OpenCo
 });
 
 test("generation refuses a floor on a profile other than Haiku 5.5 and Muse", async () => {
-  const source = crewDispatchOf("windows");
+  const source = CREW_DISPATCH_RULES;
   const [first, ...rest] = source.rules;
   if (first === undefined) return expect.unreachable("the source holds no rule");
   const use = first.use.map((profile) => (profile.model.startsWith("claude-bridge/claude-opus") ? { ...profile, floor: { scope: "all_models", min_percent: 15 } } : profile));
@@ -135,12 +134,12 @@ test("generation refuses a floor on a profile other than Haiku 5.5 and Muse", as
 });
 
 test("generation refuses a rule that names no profile", async () => {
-  const source = crewDispatchOf("mac");
+  const source = CREW_DISPATCH_RULES;
   expect(await saidBy(crewDispatchJson({ ...source, rules: source.rules.map((rule) => ({ ...rule, use: [] })) }))).toMatch(/use/);
 });
 
 const kindRule = (rule: Record<string, unknown>) => {
-  const source = crewDispatchOf("windows");
+  const source = CREW_DISPATCH_RULES;
   return { ...source, rules: [rule, ...source.rules.slice(1)] };
 };
 
@@ -157,8 +156,8 @@ test.each([
 
 const NAMES_A_PROFILE = /\b(opus|haiku|muse|spark|luna|sol|deepseek|claude|gpt|codex|low|medium|high|xhigh|max|effort)\b/i;
 
-test.each([...MACHINES])("no rule description on the %s machine names a model or an effort, which its use list already says", (machine) => {
-  const { rules, ownRules } = crewDispatchOf(machine);
+test("no rule description names a model or an effort, which its use list already says", () => {
+  const { rules, ownRules } = CREW_DISPATCH_RULES;
   const descriptions = [...rules.map(({ kind }) => TASK_KINDS[kind].description), ...ownRules.map(({ description }) => description)];
   expect(descriptions.length).toBeGreaterThan(0);
   expect(descriptions.filter((description) => NAMES_A_PROFILE.test(description))).toEqual([]);
@@ -244,7 +243,6 @@ test("a string the YAML writer emits keeps a character YAML would read as syntax
 });
 
 test.each([
-  ["harness/firstmate/secondmate-harness", "pi claude-bridge/claude-sonnet-5-5 high"],
   ["harness/firstmate/supervision-branch-model", "opencode-go/muse-spark-1.3-contributor"],
   ["harness/firstmate/supervision-branch-effort", "high"],
 ])("the committed %s holds today's pin %s", async (rel, pin) => {
@@ -252,10 +250,9 @@ test.each([
   expect(await Bun.file(`${REPO}${rel}`).text()).toBe(`${pin}\n`);
 });
 
-test("secondmate harness is sonnet, and the supervision branch pins the Muse candidate of the small rule", () => {
-  expect(FIRSTMATE_PINS["harness/firstmate/secondmate-harness"]?.trim()).toBe("pi claude-bridge/claude-sonnet-5-5 high");
-  const small = crewDispatchOf("mac").rules.find((rule) => rule.kind === "small");
-  if (small === undefined) return expect.unreachable("the mac source holds no small rule");
+test("the supervision branch pins the Muse candidate of the small rule", () => {
+  const small = CREW_DISPATCH_RULES.rules.find((rule) => rule.kind === "small");
+  if (small === undefined) return expect.unreachable("the source holds no small rule");
   const museCandidate = small.use.find((profile) => profile.model.startsWith("opencode-go/muse-spark"));
   if (museCandidate === undefined) return expect.unreachable("the small rule holds no Muse candidate");
   expect(FIRSTMATE_PINS["harness/firstmate/supervision-branch-model"]?.trim()).toBe(museCandidate.model);
