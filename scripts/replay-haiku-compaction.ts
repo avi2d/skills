@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 import { Config, Console, Effect, FileSystem, Path } from "effect";
 import type { ModelRegistry } from "@earendil-works/pi-coding-agent";
-import { NO_PRIOR_HISTORY, conversationOf, historyPromptOf, isMuseSession, turnPrefixPromptOf } from "../harness/pi/extensions/haiku-compaction";
+import { NO_PRIOR_HISTORY, conversationOf, historyConversationOf, historyPromptOf, isMuseSession, turnPrefixPromptOf } from "../harness/pi/extensions/haiku-compaction";
 import { registryOf, resolveModel, runArm, type Model } from "./replay-haiku-compaction/models";
 import { runMain } from "@avi2dg/checks/core/main.ts";
 import {
@@ -140,9 +140,12 @@ export function userTextOf(messages: readonly { readonly role: string; readonly 
   return messages.filter((message) => message.role === "user").map(messageText).join("\n");
 }
 
-function promptFor(c: ReplayCase, keepUrls: boolean): { historyPrompt: string | undefined; prefixPrompt: string | undefined } {
-  const historyPrompt = c.history.length > 0 ? historyPromptOf(conversationOf(c.history), c.previousSummary, undefined, keepUrls) : undefined;
-  const prefixPrompt = c.split && c.prefix.length > 0 ? turnPrefixPromptOf(conversationOf(c.prefix), keepUrls) : undefined;
+type PromptStyle = { readonly keepUrls: boolean; readonly hideToolOutput: boolean };
+
+function promptFor(c: ReplayCase, style: PromptStyle): { historyPrompt: string | undefined; prefixPrompt: string | undefined } {
+  const history = style.hideToolOutput ? historyConversationOf(c.history) : conversationOf(c.history);
+  const historyPrompt = c.history.length > 0 ? historyPromptOf(history, c.previousSummary, undefined, style.keepUrls) : undefined;
+  const prefixPrompt = c.split && c.prefix.length > 0 ? turnPrefixPromptOf(conversationOf(c.prefix), style.keepUrls) : undefined;
   return { historyPrompt, prefixPrompt };
 }
 
@@ -204,10 +207,10 @@ function runCase(
   reference: Model | undefined,
   c: ReplayCase,
   maxOutputTokens: number,
-  keepUrls: boolean,
+  style: PromptStyle,
 ): Effect.Effect<CaseReport, ModelError> {
   return Effect.gen(function* () {
-    const { historyPrompt, prefixPrompt } = promptFor(c, keepUrls);
+    const { historyPrompt, prefixPrompt } = promptFor(c, style);
     const arms = yield* runSummaryArms(registry, candidate, reference, historyPrompt, prefixPrompt, maxOutputTokens);
     yield* Console.log(caseKey(c.dir, c.file, c.index) + " cost candidate=" + arms.candidateCost.toFixed(4) + " reference=" + arms.referenceCost.toFixed(4));
     const historyFallback = c.split && c.history.length === 0 ? (c.previousSummary ?? NO_PRIOR_HISTORY) : undefined;
@@ -263,10 +266,10 @@ function caseReportOf(c: ReplayCase, sourceText: string, captainText: string, ou
     };
 }
 
-function estimatePromptChars(cases: readonly ReplayCase[], keepUrls: boolean): number {
+function estimatePromptChars(cases: readonly ReplayCase[], style: PromptStyle): number {
   let promptChars = 0;
   for (const c of cases) {
-    const { historyPrompt, prefixPrompt } = promptFor(c, keepUrls);
+    const { historyPrompt, prefixPrompt } = promptFor(c, style);
     promptChars += (historyPrompt ?? "").length + (prefixPrompt ?? "").length;
   }
   return promptChars;
@@ -295,14 +298,14 @@ function runAllCases(
   reference: Model | undefined,
   cases: readonly ReplayCase[],
   maxOutputTokens: number,
-  keepUrls: boolean,
+  style: PromptStyle,
 ): Effect.Effect<RunOutcome, ModelError | ReadError | ArgsError> {
   return Effect.gen(function* () {
     const done: CaseReport[] = [];
     const failures: { case: string; arm: string; error: string }[] = [];
     for (const c of cases) {
       const key = caseKey(c.dir, c.file, c.index);
-      const report = yield* runCase(registry, candidate, reference, c, maxOutputTokens, keepUrls).pipe(
+      const report = yield* runCase(registry, candidate, reference, c, maxOutputTokens, style).pipe(
         Effect.catch((cause) =>
           Effect.gen(function* () {
             failures.push({ case: key, arm: "case", error: cause.message });
@@ -336,8 +339,8 @@ const main = Effect.gen(function* () {
   const cases = yield* collectCases(fs, path, args);
   yield* Console.log(NAME + ": " + String(cases.length) + " usable " + args.sessionModel + " compaction case(s)");
   const [sessionProvider, sessionId] = splitModelRef(args.sessionModel);
-  const keepUrls = isMuseSession({ provider: sessionProvider, id: sessionId });
-  const promptChars = estimatePromptChars(cases, keepUrls);
+  const style = { keepUrls: isMuseSession({ provider: sessionProvider, id: sessionId }), hideToolOutput: !args.unmasked };
+  const promptChars = estimatePromptChars(cases, style);
   yield* Console.log(NAME + ": rebuilt prompt input ~" + String(Math.round(promptChars / 4)) + " tokens across " + String(cases.length) + " case(s)");
   if (args.dryRun) return yield* logDryRun(cases);
   const againstRecorded = args.reference === RECORDED_REFERENCE;
@@ -350,7 +353,7 @@ const main = Effect.gen(function* () {
   const candidate = yield* resolveModel(registry, args.candidate);
   const reference = againstRecorded ? undefined : yield* resolveModel(registry, args.reference);
   yield* Console.log(NAME + ": candidate " + args.candidate + ", reference " + args.reference);
-  const { done, failures } = yield* runAllCases(registry, candidate, reference, cases, args.maxOutputTokens, keepUrls);
+  const { done, failures } = yield* runAllCases(registry, candidate, reference, cases, args.maxOutputTokens, style);
   const summary = summarizeResults(done);
   return yield* finishLiveRun(fs, path, args, done, failures, summary);
 }).pipe(Effect.scoped);
