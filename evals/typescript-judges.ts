@@ -182,7 +182,7 @@ export const noSchemaTwin: ProgramJudge = {
         refusals.push(...read.refusals.filter((refusal) => refusal.includes(TWIN)));
       }
       if (refusals.length > 0) return { passed: false, evidence: refusals };
-      if (unread.length > 0) return { unjudged: `the twin lint could not read ${unread.join("; ")}` };
+      if (unread.length > 0) return { unjudged: `the twin lint gave no verdict: ${unread.join("; ")}` };
       return { passed: true, evidence: [`${code.length} changed TypeScript file(s) repeat no schema's fields: ${code.map((c) => c.path).join(", ")}`] };
     } finally {
       rmSync(project, { recursive: true, force: true });
