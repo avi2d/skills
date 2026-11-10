@@ -24,6 +24,10 @@
         "reserveTokens": 850000,
         "keepRecentTokens": 10000
       },
+      "claude-bridge/claude-fable-5-2": {
+        "reserveTokens": 850000,
+        "keepRecentTokens": 10000
+      },
       "claude-bridge/claude-opus-5": {
         "reserveTokens": 850000,
         "keepRecentTokens": 10000
