@@ -167,8 +167,17 @@ test("a save by a command chained around the slow one does not count as the slow
 test("a save by an unrelated chained command does not count on the default path", () => {
   expect(savesStdout("echo start > /tmp/marker; npm test 2>&1 | tail -3")).toBe(false);
   expect(savesStdout("npm test | tail -3; echo ok > /tmp/flag")).toBe(false);
+  expect(savesStdout("npm run build > /tmp/build.log 2>&1; npm test 2>&1 | tail -30")).toBe(false);
+  expect(savesStdout("git diff > /tmp/patch.diff; npm test 2>&1 | tail -30")).toBe(false);
+  expect(savesStdout("cat > /tmp/t.test.ts <<'EOF'\nimport { test } from \"bun:test\"\nEOF\nbun test /tmp/t.test.ts 2>&1 | tail -20")).toBe(false);
   expect(savesStdout("npm test > /tmp/full.log 2>&1")).toBe(true);
   expect(savesStdout("npm test > /tmp/full.log 2>&1; echo done")).toBe(true);
+});
+
+test("an unsaved build-then-test run still allows its fully saved rerun", () => {
+  const first = "npm run build > /tmp/build.log 2>&1; npm test 2>&1 | tail -30";
+  const saved = "npm run build > /tmp/build.log 2>&1; npm test > /tmp/test.log 2>&1";
+  expect(after([call(first), result(first, 400), call(saved)]).refused).toEqual([]);
 });
 
 test("only an output sent to a real file counts as saved", () => {

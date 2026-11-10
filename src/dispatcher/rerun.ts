@@ -262,13 +262,17 @@ const pipelineSaves = (command: string, inside: readonly boolean[], pipeline: re
 
 const TRIVIAL_PROGRAMS = new Set(["echo", "printf", "cd", "true", ":"]);
 
-const runsNonTrivial = (words: readonly string[]): boolean => !TRIVIAL_PROGRAMS.has(programOf(words[0]));
+const firstProgram = (pipeline: readonly AnalyzedStage[]): string => programOf(pipeline[0]?.words[0]);
 
-export const savesStdout = (command: string, runsSlow: (words: readonly string[]) => boolean = runsNonTrivial): boolean => {
+export const savesStdout = (command: string, runsSlow?: (words: readonly string[]) => boolean): boolean => {
   const inside = quoted(command);
-  return pipelines(analyze(command)).some(
-    (pipeline) => pipeline.some((stage) => runsSlow(stage.words)) && pipelineSaves(command, inside, pipeline),
-  );
+  const lines = pipelines(analyze(command));
+  if (runsSlow !== undefined) {
+    return lines.some((pipeline) => pipeline.some((stage) => runsSlow(stage.words)) && pipelineSaves(command, inside, pipeline));
+  }
+  const significant = lines.filter((pipeline) => !TRIVIAL_PROGRAMS.has(firstProgram(pipeline)) && !OUTPUT_FILTERS.has(firstProgram(pipeline)));
+  const last = significant.at(-1);
+  return last !== undefined && pipelineSaves(command, inside, last);
 };
 
 export const checkedRerun = (event: ToolCall, state: RunState): { refused?: RerunRefused; state: RunState } => {
