@@ -1,3 +1,6 @@
+---
+governs: [src/generate/link.ts, tests/unit/link.test.ts]
+---
 # 20. A path $HOME took from here is retired, rather than forgotten
 
 Date: 2026-09-14
@@ -7,6 +10,8 @@ Date: 2026-09-14
 Accepted. Records `RETIRED` in `src/link.ts` and the ownership check in
 `tests/link.test.ts`. Amends docs/adr/0004, which said the linker owns
 nothing it is not currently told about, and left no way to say "no longer".
+
+Amended by 0112: the dispatch rules path and the two supervision pin paths leave the map without moving to `RETIRED`.
 
 ## Context
 

@@ -6,10 +6,7 @@ import { FileFailure, fileFailure } from "../platform/failures";
 import { attempt, entryAt, outputOf, unlessAbsent } from "../platform/files";
 import { checkout, tally } from "./generate";
 import { hubUnder } from "./hub";
-import { SUPERVISION_BRANCH_EFFORT, SUPERVISION_BRANCH_MODEL } from "./firstmate-pins";
-import { CREW_DISPATCH } from "./machine-files";
 import { noMistakesConfigUnder } from "./no-mistakes-config";
-import { machineOn, type Machine } from "./machine";
 import { piLoads, type PiLoad } from "./preflight";
 import { installScanner } from "./secret-scanner";
 import { main } from "../platform/platform";
@@ -35,7 +32,7 @@ export type LinkMap = Readonly<Record<string, string>>;
 
 const CLAUDE_CODE_SETTINGS = "harness/claude-code/settings.json";
 
-export const linksUnder = (root: string, machine: Machine): LinkMap => ({
+export const linksUnder = (root: string): LinkMap => ({
   ".claude/settings.json": CLAUDE_CODE_SETTINGS,
   ".codex/hooks.json": "harness/codex/hooks.json",
   ".pi/agent/claude-bridge.json": "harness/pi/claude-bridge.json",
@@ -55,20 +52,11 @@ export const linksUnder = (root: string, machine: Machine): LinkMap => ({
   ".claude/skills": hubUnder(root),
   ".claude/skills-dispatch": `${root}/claude-code/dispatcher`,
   ".codex/skills-dispatch": `${root}/codex/dispatcher`,
-  ...(machine === "mac"
-    ? {
-        "Projects/firstmate/config/crew-dispatch.json": CREW_DISPATCH,
-        "Projects/firstmate/config/supervision-branch-model": SUPERVISION_BRANCH_MODEL,
-        "Projects/firstmate/config/supervision-branch-effort": SUPERVISION_BRANCH_EFFORT,
-      }
-    : {}),
   ".no-mistakes/config.yaml": noMistakesConfigUnder(root),
   ".orc/orchestrator.md": "harness/orc/orchestrator.md",
 });
 
-export const MACHINE = machineOn(platform());
-
-export const LINKS = linksUnder(DEFAULT_GENERATED_ROOT, MACHINE);
+export const LINKS = linksUnder(DEFAULT_GENERATED_ROOT);
 
 export type Merge = { readonly from: string; readonly ownKeys: readonly string[] };
 
@@ -258,7 +246,7 @@ const placed = Effect.fnUntraced(function* (repo: string, home: string): Effect.
   }
   yield* refuseAccountHomeFromWorktree(repo, home);
   const { claudeConfigDirs = [] } = yield* yield* UserConfigSource;
-  for (const [rel, target] of Object.entries(linksUnder(yield* readGeneratedRoot, MACHINE))) {
+  for (const [rel, target] of Object.entries(linksUnder(yield* readGeneratedRoot))) {
     outcomes.push({ home: rel, state: yield* linked(`${home}/${rel}`, `${repo}${target}`) });
   }
   for (const [rel, merge] of Object.entries(MERGED)) outcomes.push(yield* merged(repo, home, rel, merge));
