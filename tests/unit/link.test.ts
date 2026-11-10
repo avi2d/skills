@@ -277,6 +277,7 @@ test("pi compacts each claude-bridge model and each per-token worker model at ab
     shouldCompact(tokens, contextWindow, settings.getCompactionSettings({ provider: "claude-bridge", id }));
   for (const claude of [
     getBuiltinModel("anthropic", "claude-fable-5-1"),
+    getBuiltinModel("anthropic", "claude-fable-5-2"),
     getBuiltinModel("anthropic", "claude-opus-5"),
     getBuiltinModel("anthropic", "claude-opus-5-5"),
     getBuiltinModel("anthropic", "claude-sonnet-5"),

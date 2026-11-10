@@ -40,6 +40,7 @@ model pays for it out of the plan's five-hour window, so both compact near
 | key | point | reserveTokens |
 | --- | --- | --- |
 | `claude-bridge/claude-fable-5-1` | 150,000 | 1,000,000 - 150,000 = 850,000 |
+| `claude-bridge/claude-fable-5-2` | 150,000 | 1,000,000 - 150,000 = 850,000 |
 | `claude-bridge/claude-opus-5` | 150,000 | 1,000,000 - 150,000 = 850,000 |
 | `claude-bridge/claude-opus-5-5` | 150,000 | 1,000,000 - 150,000 = 850,000 |
 | `claude-bridge/claude-sonnet-5` | 150,000 | 1,000,000 - 150,000 = 850,000 |

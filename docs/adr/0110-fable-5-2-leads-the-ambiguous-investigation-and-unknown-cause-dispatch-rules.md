@@ -1,5 +1,5 @@
 ---
-governs: [src/generate/crew-dispatch-config.ts, src/generate/crew-dispatch.ts, selection.toml, harness/firstmate/crew-dispatch.json, harness/firstmate/crew-dispatch.mac.json, tests/unit/crew-dispatch.test.ts]
+governs: [src/generate/crew-dispatch-config.ts, src/generate/crew-dispatch.ts, selection.toml, harness/firstmate/crew-dispatch.json, harness/firstmate/crew-dispatch.mac.json, tests/unit/crew-dispatch.test.ts, harness/pi/settings.json]
 ---
 # 110. Fable 5.2 leads the ambiguous, investigation and unknown-cause dispatch rules
 
@@ -26,3 +26,4 @@ Firstmate reaches Fable 5.2 for these three kinds of work whenever an account is
 Routine work never names Fable 5.2.
 Fable 5.2 has no floor and runs only at high, as Opus 5.5 does here.
 `selection.toml` gains a profile for the model, because `tests/unit/selection-models.test.ts` requires every model a generated config names to run from a profile.
+`harness/pi/settings.json` gains the Fable 5.2 override, so its crew sessions compact at 150,000 and keep a 10,000-token tail.
