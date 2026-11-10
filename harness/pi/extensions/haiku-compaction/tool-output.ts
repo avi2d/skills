@@ -4,9 +4,24 @@ import type { AgentMessage } from "@earendil-works/pi-agent-core";
 
 const TOOL_OUTPUT_STUB_MIN_CHARS = 100;
 
+function balancedParens(url: string): string {
+  let open = 0;
+  let close = 0;
+  for (const char of url) {
+    if (char === "(") open += 1;
+    else if (char === ")") close += 1;
+  }
+  let kept = url;
+  while (kept.endsWith(")") && close > open) {
+    kept = kept.slice(0, -1);
+    close -= 1;
+  }
+  return kept;
+}
+
 function urlsOf(text: string): string[] {
-  const found = text.match(/https?:\/\/[^\s<>\])"'`*]+/g) ?? [];
-  return [...new Set(found.map((url) => url.replace(/[.,;:!?*`]+$/, "")))];
+  const found = text.match(/https?:\/\/[^\s<>\]"'`*]+/g) ?? [];
+  return [...new Set(found.map((url) => balancedParens(url.replace(/[.,;:!?*`]+$/, ""))))];
 }
 
 function toolOutputStubOf(chars: number, urls: readonly string[]): string {

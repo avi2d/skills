@@ -461,6 +461,14 @@ describe("haiku-compaction", () => {
     expect(history).not.toContain("api**");
   });
 
+  test("a stubbed result keeps a URL with balanced parentheses whole", async () => {
+    const body = `${"search results ".repeat(20)}https://en.wikipedia.org/wiki/Rust_(programming_language) and [docs](https://example.com/api)`;
+    const [history] = await promptsSent(eventOf([userOf("search the web"), readCallOf("web.txt"), readResultOf("web.txt", body)]));
+    expect(history).toContain("https://en.wikipedia.org/wiki/Rust_(programming_language)");
+    expect(history).toContain("https://example.com/api");
+    expect(history).not.toContain("api)");
+  });
+
   test("a result with no text leaves Haiku no stub line instead of a zero-char stub", async () => {
     const shot: AgentMessage = {
       role: "toolResult",
