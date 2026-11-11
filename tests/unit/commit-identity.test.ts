@@ -104,6 +104,10 @@ test.each([
   "d=$(mktemp -d /tmp/fixture.XXXXXX); cd \"$d\"; git -c user.name=t commit -m x",
   "R=$(mktemp -d); G=$R/repo; mkdir -p $G && cd $G && git init -q && git -c user.name=t commit -m x",
   "G=/tmp/x/repo; git -C $G -c user.name=t -c user.email=t@example.com commit -m x",
+  "tmp=$(mktemp -d); cp /tmp/seed $tmp/ && cd $tmp && git init -q && git -c user.name=t commit -m x",
+  "d=$(mktemp -d /tmp/d.XXXX); cd $d && git -c user.name=t commit -m x",
+  "repo=$(mktemp -d); cd \"$repo\" && git init -q && git -c user.name=t commit -m \"init repo\"",
+  "t=$(mktemp -d); cd $t && git init -q && git -c user.name=t commit -m x",
 ])("a commit into a temp directory held in a shell variable stays exempt: %s", (command) => {
   expect(refused(command)).toBeUndefined();
 });
@@ -143,6 +147,11 @@ test.each([
   "d=/tmp/x; source ./f; git -C $d -c user.name=t commit -m x",
   "d=/tmp/x; . ./f; git -C $d -c user.name=t commit -m x",
   "d=$(mktemp -d); eval \"$(cat f)\"; git -C $d -c user.name=t commit -m x",
+  "d=/tmp/x & git -C \"$d\" -c user.name=t commit -m x",
+  "d=$(mktemp -d) & git -C \"$d\" -c user.name=t commit -m x",
+  "true; d=/tmp/x & git -C \"$d\" -c user.name=t commit -m x",
+  "export d=/tmp/x & git -C \"$d\" -c user.name=t commit -m x",
+  "d=$(mktemp -d); cd \"$d\" & git -c user.name=t commit -m x",
   "git -c user.name=\"$(git config user.name)\" -c user.email=\"$(git config user.email)\" commit -m x",
 ])("a variable that does not resolve into the temp directory leaves the commit refused: %s", (command) => {
   expect(refused(command)).toBe(COMMIT_IDENTITY_REFUSAL);

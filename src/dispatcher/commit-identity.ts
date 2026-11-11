@@ -216,13 +216,24 @@ const gapHasBlocker = (
   return false;
 };
 
+const unquoted = (word: string): string =>
+  word.length > 1 && ((word.startsWith("\"") && word.endsWith("\"")) || (word.startsWith("'") && word.endsWith("'")))
+    ? word.slice(1, -1)
+    : word;
+
 const wordMentionsName = (word: string, name: string): boolean => {
-  if (word.startsWith("-")) return false;
-  const rest = word
-    .replace(new RegExp("\\$\\{" + name + "\\}", "g"), "")
-    .replace(new RegExp("\\$\\{" + name + "(?::)?[-+#?%^/][^}]*\\}", "g"), "")
-    .replace(new RegExp("\\$" + name + "\\b", "g"), "");
-  return new RegExp("(^|[^A-Za-z0-9_])" + name + "($|[^A-Za-z0-9_])").test(rest);
+  const bare = unquoted(word);
+  return bare === name || bare.startsWith(name + "=") || bare.startsWith(name + "+=") || bare.startsWith(name + "[");
+};
+
+const commandEndsBackgrounded = (stages: readonly SplitStage[], index: number): boolean => {
+  for (let s = index + 1; s < stages.length; s += 1) {
+    const gap = (stages[s]?.gap ?? "").replace(/&&|&>|>&|\|&/g, "");
+    const cut = gap.search(/[;\n|&]/);
+    if (cut === -1) continue;
+    return gap[cut] === "&";
+  }
+  return false;
 };
 
 const unstableVars = (
@@ -406,11 +417,12 @@ const commitDirs = (stages: readonly SplitStage[], command: string, cwd: string,
     const words = stage.words.map((word) => expandVars(word, track.vars));
     const bare = withoutEnv(words);
     const next = stages[index + 1];
-    const piped = isPipeGap(stage.gap) || (next !== undefined && isPipeGap(next.gap));
-    if (recordMktemp(track, command, stage, piped) || applyCd(track, words, bare, piped, home, index)) continue;
-    if (bare[0] === "export") recordExports(track, bare, piped);
+    const behind = commandEndsBackgrounded(stages, index);
+    const inert = behind || isPipeGap(stage.gap) || (next !== undefined && isPipeGap(next.gap));
+    if (recordMktemp(track, command, stage, inert) || applyCd(track, words, bare, inert, home, index)) continue;
+    if (bare[0] === "export") recordExports(track, bare, inert);
     else if (isAssignmentStage(words)) {
-      recordAssignments(track, words, piped);
+      recordAssignments(track, words, inert);
       continue;
     }
     const found = commitDirFor(track, words, bare, index, stages, home);
