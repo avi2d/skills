@@ -150,6 +150,53 @@ test("only relevant stdout sent to a real file counts as saved", () => {
   expect(savesStdout('echo "a > b"')).toBe(false);
 });
 
+test("a save of the slow command is not lost to a command chained after it", () => {
+  expect(savesStdout("bash tools/stock-take.sh > /tmp/stock-take.log 2>&1; echo EXIT:$?")).toBe(true);
+  expect(savesStdout("bash tools/stock-take.sh >/tmp/stock.log 2>&1 && echo done")).toBe(true);
+});
+
+test("on the default path a later nontrivial command, not the earlier save, decides", () => {
+  expect(savesStdout('cd /repo && bash tools/stock-take.sh > /tmp/stock-take.out 2>&1; echo "exit=$?"; wc -l /tmp/stock-take.out')).toBe(false);
+});
+
+test("a save by a command chained around the slow one does not count as the slow one saving", () => {
+  const stockTake = (words: readonly string[]): boolean => words.includes("tools/stock-take.sh");
+  expect(savesStdout('cd /repo && bash tools/stock-take.sh; echo "EXIT=$?"', stockTake)).toBe(false);
+  expect(savesStdout("echo start > /tmp/marker; bash tools/stock-take.sh 2>&1 | tail -3", stockTake)).toBe(false);
+  expect(savesStdout("bash tools/stock-take.sh | tail -3; wc -l /tmp/old.log > /tmp/count", stockTake)).toBe(false);
+  expect(savesStdout("echo start > /tmp/marker; bash tools/stock-take.sh > /tmp/stock.log", stockTake)).toBe(true);
+});
+
+test("a save by an unrelated chained command does not count on the default path", () => {
+  expect(savesStdout("echo start > /tmp/marker; npm test 2>&1 | tail -3")).toBe(false);
+  expect(savesStdout("npm test | tail -3; echo ok > /tmp/flag")).toBe(false);
+  expect(savesStdout("npm run build > /tmp/build.log 2>&1; npm test 2>&1 | tail -30")).toBe(false);
+  expect(savesStdout("git diff > /tmp/patch.diff; npm test 2>&1 | tail -30")).toBe(false);
+  expect(savesStdout("cat > /tmp/t.test.ts <<'EOF'\nimport { test } from \"bun:test\"\nEOF\nbun test /tmp/t.test.ts 2>&1 | tail -20")).toBe(false);
+  expect(savesStdout("npm test > /tmp/full.log 2>&1")).toBe(true);
+  expect(savesStdout("npm test > /tmp/full.log 2>&1; echo done")).toBe(true);
+  expect(savesStdout("rg -n TODO /big/monorepo > /tmp/rg.log")).toBe(true);
+  expect(savesStdout("grep -rn foo . > /tmp/grep.log 2>&1")).toBe(true);
+  expect(savesStdout("sort -u huge.txt > /tmp/sorted.txt")).toBe(true);
+  expect(savesStdout("jq '.[]' huge.json > /tmp/out.json")).toBe(true);
+  expect(savesStdout("git pull; rg -n TODO . > /tmp/rg.log")).toBe(true);
+  expect(savesStdout("npm run build && rg -n TODO dist > /tmp/todo.log")).toBe(true);
+  expect(savesStdout("wc -l big.txt; rg -n TODO /big > /tmp/rg.log")).toBe(true);
+  expect(savesStdout("ls src; grep -rn foo . > /tmp/g.log")).toBe(true);
+});
+
+test("an unsaved build-then-test run still allows its fully saved rerun", () => {
+  const first = "npm run build > /tmp/build.log 2>&1; npm test 2>&1 | tail -30";
+  const saved = "npm run build > /tmp/build.log 2>&1; npm test > /tmp/test.log 2>&1";
+  expect(after([call(first), result(first, 400), call(saved)]).refused).toEqual([]);
+});
+
+test("an unsaved filter-program run still allows its saved rerun", () => {
+  const first = "rg -n TODO /big/monorepo 2>&1 | head -50";
+  const saved = "rg -n TODO /big/monorepo > /tmp/rg.log";
+  expect(after([call(first), result(first, 400), call(saved)]).refused).toEqual([]);
+});
+
 test("only an output sent to a real file counts as saved", () => {
   expect(outputGoesToFile(`${SLOW} > /tmp/eval.log 2>&1`)).toBe(true);
   expect(outputGoesToFile(`${SLOW} 2>&1 | tee /tmp/eval.log | tail -3`)).toBe(true);

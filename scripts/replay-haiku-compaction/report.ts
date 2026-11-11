@@ -23,6 +23,7 @@ export type ReplayArgs = {
   readonly cases: string | undefined;
   readonly maxOutputTokens: number;
   readonly rescore: string | undefined;
+  readonly unmasked: boolean;
 };
 
 function flagValue(argv: readonly string[], name: string): string | undefined {
@@ -53,6 +54,7 @@ export function parseReplayArgs(argv: readonly string[], home: string): Effect.E
       cases: flagValue(argv, "--cases"),
       rescore: flagValue(argv, "--rescore"),
       maxOutputTokens,
+      unmasked: argv.includes("--unmasked"),
     };
   });
 }
@@ -272,6 +274,7 @@ export function writeReports(
     const payload = {
       candidate: args.candidate,
       reference: args.reference,
+      toolOutputHidden: !args.unmasked,
       verdict: summary.verdict,
       candidatePool: summary.candidatePool,
       referencePool: summary.referencePool,

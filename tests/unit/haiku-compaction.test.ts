@@ -50,6 +50,31 @@ const responseOf = (text: string, usage: Usage = usageOf(10, 20)): AssistantMess
 
 const userOf = (text: string): AgentMessage => ({ role: "user", content: text, timestamp: 0 });
 
+const readCallOf = (path: string): AgentMessage => ({
+  ...responseOf(""),
+  content: [{ type: "toolCall", id: "call-" + path, name: "read", arguments: { path } }],
+  stopReason: "toolUse",
+});
+
+const readResultOf = (path: string, text: string, isError = false): AgentMessage => ({
+  role: "toolResult",
+  toolCallId: "call-" + path,
+  toolName: "read",
+  content: [{ type: "text", text }],
+  isError,
+  timestamp: 0,
+});
+
+const promptsSent = async (event: Event, model = OPUS): Promise<string[]> => {
+  const seen: string[] = [];
+  const { registry } = registryOf(async (_model, context) => {
+    seen.push(context.messages[0]?.content[0]?.text ?? expect.unreachable("a user message is sent"));
+    return responseOf("## Goal\nSummary.");
+  });
+  await settled(event, { model, modelRegistry: registry }, true);
+  return seen;
+};
+
 const preparationOf = (
   messages: AgentMessage[],
   overrides: Partial<Event["preparation"]> = {},
@@ -393,6 +418,96 @@ describe("haiku-compaction", () => {
       [priorHookOf(["a.ts"], ["b.ts"]), priorHookOf(["d.ts"], ["e.ts"])],
     );
     expect(fileListsOf(merged)).toEqual({ readFiles: ["a.ts", "c.ts", "d.ts"], modifiedFiles: ["b.ts", "e.ts"] });
+  });
+
+  test("a finished turn's tool output reaches Haiku as a stub with its size, not the output itself", async () => {
+    const [history] = await promptsSent(eventOf([userOf("read the notes"), readCallOf("notes.txt"), readResultOf("notes.txt", "alpha-bravo ".repeat(20))]));
+    expect(history).not.toContain("alpha-bravo");
+    expect(history).toContain("[Tool result]: [output hidden before summarizing: 240 chars]");
+    expect(history).toContain('read(path="notes.txt")');
+  });
+
+  test("a short tool result reaches Haiku whole instead of as a stub", async () => {
+    const sha = "da39a3ee5e6b4b0d3255bfef95601890afd80709";
+    const [history] = await promptsSent(eventOf([userOf("what changed"), readCallOf("sha.txt"), readResultOf("sha.txt", sha)]));
+    expect(history).toContain(sha);
+    expect(history).not.toContain("output hidden");
+  });
+
+  test("a stubbed tool result keeps every URL the output held, in every session kind", async () => {
+    const body = `${"release notes ".repeat(20)}https://github.com/o/r/pull/123${" packed changes ".repeat(20)}https://example.com/docs`;
+    for (const model of [OPUS, MUSE]) {
+      const [history] = await promptsSent(eventOf([userOf("read the notes"), readCallOf("notes.txt"), readResultOf("notes.txt", body)]), model);
+      expect(history).toContain("https://github.com/o/r/pull/123");
+      expect(history).toContain("https://example.com/docs");
+      expect(history).not.toContain("release notes release notes");
+      expect(history).toContain("output hidden before summarizing:");
+    }
+  });
+
+  test("a result that is mostly URLs reaches Haiku whole when its stub would be longer", async () => {
+    const links = ["https://example.com/alpha/pull/1", "https://example.com/beta/pull/22", "https://example.com/gamma/pull/333", "https://example.com/delta/pull/4444"].join(" ");
+    const [history] = await promptsSent(eventOf([userOf("list the pulls"), readCallOf("pulls.txt"), readResultOf("pulls.txt", links)]));
+    expect(history).toContain(links);
+    expect(history).not.toContain("output hidden");
+  });
+
+  test("a stubbed result carries markdown-wrapped URLs without the wrapping", async () => {
+    const body = `${"changelog entries ".repeat(20)}\`https://example.com/docs\` and **https://example.com/api**`;
+    const [history] = await promptsSent(eventOf([userOf("read the changelog"), readCallOf("notes.txt"), readResultOf("notes.txt", body)]));
+    expect(history).toContain("https://example.com/docs");
+    expect(history).toContain("https://example.com/api");
+    expect(history).not.toContain("docs`");
+    expect(history).not.toContain("api**");
+  });
+
+  test("a stubbed result keeps a URL with balanced parentheses whole", async () => {
+    const body = `${"search results ".repeat(20)}https://en.wikipedia.org/wiki/Rust_(programming_language) and [docs](https://example.com/api) |[pr](https://github.com/o/r/pull/1)| _[more](https://example.com/more)_ [a](https://x.y/a)[b](https://x.y/b) (see https://example.com/notes.)`;
+    const [history] = await promptsSent(eventOf([userOf("search the web"), readCallOf("web.txt"), readResultOf("web.txt", body)]));
+    expect(history).toContain("https://en.wikipedia.org/wiki/Rust_(programming_language)");
+    expect(history).toContain("https://example.com/api");
+    expect(history).not.toContain("api)");
+    expect(history).toContain("https://github.com/o/r/pull/1");
+    expect(history).not.toContain("https://github.com/o/r/pull/1)|");
+    expect(history).toContain("https://example.com/more");
+    expect(history).not.toContain("https://example.com/more)_");
+    expect(history).toContain("https://x.y/a");
+    expect(history).toContain("https://x.y/b");
+    expect(history).not.toContain("https://x.y/a)[b");
+    expect(history).toContain("https://example.com/notes");
+    expect(history).not.toContain("https://example.com/notes.");
+  });
+
+  test("a result with no text leaves Haiku no stub line instead of a zero-char stub", async () => {
+    const shot: AgentMessage = {
+      role: "toolResult",
+      toolCallId: "call-shot",
+      toolName: "read",
+      content: [{ type: "image", data: "aGk=", mimeType: "image/png" }],
+      isError: false,
+      timestamp: 0,
+    };
+    const [history] = await promptsSent(eventOf([userOf("look at this"), readCallOf("shot.png"), shot]));
+    expect(history).not.toContain("output hidden");
+    expect(history).not.toContain("0 chars");
+  });
+
+  test("a failed tool call's error reaches Haiku whole instead of as a stub", async () => {
+    const [history] = await promptsSent(eventOf([userOf("read it"), readCallOf("gone.txt"), readResultOf("gone.txt", "ENOENT: no such file gone.txt\n    at openSync (node:internal/fs:594:3)\n".repeat(4), true)]));
+    expect(history).toContain("ENOENT: no such file gone.txt");
+    expect(history).not.toContain("output hidden");
+  });
+
+  test("the split turn's prefix keeps its tool output while the history before it is hidden", async () => {
+    const [history, prefix] = await promptsSent(
+      eventOf([userOf("earlier"), readCallOf("old.txt"), readResultOf("old.txt", "old-body ".repeat(20))], {
+        isSplitTurn: true,
+        turnPrefixMessages: [userOf("current"), readCallOf("new.txt"), readResultOf("new.txt", "new-body ".repeat(20))],
+      }),
+    );
+    expect(history).not.toContain("old-body");
+    expect(prefix).toContain("new-body");
+    expect(prefix).not.toContain("output hidden");
   });
 
   test("reads the kill switch the way pi holds it", () => {
