@@ -8,23 +8,11 @@ permissions:
   contents: read
 jobs:
   github-release:
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
     permissions:
       contents: write
-    steps:
-      - name: ref is a tag
-        run: test "$GITHUB_REF_TYPE" = tag
-      - uses: avi2d/workflows/setup@v1
-        with:
-          fetch-depth: 0
-      - run: bun run build
-      - run: git diff --exit-code
-      - name: tag matches package version
-        run: test "v$(bun -p "require('./package.json').version")" = "$GITHUB_REF_NAME"
-      - name: extract release notes
-        run: ./node_modules/.bin/checks-release-notes "${GITHUB_REF_NAME#v}" "$RUNNER_TEMP/release-notes.md"
-      - name: create the GitHub release
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --notes-file "$RUNNER_TEMP/release-notes.md"
+      id-token: write
+    uses: avi2d/workflows/.github/workflows/release.yml@v2
+    with:
+      build-command: bun run build
+      clean-tree-command: git diff --exit-code
+      github-release: true

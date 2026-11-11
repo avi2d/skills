@@ -177,7 +177,7 @@ To release what main holds since the last tag:
 1. Merge the pull request.
 1. Tag the merge commit on main `v<version>` and push the tag.
 
-`.github/workflows/release.yml` refuses a tag that disagrees with `package.json`, then creates the GitHub release with that version's `CHANGELOG.md` section as its notes.
+`.github/workflows/release.yml` refuses a tag that is not on main and a tag that disagrees with `package.json`, then creates the GitHub release with that version's `CHANGELOG.md` section as its notes.
 
 ## Add harness material
 
