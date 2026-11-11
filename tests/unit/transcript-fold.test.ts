@@ -6,6 +6,7 @@ import { editDigest, foldRenderers, shellDigest, summaryLine, textDigest, toolDi
 import { transcriptRenderer } from "../../harness/pi/extensions/transcript-style/index";
 import { classifyOutput, cleanOutput, paintOutput, type Scheme } from "../../harness/pi/extensions/transcript-style/output";
 import { builtInRenderers, codemodeRenderers, theme } from "../lib/pi-ui";
+import { nextFrame } from "../lib/spinner-frame";
 
 beforeAll(() => initTheme("dark", false));
 
@@ -209,6 +210,23 @@ describe("transcriptRenderer over pi's own renderers", () => {
 
   test("folds a long bash command to its first rows and a dim count of the rest", () => {
     expect(rows(folded("bash").renderCall(longCommand, theme, contextFor({ args: longCommand })))).toEqual(["$ echo 1", "echo 2", "echo 3", "… 3 more lines · ctrl+o to expand"]);
+  });
+
+  test("cuts a folded bash command again on a spinner frame that changed nothing", async () => {
+    const call = folded("bash").renderCall(longCommand, theme, contextFor({ args: longCommand }));
+    const first = call.render(80);
+    await nextFrame();
+    expect(call.render(80)).toBe(first);
+  });
+
+  test("serves the cut of the old width after the terminal is resized", () => {
+    const long = { command: Array.from({ length: 6 }, (_, at) => `echo ${at} ${"word ".repeat(12)}`).join("\n") };
+    const drawn = (width: number, call: Component): string[] => call.render(width).map((row) => stripVTControlCharacters(row).trimEnd());
+    const resized = folded("bash").renderCall(long, theme, contextFor({ args: long }));
+    drawn(80, resized);
+    const fresh = drawn(30, folded("bash").renderCall(long, theme, contextFor({ args: long })));
+    expect(drawn(30, resized)).toEqual(fresh);
+    expect(fresh.at(-1)).not.toBe(drawn(80, resized).at(-1));
   });
 
   test("names the gesture it is given in both folds", () => {

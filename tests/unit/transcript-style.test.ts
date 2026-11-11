@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, test } from "bun:test";
 import { AssistantMessageComponent, initTheme, Theme, type ToolRenderers } from "@earendil-works/pi-coding-agent";
-import { type Component, type TUI, TuiAltScreen, TuiMainScreen, visibleWidth } from "@earendil-works/pi-tui";
+import { type Component, Markdown, type TUI, TuiAltScreen, TuiMainScreen, visibleWidth } from "@earendil-works/pi-tui";
 import {
   bashRenderer,
   commandHeader,
@@ -17,6 +17,7 @@ import {
   type Patchable,
   type ReplyTheme,
 } from "../../harness/pi/extensions/transcript-style/index";
+import { nextFrame } from "../lib/spinner-frame";
 
 const tagged = (token: string, text: string): string => `<${token}>${text}</${token}>`;
 
@@ -345,6 +346,34 @@ describe("styleReply", () => {
     } finally {
       restore?.();
     }
+  });
+
+  function replyText(component: object): Markdown {
+    const container = "contentContainer" in component ? component.contentContainer : undefined;
+    const children: readonly unknown[] = typeof container === "object" && container !== null && "children" in container && Array.isArray(container.children) ? container.children : [];
+    return children.find((child) => child instanceof Markdown) ?? expect.unreachable("pi's reply holds no Markdown");
+  }
+
+  test("keeps the old edge after the theme behind a styled reply changed", () => {
+    const component = new AssistantMessageComponent(undefined, true);
+    component.updateContent(reply, false);
+    styleReply(component, replyTheme);
+    expect(component.render(40).filter((line) => line.includes(EDGE_CELL))).toHaveLength(3);
+    styleReply(component, terminalDefaultTheme);
+    const lines = component.render(40);
+    expect(lines.filter((line) => line.includes(EDGE))).toHaveLength(3);
+    expect(lines.join("\n")).not.toContain("[bg]");
+  });
+
+  test("builds a settled reply's edged rows again on a spinner frame that changed nothing", async () => {
+    const component = new AssistantMessageComponent(undefined, true);
+    component.updateContent(reply, false);
+    styleReply(component, replyTheme);
+    const text = replyText(component);
+    const first = text.render(40);
+    await nextFrame();
+    expect(text.render(40)).toBe(first);
+    expect(text.render(20)).not.toBe(first);
   });
 
   test("falls back to pi's look, without throwing, when the component's shape changes", () => {

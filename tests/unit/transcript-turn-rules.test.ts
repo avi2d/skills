@@ -1,8 +1,25 @@
 import { afterAll, afterEach, beforeAll, describe, expect, setSystemTime, test } from "bun:test";
 import type { SessionEntry } from "@earendil-works/pi-coding-agent";
 import { Image, type ImageProtocol, resetCapabilitiesCache, setCapabilities, stripTerminalSequences, truncateToWidth, type TuiMouseEvent, visibleWidth } from "@earendil-works/pi-tui";
-import { assistantPiece, type Decorate, decorate, keepDecorations, ledgerOf, patchRender, type Patchable, type Piece, type RuleTheme, TOOL_INDENT, toolPiece } from "../../harness/pi/extensions/transcript-style/turn-rules";
+import {
+  assistantPiece,
+  type Decorate,
+  type Decorated,
+  decorate,
+  type Draw,
+  type Drawn,
+  keepDecorations,
+  ledgerOf,
+  patchRender,
+  type Patchable,
+  type Piece,
+  type Render,
+  type RuleTheme,
+  TOOL_INDENT,
+  toolPiece,
+} from "../../harness/pi/extensions/transcript-style/turn-rules";
 import { EMPTY_LEDGER, type Ledger } from "../../harness/pi/extensions/transcript-style/turns";
+import { clockReads, nextFrame } from "../lib/spinner-frame";
 
 const plain: RuleTheme = { fg: (_color, text) => text, bold: (text) => text };
 const tagged: RuleTheme = { fg: (color, text) => `<${color}>${text}</${color}>`, bold: (text) => `*${text}*` };
@@ -65,37 +82,37 @@ describe("a tool's figure", () => {
   const tool = rows("", "", "$ ls -la", "", "✓ 5 lines · click to expand", "");
 
   test("sits right-aligned on the result's summary row, with the tool indented and pi's padding trimmed", () => {
-    const { lines, top, left } = decorate({ kind: "tool", tokens: { basis: "measured", tokens: 142 } }, tool, WIDTH, plain);
+    const { lines, top, left } = decorate({ kind: "tool", call: "t1", tokens: { basis: "measured", tokens: 142 } }, tool, WIDTH, plain);
     expect(lines.map(shown)).toEqual(["", "  $ ls -la", "", expect.stringMatching(/^ {2}✓ 5 lines · click to expand +\+142 tok$/)]);
     expect(visibleWidth(lines[3] ?? "")).toBe(WIDTH);
     expect([top, left]).toEqual([-1, TOOL_INDENT]);
   });
 
   test("marks an estimate and paints a heavy result as a warning", () => {
-    const estimate = decorate({ kind: "tool", tokens: { basis: "estimated", tokens: 52 } }, tool, WIDTH, plain).lines.at(-1);
+    const estimate = decorate({ kind: "tool", call: "t1", tokens: { basis: "estimated", tokens: 52 } }, tool, WIDTH, plain).lines.at(-1);
     expect(estimate).toEndWith("≈52 tok");
-    const heavy = decorate({ kind: "tool", tokens: { basis: "measured", tokens: 19_000 } }, tool, WIDTH, tagged).lines.at(-1);
+    const heavy = decorate({ kind: "tool", call: "t1", tokens: { basis: "measured", tokens: 19_000 } }, tool, WIDTH, tagged).lines.at(-1);
     expect(heavy).toEndWith("<warning>+19k tok</warning>");
-    const light = decorate({ kind: "tool", tokens: { basis: "measured", tokens: 9_000 } }, tool, WIDTH, tagged).lines.at(-1);
+    const light = decorate({ kind: "tool", call: "t1", tokens: { basis: "measured", tokens: 9_000 } }, tool, WIDTH, tagged).lines.at(-1);
     expect(light).toEndWith("<dim>+9.0k tok</dim>");
   });
 
   test("gets a row of its own rather than cutting off a full summary row", () => {
     const full = "x".repeat(WIDTH - TOOL_INDENT - 3);
-    const { lines } = decorate({ kind: "tool", tokens: { basis: "measured", tokens: 317 } }, rows("", "$ cmd", full), WIDTH, plain);
+    const { lines } = decorate({ kind: "tool", call: "t1", tokens: { basis: "measured", tokens: 317 } }, rows("", "$ cmd", full), WIDTH, plain);
     expect(lines.map(shown)).toEqual(["", "  $ cmd", `  ${full}`, expect.stringMatching(/^ {2} +\+317 tok$/)]);
   });
 
   test.each([10, 4, 2, 1])("keeps every row within a %d-column terminal", (width) => {
     for (const tokens of [{ basis: "measured", tokens: 142 }, { basis: "estimated", tokens: 52 }] as const) {
       const fitted = (inner: number) => tool(inner).map((line) => truncateToWidth(line, Math.max(0, inner), ""));
-      const { lines } = decorate({ kind: "tool", tokens }, fitted, width, plain);
+      const { lines } = decorate({ kind: "tool", call: "t1", tokens }, fitted, width, plain);
       expect(lines.filter((line) => visibleWidth(line) > width)).toEqual([]);
     }
   });
 
   test("leaves the rows alone when the ledger has no figure yet", () => {
-    const { lines } = decorate({ kind: "tool", tokens: undefined }, tool, WIDTH, plain);
+    const { lines } = decorate({ kind: "tool", call: "t1", tokens: undefined }, tool, WIDTH, plain);
     expect(lines.map(shown)).toEqual(["", "  $ ls -la", "", "  ✓ 5 lines · click to expand"]);
   });
 
@@ -113,7 +130,7 @@ describe("a tool's figure", () => {
     test.each<ImageProtocol>(["kitty", "iterm2"])("keeps every row a %s image reserves, then the figure", (images) => {
       const { picture, render } = withPicture(images);
       expect(picture.length).toBeGreaterThan(1);
-      const { lines } = decorate({ kind: "tool", tokens: { basis: "measured", tokens: 142 } }, render, WIDTH, plain);
+      const { lines } = decorate({ kind: "tool", call: "t1", tokens: { basis: "measured", tokens: 142 } }, render, WIDTH, plain);
       expect(lines.slice(-picture.length - 1, -1)).toEqual(picture.map((line) => " ".repeat(TOOL_INDENT) + line));
       expect(shown(lines.at(-1) ?? "")).toMatch(/^ {2} +\+142 tok$/);
     });
@@ -150,7 +167,24 @@ describe("patchRender", () => {
     return { base, proto, clicks };
   }
 
-  const shifted = (_component: object, render: (width: number) => string[], width: number) => ({ lines: ["", "rule", ...render(width - 2).map((line) => `  ${line}`)], top: 2, left: 2 });
+  const shifted: Draw<Drawn> = (_component, render, width) => {
+    const own = render(width - 2);
+    return { rows: own, decorated: { lines: ["", "rule", ...own.map((line) => `  ${line}`)], top: 2, left: 2 } };
+  };
+
+  test("draws from scratch a component it drew before", () => {
+    const { proto } = component();
+    const lasts: (Drawn | undefined)[] = [];
+    patchRender<Drawn>(proto, (block, render, width, last) => {
+      lasts.push(last);
+      return shifted(block, render, width, last);
+    });
+    const other: Patchable = Object.create(proto);
+    proto.render.call(proto, WIDTH);
+    other.render.call(other, WIDTH);
+    proto.render.call(proto, WIDTH);
+    expect(lasts.map((last) => last?.rows.length)).toEqual([undefined, undefined, 3]);
+  });
 
   test("decorates the render and maps a click back into pi's own rows, columns and height", () => {
     const { proto, clicks } = component();
@@ -201,7 +235,24 @@ describe("pieces", () => {
     expect(assistantPiece({ lastMessage: undefined, isStreaming: false }, ledger)).toBeUndefined();
     expect(assistantPiece({ lastMessage: { timestamp: "7" }, isStreaming: false }, ledger)).toBeUndefined();
     expect(toolPiece({ toolCallId: 1 }, ledger)).toBeUndefined();
-    expect(toolPiece({ toolCallId: "t1" }, ledger)).toEqual({ kind: "tool", tokens: { basis: "measured", tokens: 9 } });
+    expect(toolPiece({ toolCallId: "t1" }, ledger)).toEqual({ kind: "tool", call: "t1", tokens: { basis: "measured", tokens: 9 } });
+  });
+
+  test("builds a new piece for a component that says the same of itself as its kept piece", () => {
+    const reply = { lastMessage: { timestamp: 7 }, isStreaming: false };
+    const turn = assistantPiece(reply, ledger);
+    const tool = toolPiece({ toolCallId: "t1" }, ledger);
+    expect(assistantPiece(reply, ledger, turn)).toBe(turn);
+    expect(toolPiece({ toolCallId: "t1" }, ledger, tool)).toBe(tool);
+  });
+
+  test("serves the kept piece after the reply settled or took another message, or for another call", () => {
+    const streamed = assistantPiece({ lastMessage: { timestamp: 7 }, isStreaming: true }, ledger);
+    const tool = toolPiece({ toolCallId: "t1" }, ledger);
+    expect(assistantPiece({ lastMessage: { timestamp: 7 }, isStreaming: false }, ledger, streamed)).toMatchObject({ streaming: false });
+    expect(assistantPiece({ lastMessage: { timestamp: 8 }, isStreaming: true }, ledger, streamed)).toMatchObject({ timestamp: 8, turn: { number: 4 } });
+    expect(toolPiece({ toolCallId: "t2" }, ledger, tool)).toEqual({ kind: "tool", call: "t2", tokens: undefined });
+    expect(assistantPiece({ lastMessage: { timestamp: 7 }, isStreaming: true }, ledger, tool)).toEqual(streamed);
   });
 });
 
@@ -215,8 +266,41 @@ describe("keepDecorations", () => {
       calls.count += 1;
       return decorate(piece, render, width, theme);
     };
-    return { calls, keep: keepDecorations(decorateWith) };
+    const now: { piece: Piece; theme: RuleTheme; ledger: Ledger } = { piece: turn(false), theme: plain, ledger: EMPTY_LEDGER };
+    const draw = keepDecorations(
+      () => now.piece,
+      () => now,
+      decorateWith,
+    );
+    const lasts = new Map<object, ReturnType<typeof draw>>();
+    const keep = (block: object, piece: Piece, render: Render, width: number, theme: RuleTheme): Decorated => {
+      Object.assign(now, { piece, theme });
+      const drawn = draw(block, render, width, lasts.get(block)) ?? expect.unreachable("a block with a piece and a theme was left to pi");
+      lasts.set(block, drawn);
+      return drawn.decorated;
+    };
+    return { calls, keep, now };
   }
+
+  test("decorates a block that has no theme or no piece", () => {
+    const themeless = keepDecorations(
+      () => turn(false),
+      () => undefined,
+    );
+    const pieceless = keepDecorations(
+      () => undefined,
+      () => ({ theme: plain, ledger: EMPTY_LEDGER }),
+    );
+    expect([themeless(component, rows(), WIDTH, undefined), pieceless(component, rows(), WIDTH, undefined)]).toEqual([undefined, undefined]);
+  });
+
+  test("decorates again when a rebuilt ledger hands out the same figures", () => {
+    const { calls, keep, now } = counting();
+    const first = keep(component, turn(false), rows(" Thinking..."), WIDTH, plain);
+    now.ledger = { ...EMPTY_LEDGER };
+    expect(keep(component, turn(false), rows(" Thinking..."), WIDTH, plain)).toBe(first);
+    expect(calls.count).toBe(1);
+  });
 
   test("decorates again a component whose rows, width, piece and theme are all unchanged", () => {
     const { calls, keep } = counting();
@@ -267,7 +351,7 @@ describe("keepDecorations", () => {
   test("keeps a tool turn within the width it was asked for", () => {
     const fresh = {};
     const { calls, keep } = counting();
-    const tool: Piece = { kind: "tool", tokens: { basis: "measured", tokens: 142 } };
+    const tool: Piece = { kind: "tool", call: "t1", tokens: { basis: "measured", tokens: 142 } };
     const draw = (inner: number): string[] => ["", "", "$ ls -la", "", "ok 5 lines", ""].map((line) => line.padEnd(inner));
     const first = keep(fresh, tool, draw, WIDTH, plain);
     expect(first.lines.filter((line) => visibleWidth(line) > WIDTH)).toEqual([]);
@@ -299,6 +383,95 @@ describe("keepDecorations", () => {
     const changed = keep(component, turn(false), () => drawn, WIDTH, plain);
     expect(calls.count).toBe(2);
     expect(changed.lines[2]?.trimEnd()).toBe(" Answer");
+  });
+});
+
+describe("a spinner frame over turns that did not change", () => {
+  type Work = { readonly decorated: number; readonly painted: number; readonly asked: number; readonly looked: number; readonly clock: number };
+
+  class Looked<Key, Value> extends Map<Key, Value> {
+    lookups = 0;
+
+    override get(key: Key): Value | undefined {
+      this.lookups += 1;
+      return super.get(key);
+    }
+  }
+
+  function transcript(turns: number) {
+    const work = { decorated: 0, painted: 0, asked: 0 };
+    const paint = (text: string): string => {
+      work.painted += 1;
+      return text;
+    };
+    const counted: RuleTheme = { fg: (_color, text) => paint(text), bold: paint };
+    const counting: Decorate = (piece, render, width, theme) => {
+      work.decorated += 1;
+      return decorate(piece, render, width, theme);
+    };
+    const stamps = Array.from({ length: turns }, (_, at) => NOON + at * 60_000);
+    const turnsByTimestamp = new Looked(stamps.map((stamp, at) => [stamp, { number: at + 1, usage }]));
+    const tokens = new Looked(stamps.map((_, at) => [`t${at}`, { basis: "measured" as const, tokens: 9 }]));
+    const look = { theme: counted, ledger: { turns, turnsByTimestamp, tools: tokens } satisfies Ledger };
+    const said = new Map<object, string>();
+    const pi: Patchable["render"] = function (width) {
+      work.asked += 1;
+      return [(said.get(this) ?? " Thinking...").padEnd(width)];
+    };
+    const replies: Patchable = { render: pi };
+    const tools: Patchable = { render: pi };
+    patchRender(
+      replies,
+      keepDecorations(assistantPiece, () => look, counting),
+    );
+    patchRender(
+      tools,
+      keepDecorations(toolPiece, () => look, counting),
+    );
+    const block = (proto: Patchable, fields: object): Patchable => {
+      const component: Patchable = Object.create(proto);
+      return Object.assign(component, fields);
+    };
+    const components = stamps.flatMap((timestamp, at) => [block(replies, { lastMessage: { timestamp }, isStreaming: false }), block(tools, { toolCallId: `t${at}` })]);
+    const frame = async (): Promise<Work> => {
+      Object.assign(work, { decorated: 0, painted: 0, asked: 0 });
+      turnsByTimestamp.lookups = 0;
+      tokens.lookups = 0;
+      const clock = clockReads(() => components.map((component) => component.render.call(component, WIDTH)));
+      await nextFrame();
+      return { ...work, looked: turnsByTimestamp.lookups + tokens.lookups, clock };
+    };
+    const say = (at: number, text: string): void => {
+      said.set(components[at] ?? expect.unreachable("no such block"), text);
+    };
+    return { frame, say };
+  }
+
+  test("decorates every turn again on a frame that changed nothing", async () => {
+    const { frame } = transcript(40);
+    expect((await frame()).decorated).toBe(80);
+    expect(await frame()).toMatchObject({ decorated: 0, asked: 80 });
+  });
+
+  test("looks every turn and tool up in the ledger again on a frame that changed nothing", async () => {
+    const { frame } = transcript(40);
+    expect((await frame()).looked).toBe(80);
+    expect((await frame()).looked).toBe(0);
+  });
+
+  test("decorates every turn again when one turn's rows changed", async () => {
+    const { frame, say } = transcript(40);
+    await frame();
+    say(6, " Answer");
+    expect((await frame()).decorated).toBe(1);
+  });
+
+  test("paints and reads the clock once per turn, so a frame costs more as the transcript grows", async () => {
+    const short = transcript(4);
+    const long = transcript(40);
+    expect((await long.frame()).painted).toBeGreaterThan((await short.frame()).painted);
+    const { painted, clock } = await short.frame();
+    expect(await long.frame()).toMatchObject({ painted, clock });
   });
 });
 

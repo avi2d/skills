@@ -1,10 +1,11 @@
 import { AssistantMessageComponent, ToolExecutionComponent, type ExtensionAPI, type ExtensionContext, type Theme, type ThemeColor } from "@earendil-works/pi-coding-agent";
 import { stripTerminalSequences, truncateToWidth, type TuiMouseEvent, type TuiMouseEventResult, visibleWidth } from "@earendil-works/pi-tui";
-import { formatTime } from "./time";
+import { frames, sameRows } from "./frame";
+import { dayOf, formatTime } from "./time";
 import { buildLedger, callFigures, EMPTY_LEDGER, HEAVY_TOOL_TOKENS, type Figure, type Ledger, toolFigure, type ToolTokens, type Turn, turnLabel } from "./turns";
 
 export type TurnPiece = { readonly kind: "turn"; readonly turn: Turn | undefined; readonly streaming: boolean; readonly timestamp: number };
-export type ToolPiece = { readonly kind: "tool"; readonly tokens: ToolTokens | undefined };
+export type ToolPiece = { readonly kind: "tool"; readonly call: string; readonly tokens: ToolTokens | undefined };
 export type Piece = TurnPiece | ToolPiece;
 
 export type RuleTheme = Pick<Theme, "fg" | "bold">;
@@ -100,16 +101,23 @@ function isAssistantInternals(component: object): component is AssistantInternal
   return lastMessage === undefined || (typeof lastMessage === "object" && lastMessage !== null && "timestamp" in lastMessage && typeof lastMessage.timestamp === "number");
 }
 
-export function assistantPiece(component: object, ledger: Ledger): TurnPiece | undefined {
+// The kept piece was read from this same ledger, so it still holds while the component says the same of itself.
+export type PieceOf = (component: object, ledger: Ledger, kept?: Piece) => Piece | undefined;
+
+export function assistantPiece(component: object, ledger: Ledger, kept?: Piece): TurnPiece | undefined {
   if (!isAssistantInternals(component) || !component.lastMessage) return undefined;
-  const known = ledger.turnsByTimestamp.get(component.lastMessage.timestamp);
-  const streamed = component.isStreaming ? { number: ledger.turns + 1, usage: undefined } : undefined;
-  return { kind: "turn", turn: known ?? streamed, streaming: component.isStreaming, timestamp: component.lastMessage.timestamp };
+  const { timestamp } = component.lastMessage;
+  const streaming = component.isStreaming;
+  if (kept?.kind === "turn" && kept.streaming === streaming && kept.timestamp === timestamp) return kept;
+  const streamed = streaming ? { number: ledger.turns + 1, usage: undefined } : undefined;
+  return { kind: "turn", turn: ledger.turnsByTimestamp.get(timestamp) ?? streamed, streaming, timestamp };
 }
 
-export function toolPiece(component: object, ledger: Ledger): ToolPiece | undefined {
+export function toolPiece(component: object, ledger: Ledger, kept?: Piece): ToolPiece | undefined {
   if (!("toolCallId" in component) || typeof component.toolCallId !== "string") return undefined;
-  return { kind: "tool", tokens: ledger.tools.get(component.toolCallId) };
+  const call = component.toolCallId;
+  if (kept?.kind === "tool" && kept.call === call) return kept;
+  return { kind: "tool", call, tokens: ledger.tools.get(call) };
 }
 
 type MouseResult = TuiMouseEventResult | undefined;
@@ -125,12 +133,13 @@ const OWN_MOUSE = Symbol.for("skills.transcript-style.turn-rules.ownMouse");
 
 type Originals = { [RENDER]?: Patchable["render"]; [MOUSE]?: Patchable["handleMouse"]; [OWN_MOUSE]?: boolean };
 
-type Drawn = { readonly decorated: Decorated; readonly rows: number };
+export type Drawn = { readonly decorated: Decorated; readonly rows: readonly string[] };
 
-const LAST = new WeakMap<object, Drawn>();
+export type Draw<Last extends Drawn> = (component: object, render: Render, width: number, last: Last | undefined) => Last | undefined;
 
 // Pi re-imports an extension on reload while the prototype persists, so the wrapper always wraps Pi's own method.
-export function patchRender(proto: Patchable & Originals, decorateOf: (component: object, render: Render, width: number) => Decorated | undefined): () => void {
+export function patchRender<Last extends Drawn>(proto: Patchable & Originals, draw: Draw<Last>): () => void {
+  const lasts = new WeakMap<object, Last>();
   const ownMouse = proto[OWN_MOUSE] ?? Object.prototype.hasOwnProperty.call(proto, "handleMouse");
   const render = proto[RENDER] ?? proto.render;
   const mouse = proto[MOUSE] ?? proto.handleMouse;
@@ -138,26 +147,21 @@ export function patchRender(proto: Patchable & Originals, decorateOf: (component
   proto[MOUSE] = mouse;
   proto[OWN_MOUSE] = ownMouse;
   const decorated = function (this: object, width: number): string[] {
-    let rows = 0;
-    const drawn = (inner: number): string[] => {
-      const lines = render.call(this, inner);
-      rows = lines.length;
-      return lines;
-    };
-    const result = decorateOf(this, drawn, width);
-    if (!result) {
-      LAST.delete(this);
+    const last = lasts.get(this);
+    const drawn = draw(this, (inner) => render.call(this, inner), width, last);
+    if (!drawn) {
+      if (last) lasts.delete(this);
       return render.call(this, width);
     }
-    LAST.set(this, { decorated: result, rows });
-    return result.lines;
+    if (drawn !== last) lasts.set(this, drawn);
+    return drawn.decorated.lines;
   };
   // Pi checks a click against the bounds it drew, so the decorated offsets and pi's own height both map back.
   const shifted = function (this: object, event: TuiMouseEvent): MouseResult {
-    const last = LAST.get(this);
+    const last = lasts.get(this);
     if (!last) return mouse?.call(this, event);
     const { top, left } = last.decorated;
-    const moved = { ...event, x: event.x - left, y: event.y - top, width: event.width - left, height: last.rows };
+    const moved = { ...event, x: event.x - left, y: event.y - top, width: event.width - left, height: last.rows.length };
     if (moved.y < 0 || moved.y >= moved.height || moved.x < 0) return undefined;
     return mouse?.call(this, moved);
   };
@@ -176,30 +180,56 @@ export function patchRender(proto: Patchable & Originals, decorateOf: (component
 
 const innerWidth = (piece: Piece, width: number): number => width - (piece.kind === "tool" ? toolIndent(width) : 0);
 
-const sameRows = (a: readonly string[], b: readonly string[]): boolean => a.length === b.length && a.every((row, index) => row === b[index]);
+export type Look = { readonly theme: RuleTheme; readonly ledger: Ledger };
 
-type Kept = { readonly key: string; readonly rows: readonly string[]; readonly decorated: Decorated };
+type Kept = Drawn & {
+  frame: number;
+  readonly width: number;
+  readonly day: number;
+  readonly palette: string;
+  readonly ledger: Ledger;
+  readonly piece: Piece;
+};
 
 const themeSignature = (theme: RuleTheme): string =>
   [theme.fg("borderMuted", ""), theme.fg("accent", ""), theme.fg("dim", ""), theme.fg("muted", ""), theme.fg("warning", ""), theme.bold("")].join("\x1f");
 
-const clockSignature = (piece: Piece): string => (piece.kind === "turn" ? formatTime(piece.timestamp) : "");
+const figuresOf = (piece: Piece): Turn | ToolTokens | undefined => (piece.kind === "tool" ? piece.tokens : piece.turn);
 
-export type Keep = (component: object, piece: Piece, render: Render, width: number, theme: RuleTheme) => Decorated;
+// The ledger hands out the same figures until the session's leaf moves, so the text comparison runs only for a rebuilt ledger.
+function samePiece(kept: Piece, piece: Piece): boolean {
+  if (kept === piece) return true;
+  if (kept.kind !== piece.kind) return false;
+  if (kept.kind === "turn" && piece.kind === "turn" && (kept.streaming !== piece.streaming || kept.timestamp !== piece.timestamp)) return false;
+  const before = figuresOf(kept);
+  const after = figuresOf(piece);
+  return before === after || JSON.stringify(before) === JSON.stringify(after);
+}
 
 // Redrawn on every spinner frame, so each component keeps its decoration until one of its inputs changes.
-export function keepDecorations(decorateWith: Decorate = decorate): Keep {
-  const kept = new WeakMap<object, Kept>();
-  return (component, piece, render, width, theme) => {
+export function keepDecorations(pieceOf: PieceOf, lookOf: () => Look | undefined, decorateWith: Decorate = decorate): Draw<Kept> {
+  const frameAfter = frames(() => {
+    const look = lookOf();
+    return { look, day: dayOf(Date.now()), palette: look ? themeSignature(look.theme) : "" };
+  });
+  return (component, render, width, last) => {
+    const frame = frameAfter(last?.frame);
+    const { look, day, palette } = frame.value;
+    if (!look) return undefined;
+    const { theme, ledger } = look;
+    const piece = pieceOf(component, ledger, last?.ledger === ledger ? last.piece : undefined);
+    if (!piece) return undefined;
     const inner = innerWidth(piece, width);
+    const rows = render(inner);
+    if (last && last.width === width && last.day === day && last.palette === palette && samePiece(last.piece, piece) && sameRows(last.rows, rows)) {
+      if (last.piece !== piece) return { ...last, frame: frame.id, ledger, piece };
+      last.frame = frame.id;
+      return last;
+    }
     // Copied, because pi may reuse the array it returned and change it in place.
-    const rows = [...render(inner)];
-    const key = JSON.stringify([width, piece, clockSignature(piece), themeSignature(theme)]);
-    const last = kept.get(component);
-    if (last && last.key === key && sameRows(last.rows, rows)) return last.decorated;
-    const decorated = decorateWith(piece, (w) => (w === inner ? rows : render(w)), width, theme);
-    kept.set(component, { key, rows, decorated });
-    return decorated;
+    const copy = [...rows];
+    const decorated = decorateWith(piece, (w) => (w === inner ? copy : render(w)), width, theme);
+    return { frame: frame.id, width, day, palette, ledger, piece, rows: copy, decorated };
   };
 }
 
@@ -223,14 +253,11 @@ export function ruleTurns(pi: ExtensionAPI): void {
     theme = ctx.ui.theme;
     ledger = ledgerOf(ctx.sessionManager);
   });
-  const keep = keepDecorations();
-  const pieceDecorator =
-    (pieceOf: (component: object, ledger: Ledger) => Piece | undefined) =>
-    (component: object, render: Render, width: number): Decorated | undefined => {
-      const piece = pieceOf(component, ledger());
-      return piece && theme ? keep(component, piece, render, width, theme) : undefined;
-    };
-  const restores = [patchRender(AssistantMessageComponent.prototype, pieceDecorator(assistantPiece)), patchRender(ToolExecutionComponent.prototype, pieceDecorator(toolPiece))];
+  const lookOf = (): Look | undefined => (theme ? { theme, ledger: ledger() } : undefined);
+  const restores = [
+    patchRender(AssistantMessageComponent.prototype, keepDecorations(assistantPiece, lookOf)),
+    patchRender(ToolExecutionComponent.prototype, keepDecorations(toolPiece, lookOf)),
+  ];
   pi.on("session_shutdown", () => {
     theme = undefined;
     for (const restore of restores) restore();
