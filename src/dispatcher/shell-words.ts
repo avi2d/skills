@@ -87,6 +87,29 @@ function separate(lexer: Lexer, command: string, at: number): number {
   return past;
 }
 
+function arithmeticClose(command: string, from: number): boolean {
+  let depth = 0;
+  for (let at = from; at < command.length; at += 1) {
+    const char = command.charAt(at);
+    if (char === "\\") {
+      at += 1;
+    } else if (char === "'") {
+      const stop = command.indexOf("'", at + 1);
+      at = stop === -1 ? command.length : stop;
+    } else if (char === '"') {
+      let stop = at + 1;
+      while (stop < command.length && command.charAt(stop) !== '"') stop += command.charAt(stop) === "\\" ? 2 : 1;
+      at = stop;
+    } else if (char === "(") {
+      depth += 1;
+    } else if (char === ")") {
+      if (depth === 0) return command.charAt(at + 1) === ")";
+      depth -= 1;
+    }
+  }
+  return false;
+}
+
 function step(lexer: Lexer, command: string, at: number): number {
   const char = command.charAt(at);
   if (char === "'" || char === '"') return quote(lexer, command, at);
@@ -101,7 +124,7 @@ function step(lexer: Lexer, command: string, at: number): number {
     lexer.inside.fill(true, at, next);
     return next - 1;
   }
-  if (char === "$" && command.slice(at, at + 3) === "$((") {
+  if (char === "$" && command.slice(at, at + 3) === "$((" && arithmeticClose(command, at + 3)) {
     lexer.arithmetic += 2;
     append(lexer, "$((", at, at + 3);
     return at + 2;
@@ -111,7 +134,7 @@ function step(lexer: Lexer, command: string, at: number): number {
     append(lexer, "$[", at, at + 2);
     return at + 1;
   }
-  if (char === "(" && command.charAt(at + 1) === "(") {
+  if (char === "(" && command.charAt(at + 1) === "(" && arithmeticClose(command, at + 2)) {
     lexer.arithmetic += 2;
     append(lexer, "((", at, at + 2);
     return at + 1;
