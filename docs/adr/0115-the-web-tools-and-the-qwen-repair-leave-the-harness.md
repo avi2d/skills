@@ -1,3 +1,6 @@
+---
+governs: [src/generate/link.ts, harness/pi/settings.json, tests/e2e/extension-preflight.test.ts]
+---
 # 115. The web tools and the qwen repair leave the harness
 
 Date: 2026-11-11

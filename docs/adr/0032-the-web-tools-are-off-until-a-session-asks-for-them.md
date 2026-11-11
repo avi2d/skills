@@ -1,3 +1,6 @@
+---
+governs: [harness/pi/extensions/web-tools.ts, harness/pi/web-search.json]
+---
 # 32. The web tools are off until a session asks for them
 
 Date: 2026-09-19
