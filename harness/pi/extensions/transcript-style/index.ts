@@ -1,6 +1,7 @@
 import { AssistantMessageComponent, keyText, type ExtensionAPI, type Theme, type ToolRendererResolver } from "@earendil-works/pi-coding-agent";
 import { type Component, Markdown, type TUI, type TuiMode } from "@earendil-works/pi-tui";
 import { foldRenderers } from "./fold";
+import { keepLines } from "./frame";
 import { ruleTurns } from "./turn-rules";
 import { foldUserMessages } from "./user-message";
 
@@ -57,7 +58,8 @@ export function styleReply(component: object, theme: ReplyTheme): boolean {
       const next = { edge };
       edges.set(text, next);
       const render = text.render.bind(text);
-      text.render = (width) => render(width - 1).map((line) => next.edge + line);
+      const edged = keepLines((rows, drawn: string) => rows.map((line) => drawn + line));
+      text.render = (width) => edged(render(width - 1), next.edge);
     } else {
       holder.edge = edge;
     }

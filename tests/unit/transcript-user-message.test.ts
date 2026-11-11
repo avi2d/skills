@@ -1,10 +1,11 @@
-import { beforeAll, describe, expect, test } from "bun:test";
+import { beforeAll, describe, expect, setSystemTime, test } from "bun:test";
 import { stripVTControlCharacters } from "node:util";
 import { type ExtensionAPI, initTheme, UserMessageComponent } from "@earendil-works/pi-coding-agent";
 import type { TuiMouseEvent } from "@earendil-works/pi-tui";
 import { moreLines } from "../../harness/pi/extensions/transcript-style/fold";
 import { foldRows, foldUserMessages, MESSAGE_FOLD_ROWS, MESSAGE_PREVIEW_ROWS, type MessageLook, type Patchable, patchUserMessages, type Pi, type SessionUi } from "../../harness/pi/extensions/transcript-style/user-message";
 import { theme } from "../lib/pi-ui";
+import { clockReads, nextFrame } from "../lib/spinner-frame";
 
 beforeAll(() => initTheme("dark", false));
 
@@ -137,6 +138,90 @@ describe("a user message in pi's own component", () => {
   });
 });
 
+const SENT = new Date(2026, 9, 7, 12, 0).getTime();
+
+describe("a message whose look pi's session holds steady", () => {
+  function steady(stamp?: number) {
+    const look = lookWith();
+    class Probe extends UserMessageComponent {}
+    const proto: Patchable = Probe.prototype;
+    patchUserMessages(
+      proto,
+      () => look,
+      () => stamp,
+    );
+    return (text: string) => new Probe(text);
+  }
+
+  test("stays folded after a click and open after the next", () => {
+    const component = steady()(lines(60));
+    expect(component.render(WIDTH)).toHaveLength(FOLDED);
+    clickOn(component, event("click"));
+    expect(component.render(WIDTH)).toHaveLength(WHOLE);
+    clickOn(component, event("click"));
+    expect(component.render(WIDTH)).toHaveLength(FOLDED);
+  });
+
+  test("serves the rows of the old width after the terminal is resized", () => {
+    const message = steady(SENT);
+    const text = `${lines(MESSAGE_FOLD_ROWS)}\n${"word ".repeat(40)}`;
+    const resized = message(text);
+    resized.render(WIDTH);
+    expect(resized.render(40)).toEqual(message(text).render(40));
+  });
+
+  test("serves a bare clock time after the clock rolled past midnight", () => {
+    const component = steady(SENT)(lines(60));
+    setSystemTime(SENT);
+    try {
+      expect(shown(component.render(WIDTH)).at(-1)).toBe("12:00");
+      setSystemTime(SENT + 24 * 60 * 60 * 1000);
+      expect(shown(component.render(WIDTH)).at(-1)).toBe("2026-10-07 12:00");
+    } finally {
+      setSystemTime();
+    }
+  });
+});
+
+describe("a spinner frame over messages that did not change", () => {
+  function conversation(messages: number) {
+    const work = { painted: 0 };
+    const paint = (text: string): string => {
+      work.painted += 1;
+      return text;
+    };
+    const look: MessageLook = { openedByDefault: false, hint: (hidden) => paint(moreLines(hidden, "click")), band: paint, time: paint };
+    class Probe extends UserMessageComponent {}
+    const proto: Patchable = Probe.prototype;
+    patchUserMessages(
+      proto,
+      () => look,
+      () => SENT,
+    );
+    const components = Array.from({ length: messages }, () => new Probe(lines(60)));
+    return async (): Promise<{ readonly painted: number; readonly clock: number }> => {
+      work.painted = 0;
+      const clock = clockReads(() => components.map((component) => component.render(WIDTH)));
+      await nextFrame();
+      return { painted: work.painted, clock };
+    };
+  }
+
+  test("paints every message's hint and time again on a frame that changed nothing", async () => {
+    const frame = conversation(30);
+    expect((await frame()).painted).toBeGreaterThan(0);
+    expect((await frame()).painted).toBe(0);
+  });
+
+  test("reads the clock once per message, so a frame costs more as the conversation grows", async () => {
+    const short = conversation(3);
+    const long = conversation(30);
+    await short();
+    await long();
+    expect((await long()).clock).toBe((await short()).clock);
+  });
+});
+
 describe("patchUserMessages", () => {
   test("wraps pi's own methods again on reload and restores them on shutdown", () => {
     class Probe extends UserMessageComponent {}
@@ -162,24 +247,78 @@ describe("foldUserMessages", () => {
     expect(typeof takes).toBe("function");
   });
 
-  test("folds pi's user messages for the session with the gesture it is given, and stops at shutdown", () => {
+  function session(gesture: () => string, toolsExpanded: () => boolean = () => false) {
     const handlers = new Map<string, Handler[]>();
     const pi: Pi = {
       on: (name: string, handler: Handler): void => {
         handlers.set(name, [...(handlers.get(name) ?? []), handler]);
       },
     };
-    const fire = (name: string, ctx: Ctx): void => {
-      for (const handler of handlers.get(name) ?? []) handler({}, ctx);
+    const tui: Ctx = { mode: "tui", ui: { theme, getToolsExpanded: toolsExpanded } };
+    const fire = (name: string): void => {
+      for (const handler of handlers.get(name) ?? []) handler({}, tui);
     };
-    const tui: Ctx = { mode: "tui", ui: { theme, getToolsExpanded: () => false } };
-    foldUserMessages(pi, () => "ctrl+o");
+    foldUserMessages(pi, gesture);
+    return { start: () => fire("session_start"), shutdown: () => fire("session_shutdown") };
+  }
+
+  test("folds pi's user messages for the session with the gesture it is given, and stops at shutdown", () => {
+    const { start, shutdown } = session(() => "ctrl+o");
     try {
-      fire("session_start", tui);
+      start();
       expect(shown(new UserMessageComponent(lines(60)).render(WIDTH)).at(-2)).toBe("… 52 more lines · ctrl+o to expand");
     } finally {
-      fire("session_shutdown", tui);
+      shutdown();
     }
     expect(new UserMessageComponent(lines(60)).render(WIDTH)).toHaveLength(WHOLE);
+  });
+
+  test("names the old gesture and stays folded after pi moved the gesture and opened every block", async () => {
+    const pi = { gesture: "ctrl+o", expanded: false };
+    const { start, shutdown } = session(
+      () => pi.gesture,
+      () => pi.expanded,
+    );
+    try {
+      start();
+      const component = new UserMessageComponent(lines(60));
+      component.render(WIDTH);
+      await nextFrame();
+      pi.gesture = "click";
+      expect(shown(component.render(WIDTH)).at(-2)).toBe("… 52 more lines · click to expand");
+      await nextFrame();
+      pi.expanded = true;
+      expect(component.render(WIDTH)).toHaveLength(WHOLE);
+    } finally {
+      shutdown();
+    }
+  });
+
+  test("asks pi for the gesture and the expand state once per message, so a frame costs more as the conversation grows", async () => {
+    const asked = { gesture: 0, expanded: 0 };
+    const { start, shutdown } = session(
+      () => {
+        asked.gesture += 1;
+        return "ctrl+o";
+      },
+      () => {
+        asked.expanded += 1;
+        return false;
+      },
+    );
+    try {
+      start();
+      const frame = async (messages: readonly UserMessageComponent[]): Promise<typeof asked> => {
+        Object.assign(asked, { gesture: 0, expanded: 0 });
+        for (const message of messages) message.render(WIDTH);
+        const spent = { ...asked };
+        await nextFrame();
+        return spent;
+      };
+      const conversation = (messages: number): UserMessageComponent[] => Array.from({ length: messages }, () => new UserMessageComponent(lines(60)));
+      expect(await frame(conversation(30))).toEqual(await frame(conversation(3)));
+    } finally {
+      shutdown();
+    }
   });
 });

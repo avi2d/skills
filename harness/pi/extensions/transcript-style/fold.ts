@@ -1,5 +1,6 @@
 import { getLanguageFromPath, type Theme, type ThemeColor, type ToolRenderers } from "@earendil-works/pi-coding-agent";
 import { type Component, Container, getCapabilities, getImageDimensions, imageFallback, Text } from "@earendil-works/pi-tui";
+import { keepLines } from "./frame";
 import { cleanOutput, paintOutput, type Scheme } from "./output";
 
 type RenderCall = NonNullable<ToolRenderers["renderCall"]>;
@@ -228,36 +229,48 @@ function foldResult(view: View, renderResult: RenderResult, selfShell: boolean, 
 
 export const COMMAND_PREVIEW_ROWS = 3;
 
+type Rows = (width: number) => string[];
+
 type CallFold = {
   readonly args?: (args: unknown) => unknown;
-  readonly rows: (inner: Component, width: number, hint: (hidden: number) => string) => string[];
+  readonly rows: (inner: Component, hint: (hidden: number) => string) => Rows;
 };
 
-function firstRows(inner: Component, width: number, hint: (hidden: number) => string): string[] {
-  const rows = inner.render(width);
-  if (rows.length <= COMMAND_PREVIEW_ROWS + 1) return rows;
-  return [...rows.slice(0, COMMAND_PREVIEW_ROWS), ...new Text(hint(rows.length - COMMAND_PREVIEW_ROWS), 0, 0).render(width)];
+type Hinted = { readonly width: number; readonly said: string };
+
+function firstRows(inner: Component, hint: (hidden: number) => string): Rows {
+  const cut = keepLines(
+    (rows, { width, said }: Hinted) => [...rows.slice(0, COMMAND_PREVIEW_ROWS), ...new Text(said, 0, 0).render(width)],
+    (kept, hinted) => kept.width === hinted.width && kept.said === hinted.said,
+  );
+  return (width) => {
+    const rows = inner.render(width);
+    if (rows.length <= COMMAND_PREVIEW_ROWS + 1) return rows;
+    return cut(rows, { width, said: hint(rows.length - COMMAND_PREVIEW_ROWS) });
+  };
 }
 
 const hasChildren = (component: Component): component is Component & { children: Component[] } => "children" in component && Array.isArray(component.children);
 
 // Pi's edit result rebuilds the call's box after this renderer returns, so the box is cut at render time rather than here.
-function headerRows(inner: Component, width: number): string[] {
-  if (!hasChildren(inner) || inner.children.length < 2) return inner.render(width);
-  const all = inner.children;
-  inner.children = all.slice(0, 1);
-  try {
-    return inner.render(width);
-  } finally {
-    inner.children = all;
-  }
+function headerRows(inner: Component): Rows {
+  return (width) => {
+    if (!hasChildren(inner) || inner.children.length < 2) return inner.render(width);
+    const all = inner.children;
+    inner.children = all.slice(0, 1);
+    try {
+      return inner.render(width);
+    } finally {
+      inner.children = all;
+    }
+  };
 }
 
 const CALL_FOLDS: ReadonlyMap<string, CallFold> = new Map<string, CallFold>([
   ["bash", { rows: firstRows }],
   ["powershell", { rows: firstRows }],
   ["edit", { rows: headerRows }],
-  ["write", { args: (args) => (isRecord(args) ? { ...args, content: "" } : args), rows: (inner, width) => inner.render(width) }],
+  ["write", { args: (args) => (isRecord(args) ? { ...args, content: "" } : args), rows: (inner) => (width) => inner.render(width) }],
 ]);
 
 export const moreLines = (hidden: number, gesture: string): string => `… ${hidden} more line${hidden === 1 ? "" : "s"}${gesture ? ` · ${gesture} to expand` : ""}`;
@@ -272,7 +285,7 @@ function foldCall(fold: CallFold, renderCall: RenderCall, expandGesture: () => s
     const inner = renderCall(fold.args ? fold.args(args) : args, theme, { ...context, lastComponent });
     const gesture = expandGesture();
     const hint = (hidden: number): string => theme.fg("dim", moreLines(hidden, gesture));
-    return wrapping(inner, (width) => fold.rows(inner, width, hint));
+    return wrapping(inner, fold.rows(inner, hint));
   };
 }
 

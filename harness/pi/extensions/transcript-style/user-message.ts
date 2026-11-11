@@ -1,7 +1,8 @@
 import { type ExtensionContext, type ExtensionUIContext, parseSkillBlock, type SessionEntry, UserMessageComponent } from "@earendil-works/pi-coding-agent";
 import { Markdown, Text, truncateToWidth, type TuiMouseEvent, type TuiMouseEventResult, visibleWidth } from "@earendil-works/pi-tui";
 import { moreLines } from "./fold";
-import { formatTime } from "./time";
+import { oncePerFrame, sameRows } from "./frame";
+import { dayOf, formatTime } from "./time";
 
 // The fold hides at least five rows, so it never trades a row or two for its own hint.
 export const MESSAGE_FOLD_ROWS = 12;
@@ -185,12 +186,27 @@ const OWN_MOUSE = Symbol.for("skills.transcript-style.user-message.ownMouse");
 type Originals = { [RENDER]?: Patchable["render"]; [MOUSE]?: Patchable["handleMouse"]; [OWN_MOUSE]?: boolean };
 
 const OPENED = new WeakMap<object, boolean>();
-const FOLDABLE = new WeakSet<object>();
+
+type Shown = {
+  readonly rows: readonly string[];
+  readonly width: number;
+  readonly look: MessageLook;
+  readonly padding: Padding;
+  readonly open: boolean;
+  readonly stamp: number | undefined;
+  readonly day: number;
+  readonly foldable: boolean;
+  readonly lines: string[];
+};
+
+const SHOWN = new WeakMap<object, Shown>();
+
+const samePadding = (kept: Padding, padding: Padding): boolean => kept.x === padding.x && kept.y === padding.y;
 
 // Pi re-imports an extension on reload while the prototype persists, so the wrapper always wraps Pi's own methods.
 export function patchUserMessages(
   proto: Patchable & Originals,
-  lookOf: () => MessageLook | undefined,
+  lookOf: (component: object) => MessageLook | undefined,
   stampOf: (component: object) => number | undefined = () => undefined,
 ): () => void {
   const ownMouse = proto[OWN_MOUSE] ?? Object.prototype.hasOwnProperty.call(proto, "handleMouse");
@@ -198,26 +214,33 @@ export function patchUserMessages(
   const mouse = proto[MOUSE] ?? proto.handleMouse;
   Object.assign(proto, { [RENDER]: render, [MOUSE]: mouse, [OWN_MOUSE]: ownMouse });
   const opened = (component: object, look: MessageLook): boolean => OPENED.get(component) ?? look.openedByDefault;
+  const today = oncePerFrame(() => dayOf(Date.now()));
+  // Redrawn on every spinner frame, so each message keeps its rows until one of their inputs changes.
   const folded = function (this: object, width: number): string[] {
     const rows = render.call(this, width);
     const padding = paddingOf(this);
-    const look = lookOf();
-    let drawn: string[];
-    if (!padding || !look || !isLong(rows.length, padding)) {
-      FOLDABLE.delete(this);
-      drawn = rows;
-    } else {
-      FOLDABLE.add(this);
-      drawn = opened(this, look) ? rows : foldRows(rows, padding.y, (hidden) => new Text(look.hint(hidden), padding.x, 0, look.band).render(width));
+    const look = lookOf(this);
+    if (!padding || !look) {
+      SHOWN.delete(this);
+      return rows;
     }
-    const stamp = padding && look ? stampOf(this) : undefined;
-    if (!padding || !look || stamp === undefined) return drawn;
-    return withTime(drawn, formatTime(stamp), look, width);
+    const open = opened(this, look);
+    const stamp = stampOf(this);
+    const day = today(this);
+    const last = SHOWN.get(this);
+    if (last && last.width === width && last.look === look && last.open === open && last.stamp === stamp && last.day === day && samePadding(last.padding, padding) && sameRows(last.rows, rows))
+      return last.lines;
+    const foldable = isLong(rows.length, padding);
+    const body = foldable && !open ? foldRows(rows, padding.y, (hidden) => new Text(look.hint(hidden), padding.x, 0, look.band).render(width)) : rows;
+    const lines = stamp === undefined ? body : withTime(body, formatTime(stamp), look, width);
+    // Copied, because pi may reuse the array it returned and change it in place.
+    SHOWN.set(this, { rows: [...rows], width, look, padding, open, stamp, day, foldable, lines });
+    return lines;
   };
   // Only a click toggles, so a press and a drag still reach the terminal's selection.
   const toggled = function (this: object, event: TuiMouseEvent): MouseResult {
-    const look = lookOf();
-    if (event.type !== "click" || event.button !== "left" || !look || !FOLDABLE.has(this)) return mouse?.call(this, event);
+    const look = lookOf(this);
+    if (event.type !== "click" || event.button !== "left" || !look || !SHOWN.get(this)?.foldable) return mouse?.call(this, event);
     OPENED.set(this, !opened(this, look));
     return { handled: true };
   };
@@ -271,18 +294,28 @@ export function foldUserMessages(pi: Pi, gesture: () => string): void {
     const text = messageText(event);
     if (text !== undefined) book.settle(text);
   });
-  const restore = patchUserMessages(
-    UserMessageComponent.prototype,
-    () => {
-      if (!ui) return undefined;
-      const { theme } = ui;
-      return {
-        openedByDefault: ui.getToolsExpanded(),
-        hint: (hidden) => theme.fg("dim", moreLines(hidden, gesture())),
+  let held: { readonly ui: SessionUi; readonly signature: string; readonly look: MessageLook } | undefined;
+  // A message keeps its rows while its look is the same object, so the look is replaced only when what it paints with changes.
+  const lookOf = oncePerFrame((): MessageLook | undefined => {
+    if (!ui) return undefined;
+    const { theme } = ui;
+    const openedByDefault = ui.getToolsExpanded();
+    const said = gesture();
+    const signature = [openedByDefault, said, theme.fg("dim", ""), theme.bg("userMessageBg", "")].join("\x1f");
+    if (held?.ui !== ui || held.signature !== signature) {
+      const look: MessageLook = {
+        openedByDefault,
+        hint: (hidden) => theme.fg("dim", moreLines(hidden, said)),
         band: (text) => theme.bg("userMessageBg", text),
         time: (text) => theme.bg("userMessageBg", theme.fg("dim", text)),
       };
-    },
+      held = { ui, signature, look };
+    }
+    return held.look;
+  });
+  const restore = patchUserMessages(
+    UserMessageComponent.prototype,
+    lookOf,
     (component) => {
       if (!ui || !session) return undefined;
       book.refresh(session);
@@ -293,6 +326,7 @@ export function foldUserMessages(pi: Pi, gesture: () => string): void {
   pi.on("session_shutdown", () => {
     ui = undefined;
     session = undefined;
+    held = undefined;
     book.reset();
     restore();
   });
