@@ -134,6 +134,8 @@ type Track = {
   effective: string;
   missingSince: number | undefined;
   vars: Record<string, string>;
+  gitDirExported: boolean;
+  exportStack: boolean[];
   dirStack: string[];
   effectiveStack: string[];
   missingStack: Array<number | undefined>;
@@ -145,6 +147,8 @@ const makeTrack = (cwd: string): Track => ({
   effective: cwd,
   missingSince: undefined,
   vars: {},
+  gitDirExported: false,
+  exportStack: [],
   dirStack: [],
   effectiveStack: [],
   missingStack: [],
@@ -156,6 +160,7 @@ const pushScope = (track: Track): void => {
   track.effectiveStack.push(track.effective);
   track.missingStack.push(track.missingSince);
   track.varStack.push(track.vars);
+  track.exportStack.push(track.gitDirExported);
   track.vars = { ...track.vars };
 };
 
@@ -164,6 +169,7 @@ const popScope = (track: Track): void => {
   track.effective = track.effectiveStack.pop() ?? track.effective;
   track.missingSince = track.missingStack.pop();
   track.vars = track.varStack.pop() ?? track.vars;
+  track.gitDirExported = track.exportStack.pop() ?? track.gitDirExported;
 };
 
 const applyGapParens = (track: Track, stage: SplitStage, base: number, inside: readonly boolean[], insideBody: (at: number) => boolean): void => {
@@ -190,11 +196,46 @@ const applyCd = (track: Track, words: readonly string[], bare: readonly string[]
   return true;
 };
 
+const splitBuiltinOptions = (args: readonly string[]): { at: number; flags: string } => {
+  let at = 0;
+  let flags = "";
+  for (; at < args.length; at += 1) {
+    const option = args[at] ?? "";
+    if (option === "--") {
+      at += 1;
+      break;
+    }
+    if (option.startsWith("-") && option.length > 1 && !option.includes("=")) {
+      flags += option.slice(1);
+      continue;
+    }
+    break;
+  }
+  return { at, flags };
+};
+
 const recordExports = (track: Track, bare: readonly string[], piped: boolean): void => {
   if (piped) return;
-  for (const word of bare.slice(1)) {
+  const args = bare.slice(1);
+  const { at, flags } = splitBuiltinOptions(args);
+  const unexport = flags.includes("n");
+  for (const word of args.slice(at)) {
     const cut = word.indexOf("=");
+    if (word === "GIT_DIR" || word.startsWith("GIT_DIR=")) track.gitDirExported = !unexport;
     if (cut > 0) track.vars[word.slice(0, cut)] = word.slice(cut + 1);
+  }
+};
+
+const recordUnsets = (track: Track, bare: readonly string[], piped: boolean): void => {
+  if (piped) return;
+  const args = bare.slice(1);
+  const { at, flags } = splitBuiltinOptions(args);
+  if (flags.includes("f") && !flags.includes("v")) return;
+  for (const word of args.slice(at)) {
+    if (word === "GIT_DIR") {
+      delete track.vars.GIT_DIR;
+      track.gitDirExported = false;
+    }
   }
 };
 
@@ -222,7 +263,7 @@ const commitDirFor = (track: Track, words: readonly string[], bare: readonly str
   if (git === -1) return undefined;
   const commitAt = bare.indexOf("commit", git + 1);
   if (commitAt === -1) return undefined;
-  return gitDirOf(words, bare, git, commitAt, resolveFrom(track, index, stages, inside), track.vars, home);
+  return gitDirOf(words, bare, git, commitAt, resolveFrom(track, index, stages, inside), track.gitDirExported ? track.vars : {}, home);
 };
 
 const commitDirs = (stages: readonly SplitStage[], command: string, cwd: string, home: string): string[] => {
@@ -246,6 +287,7 @@ const commitDirs = (stages: readonly SplitStage[], command: string, cwd: string,
       (next !== undefined && isPipeGap(openGap(next.gap, inside, next.start - next.gap.length)));
     if (applyCd(track, words, bare, piped, home, index)) continue;
     if (rawBare[0] === "export") recordExports(track, rawBare, piped);
+    else if (rawBare[0] === "unset") recordUnsets(track, rawBare, piped);
     else if (isAssignmentStage(stage.words)) {
       recordAssignments(track, stage.words, piped);
       continue;
