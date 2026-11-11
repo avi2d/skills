@@ -241,9 +241,9 @@ const stageSaves = (words: readonly string[], text: string, inside: readonly boo
 
 const pipelines = (stages: readonly AnalyzedStage[]): AnalyzedStage[][] => {
   const found: AnalyzedStage[][] = [];
-  for (const [at, stage] of stages.entries()) {
+  for (const stage of stages) {
     const current = found.at(-1);
-    if (current === undefined || at === 0 || !isPipeGap(stage.gap)) found.push([stage]);
+    if (current === undefined || !isPipeGap(stage.gap)) found.push([stage]);
     else current.push(stage);
   }
   return found;

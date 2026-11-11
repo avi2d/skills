@@ -153,6 +153,9 @@ test("only relevant stdout sent to a real file counts as saved", () => {
 test("a save of the slow command is not lost to a command chained after it", () => {
   expect(savesStdout("bash tools/stock-take.sh > /tmp/stock-take.log 2>&1; echo EXIT:$?")).toBe(true);
   expect(savesStdout("bash tools/stock-take.sh >/tmp/stock.log 2>&1 && echo done")).toBe(true);
+});
+
+test("on the default path a later nontrivial command, not the earlier save, decides", () => {
   expect(savesStdout('cd /repo && bash tools/stock-take.sh > /tmp/stock-take.out 2>&1; echo "exit=$?"; wc -l /tmp/stock-take.out')).toBe(false);
 });
 
