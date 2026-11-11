@@ -36,14 +36,14 @@ A pull request that touches only top-level Markdown and Markdown under `docs/` s
 Any other change runs `tests/e2e/fleet-names.test.ts` only inside `bun run test`.
 A push to main starts no `ci.yml` run, and the release pull request's dispatched run is the first run to check the merged tree.
 
-`bun run test` is the kit's `checks-test`, which runs `bun test --randomize` with one worker per machine core and prints the seed that reproduces a failure.
-`bun run test:unit` and `bun run test:e2e` run the unit and e2e tiers, and `bun run test:fast` runs the test files the change reaches.
+`bun run test` is the kit's `checks-test`, which runs `bun test --randomize` with workers sized from free memory up to the machine core count and prints the seed that reproduces a failure.
+`bun run test:unit` and `bun run test:e2e` run the unit and e2e tiers.
 Bun hands each test file to one worker process, and each file runs in a fresh global, so a file cannot lean on state another file left behind.
 It fails on a skipped test that declares no reason with `skipReason` at its test site, because bun exits 0 over a test that never ran.
 A skip only a local machine meets, one without `claude` on `PATH` or without the `repos/effect` link, passes `"local"` as the third argument, so only a local run accepts it.
 A test that reads `$HOME` passes against a home nothing was installed into, or skips and says why.
 
-`bunx checks-test --changed` runs only the unit and e2e test files the change reaches.
+`bun run test:fast` is `bunx checks-test --changed`, which runs only the unit and e2e test files the change reaches.
 The change is every path between where `HEAD` branched from `origin/main` and `HEAD`, plus the working tree edits and untracked files.
 A changed test file runs on its own, and a shared file never widens the run to the whole suite.
 The run fails before any test runs when `origin/main` is missing, because then the reached files are unknown.
