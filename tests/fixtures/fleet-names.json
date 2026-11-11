@@ -73,7 +73,7 @@
   "docs/why.md": 1,
   "harness/claude-code/settings.json": 5,
   "harness/codex/hooks.json": 3,
-  "harness/orc/orchestrator.md": 4,
+  "harness/orc/orchestrator.md": 8,
   "harness/pi/extensions/herdr-model-label.ts": 37,
   "harness/pi/extensions/session-name.ts": 14,
   "harness/pi/extensions/transcript-style/index.ts": 7,
