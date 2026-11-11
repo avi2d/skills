@@ -123,6 +123,7 @@ const slowThenCall = (first: string, second: string): string[] => after([call(fi
 
 test.each([
   ["no-mistakes axi run 2>&1 | tail -30", "no-mistakes axi run 2>&1 | tail -25"],
+  ["cd /repo && no-mistakes axi run 2>&1 | tail -30", "cd /repo && no-mistakes axi run 2>&1 | tail -25"],
   ["no-mistakes axi respond --action fix --findings lint-1 2>&1 | tail -30", "no-mistakes axi respond --action fix --findings lint-1 2>&1 | tail -20"],
   ["sleep 240; no-mistakes axi status 2>&1 | sed -n '1,22p'", "sleep 240; no-mistakes axi status 2>&1 | sed -n '7,20p'"],
   ["sleep 300; gh-axi pr checks 42 2>&1 | tail -n 7", "sleep 300; gh-axi pr checks 42 2>&1 | tail -n 12"],
@@ -144,6 +145,7 @@ test.each([
   ["bun run build && sleep 1 && bun test 2>&1 | tail -5", "bun run build && sleep 1 && bun test 2>&1 | tail -30"],
   ["rg -n foo / 2>&1 | head -5", "rg -n foo / 2>&1 | tail -5"],
   ["jq . big.json | head", "jq . big.json | tail"],
+  ["cd x && bun test 2>&1 | tail -5", "cd x && bun test 2>&1 | grep fail"],
 ])("a test or build rerun is still refused though waits pass: %s then a new filter", (first, second) => {
   expect(slowThenCall(first, second)).toEqual([RERUN_REFUSAL]);
 });

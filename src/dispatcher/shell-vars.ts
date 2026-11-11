@@ -12,16 +12,20 @@ const MKTEMP_ASSIGNMENT = /^([A-Za-z_][A-Za-z0-9_]*)=("?)(?:\$\(|`)\s*mktemp((?:
 
 const MKTEMP_FLAGS = new Set(["-d", "--directory", "-q", "--quiet", "-u", "--dry-run", "-t"]);
 
+const splitCluster = (arg: string): string[] =>
+  /^-[dqtu]+$/.test(arg) ? [...arg.slice(1)].map((flag) => `-${flag}`) : [arg];
+
 const mktempDir = (args: readonly string[]): string | undefined => {
-  if (!args.some((arg) => arg === "-d" || arg === "--directory")) return undefined;
-  if (args.some((arg) => arg === "-u" || arg === "--dry-run")) return undefined;
-  const templates = args.filter((arg) => !MKTEMP_FLAGS.has(arg));
+  const expanded = args.flatMap(splitCluster);
+  if (!expanded.some((arg) => arg === "-d" || arg === "--directory")) return undefined;
+  if (expanded.some((arg) => arg === "-u" || arg === "--dry-run")) return undefined;
+  const templates = expanded.filter((arg) => !MKTEMP_FLAGS.has(arg));
   if (templates.some((arg) => arg.startsWith("-"))) return undefined;
   const [template, ...rest] = templates;
   if (rest.length > 0) return undefined;
   if (template === undefined) return tmpdir();
-  if (!template.includes("/")) return args.includes("-t") ? tmpdir() : undefined;
-  if (args.includes("-t")) return undefined;
+  if (!template.includes("/")) return expanded.includes("-t") ? tmpdir() : undefined;
+  if (expanded.includes("-t")) return undefined;
   return template.startsWith("/") ? dirname(template) : undefined;
 };
 

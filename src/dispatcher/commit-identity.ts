@@ -190,17 +190,31 @@ const flatCommand = (stages: readonly SplitStage[], command: string, inside: rea
 const wordMentionsName = (word: string, name: string): boolean =>
   word === name || word.startsWith(name + "=") || word.startsWith(name + "+=") || word.startsWith(name + "[");
 
+const LITERAL_TEMP_FORBIDDEN = /[$`*?\[]/;
+
+const literalTempDir = (first: SplitStage): { name: string; dir: string } | undefined => {
+  if (first.words.length !== 1) return undefined;
+  const found = ASSIGN_WORD.exec(first.words[0] ?? "");
+  if (found === null) return undefined;
+  const value = (first.words[0] ?? "").slice(found[0].length);
+  if (!value.startsWith("/") || LITERAL_TEMP_FORBIDDEN.test(value)) return undefined;
+  if (!underTemp(value)) return undefined;
+  return { name: found[1] ?? "", dir: value };
+};
+
 const shapeVar = (stages: readonly SplitStage[], command: string, inside: readonly boolean[]): Record<string, string> => {
   if (!flatCommand(stages, command, inside)) return {};
   const first = stages[0];
   if (first === undefined) return {};
   const made = mktempAssignment(command, first);
-  if (made === undefined || made.dir === UNRESOLVED) return {};
+  const fromMktemp = made !== undefined && made.dir !== UNRESOLVED ? { name: made.name, dir: made.dir } : undefined;
+  const resolved = fromMktemp ?? (made === undefined ? literalTempDir(first) : undefined);
+  if (resolved === undefined) return {};
   let seen = 0;
   let only = { stage: -1, word: -1 };
   stages.forEach((stage, index) => {
     stage.words.forEach((word, at) => {
-      if (ASSIGN_WORD.exec(word)?.[1] === made.name) {
+      if (ASSIGN_WORD.exec(word)?.[1] === resolved.name) {
         seen += 1;
         only = { stage: index, word: at };
       }
@@ -212,10 +226,10 @@ const shapeVar = (stages: readonly SplitStage[], command: string, inside: readon
     if (other === undefined) continue;
     for (let w = 0; w < other.words.length; w += 1) {
       if (s === only.stage && w === only.word) continue;
-      if (wordMentionsName(other.words[w] ?? "", made.name)) return {};
+      if (wordMentionsName(other.words[w] ?? "", resolved.name)) return {};
     }
   }
-  return { [made.name]: made.dir };
+  return { [resolved.name]: resolved.dir };
 };
 
 const andOnly = (gap: string): boolean =>

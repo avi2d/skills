@@ -86,7 +86,8 @@ const stageWaits = (words: readonly string[]): boolean => {
 
 const waitsOnState = (command: string): boolean => {
   const kept = analyze(command).filter((stage) => stage.kept);
-  return kept.some((stage) => stageWaits(stage.words)) && kept.every((stage) => stageWaits(stage.words) || OUTPUT_FILTERS.has(programOf(unwrapped(stage.words)[0])));
+  const silent = (words: readonly string[]): boolean => programOf(unwrapped(words)[0]) === "cd";
+  return kept.some((stage) => stageWaits(stage.words)) && kept.every((stage) => silent(stage.words) || stageWaits(stage.words) || OUTPUT_FILTERS.has(programOf(unwrapped(stage.words)[0])));
 };
 
 type AnalyzedStage = SplitStage & { kept: boolean };
