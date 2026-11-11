@@ -57,6 +57,11 @@ test("a subshell cd after an escaped quote never moves the commit target", () =>
   expect(refused('d=$(mktemp -d); echo "a\\"b"; (cd "$d"); git -c user.name=t commit -m x')).toBe(COMMIT_IDENTITY_REFUSAL);
 });
 
+test("a quote in a heredoc body or comment never hides a subshell cd", () => {
+  expect(refused("d=$(mktemp -d)\ncat > /tmp/note <<EOF\nit's\nEOF\n(cd \"$d\" && git init -q)\ngit -c user.name=t commit -m x")).toBe(COMMIT_IDENTITY_REFUSAL);
+  expect(refused("d=$(mktemp -d)\n# don't reuse\n(cd \"$d\" && git init -q)\ngit -c user.name=t commit -m x")).toBe(COMMIT_IDENTITY_REFUSAL);
+});
+
 test("the commit target follows the repository selectors, and the work tree never moves it", () => {
   expect(refused(`GIT_DIR=/repo/.git git commit --author=spark -m 'x'`, fixture)).toBe(COMMIT_IDENTITY_REFUSAL);
   expect(refused(`git --git-dir=${fixture} commit --author=spark -m 'x'`)).toBeUndefined();

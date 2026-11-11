@@ -12,7 +12,7 @@ const hasEscapedDollar = (inner: string): boolean => {
   return false;
 };
 
-type Lexer = { segments: Word[][]; word: string | undefined; from: number; to: number; noExpand: boolean; target: "drop" | "heredoc" | undefined; heredocs: string[] };
+type Lexer = { segments: Word[][]; word: string | undefined; from: number; to: number; noExpand: boolean; target: "drop" | "heredoc" | undefined; heredocs: string[]; inside: boolean[] };
 
 function append(lexer: Lexer, text: string, from: number, to: number): void {
   if (lexer.word === undefined) lexer.from = from;
@@ -47,6 +47,7 @@ function quote(lexer: Lexer, command: string, at: number): number {
   const stop = close === -1 ? command.length : close;
   const inner = command.slice(at + 1, stop);
   if (mark === "\x27" ? inner.includes("$") : hasEscapedDollar(inner)) lexer.noExpand = true;
+  lexer.inside.fill(true, at, stop + 1);
   append(lexer, inner, at, stop + 1);
   return stop;
 }
@@ -81,6 +82,7 @@ function separate(lexer: Lexer, command: string, at: number): number {
   const char = command.charAt(at);
   endWord(lexer);
   const past = char === "\n" && lexer.heredocs.length > 0 ? pastHeredocs(command, at, lexer.heredocs.splice(0)) : at;
+  if (past > at) lexer.inside.fill(true, at, past + 1);
   if (SEPARATORS.has(char) && lexer.segments.at(-1)?.length !== 0) lexer.segments.push([]);
   return past;
 }
@@ -90,49 +92,34 @@ function step(lexer: Lexer, command: string, at: number): number {
   if (char === "'" || char === '"') return quote(lexer, command, at);
   if (char === "\\") {
     if (command.charAt(at + 1) === "$") lexer.noExpand = true;
+    lexer.inside.fill(true, at, at + 2);
     if (command.charAt(at + 1) !== "\n") append(lexer, command.charAt(at + 1), at, at + 2);
     return at + 1;
   }
-  if (char === "#" && lexer.word === undefined) return lineEnd(command, at) - 1;
+  if (char === "#" && lexer.word === undefined) {
+    const next = lineEnd(command, at);
+    lexer.inside.fill(true, at, next);
+    return next - 1;
+  }
   if (char === "<" || char === ">") return redirect(lexer, command, at);
   if (SEPARATORS.has(char) || BLANKS.has(char)) return separate(lexer, command, at);
   append(lexer, char, at, at + 1);
   return at;
 }
 
-export function segments(command: string): Word[][] {
-  const lexer: Lexer = { segments: [[]], word: undefined, from: 0, to: 0, noExpand: false, target: undefined, heredocs: [] };
+type Scan = { segments: Word[][]; inside: boolean[] };
+
+function scan(command: string): Scan {
+  const lexer: Lexer = { segments: [[]], word: undefined, from: 0, to: 0, noExpand: false, target: undefined, heredocs: [], inside: new Array<boolean>(command.length).fill(false) };
   for (let at = 0; at < command.length; at += 1) at = step(lexer, command, at);
   endWord(lexer);
-  return lexer.segments.filter((segment) => segment.length > 0);
+  return { segments: lexer.segments.filter((segment) => segment.length > 0), inside: lexer.inside };
+}
+
+export function segments(command: string): Word[][] {
+  return scan(command).segments;
 }
 
 export function quoted(command: string): boolean[] {
-  const inside = new Array<boolean>(command.length).fill(false);
-  let single = false;
-  let double = false;
-  let escaped = false;
-  for (let at = 0; at < command.length; at += 1) {
-    const char = command.charAt(at);
-    if (single) {
-      inside[at] = true;
-      if (char === "\x27") single = false;
-    } else if (double) {
-      inside[at] = true;
-      if (escaped) escaped = false;
-      else if (char === "\\") escaped = true;
-      else if (char === "\"") double = false;
-    } else if (char === "\x27") {
-      inside[at] = true;
-      single = true;
-    } else if (char === "\"") {
-      inside[at] = true;
-      double = true;
-    } else if (char === "\\") {
-      inside[at] = true;
-      if (at + 1 < command.length) inside[at + 1] = true;
-      at += 1;
-    }
-  }
-  return inside;
+  return scan(command).inside;
 }
