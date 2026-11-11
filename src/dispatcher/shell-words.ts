@@ -87,25 +87,84 @@ function separate(lexer: Lexer, command: string, at: number): number {
   return past;
 }
 
+function singleQuotedEnd(command: string, at: number): number {
+  const stop = command.indexOf("'", at + 1);
+  return stop === -1 ? command.length : stop;
+}
+
+function doubleQuotedEnd(command: string, at: number): number {
+  let stop = at + 1;
+  while (stop < command.length && command.charAt(stop) !== '"') stop += command.charAt(stop) === "\\" ? 2 : 1;
+  return stop;
+}
+
+function quotedEnd(command: string, at: number): number | undefined {
+  if (command.charAt(at) === "'") return singleQuotedEnd(command, at);
+  if (command.charAt(at) === '"') return doubleQuotedEnd(command, at);
+  return undefined;
+}
+
 function arithmeticClose(command: string, from: number): boolean {
   let depth = 0;
   for (let at = from; at < command.length; at += 1) {
-    const char = command.charAt(at);
-    if (char === "\\") {
+    if (command.charAt(at) === "\\") {
       at += 1;
-    } else if (char === "'") {
-      const stop = command.indexOf("'", at + 1);
-      at = stop === -1 ? command.length : stop;
-    } else if (char === '"') {
-      let stop = at + 1;
-      while (stop < command.length && command.charAt(stop) !== '"') stop += command.charAt(stop) === "\\" ? 2 : 1;
-      at = stop;
-    } else if (char === "(") {
-      depth += 1;
-    } else if (char === ")") {
-      if (depth === 0) return command.charAt(at + 1) === ")";
-      depth -= 1;
+      continue;
     }
+    const quotedStop = quotedEnd(command, at);
+    if (quotedStop !== undefined) {
+      at = quotedStop;
+      continue;
+    }
+    if (command.charAt(at) === "(") {
+      depth += 1;
+      continue;
+    }
+    if (command.charAt(at) !== ")") continue;
+    if (depth === 0) return command.charAt(at + 1) === ")";
+    depth -= 1;
+  }
+  return false;
+}
+
+function escapeStep(lexer: Lexer, command: string, at: number): number {
+  if (command.charAt(at + 1) === "$") lexer.noExpand = true;
+  lexer.inside.fill(true, at, at + 2);
+  if (command.charAt(at + 1) !== "\n") append(lexer, command.charAt(at + 1), at, at + 2);
+  return at + 1;
+}
+
+function commentStep(lexer: Lexer, command: string, at: number): number {
+  const next = lineEnd(command, at);
+  lexer.inside.fill(true, at, next);
+  return next - 1;
+}
+
+function openArithmetic(lexer: Lexer, command: string, at: number): number | undefined {
+  if (command.charAt(at) === "$" && command.slice(at, at + 3) === "$((" && arithmeticClose(command, at + 3)) {
+    lexer.arithmetic += 2;
+    append(lexer, "$((", at, at + 3);
+    return at + 2;
+  }
+  if (command.charAt(at) === "$" && command.slice(at, at + 2) === "$[") {
+    lexer.arithmetic += 1;
+    append(lexer, "$[", at, at + 2);
+    return at + 1;
+  }
+  if (command.charAt(at) === "(" && command.charAt(at + 1) === "(" && arithmeticClose(command, at + 2)) {
+    lexer.arithmetic += 2;
+    append(lexer, "((", at, at + 2);
+    return at + 1;
+  }
+  return undefined;
+}
+
+function arithmeticStep(lexer: Lexer, char: string, at: number): boolean {
+  if (lexer.arithmetic > 0 && (char === "(" || char === "[")) lexer.arithmetic += 1;
+  else if (lexer.arithmetic > 0 && (char === ")" || char === "]")) lexer.arithmetic -= 1;
+  if (lexer.arithmetic > 0 && (char === "<" || char === ">")) {
+    append(lexer, char, at, at + 1);
+    return true;
   }
   return false;
 }
@@ -113,38 +172,11 @@ function arithmeticClose(command: string, from: number): boolean {
 function step(lexer: Lexer, command: string, at: number): number {
   const char = command.charAt(at);
   if (char === "'" || char === '"') return quote(lexer, command, at);
-  if (char === "\\") {
-    if (command.charAt(at + 1) === "$") lexer.noExpand = true;
-    lexer.inside.fill(true, at, at + 2);
-    if (command.charAt(at + 1) !== "\n") append(lexer, command.charAt(at + 1), at, at + 2);
-    return at + 1;
-  }
-  if (char === "#" && lexer.word === undefined) {
-    const next = lineEnd(command, at);
-    lexer.inside.fill(true, at, next);
-    return next - 1;
-  }
-  if (char === "$" && command.slice(at, at + 3) === "$((" && arithmeticClose(command, at + 3)) {
-    lexer.arithmetic += 2;
-    append(lexer, "$((", at, at + 3);
-    return at + 2;
-  }
-  if (char === "$" && command.slice(at, at + 2) === "$[") {
-    lexer.arithmetic += 1;
-    append(lexer, "$[", at, at + 2);
-    return at + 1;
-  }
-  if (char === "(" && command.charAt(at + 1) === "(" && arithmeticClose(command, at + 2)) {
-    lexer.arithmetic += 2;
-    append(lexer, "((", at, at + 2);
-    return at + 1;
-  }
-  if (lexer.arithmetic > 0 && (char === "(" || char === "[")) lexer.arithmetic += 1;
-  else if (lexer.arithmetic > 0 && (char === ")" || char === "]")) lexer.arithmetic -= 1;
-  if (lexer.arithmetic > 0 && (char === "<" || char === ">")) {
-    append(lexer, char, at, at + 1);
-    return at;
-  }
+  if (char === "\\") return escapeStep(lexer, command, at);
+  if (char === "#" && lexer.word === undefined) return commentStep(lexer, command, at);
+  const opened = openArithmetic(lexer, command, at);
+  if (opened !== undefined) return opened;
+  if (arithmeticStep(lexer, char, at)) return at;
   if (char === "<" || char === ">") return redirect(lexer, command, at);
   if (SEPARATORS.has(char) || BLANKS.has(char)) return separate(lexer, command, at);
   append(lexer, char, at, at + 1);
