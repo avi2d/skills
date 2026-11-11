@@ -18,10 +18,7 @@ A target under `generated/` is written by the same run, because a clone arrives 
 | `~/.codex/hooks.json` | `harness/codex/hooks.json` |
 | `~/.pi/agent/claude-bridge.json` | `harness/pi/claude-bridge.json` |
 | `~/.pi/agent/keybindings.json` | `harness/pi/keybindings.json` |
-| `~/.pi/agent/web-search.json` | `harness/pi/web-search.json` |
 | `~/.pi/agent/extensions/session-name.ts` | `harness/pi/extensions/session-name.ts` |
-| `~/.pi/agent/extensions/qwen-tool-calls.ts` | `harness/pi/extensions/qwen-tool-calls.ts` |
-| `~/.pi/agent/extensions/web-tools.ts` | `harness/pi/extensions/web-tools.ts` |
 | `~/.pi/agent/extensions/herdr-model-label.ts` | `harness/pi/extensions/herdr-model-label.ts` |
 | `~/.pi/agent/extensions/transcript-style` | `harness/pi/extensions/transcript-style` |
 | `~/.pi/agent/extensions/copy-selection.ts` | `harness/pi/extensions/copy-selection.ts` |
@@ -70,6 +67,9 @@ Each path below was once in the map.
 - `~/.config/opencode/AGENTS.md`
 - `~/.pi/agent/AGENTS.md`
 - `~/.pi/agent/extensions/compaction-points.ts`
+- `~/.pi/agent/extensions/qwen-tool-calls.ts`
+- `~/.pi/agent/extensions/web-tools.ts`
+- `~/.pi/agent/web-search.json`
 - `~/.pi/agent/extensions/transcript-style.ts`
 - `~/Projects/firstmate/config/secondmate-harness`
 

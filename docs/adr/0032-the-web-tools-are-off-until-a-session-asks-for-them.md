@@ -1,10 +1,13 @@
+---
+governs: [harness/pi/extensions/web-tools.ts, harness/pi/web-search.json]
+---
 # 32. The web tools are off until a session asks for them
 
 Date: 2026-09-19
 
 ## Status
 
-Accepted.
+Superseded by [0115](0115-the-web-tools-and-the-qwen-repair-leave-the-harness.md), which removes the package and the extension.
 
 ## Context
 

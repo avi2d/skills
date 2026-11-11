@@ -33,10 +33,7 @@ These paths in $HOME then belong to the checkout:
 - `~/.codex/hooks.json`
 - `~/.pi/agent/claude-bridge.json`
 - `~/.pi/agent/keybindings.json`
-- `~/.pi/agent/web-search.json`
 - `~/.pi/agent/extensions/session-name.ts`
-- `~/.pi/agent/extensions/qwen-tool-calls.ts`
-- `~/.pi/agent/extensions/web-tools.ts`
 - `~/.pi/agent/extensions/herdr-model-label.ts`
 - `~/.pi/agent/extensions/transcript-style`
 - `~/.pi/agent/extensions/copy-selection.ts`
@@ -68,10 +65,7 @@ for path in \
   '.codex/hooks.json' \
   '.pi/agent/claude-bridge.json' \
   '.pi/agent/keybindings.json' \
-  '.pi/agent/web-search.json' \
   '.pi/agent/extensions/session-name.ts' \
-  '.pi/agent/extensions/qwen-tool-calls.ts' \
-  '.pi/agent/extensions/web-tools.ts' \
   '.pi/agent/extensions/herdr-model-label.ts' \
   '.pi/agent/extensions/transcript-style' \
   '.pi/agent/extensions/copy-selection.ts' \
@@ -91,6 +85,9 @@ for path in \
   '.config/opencode/AGENTS.md' \
   '.pi/agent/AGENTS.md' \
   '.pi/agent/extensions/compaction-points.ts' \
+  '.pi/agent/extensions/qwen-tool-calls.ts' \
+  '.pi/agent/extensions/web-tools.ts' \
+  '.pi/agent/web-search.json' \
   '.pi/agent/extensions/transcript-style.ts' \
   'Projects/firstmate/config/secondmate-harness'
 do
