@@ -16,7 +16,7 @@ const code = (await trackedFiles(repo)).filter((path) => globs.some((glob) => ma
 test("the Rule's own trigger picks the files these checks read, and it picks some", () => {
   expect(code, "no tracked file matches the Rule's trigger, so every check below passes on an empty set").not.toEqual([]);
   expect(code, "the generator and its suite are code the Rule covers").toContain("src/dispatcher/dispatch.ts");
-  expect(code, "a harness extension is code the Rule covers").toContain("harness/pi/extensions/web-tools.ts");
+  expect(code, "a harness extension is code the Rule covers").toContain("harness/pi/extensions/session-name.ts");
 });
 
 test("every extension the checks know how to read is one the Rule's trigger fires on", () => {

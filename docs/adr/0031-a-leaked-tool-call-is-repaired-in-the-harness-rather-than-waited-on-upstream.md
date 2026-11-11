@@ -1,10 +1,13 @@
+---
+governs: [harness/pi/extensions/qwen-tool-calls.ts]
+---
 # 31. A leaked tool call is repaired in the harness rather than waited on upstream
 
 Date: 2026-09-19
 
 ## Status
 
-Accepted.
+Superseded by [0115](0115-the-web-tools-and-the-qwen-repair-leave-the-harness.md), which removes the extension.
 
 ## Context
 

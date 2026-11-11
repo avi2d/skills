@@ -38,8 +38,8 @@
 | [0028](0028-a-bundled-module-declares-the-packages-its-harness-supplies.md) | A bundled module declares the packages its harness supplies | Accepted |  |
 | [0029](0029-a-hub-is-links-into-the-tree-and-is-reconciled-rather-than-rewritten.md) | A Hub is links into the tree, and is reconciled rather than rewritten | Accepted |  |
 | [0030](0030-inheritance-goes-and-a-skill-is-the-words-it-holds.md) | Inheritance goes, and a Skill is the words it holds | Accepted |  |
-| [0031](0031-a-leaked-tool-call-is-repaired-in-the-harness-rather-than-waited-on-upstream.md) | A leaked tool call is repaired in the harness rather than waited on upstream | Accepted |  |
-| [0032](0032-the-web-tools-are-off-until-a-session-asks-for-them.md) | The web tools are off until a session asks for them | Accepted |  |
+| [0031](0031-a-leaked-tool-call-is-repaired-in-the-harness-rather-than-waited-on-upstream.md) | A leaked tool call is repaired in the harness rather than waited on upstream | Superseded | `harness/pi/extensions/qwen-tool-calls.ts` |
+| [0032](0032-the-web-tools-are-off-until-a-session-asks-for-them.md) | The web tools are off until a session asks for them | Superseded | `harness/pi/extensions/web-tools.ts`, `harness/pi/web-search.json` |
 | [0033](0033-a-clause-a-program-can-decide-leaves-the-rule-body-and-becomes-a-lint-rule.md) | A clause a program can decide leaves the Rule body and becomes a lint rule | Accepted |  |
 | [0034](0034-pi-cache-warming-is-off-until-a-model-declares-a-prompt-cache.md) | pi cache warming is off until a model declares a prompt cache | Accepted |  |
 | [0035](0035-the-suite-builds-what-a-clone-does-not-carry-and-fetches-the-checks-at-a-pin.md) | The suite builds what a clone does not carry, and the checks arrive at a pin | Accepted |  |
@@ -122,5 +122,6 @@
 | [0112](0112-the-firstmate-dispatch-rules-and-pins-move-to-the-dotfiles-repository.md) | The firstmate dispatch rules and pins move to the dotfiles repository | Accepted | `src/generate/link.ts`, `src/generate/no-mistakes-config.ts`, `tests/unit/link.test.ts`, `tests/unit/no-mistakes-config.test.ts` |
 | [0113](0113-finish-the-task-is-switched-off.md) | Finish the task is switched off | Accepted | `selection.toml` |
 | [0114](0114-sol-returns-to-the-reviewer-chain-with-no-floor.md) | Sol returns to the reviewer chain with no floor | Accepted | `src/generate/no-mistakes-config.ts`, `tests/unit/no-mistakes-config.test.ts` |
+| [0115](0115-the-web-tools-and-the-qwen-repair-leave-the-harness.md) | The web tools and the qwen repair leave the harness | Accepted | `src/generate/link.ts`, `harness/pi/settings.json`, `tests/e2e/extension-preflight.test.ts` |
 
 <!-- end generated adr-index -->
