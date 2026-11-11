@@ -5,7 +5,7 @@ import { segments } from "./shell-words";
 
 export const digestCommand = (command: string): string => createHash("sha256").update(command, "utf8").digest("hex");
 
-export type SplitStage = { words: string[]; start: number; gap: string; spanEnd: number };
+export type SplitStage = { words: string[]; noExpand: readonly boolean[]; start: number; gap: string; spanEnd: number };
 
 export const splitStages = (command: string): SplitStage[] => {
   const found = segments(command);
@@ -14,6 +14,7 @@ export const splitStages = (command: string): SplitStage[] => {
     const previous = at === 0 ? 0 : (found[at - 1]?.at(-1)?.to ?? 0);
     return {
       words: segment.map((word) => word.text),
+      noExpand: segment.map((word) => word.noExpand === true),
       start,
       gap: command.slice(previous, start),
       spanEnd: found[at + 1]?.[0]?.from ?? command.length,

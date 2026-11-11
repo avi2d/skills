@@ -109,6 +109,7 @@ test.each([
   "d=$(mktemp -d); cd \"$d\" && git init -q && echo x > f && git add . && git -c user.name=t -c user.email=t@e commit -m x",
   "G=/tmp/x/repo; git -C $G -c user.name=t -c user.email=t@example.com commit -m x",
   "d=$(mktemp -dt foo.XXXX); cd \"$d\" && git -c user.name=t commit -m x",
+  "d=$(mktemp -d); echo \"it's\" > \"$d/f\"; cd \"$d\" && git init -q && git add f && git -c user.name=t commit -m x",
 ])("a commit into a temp directory held in a shell variable stays exempt: %s", (command) => {
   expect(refused(command)).toBeUndefined();
 });
@@ -169,6 +170,8 @@ test.each([
   "G=/tmp/x; GIT_DIR=$G/.git; git -c user.name=t commit -m x",
   "R=$(mktemp -d); export GIT_DIR=$R/.git; git -c user.name=t commit -m x",
   "G=/tmp/x; export GIT_DIR=$G/.git; git -c user.name=t commit -m x",
+  "d=$(mktemp -d); echo \"'\"; cd '$d'; git -c user.name=t commit -m x",
+  "d=$(mktemp -d); cd \"a\\\"b'$d\"; git -c user.name=t commit -m x",
   "d=$(mktemp -d); cd '$d'; git -c user.name=t commit -m x",
   "d=$(mktemp -d); cd \\$d; git -c user.name=t commit -m x",
   "G=/tmp/x; cd '$G'; git -c user.name=t commit -m x",
