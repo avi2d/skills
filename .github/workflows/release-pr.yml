@@ -6,37 +6,12 @@ on:
 permissions:
   contents: read
 jobs:
-  pull-request:
-    if: github.event_name != 'push'
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    concurrency:
-      group: release-pull-request
-      cancel-in-progress: false
+  release-pr:
     permissions:
       contents: write
       pull-requests: write
       actions: write
-    steps:
-      - uses: avi2d/workflows/setup@v1
-        with:
-          fetch-depth: 0
-      - name: open or refresh the release pull request
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: ./node_modules/.bin/checks-release-pr ci.yml
-  tag:
-    if: "github.event_name == 'push' && startsWith(github.event.head_commit.message, 'chore: release ')"
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    permissions:
-      contents: write
-      actions: write
-    steps:
-      - uses: avi2d/workflows/setup@v1
-        with:
-          fetch-depth: 0
-      - name: tag the release
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: ./node_modules/.bin/checks-release-tag release.yml
+    uses: avi2d/workflows/.github/workflows/release-pr.yml@v2
+    with:
+      plan-command: ./node_modules/.bin/checks-release-pr ci.yml
+      tag-command: ./node_modules/.bin/checks-release-tag release.yml
