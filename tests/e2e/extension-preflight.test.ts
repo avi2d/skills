@@ -17,7 +17,7 @@ const PINNED_PI_VERSION = Schema.decodeSync(Schema.fromJsonString(Schema.Struct(
   readFileSync(`${REPO}node_modules/@earendil-works/pi-coding-agent/package.json`, "utf8"),
 ).version;
 
-const UNLOADABLE_ENTRY = "harness/pi/extensions/web-tools.ts";
+const UNLOADABLE_ENTRY = "harness/pi/extensions/session-name.ts";
 
 // What an extension meets under a pi that exports no createCodemodeExtension.
 const UNLOADABLE_EXTENSION = `const createCodemodeExtension = Reflect.get({}, "createCodemodeExtension");
@@ -53,7 +53,7 @@ test("a checkout whose extension pi cannot load is refused, naming the extension
     await writeFile(`${repo}${UNLOADABLE_ENTRY}`, UNLOADABLE_EXTENSION);
     const installed = await valueOf(install(repo, home, PI));
     const reasons = installed.state === "refused" ? installed.reasons : expect.unreachable("the preflight let an unloadable extension through");
-    expect(reasons.join("\n")).toMatch(/~\/\.pi\/agent\/extensions\/web-tools\.ts.*createCodemodeExtension is not a function/);
+    expect(reasons.join("\n")).toMatch(/~\/\.pi\/agent\/extensions\/session-name\.ts.*createCodemodeExtension is not a function/);
     expect(existsSync(home), "the link went ahead into $HOME after pi failed to load an extension").toBe(false);
   } finally {
     await discard();
@@ -67,7 +67,7 @@ test("a checkout pi loads in full is linked into $HOME after the preflight", asy
     const linked = installed.state === "linked" ? installed : expect.unreachable(`the preflight refused: ${installed.reasons.join("; ")}`);
     expect(linked.load).toEqual({ state: "loaded", pi: { path: PI, version: PINNED_PI_VERSION } });
     expect(linked.outcomes.filter((o) => o.state === "refused")).toEqual([]);
-    expect(existsSync(`${home}/.pi/agent/extensions/web-tools.ts`), "$HOME holds no link to web-tools").toBe(true);
+    expect(existsSync(`${home}/.pi/agent/extensions/session-name.ts`), "$HOME holds no link to session-name").toBe(true);
   } finally {
     await discard();
   }

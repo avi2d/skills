@@ -37,11 +37,7 @@ export const linksUnder = (root: string): LinkMap => ({
   ".codex/hooks.json": "harness/codex/hooks.json",
   ".pi/agent/claude-bridge.json": "harness/pi/claude-bridge.json",
   ".pi/agent/keybindings.json": "harness/pi/keybindings.json",
-  // Credentials in that file go in as `$ENV_VAR` sources: a key written there is a key published.
-  ".pi/agent/web-search.json": "harness/pi/web-search.json",
   ".pi/agent/extensions/session-name.ts": "harness/pi/extensions/session-name.ts",
-  ".pi/agent/extensions/qwen-tool-calls.ts": "harness/pi/extensions/qwen-tool-calls.ts",
-  ".pi/agent/extensions/web-tools.ts": "harness/pi/extensions/web-tools.ts",
   ".pi/agent/extensions/herdr-model-label.ts": "harness/pi/extensions/herdr-model-label.ts",
   ".pi/agent/extensions/transcript-style": "harness/pi/extensions/transcript-style",
   ".pi/agent/extensions/copy-selection.ts": "harness/pi/extensions/copy-selection.ts",
@@ -85,6 +81,9 @@ export const RETIRED: readonly string[] = [
   ".config/opencode/AGENTS.md",
   ".pi/agent/AGENTS.md",
   ".pi/agent/extensions/compaction-points.ts",
+  ".pi/agent/extensions/qwen-tool-calls.ts",
+  ".pi/agent/extensions/web-tools.ts",
+  ".pi/agent/web-search.json",
   ".pi/agent/extensions/transcript-style.ts",
   "Projects/firstmate/config/secondmate-harness",
 ];

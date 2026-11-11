@@ -192,7 +192,7 @@ A pi extension that keeps its logic in exported pure functions gets a unit test 
 A linked pi extension resolves no package from this checkout's `node_modules`.
 It imports only Node's built-ins, the packages pi gives every extension, and its own files.
 `bun run link` refuses to link $HOME while the pi on `PATH` fails to load it, and `tests/e2e/extension-preflight.test.ts` holds that refusal.
-A patch to a provider behaviour belongs here rather than in `src/`, as [record 0031](adr/0031-a-leaked-tool-call-is-repaired-in-the-harness-rather-than-waited-on-upstream.md) records for the one that repairs qwen3-coder's leaked tool calls.
+A patch to a provider behaviour belongs here rather than in `src/`.
 
 ## Troubleshooting
 

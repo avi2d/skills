@@ -23,12 +23,12 @@ test("each extension pi failed to load is named once, under ~ rather than the te
   const home = "/tmp/skills-preflight-x/home";
   const stderr = [
     `Error: Failed to load extension "${home}/.pi/agent/extensions/session-name.ts": Failed to load extension: createCodemodeExtension is not a function`,
-    `Error: Failed to load extension "${home}/.pi/agent/extensions/web-tools.ts": Failed to load extension: boom`,
+    `Error: Failed to load extension "${home}/.pi/agent/extensions/copy-selection.ts": Failed to load extension: boom`,
     'Hint: Start without extensions using "pi -ne".',
     "",
   ].join("\n");
   expect(loadFailures(stderr, home)).toEqual([
     'Failed to load extension "~/.pi/agent/extensions/session-name.ts": Failed to load extension: createCodemodeExtension is not a function',
-    'Failed to load extension "~/.pi/agent/extensions/web-tools.ts": Failed to load extension: boom',
+    'Failed to load extension "~/.pi/agent/extensions/copy-selection.ts": Failed to load extension: boom',
   ]);
 });
