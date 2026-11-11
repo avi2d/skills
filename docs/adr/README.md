@@ -121,5 +121,6 @@
 | [0111](0111-one-crew-dispatch-file-holds-the-mac-rules.md) | One crew dispatch file holds the Mac rules | Superseded | `src/generate/crew-dispatch-config.ts`, `src/generate/machine-files.ts`, `src/generate/link.ts`, `src/generate/firstmate-pins.ts`, `harness/firstmate/crew-dispatch.json`, `tests/unit/crew-dispatch.test.ts`, `tests/unit/machine-files.test.ts` |
 | [0112](0112-the-firstmate-dispatch-rules-and-pins-move-to-the-dotfiles-repository.md) | The firstmate dispatch rules and pins move to the dotfiles repository | Accepted | `src/generate/link.ts`, `src/generate/no-mistakes-config.ts`, `tests/unit/link.test.ts`, `tests/unit/no-mistakes-config.test.ts` |
 | [0113](0113-finish-the-task-is-switched-off.md) | Finish the task is switched off | Accepted | `selection.toml` |
+| [0114](0114-sol-returns-to-the-reviewer-chain-with-no-floor.md) | Sol returns to the reviewer chain with no floor | Accepted | `src/generate/no-mistakes-config.ts`, `tests/unit/no-mistakes-config.test.ts` |
 
 <!-- end generated adr-index -->

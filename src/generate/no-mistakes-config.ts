@@ -8,6 +8,8 @@ const Count = Schema.Int.check(Schema.isGreaterThanOrEqualTo(0));
 
 const Effort = Schema.Literals(["minimal", "low", "medium", "high", "xhigh", "max"]);
 
+const SOL = "openai/gpt-6.1-sol";
+
 const OPUS = "claude-bridge/claude-opus-5-5";
 
 const SPARK = "opencode-go/muse-spark-1.3-contributor";
@@ -25,6 +27,9 @@ const ReviewerChain = Schema.Tuple([
     env: Schema.Struct({ CLAUDE_CONFIG_DIR: accountDirOf(MAIN_ACCOUNT) }),
   }).annotate({
     description: "Opus 5.5 on the clauth account main, the Claude $200 Max account, logged in under its own config dir",
+  }),
+  Schema.Struct({ agent: Schema.Literal("pi"), model: Schema.Literal(SOL), effort: Effort }).annotate({
+    description: "GPT-6.1 Sol on the Codex $20 account",
   }),
   Schema.Struct({
     agent: Schema.Literal("pi"),
@@ -117,6 +122,7 @@ export const noMistakesConfigOf = (home: string): NoMistakesConfig => ({
   },
   reviewer_chain: [
     { agent: "pi", model: OPUS, effort: "high", env: { CLAUDE_CONFIG_DIR: loginDir(home, MAIN_ACCOUNT) } },
+    { agent: "pi", model: SOL, effort: "high" },
     { agent: "pi", model: OPUS, effort: "high", env: { CLAUDE_CONFIG_DIR: loginDir(home, SECOND_ACCOUNT) } },
   ],
   auto_fix: { rebase: 3, lint: 3, test: 3, review: 0, document: 3, ci: 3 },
