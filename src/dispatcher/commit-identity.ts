@@ -1,58 +1,17 @@
 import { existsSync, readFileSync, realpathSync } from "node:fs";
-import { homedir, tmpdir } from "node:os";
-import { dirname, join, resolve, sep } from "node:path";
+import { homedir } from "node:os";
+import { dirname, join, resolve } from "node:path";
 import { isPipeGap, quoted, splitStages, type SplitStage } from "./rerun";
-import { UNRESOLVED, expandVars, mktempAssignment } from "./shell-vars";
+import { LEADING_ASSIGNMENT, andOnly, expandVars, openGap, shapeVar, underTemp, withoutEnv } from "./shell-vars";
 
 export const COMMIT_IDENTITY_REFUSAL =
   "This commit sets its own author or committer. Commit as the identity the repository already resolves to, which git config user.name and git config user.email print. Set an identity only inside a throwaway repository a test creates under the temp directory.";
 
 export const COMMIT_IDENTITY_LINE = "commit-identity: refused a commit that sets its own author or committer";
 
-const tempRoots = (): string[] => {
-  const roots = new Set<string>();
-  for (const candidate of [tmpdir(), "/tmp", "/private/tmp"]) {
-    try {
-      roots.add(realpathSync(candidate));
-    } catch {
-    }
-  }
-  return [...roots];
-};
-
-const underTemp = (cwd: string): boolean => {
-  if (cwd.includes("$") || cwd.includes("`")) return false;
-  try {
-    const roots = tempRoots();
-    try {
-      const dir = realpathSync(resolve(cwd));
-      return roots.some((root) => dir === root || dir.startsWith(root + sep));
-    } catch {
-      let base = resolve(cwd);
-      for (;;) {
-        if (existsSync(base)) {
-          const dir = realpathSync(base);
-          return roots.some((root) => dir === root || dir.startsWith(root + sep));
-        }
-        const parent = dirname(base);
-        if (parent === base) return false;
-        base = parent;
-      }
-    }
-  } catch {
-    return false;
-  }
-};
 
 const IDENTITY_VAR = /^GIT_(AUTHOR|COMMITTER)_[A-Z][A-Z_]*=/;
 
-const LEADING_ASSIGNMENT = /^[A-Za-z_][A-Za-z0-9_]*=.*/;
-
-const withoutEnv = (words: readonly string[]): readonly string[] => {
-  let at = 0;
-  while (at < words.length && LEADING_ASSIGNMENT.test(words[at] ?? "")) at += 1;
-  return words.slice(at);
-};
 
 const expandHome = (dir: string, home: string): string =>
   dir === "~" || dir.startsWith("~/") ? join(home, dir.slice(1)) : dir;
@@ -169,81 +128,6 @@ const gitDirOf = (
   return explicit ?? envGitDir(words, bare, vars, home) ?? discoverGitDir(dir);
 };
 
-const ASSIGN_WORD = /^([A-Za-z_][A-Za-z0-9_]*)=/;
-const COMPOUND_WORDS = new Set(["if", "then", "else", "elif", "fi", "while", "until", "for", "select", "do", "done", "case", "esac", "function", "coproc", "time", "{", "}", "!", "source", "eval", "."]);
-
-const openGap = (gap: string, inside: readonly boolean[], base: number): string => {
-  let seen = "";
-  for (let o = 0; o < gap.length; o += 1) {
-    if (inside[base + o] !== true) seen += gap[o];
-  }
-  return seen;
-};
-
-const flatCommand = (stages: readonly SplitStage[], command: string, inside: readonly boolean[]): boolean => {
-  for (const stage of stages) {
-    const head = withoutEnv(stage.words)[0];
-    if (head !== undefined && COMPOUND_WORDS.has(head)) return false;
-    const base = stage.start - stage.gap.length;
-    for (let o = 0; o < stage.gap.length; o += 1) {
-      const at = base + o;
-      if (inside[at] === true) continue;
-      if (stage.gap[o] === "(" && command[at - 1] !== "$") return false;
-    }
-    if (/[|&]/.test(openGap(stage.gap, inside, base).replace(/&&|&>|>&/g, ""))) return false;
-  }
-  return true;
-};
-
-const wordMentionsName = (word: string, name: string): boolean =>
-  word === name || word.startsWith(name + "=") || word.startsWith(name + "+=") || word.startsWith(name + "[");
-
-const LITERAL_TEMP_FORBIDDEN = /[$`*?\[]/;
-
-const literalTempDir = (first: SplitStage): { name: string; dir: string } | undefined => {
-  if (first.words.length !== 1) return undefined;
-  const found = ASSIGN_WORD.exec(first.words[0] ?? "");
-  if (found === null) return undefined;
-  const value = (first.words[0] ?? "").slice(found[0].length);
-  if (!value.startsWith("/") || LITERAL_TEMP_FORBIDDEN.test(value)) return undefined;
-  if (!underTemp(value)) return undefined;
-  return { name: found[1] ?? "", dir: value };
-};
-
-const shapeVar = (stages: readonly SplitStage[], command: string, inside: readonly boolean[]): Record<string, string> => {
-  if (!flatCommand(stages, command, inside)) return {};
-  const first = stages[0];
-  if (first === undefined) return {};
-  const made = mktempAssignment(command, first);
-  const fromMktemp = made !== undefined && made.dir !== UNRESOLVED ? { name: made.name, dir: made.dir } : undefined;
-  const resolved = fromMktemp ?? (made === undefined ? literalTempDir(first) : undefined);
-  if (resolved === undefined) return {};
-  let seen = 0;
-  let only = { stage: -1, word: -1 };
-  stages.forEach((stage, index) => {
-    stage.words.forEach((word, at) => {
-      if (ASSIGN_WORD.exec(word)?.[1] === resolved.name) {
-        seen += 1;
-        only = { stage: index, word: at };
-      }
-    });
-  });
-  if (seen !== 1 || only.stage !== 0) return {};
-  for (let s = 0; s < stages.length; s += 1) {
-    const other = stages[s];
-    if (other === undefined) continue;
-    for (let w = 0; w < other.words.length; w += 1) {
-      if (s === only.stage && w === only.word) continue;
-      if (wordMentionsName(other.words[w] ?? "", resolved.name)) return {};
-    }
-  }
-  return { [resolved.name]: resolved.dir };
-};
-
-const andOnly = (gap: string, inside: readonly boolean[], base: number): boolean => {
-  const seen = openGap(gap, inside, base);
-  return seen.includes("&&") && !seen.includes(";") && !seen.includes("||") && !seen.includes("\n");
-};
 
 type Track = {
   current: string;
