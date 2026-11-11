@@ -198,10 +198,53 @@ const applyCd = (track: Track, words: readonly string[], bare: readonly string[]
 
 const recordExports = (track: Track, bare: readonly string[], piped: boolean): void => {
   if (piped) return;
-  for (const word of bare.slice(1)) {
+  const args = bare.slice(1);
+  let at = 0;
+  let unexport = false;
+  for (; at < args.length; at += 1) {
+    const option = args[at] ?? "";
+    if (option === "--") {
+      at += 1;
+      break;
+    }
+    if (option.startsWith("-") && option.length > 1 && !option.includes("=")) {
+      if (option.slice(1).includes("n")) unexport = true;
+      continue;
+    }
+    break;
+  }
+  for (const word of args.slice(at)) {
     const cut = word.indexOf("=");
-    if (word === "GIT_DIR" || word.startsWith("GIT_DIR=")) track.gitDirExported = true;
+    if (word === "GIT_DIR" || word.startsWith("GIT_DIR=")) track.gitDirExported = !unexport;
     if (cut > 0) track.vars[word.slice(0, cut)] = word.slice(cut + 1);
+  }
+};
+
+const recordUnsets = (track: Track, bare: readonly string[], piped: boolean): void => {
+  if (piped) return;
+  const args = bare.slice(1);
+  let at = 0;
+  let functions = false;
+  let variables = false;
+  for (; at < args.length; at += 1) {
+    const option = args[at] ?? "";
+    if (option === "--") {
+      at += 1;
+      break;
+    }
+    if (option.startsWith("-") && option.length > 1 && !option.includes("=")) {
+      if (option.slice(1).includes("f")) functions = true;
+      if (option.slice(1).includes("v")) variables = true;
+      continue;
+    }
+    break;
+  }
+  if (functions && !variables) return;
+  for (const word of args.slice(at)) {
+    if (word === "GIT_DIR") {
+      delete track.vars.GIT_DIR;
+      track.gitDirExported = false;
+    }
   }
 };
 
@@ -253,6 +296,7 @@ const commitDirs = (stages: readonly SplitStage[], command: string, cwd: string,
       (next !== undefined && isPipeGap(openGap(next.gap, inside, next.start - next.gap.length)));
     if (applyCd(track, words, bare, piped, home, index)) continue;
     if (rawBare[0] === "export") recordExports(track, rawBare, piped);
+    else if (rawBare[0] === "unset") recordUnsets(track, rawBare, piped);
     else if (isAssignmentStage(stage.words)) {
       recordAssignments(track, stage.words, piped);
       continue;
