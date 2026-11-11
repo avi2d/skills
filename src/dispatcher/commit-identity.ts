@@ -344,12 +344,13 @@ const commitDirs = (stages: readonly SplitStage[], command: string, cwd: string,
     applyGapParens(track, stage, stage.start - stage.gap.length, inside, insideBody);
     const words = stage.words.map((word) => expandVars(word, shape));
     const bare = withoutEnv(words);
+    const rawBare = withoutEnv(stage.words);
     const next = stages[index + 1];
     const piped = isPipeGap(stage.gap) || (next !== undefined && isPipeGap(next.gap));
     if (applyCd(track, words, bare, piped, home, index)) continue;
-    if (bare[0] === "export") recordExports(track, bare, piped);
-    else if (isAssignmentStage(words)) {
-      recordAssignments(track, words, piped);
+    if (rawBare[0] === "export") recordExports(track, rawBare, piped);
+    else if (isAssignmentStage(stage.words)) {
+      recordAssignments(track, stage.words, piped);
       continue;
     }
     const found = commitDirFor(track, words, bare, index, stages, home);
