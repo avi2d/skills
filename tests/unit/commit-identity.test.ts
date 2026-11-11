@@ -140,6 +140,22 @@ test.each([
 });
 
 test.each([
+  "export -n GIT_DIR=/tmp/x/.git; git -c user.name=t commit -m x",
+  "export GIT_DIR=/tmp/x/.git; export -n GIT_DIR; git -c user.name=t commit -m x",
+  "export GIT_DIR=/tmp/x/.git; unset GIT_DIR; git -c user.name=t commit -m x",
+  "export GIT_DIR=/tmp/x/.git; unset -v GIT_DIR; git -c user.name=t commit -m x",
+])("an unexported or unset GIT_DIR leaves the commit refused: %s", (command) => {
+  expect(refused(command)).toBe(COMMIT_IDENTITY_REFUSAL);
+});
+
+test.each([
+  "export GIT_DIR=/tmp/x/.git; (unset GIT_DIR); git -c user.name=t commit -m x",
+  "export GIT_DIR=/tmp/x/.git; unset -f GIT_DIR; git -c user.name=t commit -m x",
+])("an unset confined to a subshell or a function leaves the exported git dir exempt: %s", (command) => {
+  expect(refused(command)).toBeUndefined();
+});
+
+test.each([
   "d=/repo; cd \"$d\" && git -c user.name=t commit -m x",
   "d=$(pwd); cd \"$d\" && git -c user.name=t commit -m x",
   "d=$(git rev-parse --show-toplevel); git -C \"$d\" -c user.name=t commit -m x",

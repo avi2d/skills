@@ -196,11 +196,9 @@ const applyCd = (track: Track, words: readonly string[], bare: readonly string[]
   return true;
 };
 
-const recordExports = (track: Track, bare: readonly string[], piped: boolean): void => {
-  if (piped) return;
-  const args = bare.slice(1);
+const splitBuiltinOptions = (args: readonly string[]): { at: number; flags: string } => {
   let at = 0;
-  let unexport = false;
+  let flags = "";
   for (; at < args.length; at += 1) {
     const option = args[at] ?? "";
     if (option === "--") {
@@ -208,11 +206,19 @@ const recordExports = (track: Track, bare: readonly string[], piped: boolean): v
       break;
     }
     if (option.startsWith("-") && option.length > 1 && !option.includes("=")) {
-      if (option.slice(1).includes("n")) unexport = true;
+      flags += option.slice(1);
       continue;
     }
     break;
   }
+  return { at, flags };
+};
+
+const recordExports = (track: Track, bare: readonly string[], piped: boolean): void => {
+  if (piped) return;
+  const args = bare.slice(1);
+  const { at, flags } = splitBuiltinOptions(args);
+  const unexport = flags.includes("n");
   for (const word of args.slice(at)) {
     const cut = word.indexOf("=");
     if (word === "GIT_DIR" || word.startsWith("GIT_DIR=")) track.gitDirExported = !unexport;
@@ -223,23 +229,8 @@ const recordExports = (track: Track, bare: readonly string[], piped: boolean): v
 const recordUnsets = (track: Track, bare: readonly string[], piped: boolean): void => {
   if (piped) return;
   const args = bare.slice(1);
-  let at = 0;
-  let functions = false;
-  let variables = false;
-  for (; at < args.length; at += 1) {
-    const option = args[at] ?? "";
-    if (option === "--") {
-      at += 1;
-      break;
-    }
-    if (option.startsWith("-") && option.length > 1 && !option.includes("=")) {
-      if (option.slice(1).includes("f")) functions = true;
-      if (option.slice(1).includes("v")) variables = true;
-      continue;
-    }
-    break;
-  }
-  if (functions && !variables) return;
+  const { at, flags } = splitBuiltinOptions(args);
+  if (flags.includes("f") && !flags.includes("v")) return;
   for (const word of args.slice(at)) {
     if (word === "GIT_DIR") {
       delete track.vars.GIT_DIR;
