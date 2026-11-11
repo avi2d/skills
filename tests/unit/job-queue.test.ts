@@ -383,6 +383,10 @@ describe("reading the shell around a command", () => {
     expect(q(command)).toBe(group);
   });
 
+  test("a double paren without an arithmetic close never hides the inner test run", () => {
+    expect(q("((bun test) && echo ok)")).toBe("tests");
+  });
+
   test("a redirection target is not read as a path filter", () => {
     expect(simpleCommands("bun test >out.txt 2> err.txt")).toEqual([["bun", "test"]]);
   });
