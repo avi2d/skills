@@ -134,6 +134,8 @@ type Track = {
   effective: string;
   missingSince: number | undefined;
   vars: Record<string, string>;
+  gitDirExported: boolean;
+  exportStack: boolean[];
   dirStack: string[];
   effectiveStack: string[];
   missingStack: Array<number | undefined>;
@@ -145,6 +147,8 @@ const makeTrack = (cwd: string): Track => ({
   effective: cwd,
   missingSince: undefined,
   vars: {},
+  gitDirExported: false,
+  exportStack: [],
   dirStack: [],
   effectiveStack: [],
   missingStack: [],
@@ -156,6 +160,7 @@ const pushScope = (track: Track): void => {
   track.effectiveStack.push(track.effective);
   track.missingStack.push(track.missingSince);
   track.varStack.push(track.vars);
+  track.exportStack.push(track.gitDirExported);
   track.vars = { ...track.vars };
 };
 
@@ -164,6 +169,7 @@ const popScope = (track: Track): void => {
   track.effective = track.effectiveStack.pop() ?? track.effective;
   track.missingSince = track.missingStack.pop();
   track.vars = track.varStack.pop() ?? track.vars;
+  track.gitDirExported = track.exportStack.pop() ?? track.gitDirExported;
 };
 
 const applyGapParens = (track: Track, stage: SplitStage, base: number, inside: readonly boolean[], insideBody: (at: number) => boolean): void => {
@@ -194,6 +200,7 @@ const recordExports = (track: Track, bare: readonly string[], piped: boolean): v
   if (piped) return;
   for (const word of bare.slice(1)) {
     const cut = word.indexOf("=");
+    if (word === "GIT_DIR" || word.startsWith("GIT_DIR=")) track.gitDirExported = true;
     if (cut > 0) track.vars[word.slice(0, cut)] = word.slice(cut + 1);
   }
 };
@@ -222,7 +229,7 @@ const commitDirFor = (track: Track, words: readonly string[], bare: readonly str
   if (git === -1) return undefined;
   const commitAt = bare.indexOf("commit", git + 1);
   if (commitAt === -1) return undefined;
-  return gitDirOf(words, bare, git, commitAt, resolveFrom(track, index, stages, inside), track.vars, home);
+  return gitDirOf(words, bare, git, commitAt, resolveFrom(track, index, stages, inside), track.gitDirExported ? track.vars : {}, home);
 };
 
 const commitDirs = (stages: readonly SplitStage[], command: string, cwd: string, home: string): string[] => {

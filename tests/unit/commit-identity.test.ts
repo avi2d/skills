@@ -126,7 +126,12 @@ test.each([
   expect(refused(command)).toBeUndefined();
 });
 
+test("an unexported GIT_DIR assignment cannot exempt a commit", () => {
+  expect(refused("GIT_DIR=/tmp/x/.git; git -c user.name=t commit -m x")).toBe(COMMIT_IDENTITY_REFUSAL);
+});
+
 test.each([
+  "GIT_DIR=/tmp/x/.git git -c user.name=t commit -m x",
   "export GIT_DIR=/tmp/x/.git; git -c user.name=t commit -m x",
   "GIT_DIR=/tmp/x/.git; export GIT_DIR; git -c user.name=t commit -m x",
   "export GIT_DIR=/tmp/x/.git && git -c user.name=t commit -m x",
