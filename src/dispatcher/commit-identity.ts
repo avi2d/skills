@@ -182,7 +182,7 @@ const flatCommand = (stages: readonly SplitStage[], command: string, inside: rea
       if (inside[at] === true) continue;
       if (stage.gap[o] === "(" && command[at - 1] !== "$") return false;
     }
-    if (/[|&]/.test(stage.gap.replace(/&&|&>|>&|\|&/g, ""))) return false;
+    if (/[|&]/.test(stage.gap.replace(/&&|&>|>&/g, ""))) return false;
   }
   return true;
 };
@@ -300,13 +300,6 @@ const recordAssignments = (track: Track, words: readonly string[], piped: boolea
   }
 };
 
-const recordMktemp = (track: Track, command: string, stage: SplitStage, piped: boolean): boolean => {
-  const made = mktempAssignment(command, stage);
-  if (made === undefined) return false;
-  if (!piped && !made.piped) track.vars[made.name] = made.dir;
-  return true;
-};
-
 const resolveFrom = (track: Track, index: number, stages: readonly SplitStage[]): string => {
   if (track.missingSince === undefined) return track.current;
   for (let at = track.missingSince + 1; at <= index; at += 1) {
@@ -339,7 +332,7 @@ const commitDirs = (stages: readonly SplitStage[], command: string, cwd: string,
     const bare = withoutEnv(words);
     const next = stages[index + 1];
     const piped = isPipeGap(stage.gap) || (next !== undefined && isPipeGap(next.gap));
-    if (recordMktemp(track, command, stage, piped) || applyCd(track, words, bare, piped, home, index)) continue;
+    if (applyCd(track, words, bare, piped, home, index)) continue;
     if (bare[0] === "export") recordExports(track, bare, piped);
     else if (isAssignmentStage(words)) {
       recordAssignments(track, words, piped);
