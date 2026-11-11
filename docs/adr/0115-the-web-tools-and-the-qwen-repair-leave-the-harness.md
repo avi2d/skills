@@ -8,7 +8,7 @@ Accepted. Supersedes [0031](0031-a-leaked-tool-call-is-repaired-in-the-harness-r
 
 ## Context
 
-The Pi extensions cost investigation measured `pi-web-access` at 0.39 s of start-up and 83 MB of peak memory in every pi process while its tools were off. Its last call was on 2026-09-19, and none was made on winbox. `web-tools.ts` existed only to keep those tools off, and no session has switched them on since October. `qwen-tool-calls.ts` acts only on a qwen coder model, and no such model is installed or configured on either machine.
+The Pi extensions cost investigation measured `pi-web-access` at 0.39 s of start-up and 83 MB of peak memory in every pi process while its tools were off. Its last call was on 2026-09-19, and none was made on the second machine. `web-tools.ts` existed only to keep those tools off, and no session has switched them on since October. `qwen-tool-calls.ts` acts only on a qwen coder model, and no such model is installed or configured on either machine.
 
 ## Decision
 
