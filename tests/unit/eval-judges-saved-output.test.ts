@@ -92,6 +92,38 @@ test("a shell flag or a checking run around the report still counts, and a stder
   expect(verdictOf(judge, errors)).toMatchObject({ outcome: "fail", judge: "answered-from-saved-output" });
 });
 
+test("a count written with a thousands separator is not left unjudged", () => {
+  const judge = answeredFromSavedOutput(/sku-0420/, /2743/, /stock-take\.sh/, 1000);
+  const separated = run(
+    [
+      bash("bash tools/stock-take.sh > /tmp/stock-take.out 2>&1", ""),
+      bash("grep -c '^STOCK ' /tmp/stock-take.out", "2743"),
+    ],
+    [],
+    "SKU **sku-0420** is the only one flagged LOW (qty 072, bay B-01). The full report holds **2,743 stock lines**, all unique SKUs, with no non-stock lines.",
+  );
+  expect(verdictOf(judge, separated)).toMatchObject({ outcome: "pass", judge: "answered-from-saved-output" });
+});
+
+test("a report saved before a chained status echo passes rather than failing as unsaved", () => {
+  const judge = answeredFromSavedOutput(/sku-0420/, /2743/, /stock-take\.sh/, 1000);
+  const echoed = run(
+    [
+      bash("bash tools/stock-take.sh > /tmp/stock-take.log 2>&1; echo EXIT:$?", "EXIT:0"),
+      bash("grep -c \"^STOCK\" /tmp/stock-take.log; tail -n 3 /tmp/stock-take.log", "2743"),
+    ],
+    [],
+    "SKU `sku-0420` is flagged LOW, and the full report holds 2743 stock lines.",
+  );
+  expect(verdictOf(judge, echoed)).toMatchObject({ outcome: "pass", judge: "answered-from-saved-output" });
+  const unsaved = run(
+    [bash('bash tools/stock-take.sh; echo "EXIT=$?"', "x".repeat(500))],
+    [],
+    "SKU sku-0420 is flagged LOW, and the full report holds 2,743 stock lines.",
+  );
+  expect(verdictOf(judge, unsaved)).toMatchObject({ outcome: "fail", judge: "answered-from-saved-output" });
+});
+
 test("two report runs inside one bash call fail, and one unsaved run fails too", () => {
   const judge = answeredFromSavedOutput(/sku-0420/, /2743/, /stock-take\.sh/, 1000);
   const twice = run(

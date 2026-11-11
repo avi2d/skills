@@ -1,7 +1,14 @@
 import { expect, test } from "bun:test";
-import { keepsTheErrorChannel, noTypeAssertion } from "../../evals/typescript-judges";
+import { keepsTheErrorChannel, noSchemaTwin, noTypeAssertion } from "../../evals/typescript-judges";
 import { verdictOf, type Change } from "../../src/eval/eval-judges";
 import { added, run } from "../lib/eval-run";
+
+test("a run that changed no TypeScript is unjudged on its twins rather than passed", () => {
+  expect(verdictOf(noSchemaTwin, run([], [added("README.md", "export type UserShape = { id: string; age: number };")]))).toEqual({
+    outcome: "unjudged",
+    why: "the agent changed no TypeScript file, so there was no code to judge",
+  });
+});
 
 const config = (body: string): Change => added("src/config.ts", `import type { Config } from "./types";\n\n${body}\n`);
 

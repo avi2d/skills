@@ -83,7 +83,7 @@ export const GUARD_THE_CONTEXT_WINDOW: readonly EvalCase[] = [
   },
   {
     id: "slow-report",
-    rule: "guard-the-context-window-spark",
+    rule: "guard-the-context-window-slow-output",
     judge: answeredFromSavedOutput(/sku-0420/, /2743/, /stock-take\.sh/, BUDGET),
     prompt:
       "Run `bash tools/stock-take.sh` for the full warehouse stock report. The command takes a little over a minute. Which SKU is flagged LOW? How many stock lines does the full report hold? Answer both in one or two sentences.",

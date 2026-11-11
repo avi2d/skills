@@ -1,4 +1,9 @@
 import { parseSync } from "@swc/core";
+import { mkdtempSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { fileURLToPath } from "node:url";
+import { createTypesBudget, linterOf, typesRefused } from "../src/dispatcher/types";
 import { addedLineNumbers, type Change, type Judgement, type ProgramJudge } from "../src/eval/eval-judges";
 
 // src/ may not import @swc/core, a devDependency, so the judges that parse TypeScript sit beside the cases.
@@ -137,3 +142,50 @@ export const keepsTheErrorChannel = ({ failuresHappen }: { failuresHappen: boole
     "erase no error unseen",
   ),
 });
+
+const REPOSITORY = fileURLToPath(new URL("../", import.meta.url));
+
+const LINTED = /\.tsx?$/;
+
+const TWIN = "`data-shape/schema-twin`";
+
+const TSCONFIG = JSON.stringify({
+  compilerOptions: { strict: true, module: "preserve", target: "esnext", moduleResolution: "bundler", noEmit: true },
+  include: ["**/*.ts", "**/*.tsx"],
+});
+
+// The kit's lint finds its plugins through the node_modules above a file, so the scratch project links this repository's.
+export const noSchemaTwin: ProgramJudge = {
+  name: "no-schema-twin",
+  judge: ({ changes }) => {
+    const code = changes.filter((change) => LINTED.test(change.path));
+    if (code.length === 0) return { unjudged: "the agent changed no TypeScript file, so there was no code to judge" };
+    const project = mkdtempSync(join(tmpdir(), "skills-twin-"));
+    try {
+      symlinkSync(join(REPOSITORY, "node_modules"), join(project, "node_modules"));
+      writeFileSync(join(project, "tsconfig.json"), TSCONFIG);
+      const budget = createTypesBudget();
+      const refusals: string[] = [];
+      const unread: string[] = [];
+      for (const change of code) {
+        const added = addedLineNumbers(change);
+        if (added.size === 0) continue;
+        if (linterOf(join(project, change.path)) === undefined) {
+          unread.push(`no linter above ${change.path}`);
+          continue;
+        }
+        const read = typesRefused(join(project, change.path), change.after, added, budget);
+        if ("unread" in read) {
+          unread.push(read.unread);
+          continue;
+        }
+        refusals.push(...read.refusals.filter((refusal) => refusal.includes(TWIN)));
+      }
+      if (refusals.length > 0) return { passed: false, evidence: refusals };
+      if (unread.length > 0) return { unjudged: `the twin lint gave no verdict: ${unread.join("; ")}` };
+      return { passed: true, evidence: [`${code.length} changed TypeScript file(s) repeat no schema's fields: ${code.map((c) => c.path).join(", ")}`] };
+    } finally {
+      rmSync(project, { recursive: true, force: true });
+    }
+  },
+};

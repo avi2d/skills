@@ -22,6 +22,16 @@ export type Sandbox = { root: string; home: string; agentDir: string; tmp: strin
 
 export const CARRIAGE_VARIABLE = "SKILLS_EVAL_CARRIAGE";
 
+// pueue finds its socket and config through these; HOME stays the sandbox's, since a queued job runs with the env it was added with.
+function queueEnv(caller: Env, liveHome: string): Record<string, string> {
+  const runtime = caller["XDG_RUNTIME_DIR"];
+  return {
+    ...(runtime === undefined ? {} : { XDG_RUNTIME_DIR: runtime }),
+    XDG_DATA_HOME: caller["XDG_DATA_HOME"] ?? `${liveHome}/.local/share`,
+    PUEUE_CONFIG_PATH: caller["PUEUE_CONFIG_PATH"] ?? `${liveHome}/.config/pueue/pueue.yml`,
+  };
+}
+
 export function isolatedEnv(
   sandbox: Sandbox,
   caller: Env,
@@ -66,7 +76,7 @@ const git = (repo: string, env: Record<string, string>, args: readonly string[])
 
 const IDENTITY = { "user.name": "skills-eval", "user.email": "skills-eval@example.invalid", "commit.gpgsign": "false" };
 
-export type Seeded = { sandbox: Sandbox; env: Record<string, string>; base: string };
+export type Seeded = { sandbox: Sandbox; env: Record<string, string>; verifierEnv: Record<string, string>; base: string };
 
 const writtenInto = Effect.fnUntraced(function* (repo: string, files: Readonly<Record<string, string>>): Effect.fn.Return<void, FileFailure, FileSystem.FileSystem> {
   for (const [rel, text] of Object.entries(files)) {
@@ -117,7 +127,7 @@ export const seeded = Effect.fnUntraced(function* (
   yield* git(sandbox.repo, env, ["add", "-A"]);
   yield* git(sandbox.repo, env, ["commit", "-q", "-m", "seed"]);
   const base = (yield* git(sandbox.repo, env, ["rev-parse", "HEAD"])).trim();
-  return { sandbox, env, base };
+  return { sandbox, env, verifierEnv: { ...env, ...queueEnv(caller, liveHome) }, base };
 });
 
 const LARGEST_JUDGED_FILE = 512 * 1024;
@@ -157,13 +167,13 @@ const VERIFIER_BUDGET = Duration.seconds(60);
 
 // Call after the run's changes are read, or the verifier's files count as the agent's.
 export const verifiedBy = Effect.fnUntraced(function* (
-  { sandbox, env }: Seeded,
+  { sandbox, verifierEnv }: Seeded,
   { files, runs }: Verifier,
   budget: Duration.Duration = VERIFIER_BUDGET,
 ): Effect.fn.Return<Verification, FileFailure, FileSystem.FileSystem | ChildProcessSpawner.ChildProcessSpawner> {
   yield* writtenInto(sandbox.repo, files);
   const [command, ...args] = runs;
-  const exited = yield* spawned(sandbox.repo, { ...env, NO_COLOR: "1" }, command, args).pipe(Effect.timeoutOption(budget));
+  const exited = yield* spawned(sandbox.repo, { ...verifierEnv, NO_COLOR: "1" }, command, args).pipe(Effect.timeoutOption(budget));
   if (Option.isNone(exited)) return { exit: "timed out", output: "" };
   return { exit: exited.value.code, output: `${exited.value.stdout}${exited.value.stderr}` };
 });

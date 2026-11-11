@@ -23,7 +23,7 @@ The Rule costs 91 tokens in every Spark session it reaches.
 
 ## Decision
 
-`selection.toml` names only `guard-the-context-window-spark` and `writing-for-people` in `add` under the Muse Spark Profile rules.
+`selection.toml` names only `guard-the-context-window-slow-output` and `writing-for-people` in `add` under the Muse Spark Profile rules.
 The Rule file stays in the library with no Profile naming it.
 A project still switches the Rule on under `skills.rules` in its `package.json` where a session needs it.
 

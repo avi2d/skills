@@ -65,7 +65,7 @@ test("each model Profile scopes only its named Rules", () => {
   expect(injected(lunaActions)).toContain("force-determinism");
   expect(injected(lunaActions)).toContain("git-hygiene");
   expect(injected(lunaActions)).toContain("typescript-best-practices");
-  expect(injected(lunaActions)).not.toContain("guard-the-context-window");
+  expect(injected(lunaActions)).toContain("guard-the-context-window-slow-output");
   expect(injected(lunaActions)).not.toContain("git-hygiene-co-author");
   expect(injected(lunaActions)).not.toContain("writing-for-people");
 
@@ -74,7 +74,7 @@ test("each model Profile scopes only its named Rules", () => {
     promptOn(muse, ...thisRepo),
     { type: "tool-call", tool: "write", input: { path: changelog }, writes: [changelog] },
   ]).actions;
-  expect(injected(museActions)).toContain("guard-the-context-window-spark");
+expect(injected(museActions)).toContain("guard-the-context-window-slow-output");
   expect(injected(museActions)).not.toContain("finish-the-task");
   expect(injected(museActions)).toContain("writing-for-people");
   expect(injected(museActions)).toContain("typescript-best-practices");
@@ -89,7 +89,7 @@ test("a harness without model identity takes the default Profile", () => {
     { type: "tool-call", tool: "write", input: { path: "CHANGELOG.md" }, writes: ["CHANGELOG.md"] },
   ]);
   expect(injected(actions)).not.toContain("force-determinism");
-  expect(injected(actions)).not.toContain("guard-the-context-window");
+  expect(injected(actions)).not.toContain("guard-the-context-window-slow-output");
   expect(injected(actions)).not.toContain("git-hygiene");
   expect(injected(actions)).toContain("prove-it-works");
 });
@@ -99,9 +99,9 @@ test("an exact ollama profile trims tools, while a future ollama model takes def
   const local = index.profiles.find((profile) => profile.models.includes(qwen));
   expect(local?.name).toBe("ollama-qwen");
   const { actions } = run(index, [startedOn(qwen), promptOn(qwen, ...thisRepo)]);
-  expect(injected(actions)).toEqual(["credential-files", "guard-the-context-window", "prove-it-works"]);
+  expect(injected(actions)).toEqual(["credential-files", "guard-the-context-window-slow-output", "prove-it-works"]);
   expect(kept(actions)).toEqual(["read", "write", "edit", "bash"]);
   const future = run(index, [startedOn("ollama/future"), promptOn("ollama/future", ...thisRepo)]).actions;
-  expect(injected(future)).not.toContain("guard-the-context-window");
+  expect(injected(future)).not.toContain("guard-the-context-window-slow-output");
   expect(kept(future)).toEqual([]);
 });
