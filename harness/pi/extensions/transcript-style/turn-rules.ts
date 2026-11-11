@@ -62,8 +62,10 @@ function callLead({ turn, streaming }: TurnPiece, theme: RuleTheme): string {
 
 export const TOOL_INDENT = 2;
 
+const toolIndent = (width: number): number => (width > TOOL_INDENT ? TOOL_INDENT : 0);
+
 function ruleTool(tokens: ToolTokens | undefined, render: Render, width: number, theme: RuleTheme): Decorated {
-  const indent = width > TOOL_INDENT ? TOOL_INDENT : 0;
+  const indent = toolIndent(width);
   const inner = width - indent;
   const { body, dropped } = trimBlank(render(inner));
   const lines = withToolTail(body, toolTail(tokens, theme), inner).map((line) => " ".repeat(indent) + line);
@@ -82,6 +84,8 @@ function ruleTurn(piece: TurnPiece, render: Render, width: number, theme: RuleTh
   const rule = truncateToWidth(ruled(2 + slack), room, theme.fg("dim", "…"));
   return { lines: ["", truncateToWidth(rule + clock, width, ""), ...render(width)], top: 2, left: 0 };
 }
+
+export type Decorate = (piece: Piece, render: Render, width: number, theme: RuleTheme) => Decorated;
 
 export function decorate(piece: Piece, render: Render, width: number, theme: RuleTheme): Decorated {
   return piece.kind === "tool" ? ruleTool(piece.tokens, render, width, theme) : ruleTurn(piece, render, width, theme);
@@ -170,6 +174,29 @@ export function patchRender(proto: Patchable & Originals, decorateOf: (component
   };
 }
 
+const innerWidth = (piece: Piece, width: number): number => width - (piece.kind === "tool" ? toolIndent(width) : 0);
+
+const sameRows = (a: readonly string[], b: readonly string[]): boolean => a.length === b.length && a.every((row, index) => row === b[index]);
+
+type Kept = { readonly theme: RuleTheme; readonly key: string; readonly rows: readonly string[]; readonly decorated: Decorated };
+
+export type Keep = (component: object, piece: Piece, render: Render, width: number, theme: RuleTheme) => Decorated;
+
+// Redrawn on every spinner frame, so each component keeps its decoration until one of its inputs changes.
+export function keepDecorations(decorateWith: Decorate = decorate): Keep {
+  const kept = new WeakMap<object, Kept>();
+  return (component, piece, render, width, theme) => {
+    // Copied, because pi may reuse the array it returned and change it in place.
+    const rows = [...render(innerWidth(piece, width))];
+    const key = JSON.stringify([width, piece]);
+    const last = kept.get(component);
+    if (last && last.theme === theme && last.key === key && sameRows(last.rows, rows)) return last.decorated;
+    const decorated = decorateWith(piece, () => rows, width, theme);
+    kept.set(component, { theme, key, rows, decorated });
+    return decorated;
+  };
+}
+
 type Session = Pick<ExtensionContext["sessionManager"], "getLeafId" | "getBranch">;
 
 // The leaf moves with every appended entry and every tree jump, so it keys the one rebuild each change needs.
@@ -190,11 +217,12 @@ export function ruleTurns(pi: ExtensionAPI): void {
     theme = ctx.ui.theme;
     ledger = ledgerOf(ctx.sessionManager);
   });
+  const keep = keepDecorations();
   const pieceDecorator =
     (pieceOf: (component: object, ledger: Ledger) => Piece | undefined) =>
     (component: object, render: Render, width: number): Decorated | undefined => {
       const piece = pieceOf(component, ledger());
-      return piece && theme ? decorate(piece, render, width, theme) : undefined;
+      return piece && theme ? keep(component, piece, render, width, theme) : undefined;
     };
   const restores = [patchRender(AssistantMessageComponent.prototype, pieceDecorator(assistantPiece)), patchRender(ToolExecutionComponent.prototype, pieceDecorator(toolPiece))];
   pi.on("session_shutdown", () => {

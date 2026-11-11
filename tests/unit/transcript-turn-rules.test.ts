@@ -1,7 +1,7 @@
 import { afterAll, afterEach, beforeAll, describe, expect, setSystemTime, test } from "bun:test";
 import type { SessionEntry } from "@earendil-works/pi-coding-agent";
 import { Image, type ImageProtocol, resetCapabilitiesCache, setCapabilities, stripTerminalSequences, truncateToWidth, type TuiMouseEvent, visibleWidth } from "@earendil-works/pi-tui";
-import { assistantPiece, decorate, ledgerOf, patchRender, type Patchable, type RuleTheme, TOOL_INDENT, toolPiece } from "../../harness/pi/extensions/transcript-style/turn-rules";
+import { assistantPiece, type Decorate, decorate, keepDecorations, ledgerOf, patchRender, type Patchable, type Piece, type RuleTheme, TOOL_INDENT, toolPiece } from "../../harness/pi/extensions/transcript-style/turn-rules";
 import { EMPTY_LEDGER, type Ledger } from "../../harness/pi/extensions/transcript-style/turns";
 
 const plain: RuleTheme = { fg: (_color, text) => text, bold: (text) => text };
@@ -202,6 +202,71 @@ describe("pieces", () => {
     expect(assistantPiece({ lastMessage: { timestamp: "7" }, isStreaming: false }, ledger)).toBeUndefined();
     expect(toolPiece({ toolCallId: 1 }, ledger)).toBeUndefined();
     expect(toolPiece({ toolCallId: "t1" }, ledger)).toEqual({ kind: "tool", tokens: { basis: "measured", tokens: 9 } });
+  });
+});
+
+describe("keepDecorations", () => {
+  const turn = (streaming: boolean): Piece => ({ kind: "turn", turn: { number: 4, usage }, streaming, timestamp: NOON });
+  const component = {};
+
+  function counting() {
+    const calls = { count: 0 };
+    const decorateWith: Decorate = (piece, render, width, theme) => {
+      calls.count += 1;
+      return decorate(piece, render, width, theme);
+    };
+    return { calls, keep: keepDecorations(decorateWith) };
+  }
+
+  test("decorates again a component whose rows, width, piece and theme are all unchanged", () => {
+    const { calls, keep } = counting();
+    const first = keep(component, turn(false), rows(" Thinking..."), WIDTH, plain);
+    const second = keep(component, turn(false), rows(" Thinking..."), WIDTH, plain);
+    expect(calls.count).toBe(1);
+    expect(second).toBe(first);
+  });
+
+  test("serves a stale rule when the width changed", () => {
+    const { calls, keep } = counting();
+    const fixed = () => [" Thinking..."];
+    keep(component, turn(false), fixed, WIDTH, plain);
+    const narrow = keep(component, turn(false), fixed, 60, plain);
+    expect(calls.count).toBe(2);
+    expect(visibleWidth(narrow.lines[1] ?? "")).toBe(60);
+  });
+
+  test("serves a stale rule when the theme changed", () => {
+    const { calls, keep } = counting();
+    keep(component, turn(false), rows(" Thinking..."), 400, plain);
+    const painted = keep(component, turn(false), rows(" Thinking..."), 400, tagged);
+    expect(calls.count).toBe(2);
+    expect(painted.lines[1]).toStartWith("<borderMuted>── </borderMuted>");
+  });
+
+  test("serves a stale rule when the piece changed", () => {
+    const { calls, keep } = counting();
+    keep(component, turn(true), rows(), WIDTH, plain);
+    const settled = keep(component, turn(false), rows(), WIDTH, plain);
+    expect(calls.count).toBe(2);
+    expect(settled.lines[1]).not.toContain("…");
+  });
+
+  test("serves stale rows when pi returned a different row", () => {
+    const { calls, keep } = counting();
+    keep(component, turn(false), rows(" Thinking..."), WIDTH, plain);
+    const changed = keep(component, turn(false), rows(" Answer"), WIDTH, plain);
+    expect(calls.count).toBe(2);
+    expect(changed.lines[2]?.trimEnd()).toBe(" Answer");
+  });
+
+  test("serves stale rows when pi changed, in place, the array it returned last time", () => {
+    const { calls, keep } = counting();
+    const drawn = [" Thinking..."];
+    keep(component, turn(false), () => drawn, WIDTH, plain);
+    drawn[0] = " Answer";
+    const changed = keep(component, turn(false), () => drawn, WIDTH, plain);
+    expect(calls.count).toBe(2);
+    expect(changed.lines[2]?.trimEnd()).toBe(" Answer");
   });
 });
 
