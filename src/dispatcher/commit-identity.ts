@@ -172,6 +172,14 @@ const gitDirOf = (
 const ASSIGN_WORD = /^([A-Za-z_][A-Za-z0-9_]*)=/;
 const COMPOUND_WORDS = new Set(["if", "then", "else", "elif", "fi", "while", "until", "for", "select", "do", "done", "case", "esac", "function", "coproc", "time", "{", "}", "!", "source", "eval", "."]);
 
+const openGap = (gap: string, inside: readonly boolean[], base: number): string => {
+  let seen = "";
+  for (let o = 0; o < gap.length; o += 1) {
+    if (inside[base + o] !== true) seen += gap[o];
+  }
+  return seen;
+};
+
 const flatCommand = (stages: readonly SplitStage[], command: string, inside: readonly boolean[]): boolean => {
   for (const stage of stages) {
     const head = withoutEnv(stage.words)[0];
@@ -182,7 +190,7 @@ const flatCommand = (stages: readonly SplitStage[], command: string, inside: rea
       if (inside[at] === true) continue;
       if (stage.gap[o] === "(" && command[at - 1] !== "$") return false;
     }
-    if (/[|&]/.test(stage.gap.replace(/&&|&>|>&/g, ""))) return false;
+    if (/[|&]/.test(openGap(stage.gap, inside, base).replace(/&&|&>|>&/g, ""))) return false;
   }
   return true;
 };
@@ -232,8 +240,10 @@ const shapeVar = (stages: readonly SplitStage[], command: string, inside: readon
   return { [resolved.name]: resolved.dir };
 };
 
-const andOnly = (gap: string): boolean =>
-  gap.includes("&&") && !gap.includes(";") && !gap.includes("||") && !gap.includes("\n");
+const andOnly = (gap: string, inside: readonly boolean[], base: number): boolean => {
+  const seen = openGap(gap, inside, base);
+  return seen.includes("&&") && !seen.includes(";") && !seen.includes("||") && !seen.includes("\n");
+};
 
 type Track = {
   current: string;
@@ -314,20 +324,21 @@ const recordAssignments = (track: Track, words: readonly string[], piped: boolea
   }
 };
 
-const resolveFrom = (track: Track, index: number, stages: readonly SplitStage[]): string => {
+const resolveFrom = (track: Track, index: number, stages: readonly SplitStage[], inside: readonly boolean[]): string => {
   if (track.missingSince === undefined) return track.current;
   for (let at = track.missingSince + 1; at <= index; at += 1) {
-    if (!andOnly(stages[at]?.gap ?? "")) return track.effective;
+    const gap = stages[at]?.gap ?? "";
+    if (!andOnly(gap, inside, (stages[at]?.start ?? 0) - gap.length)) return track.effective;
   }
   return track.current;
 };
 
-const commitDirFor = (track: Track, words: readonly string[], bare: readonly string[], index: number, stages: readonly SplitStage[], home: string): string | undefined => {
+const commitDirFor = (track: Track, words: readonly string[], bare: readonly string[], index: number, stages: readonly SplitStage[], home: string, inside: readonly boolean[]): string | undefined => {
   const git = bare.indexOf("git");
   if (git === -1) return undefined;
   const commitAt = bare.indexOf("commit", git + 1);
   if (commitAt === -1) return undefined;
-  return gitDirOf(words, bare, git, commitAt, resolveFrom(track, index, stages), track.vars, home);
+  return gitDirOf(words, bare, git, commitAt, resolveFrom(track, index, stages, inside), track.vars, home);
 };
 
 const commitDirs = (stages: readonly SplitStage[], command: string, cwd: string, home: string): string[] => {
@@ -346,14 +357,16 @@ const commitDirs = (stages: readonly SplitStage[], command: string, cwd: string,
     const bare = withoutEnv(words);
     const rawBare = withoutEnv(stage.words);
     const next = stages[index + 1];
-    const piped = isPipeGap(stage.gap) || (next !== undefined && isPipeGap(next.gap));
+    const piped =
+      isPipeGap(openGap(stage.gap, inside, stage.start - stage.gap.length)) ||
+      (next !== undefined && isPipeGap(openGap(next.gap, inside, next.start - next.gap.length)));
     if (applyCd(track, words, bare, piped, home, index)) continue;
     if (rawBare[0] === "export") recordExports(track, rawBare, piped);
     else if (isAssignmentStage(stage.words)) {
       recordAssignments(track, stage.words, piped);
       continue;
     }
-    const found = commitDirFor(track, words, bare, index, stages, home);
+    const found = commitDirFor(track, words, bare, index, stages, home, inside);
     if (found !== undefined) targets.push(found);
   }
   return targets;

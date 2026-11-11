@@ -120,6 +120,8 @@ test.each([
   "G=/tmp/x/repo; git -C $G -c user.name=t -c user.email=t@example.com commit -m x",
   "d=$(mktemp -dt foo.XXXX); cd \"$d\" && git -c user.name=t commit -m x",
   "d=$(mktemp -d); echo \"it's\" > \"$d/f\"; cd \"$d\" && git init -q && git add f && git -c user.name=t commit -m x",
+  "d=$(mktemp -d); cd \"$d\" && git init -q && cat > f <<EOF\na | b\nEOF\ngit add f && git -c user.name=t commit -m x",
+  "d=$(mktemp -d) # scratch repo\ncd \"$d\" && git init -q && git -c user.name=t commit -m x",
 ])("a commit into a temp directory held in a shell variable stays exempt: %s", (command) => {
   expect(refused(command)).toBeUndefined();
 });
