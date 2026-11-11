@@ -51,6 +51,12 @@ test("a rerun that changes only its output filter is refused, and the rerun sent
   expect(after([...slowSince(400), call(`${SLOW} > /tmp/eval.log 2>&1`)]).refused).toEqual([]);
 });
 
+test("a rerun that saves quoted output to a file is allowed", () => {
+  const quoted = 'bun test -t "a \\"b\\""';
+  const slow = [call(`${quoted} 2>&1 | tail -5`), result(`${quoted} 2>&1 | tail -5`, 300)];
+  expect(after([...slow, call(`${quoted} > /tmp/out.log 2>&1`)]).refused).toEqual([]);
+});
+
 test("a first save of unsaved output passes once, and the next save to another file is refused", () => {
   const asked = [...slowSince(400), call(`${SLOW} > /tmp/first.log`)];
   expect(after(asked).refused).toEqual([]);

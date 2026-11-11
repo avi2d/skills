@@ -106,3 +106,33 @@ export function segments(command: string): Word[][] {
   endWord(lexer);
   return lexer.segments.filter((segment) => segment.length > 0);
 }
+
+export function quoted(command: string): boolean[] {
+  const inside = new Array<boolean>(command.length).fill(false);
+  let single = false;
+  let double = false;
+  let escaped = false;
+  for (let at = 0; at < command.length; at += 1) {
+    const char = command.charAt(at);
+    if (single) {
+      inside[at] = true;
+      if (char === "\x27") single = false;
+    } else if (double) {
+      inside[at] = true;
+      if (escaped) escaped = false;
+      else if (char === "\\") escaped = true;
+      else if (char === "\"") double = false;
+    } else if (char === "\x27") {
+      inside[at] = true;
+      single = true;
+    } else if (char === "\"") {
+      inside[at] = true;
+      double = true;
+    } else if (char === "\\") {
+      inside[at] = true;
+      if (at + 1 < command.length) inside[at + 1] = true;
+      at += 1;
+    }
+  }
+  return inside;
+}

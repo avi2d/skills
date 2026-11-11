@@ -1,7 +1,9 @@
 import { createHash } from "node:crypto";
 import { segmentWrites } from "./rerun-mutation";
 import { SLOW_KEEP, type RunState } from "./run-state";
-import { segments } from "./shell-words";
+import { quoted, segments } from "./shell-words";
+
+export { quoted };
 
 export const digestCommand = (command: string): string => createHash("sha256").update(command, "utf8").digest("hex");
 
@@ -174,26 +176,6 @@ export const stripped = (command: string): string => {
     .join(" ")
     .replace(/\s+/g, " ")
     .trim();
-};
-
-export const quoted = (command: string): boolean[] => {
-  const inside = new Array<boolean>(command.length).fill(false);
-  let quote = "";
-  for (let at = 0; at < command.length; at += 1) {
-    const char = command.charAt(at);
-    if (quote !== "") {
-      inside[at] = true;
-      if (char === quote) quote = "";
-    } else if (char === "'" || char === '"') {
-      inside[at] = true;
-      quote = char;
-    } else if (char === "\\") {
-      inside[at] = true;
-      if (at + 1 < command.length) inside[at + 1] = true;
-      at += 1;
-    }
-  }
-  return inside;
 };
 
 export const outputGoesToFile = (command: string): boolean => {
