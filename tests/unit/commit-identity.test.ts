@@ -106,7 +106,16 @@ test.each([
   "d=$(mktemp -d /tmp/d.XXXX); cd $d && git -c user.name=t commit -m x",
   "repo=$(mktemp -d); cd \"$repo\" && git init -q && git -c user.name=t commit -m \"init repo\"",
   "t=$(mktemp -d); cd $t && git init -q && git -c user.name=t commit -m x",
+  "d=$(mktemp -d); cd \"$d\" && git init -q && echo x > f && git add . && git -c user.name=t -c user.email=t@e commit -m x",
 ])("a commit into a temp directory held in a shell variable stays exempt: %s", (command) => {
+  expect(refused(command)).toBeUndefined();
+});
+
+test.each([
+  "export GIT_DIR=/tmp/x/.git; git -c user.name=t commit -m x",
+  "GIT_DIR=/tmp/x/.git; export GIT_DIR; git -c user.name=t commit -m x",
+  "export GIT_DIR=/tmp/x/.git && git -c user.name=t commit -m x",
+])("a commit with an exported git dir under the temp directory stays exempt: %s", (command) => {
   expect(refused(command)).toBeUndefined();
 });
 
