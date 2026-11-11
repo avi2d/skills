@@ -37,7 +37,7 @@ Any other change runs `tests/e2e/fleet-names.test.ts` only inside `bun run test`
 A push to main starts no `ci.yml` run, and the release pull request's dispatched run is the first run to check the merged tree.
 
 `bun run test` is the kit's `checks-test`, which runs `bun test --randomize` with one worker per machine core and prints the seed that reproduces a failure.
-`bun run test:local` runs the whole unit and e2e tiers through `scripts/test-local.ts`, with the same worker count.
+`bun run test:unit` and `bun run test:e2e` run the unit and e2e tiers, and `bun run test:fast` runs the test files the change reaches.
 Bun hands each test file to one worker process, and each file runs in a fresh global, so a file cannot lean on state another file left behind.
 It fails on a skipped test that declares no reason with `skipReason` at its test site, because bun exits 0 over a test that never ran.
 A skip only a local machine meets, one without `claude` on `PATH` or without the `repos/effect` link, passes `"local"` as the third argument, so only a local run accepts it.
