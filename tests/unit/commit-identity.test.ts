@@ -61,6 +61,16 @@ test("an arithmetic shift does not hide a later commit", () => {
   expect(refused("echo $((1 << 2))\ngit -c user.name=t commit -m x")).toBe(COMMIT_IDENTITY_REFUSAL);
 });
 
+test("an arithmetic command shift does not hide a later commit", () => {
+  expect(refused("((n = 1 << 2))\ngit -c user.name=t commit -m x")).toBe(COMMIT_IDENTITY_REFUSAL);
+  expect(refused("for((i=0;i<<1;i++));do :;done\ngit -c user.name=t commit -m x")).toBe(COMMIT_IDENTITY_REFUSAL);
+});
+
+test("a deprecated arithmetic expansion shift does not hide a later commit", () => {
+  expect(refused("echo $[1 << 2]\ngit -c user.name=t commit -m x")).toBe(COMMIT_IDENTITY_REFUSAL);
+  expect(refused("echo $[a[0] << 1]\ngit -c user.name=t commit -m x")).toBe(COMMIT_IDENTITY_REFUSAL);
+});
+
 test("a heredoc after an arithmetic shift still hides its body", () => {
   expect(refused("echo $((1 << 2))\ncat <<EOF\ngit -c user.name=t commit -m x\nEOF")).toBeUndefined();
 });

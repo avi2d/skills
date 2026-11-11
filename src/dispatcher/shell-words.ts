@@ -106,8 +106,18 @@ function step(lexer: Lexer, command: string, at: number): number {
     append(lexer, "$((", at, at + 3);
     return at + 2;
   }
-  if (lexer.arithmetic > 0 && char === "(") lexer.arithmetic += 1;
-  else if (lexer.arithmetic > 0 && char === ")") lexer.arithmetic -= 1;
+  if (char === "$" && command.slice(at, at + 2) === "$[") {
+    lexer.arithmetic += 1;
+    append(lexer, "$[", at, at + 2);
+    return at + 1;
+  }
+  if (char === "(" && command.charAt(at + 1) === "(") {
+    lexer.arithmetic += 2;
+    append(lexer, "((", at, at + 2);
+    return at + 1;
+  }
+  if (lexer.arithmetic > 0 && (char === "(" || char === "[")) lexer.arithmetic += 1;
+  else if (lexer.arithmetic > 0 && (char === ")" || char === "]")) lexer.arithmetic -= 1;
   if (lexer.arithmetic > 0 && (char === "<" || char === ">")) {
     append(lexer, char, at, at + 1);
     return at;
