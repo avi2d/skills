@@ -45,6 +45,12 @@ describe("the Rule a bare sweep measures", () => {
     expect(stalest(catalog, history, "m")).toEqual(["prove-it-works"]);
   });
 
+  test("counts a sweep kept under a Rule's old name toward its current name", () => {
+    const renamed = [{ rule: "guard-the-context-window-slow-output" }, { rule: "prove-it-works" }];
+    const history = [sweep("2026-11-10T20:49:24Z", "m", [ran("guard-the-context-window-spark", "slow-report", "injected", pass)])];
+    expect(stalest(renamed, history, "m")).toEqual(["prove-it-works"]);
+  });
+
   test("once every Rule has been swept on the model, is the one whose newest sweep is oldest", () => {
     const history = [
       sweep("2026-09-24T11:00:00Z", "m", [ran("comment-discipline", "a", "injected", pass)]),
@@ -143,6 +149,19 @@ describe("the sweep page", () => {
       .split("\n")
       .find((line) => line.startsWith("| [2026-09-25T10:00:00Z]"));
     expect(row).toBe("| [2026-09-25T10:00:00Z](2026-09-25T10-00-00Z.json) | `claude-bridge/claude-opus-5-5` | high | 1 | 2 of 2 | 20 | 1000 | 400 | 200 | not measured | `4b1bae1` | not recorded |");
+  });
+
+  test("lists a record kept under a Rule's old name in the one table of its current name, not a table of its own", () => {
+    const renamed = sweepPage([
+      sweep("2026-11-10T20:49:24Z", "m", [ran("guard-the-context-window-spark", "slow-report", "injected", pass)]),
+      sweep("2026-11-12T09:00:00Z", "m", [ran("guard-the-context-window-slow-output", "slow-report", "withheld", fail)]),
+    ]).split("\n");
+    expect(renamed.filter((line) => line.startsWith("## guard-the-context-window"))).toEqual(["## guard-the-context-window-slow-output"]);
+    const section = renamed.slice(renamed.indexOf("## guard-the-context-window-slow-output"));
+    expect(section.filter((line) => line.startsWith("| ["))).toEqual([
+      "| [2026-11-10T20:49:24Z](2026-11-10T20-49-24Z.json) | `m` | high | all | 1/1, 100% | -/0 | - | - |",
+      "| [2026-11-12T09:00:00Z](2026-11-12T09-00-00Z.json) | `m` | high | all | -/0 | 0/1, 0% | - | - |",
+    ]);
   });
 
   test("labels a fallback price as estimated", () => {

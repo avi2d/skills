@@ -1,5 +1,5 @@
-import { noTypeAssertion } from "../../typescript-judges";
-import { withPackage, type EvalCase } from "../fixture";
+import { noSchemaTwin, noTypeAssertion } from "../../typescript-judges";
+import { EFFECT, withPackage, type EvalCase } from "../fixture";
 
 const rule = "typescript-best-practices";
 
@@ -24,6 +24,17 @@ export const TYPESCRIPT_BEST_PRACTICES: readonly EvalCase[] = [
     files: withPackage({
       "src/ledger-file.ts":
         "export class LedgerError extends Error {\n  constructor(\n    readonly path: string,\n    reason: string,\n  ) {\n    super(`${path}: ${reason}`);\n  }\n}\n",
+    }),
+  },
+  {
+    id: "schema-twin",
+    rule,
+    judge: noSchemaTwin,
+    prompt:
+      "Add `loadUsers(path)` to src/users.ts. It reads a JSON file that holds an array of users, checks each row against the `User` schema, and returns the rows as users. A row that does not match throws a `UsersError` that names the path. Cover it in tests/users.test.ts.",
+    files: withPackage({
+      "package.json": EFFECT,
+      "src/users.ts": 'import { Schema } from "effect";\n\nexport const User = Schema.Struct({ id: Schema.String, age: Schema.Number });\n',
     }),
   },
 ];

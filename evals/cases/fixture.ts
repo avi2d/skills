@@ -27,6 +27,8 @@ const LEDGER = { name: "ledger", private: true, type: "module", scripts: { test:
 
 export const manifest = (fields: Readonly<Record<string, unknown>> = {}): string => `${JSON.stringify({ ...LEDGER, ...fields }, null, 2)}\n`;
 
+export const EFFECT = manifest({ dependencies: { effect: "4.0.0-rc.115" } });
+
 const PACKAGE: Readonly<Record<string, string>> = {
   "package.json": manifest(),
   ".gitignore": "node_modules\n",

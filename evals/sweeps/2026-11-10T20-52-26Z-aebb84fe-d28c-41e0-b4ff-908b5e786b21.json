@@ -1,0 +1,283 @@
+{
+  "startedAt": "2026-11-10T20:52:26Z",
+  "runId": "aebb84fe-d28c-41e0-b4ff-908b5e786b21",
+  "commit": "ec1e094f570ba1a0de6d88123b2482eaa63d1629",
+  "prose": {
+    "files": {
+      "library/utility/rules/guard-the-context-window-spark/SKILL.md": "fbe0b2a6446e7ec4834215526727a9318df4844da39eba9ed501548fbf9d5472"
+    },
+    "uncommitted": false
+  },
+  "model": "opencode-go/gpt-6-luna",
+  "thinking": "high",
+  "repeats": 5,
+  "planned": 10,
+  "missing": [],
+  "runs": [
+    {
+      "rule": "guard-the-context-window-spark",
+      "case": "slow-report",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "answered-from-saved-output",
+        "kind": "program",
+        "evidence": [
+          "the slow command ran once, at step 0, and saved its output to a file",
+          "2835 bytes of tool output entered the context, against a budget of 16384"
+        ]
+      },
+      "spend": {
+        "seconds": 85,
+        "turns": 4,
+        "input": 12,
+        "output": 371,
+        "cacheRead": 5404,
+        "cacheWrite": 2758,
+        "cacheWrite1h": 0,
+        "cost": 0.0005854899999999999,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "guard-the-context-window-spark",
+      "case": "slow-report",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "answered-from-saved-output",
+        "kind": "program",
+        "evidence": [
+          "the slow command ran once, at step 0, without saving its output to a file; the second answer should have come from the saved file"
+        ]
+      },
+      "spend": {
+        "seconds": 83,
+        "turns": 3,
+        "input": 9,
+        "output": 272,
+        "cacheRead": 21123,
+        "cacheWrite": 20186,
+        "cacheWrite1h": 0,
+        "cost": 0.00287138,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "guard-the-context-window-spark",
+      "case": "slow-report",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "answered-from-saved-output",
+        "kind": "program",
+        "evidence": [
+          "the slow command ran once, at step 0, and saved its output to a file",
+          "4408 bytes of tool output entered the context, against a budget of 16384"
+        ]
+      },
+      "spend": {
+        "seconds": 87,
+        "turns": 4,
+        "input": 12,
+        "output": 327,
+        "cacheRead": 5983,
+        "cacheWrite": 3289,
+        "cacheWrite1h": 0,
+        "cost": 0.0006356549999999999,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "guard-the-context-window-spark",
+      "case": "slow-report",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "answered-from-saved-output",
+        "kind": "program",
+        "evidence": [
+          "the slow command ran once, at step 0, without saving its output to a file; the second answer should have come from the saved file"
+        ]
+      },
+      "spend": {
+        "seconds": 83,
+        "turns": 3,
+        "input": 9,
+        "output": 414,
+        "cacheRead": 21106,
+        "cacheWrite": 20363,
+        "cacheWrite1h": 0,
+        "cost": 0.0029643350000000002,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "guard-the-context-window-spark",
+      "case": "slow-report",
+      "arm": "injected",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "answered-from-saved-output",
+        "kind": "program",
+        "evidence": [
+          "the slow command ran once, at step 0, and saved its output to a file",
+          "128 bytes of tool output entered the context, against a budget of 16384"
+        ]
+      },
+      "spend": {
+        "seconds": 84,
+        "turns": 4,
+        "input": 12,
+        "output": 295,
+        "cacheRead": 4358,
+        "cacheWrite": 1679,
+        "cacheWrite1h": 0,
+        "cost": 0.00040215499999999996,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "guard-the-context-window-spark",
+      "case": "slow-report",
+      "arm": "withheld",
+      "repeat": 3,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "answered-from-saved-output",
+        "kind": "program",
+        "evidence": [
+          "the slow command ran once, at step 0, without saving its output to a file; the second answer should have come from the saved file"
+        ]
+      },
+      "spend": {
+        "seconds": 88,
+        "turns": 4,
+        "input": 12,
+        "output": 366,
+        "cacheRead": 41276,
+        "cacheWrite": 20291,
+        "cacheWrite1h": 0,
+        "cost": 0.0031333349999999997,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "guard-the-context-window-spark",
+      "case": "slow-report",
+      "arm": "injected",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "answered-from-saved-output",
+        "kind": "program",
+        "evidence": [
+          "the slow command ran once, at step 0, and saved its output to a file",
+          "2802 bytes of tool output entered the context, against a budget of 16384"
+        ]
+      },
+      "spend": {
+        "seconds": 86,
+        "turns": 3,
+        "input": 9,
+        "output": 427,
+        "cacheRead": 2783,
+        "cacheWrite": 2715,
+        "cacheWrite1h": 0,
+        "cost": 0.000581605,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "guard-the-context-window-spark",
+      "case": "slow-report",
+      "arm": "withheld",
+      "repeat": 4,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "answered-from-saved-output",
+        "kind": "program",
+        "evidence": [
+          "the slow command ran once, at step 0, without saving its output to a file; the second answer should have come from the saved file"
+        ]
+      },
+      "spend": {
+        "seconds": 84,
+        "turns": 3,
+        "input": 9,
+        "output": 237,
+        "cacheRead": 21113,
+        "cacheWrite": 20154,
+        "cacheWrite1h": 0,
+        "cost": 0.00284978,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "guard-the-context-window-spark",
+      "case": "slow-report",
+      "arm": "injected",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "answered-from-saved-output",
+        "kind": "program",
+        "evidence": [
+          "the slow command ran once, at step 0, and saved its output to a file",
+          "3626 bytes of tool output entered the context, against a budget of 16384"
+        ]
+      },
+      "spend": {
+        "seconds": 87,
+        "turns": 4,
+        "input": 12,
+        "output": 534,
+        "cacheRead": 5859,
+        "cacheWrite": 3185,
+        "cacheWrite1h": 0,
+        "cost": 0.000724915,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    },
+    {
+      "rule": "guard-the-context-window-spark",
+      "case": "slow-report",
+      "arm": "withheld",
+      "repeat": 5,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "answered-from-saved-output",
+        "kind": "program",
+        "evidence": [
+          "the slow command ran once, at step 0, without saving its output to a file; the second answer should have come from the saved file"
+        ]
+      },
+      "spend": {
+        "seconds": 82,
+        "turns": 3,
+        "input": 9,
+        "output": 258,
+        "cacheRead": 21105,
+        "cacheWrite": 20174,
+        "cacheWrite1h": 0,
+        "cost": 0.0028626999999999997,
+        "costEstimated": false
+      },
+      "wroteTest": false
+    }
+  ]
+}

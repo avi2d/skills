@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { Effect, FileSystem, Path } from "effect";
-import { assembleSummary, poolScores, rescoreSaved, verdictFor, type CaseReport } from "../../scripts/replay-haiku-compaction/report";
+import { assembleSummary, parseReplayArgs, poolScores, rescoreSaved, verdictFor, type CaseReport } from "../../scripts/replay-haiku-compaction/report";
 import { rescoreReport } from "../../scripts/replay-haiku-compaction/rescore";
 import { saidBy, valueOf } from "../lib/effect";
 import { userTextOf } from "../../scripts/replay-haiku-compaction";
@@ -132,6 +132,10 @@ describe("verdict and pooling", () => {
     ];
     expect(selectCases(tagged, 3, 2)).toEqual([2, 1, 3]);
   });
+  test("a replay hides tool output unless --unmasked asks for the unmasked prompt", async () => {
+    expect((await valueOf(parseReplayArgs([], "/home/x"))).unmasked).toBe(false);
+    expect((await valueOf(parseReplayArgs(["--unmasked"], "/home/x"))).unmasked).toBe(true);
+  });
   test("explicitFilter parses file:index pairs", () => {
     expect(explicitFilter("a.jsonl:3,b.jsonl:7").get("a.jsonl")).toEqual(new Set([3]));
   });
@@ -250,62 +254,73 @@ describe("rescoreSaved", () => {
   });
 });
 
+  const blankScore = {
+    classes: [],
+    overall: 0,
+    total: 0,
+    hits: 0,
+    quoteRecall: 0,
+    quoteTotal: 0,
+    decisionRecall: 0,
+    decisionTotal: 0,
+    recordedChars: 0,
+    candidateChars: 0,
+  };
+  const keeper: CaseReport = {
+    file: "sessions.jsonl",
+    dir: "s1",
+    index: 0,
+    split: false,
+    tokensBefore: 0,
+    rebuiltTokens: 0,
+    skipped: 0,
+    historyMessages: 1,
+    prefixMessages: 1,
+    recordedModel: "opencode-go/muse-spark",
+    recordedItems: 0,
+    recordedChars: 0,
+    candidateChars: 0,
+    referenceChars: 0,
+    candidateCost: 0,
+    referenceCost: 0,
+    candidateTokens: { calls: 0, reportedInput: 0, reportedOutput: 0, estimatedInput: 0, estimatedOutput: 0 },
+    candidate: blankScore,
+    reference: blankScore,
+    candidateText: "## Goal\n- Ship it.",
+    referenceText: "## Goal\n- Ship it.",
+    recordedText: "## Goal\n- Ship it.",
+    sourceText: "user: ship it",
+    captainText: "user: ship it",
+    previousSummary: undefined,
+  };
+
+function rescoredReportOf(saved: object): Promise<{ parsed: unknown; markdown: string }> {
+  return valueOf(Effect.scoped(Effect.gen(function* () {
+    const fs = yield* FileSystem.FileSystem;
+    const path = yield* Path.Path;
+    const tmp = yield* fs.makeTempDirectoryScoped({ prefix: "replay-rescore-" });
+    const input = path.join(tmp, "report.json");
+    const out = path.join(tmp, "rescored");
+    yield* fs.writeFileString(input, JSON.stringify(saved));
+    yield* rescoreReport(fs, path, input, out, "test");
+    const parsed: unknown = JSON.parse(yield* fs.readFileString(path.join(out, "report.json")));
+    const markdown = yield* fs.readFileString(path.join(out, "report.md"));
+    return { parsed, markdown };
+  })));
+}
+
 describe("rescoreReport", () => {
   test("a saved-report rescore does not drop the recorded failures", async () => {
-    const blankScore = {
-      classes: [],
-      overall: 0,
-      total: 0,
-      hits: 0,
-      quoteRecall: 0,
-      quoteTotal: 0,
-      decisionRecall: 0,
-      decisionTotal: 0,
-      recordedChars: 0,
-      candidateChars: 0,
-    };
-    const keeper: CaseReport = {
-      file: "sessions.jsonl",
-      dir: "s1",
-      index: 0,
-      split: false,
-      tokensBefore: 0,
-      rebuiltTokens: 0,
-      skipped: 0,
-      historyMessages: 1,
-      prefixMessages: 1,
-      recordedModel: "opencode-go/muse-spark",
-      recordedItems: 0,
-      recordedChars: 0,
-      candidateChars: 0,
-      referenceChars: 0,
-      candidateCost: 0,
-      referenceCost: 0,
-      candidateTokens: { calls: 0, reportedInput: 0, reportedOutput: 0, estimatedInput: 0, estimatedOutput: 0 },
-      candidate: blankScore,
-      reference: blankScore,
-      candidateText: "## Goal\n- Ship it.",
-      referenceText: "## Goal\n- Ship it.",
-      recordedText: "## Goal\n- Ship it.",
-      sourceText: "user: ship it",
-      captainText: "user: ship it",
-      previousSummary: undefined,
-    };
     const failures = [{ case: "s1#0", arm: "candidate", error: "boom" }];
-    const wrote = await valueOf(Effect.scoped(Effect.gen(function* () {
-      const fs = yield* FileSystem.FileSystem;
-      const path = yield* Path.Path;
-      const tmp = yield* fs.makeTempDirectoryScoped({ prefix: "replay-rescore-" });
-      const input = path.join(tmp, "report.json");
-      const out = path.join(tmp, "rescored");
-      yield* fs.writeFileString(input, JSON.stringify({ candidate: "c", reference: "recorded", failures, cases: [keeper] }));
-      yield* rescoreReport(fs, path, input, out, "test");
-      const parsed: unknown = JSON.parse(yield* fs.readFileString(path.join(out, "report.json")));
-      const markdown = yield* fs.readFileString(path.join(out, "report.md"));
-      return { parsed, kept: markdown.includes("- s1#0 candidate: boom") };
-    })));
+    const wrote = await rescoredReportOf({ candidate: "c", reference: "recorded", failures, cases: [keeper] });
     expect(wrote.parsed).toMatchObject({ failures });
-    expect(wrote.kept).toBe(true);
+    expect(wrote.markdown).toContain("- s1#0 candidate: boom");
+  });
+  test("a rescore keeps a masked run masked and marks a report from before masking unmasked", async () => {
+    const masked = await rescoredReportOf({ candidate: "c", reference: "recorded", toolOutputHidden: true, failures: [], cases: [keeper] });
+    expect(masked.parsed).toMatchObject({ toolOutputHidden: true });
+    const older = await rescoredReportOf({ candidate: "c", reference: "recorded", failures: [], cases: [keeper] });
+    expect(older.parsed).toMatchObject({ toolOutputHidden: false });
   });
   test("a saved-report rescore with malformed failures reports the failures, not the cases", async () => {
     const message = await saidBy(Effect.scoped(Effect.gen(function* () {

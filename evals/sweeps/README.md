@@ -8,6 +8,7 @@ It holds a sha256 of each Rule and reachable Reference file, and whether any dif
 It holds every run's verdict, spend and turns, and whether the run wrote a test.
 No record is edited once committed, so a new measurement is a new record.
 A Rule's pooled row treats every run as independent, so read the case rows beneath it.
+A renamed Rule is listed under its current name, and its older records keep the name it had when they ran.
 New sweep records store input, output, cache-read, and cache-write token totals.
 Older records show missing cache counts as not recorded.
 Where cache counts are not recorded, the input column leaves out cached prompt tokens, so it undercounts the prompt.
@@ -110,6 +111,12 @@ A zero cost without a matching rate appears as not measured.
 | [2026-10-11T20:09:36Z](2026-10-11T20-09-36Z-470a2003-7ffd-4232-9905-9d62575127a7.json) | `claude-bridge/claude-opus-5-5` | high | 2 | 32 of 32 | 314 | 92030 | 1214406 | 381754 | estimated $3.9935 | `c964b22` | as committed |
 | [2026-10-12T14:14:27Z](2026-10-12T14-14-27Z-7cfb5e78-f0b8-4f29-b857-4b5030210031.json) | `opencode-go/muse-spark-1.3-contributor` | high | 5 | 120 of 120 | 1546574 | 883877 | 7812219 | 0 | $0.3471 | `b133b41` | as committed |
 | [2026-10-12T16:21:59Z](2026-10-12T16-21-59Z-7bcaf5ef-6348-4f05-9585-23409b7d8e8d.json) | `claude-bridge/claude-opus-5-5` | high | 2 | 48 of 48 | 528 | 155336 | 2223569 | 603056 | estimated $6.5688 | `b133b41` | as committed |
+| [2026-11-10T20:27:48Z](2026-11-10T20-27-48Z-8d37c1b6-ce93-4f57-bc97-1775564831e2.json) | `opencode-go/muse-spark-1.3-contributor` | high | 3 | 18 of 18 | 296762 | 117749 | 2360463 | 0 | $0.0579 | `d6bdd08` | as committed |
+| [2026-11-10T20:49:24Z](2026-11-10T20-49-24Z-01f2de77-3262-44cf-be60-c1efaed113b6.json) | `claude-bridge/claude-haiku-5-5` | high | 5 | 10 of 10 | 84 | 10632 | 186162 | 50882 | estimated $0.0135 | `ec1e094` | as committed |
+| [2026-11-10T20:52:26Z](2026-11-10T20-52-26Z-aebb84fe-d28c-41e0-b4ff-908b5e786b21.json) | `opencode-go/gpt-6-luna` | high | 5 | 10 of 10 | 105 | 3501 | 150110 | 114794 | $0.0176 | `ec1e094` | as committed |
+| [2026-11-10T20:55:23Z](2026-11-10T20-55-23Z-8af23ddd-d5d9-4de6-81be-991134a24ca2.json) | `claude-bridge/claude-fable-5-2` | high | 5 | 10 of 10 | 68 | 6645 | 131228 | 25607 | estimated $0.5487 | `ec1e094` | as committed |
+| [2026-11-10T20:59:44Z](2026-11-10T20-59-44Z-e113772f-cb4b-420f-b055-adbcf7a8dd97.json) | `openrouter/qwen/qwen3.6-35b-a3b` | high | 5 | 10 of 10 | 417978 | 3819 | 234464 | 0 | $0.0522 | `ec1e094` | as committed |
+| [2026-11-11T08:08:28Z](2026-11-11T08-08-28Z-eb4dddc0-605b-4206-be46-a69c7805487f.json) | `claude-bridge/claude-opus-5-5` | high | 2 | 12 of 12 | 228 | 61586 | 813695 | 106102 | estimated $1.9259 | `d6bdd08` | as committed |
 
 ## agent-docs
 
@@ -263,6 +270,19 @@ A zero cost without a matching rate appears as not measured.
 | [2026-09-25T18:48:33Z](2026-09-25T18-48-33Z-0f5d5c8d-61a6-4cc4-8bf7-e7866855f894.json) | `claude-bridge/claude-opus-5-5` | xhigh | all | 10/10, 100% | 10/10, 100% | +0 pp | 1.000 |
 | | | | build-log | 5/5, 100% | 5/5, 100% | +0 pp | 1.000 |
 | | | | lockfile | 5/5, 100% | 5/5, 100% | +0 pp | 1.000 |
+
+## guard-the-context-window-slow-output
+
+| Sweep | Model | Thinking | Case | Injected | Withheld | Difference | Fisher p |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| [2026-11-10T20:49:24Z](2026-11-10T20-49-24Z-01f2de77-3262-44cf-be60-c1efaed113b6.json) | `claude-bridge/claude-haiku-5-5` | high | all | 5/5, 100% | 0/4, 0%, 1 unjudged | +100 pp | 0.008 |
+| | | | slow-report | 5/5, 100% | 0/4, 0%, 1 unjudged | +100 pp | 0.008 |
+| [2026-11-10T20:52:26Z](2026-11-10T20-52-26Z-aebb84fe-d28c-41e0-b4ff-908b5e786b21.json) | `opencode-go/gpt-6-luna` | high | all | 5/5, 100% | 0/5, 0% | +100 pp | 0.008 |
+| | | | slow-report | 5/5, 100% | 0/5, 0% | +100 pp | 0.008 |
+| [2026-11-10T20:55:23Z](2026-11-10T20-55-23Z-8af23ddd-d5d9-4de6-81be-991134a24ca2.json) | `claude-bridge/claude-fable-5-2` | high | all | 5/5, 100% | 0/5, 0% | +100 pp | 0.008 |
+| | | | slow-report | 5/5, 100% | 0/5, 0% | +100 pp | 0.008 |
+| [2026-11-10T20:59:44Z](2026-11-10T20-59-44Z-e113772f-cb4b-420f-b055-adbcf7a8dd97.json) | `openrouter/qwen/qwen3.6-35b-a3b` | high | all | 3/3, 100%, 2 unjudged | 0/4, 0%, 1 unjudged | +100 pp | 0.029 |
+| | | | slow-report | 3/3, 100%, 2 unjudged | 0/4, 0%, 1 unjudged | +100 pp | 0.029 |
 
 ## plain-sentences
 
@@ -429,6 +449,14 @@ A zero cost without a matching rate appears as not measured.
 | [2026-09-25T19:00:10Z](2026-09-25T19-00-10Z-3c5c7a6c-6484-4900-9cda-dd0f5083a028.json) | `claude-bridge/claude-opus-5-5` | xhigh | all | 10/10, 100% | 3/10, 30% | +70 pp | 0.003 |
 | | | | json-config | 5/5, 100% | 3/5, 60% | +40 pp | 0.444 |
 | | | | error-message | 5/5, 100% | 0/5, 0% | +100 pp | 0.008 |
+| [2026-11-10T20:27:48Z](2026-11-10T20-27-48Z-8d37c1b6-ce93-4f57-bc97-1775564831e2.json) | `opencode-go/muse-spark-1.3-contributor` | high | all | 9/9, 100% | 3/9, 33% | +67 pp | 0.009 |
+| | | | json-config | 3/3, 100% | 0/3, 0% | +100 pp | 0.100 |
+| | | | error-message | 3/3, 100% | 0/3, 0% | +100 pp | 0.100 |
+| | | | schema-twin | 3/3, 100% | 3/3, 100% | +0 pp | 1.000 |
+| [2026-11-11T08:08:28Z](2026-11-11T08-08-28Z-eb4dddc0-605b-4206-be46-a69c7805487f.json) | `claude-bridge/claude-opus-5-5` | high | all | 6/6, 100% | 2/6, 33% | +67 pp | 0.061 |
+| | | | json-config | 2/2, 100% | 0/2, 0% | +100 pp | 0.333 |
+| | | | error-message | 2/2, 100% | 0/2, 0% | +100 pp | 0.333 |
+| | | | schema-twin | 2/2, 100% | 2/2, 100% | +0 pp | 1.000 |
 
 ## unslop
 
