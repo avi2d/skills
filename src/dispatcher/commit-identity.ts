@@ -202,10 +202,28 @@ const literalTempDir = (first: SplitStage): { name: string; dir: string } | unde
   return { name: found[1] ?? "", dir: value };
 };
 
+const hasUnexpandedDollar = (command: string, from: number): boolean => {
+  let single = false;
+  let escaped = false;
+  for (let at = from; at < command.length; at += 1) {
+    const char = command.charAt(at);
+    if (single) {
+      if (char === "\x27") single = false;
+      else if (char === "$") return true;
+    } else if (escaped) {
+      if (char === "$") return true;
+      escaped = false;
+    } else if (char === "\\") escaped = true;
+    else if (char === "\x27") single = true;
+  }
+  return false;
+};
+
 const shapeVar = (stages: readonly SplitStage[], command: string, inside: readonly boolean[]): Record<string, string> => {
   if (!flatCommand(stages, command, inside)) return {};
   const first = stages[0];
   if (first === undefined) return {};
+  if (hasUnexpandedDollar(command, first.spanEnd)) return {};
   const made = mktempAssignment(command, first);
   const fromMktemp = made !== undefined && made.dir !== UNRESOLVED ? { name: made.name, dir: made.dir } : undefined;
   const resolved = fromMktemp ?? (made === undefined ? literalTempDir(first) : undefined);
