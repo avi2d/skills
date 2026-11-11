@@ -271,8 +271,7 @@ export const savesStdout = (command: string, runsSlow?: (words: readonly string[
     return lines.some((pipeline) => pipeline.some((stage) => runsSlow(stage.words)) && pipelineSaves(command, inside, pipeline));
   }
   const commands = lines.filter((pipeline) => !TRIVIAL_PROGRAMS.has(firstProgram(pipeline)));
-  const significant = commands.filter((pipeline) => !OUTPUT_FILTERS.has(firstProgram(pipeline)));
-  const judged = significant.length > 0 ? significant.at(-1) : commands.at(0);
+  const judged = commands.at(-1);
   return judged !== undefined && pipelineSaves(command, inside, judged);
 };
 

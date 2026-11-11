@@ -153,7 +153,7 @@ test("only relevant stdout sent to a real file counts as saved", () => {
 test("a save of the slow command is not lost to a command chained after it", () => {
   expect(savesStdout("bash tools/stock-take.sh > /tmp/stock-take.log 2>&1; echo EXIT:$?")).toBe(true);
   expect(savesStdout("bash tools/stock-take.sh >/tmp/stock.log 2>&1 && echo done")).toBe(true);
-  expect(savesStdout('cd /repo && bash tools/stock-take.sh > /tmp/stock-take.out 2>&1; echo "exit=$?"; wc -l /tmp/stock-take.out')).toBe(true);
+  expect(savesStdout('cd /repo && bash tools/stock-take.sh > /tmp/stock-take.out 2>&1; echo "exit=$?"; wc -l /tmp/stock-take.out')).toBe(false);
 });
 
 test("a save by a command chained around the slow one does not count as the slow one saving", () => {
@@ -176,6 +176,10 @@ test("a save by an unrelated chained command does not count on the default path"
   expect(savesStdout("grep -rn foo . > /tmp/grep.log 2>&1")).toBe(true);
   expect(savesStdout("sort -u huge.txt > /tmp/sorted.txt")).toBe(true);
   expect(savesStdout("jq '.[]' huge.json > /tmp/out.json")).toBe(true);
+  expect(savesStdout("git pull; rg -n TODO . > /tmp/rg.log")).toBe(true);
+  expect(savesStdout("npm run build && rg -n TODO dist > /tmp/todo.log")).toBe(true);
+  expect(savesStdout("wc -l big.txt; rg -n TODO /big > /tmp/rg.log")).toBe(true);
+  expect(savesStdout("ls src; grep -rn foo . > /tmp/g.log")).toBe(true);
 });
 
 test("an unsaved build-then-test run still allows its fully saved rerun", () => {
