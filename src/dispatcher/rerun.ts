@@ -1,11 +1,13 @@
 import { createHash } from "node:crypto";
 import { segmentWrites } from "./rerun-mutation";
 import { SLOW_KEEP, type RunState } from "./run-state";
-import { segments } from "./shell-words";
+import { quoted, segments } from "./shell-words";
+
+export { quoted };
 
 export const digestCommand = (command: string): string => createHash("sha256").update(command, "utf8").digest("hex");
 
-export type SplitStage = { words: string[]; start: number; gap: string; spanEnd: number };
+export type SplitStage = { words: string[]; noExpand: readonly boolean[]; start: number; gap: string; spanEnd: number };
 
 export const splitStages = (command: string): SplitStage[] => {
   const found = segments(command);
@@ -14,6 +16,7 @@ export const splitStages = (command: string): SplitStage[] => {
     const previous = at === 0 ? 0 : (found[at - 1]?.at(-1)?.to ?? 0);
     return {
       words: segment.map((word) => word.text),
+      noExpand: segment.map((word) => word.noExpand === true),
       start,
       gap: command.slice(previous, start),
       spanEnd: found[at + 1]?.[0]?.from ?? command.length,
@@ -53,6 +56,43 @@ const OUTPUT_FILTERS = new Set([
 
 const programOf = (word: string | undefined): string => word?.split("/").pop() ?? "";
 
+const WAITS: readonly (readonly string[])[] = [
+  ["sleep"],
+  ["no-mistakes", "axi", "run"], ["no-mistakes", "axi", "respond"], ["no-mistakes", "axi", "status"],
+  ["gh-axi", "pr", "checks"],
+  ["pueue", "wait"], ["pueue", "status"],
+];
+
+const TIMEOUT_VALUED = new Set(["-s", "-k", "--signal", "--kill-after"]);
+
+const unwrapped = (words: readonly string[]): readonly string[] => {
+  let at = 0;
+  while (/^[A-Za-z_][A-Za-z0-9_]*=/.test(words[at] ?? "")) at += 1;
+  for (;;) {
+    const program = programOf(words[at]);
+    if (program === "timeout") {
+      at += 1;
+      while ((words[at] ?? "").startsWith("-")) at += TIMEOUT_VALUED.has(words[at] ?? "") ? 2 : 1;
+      at += 1;
+    } else return words.slice(at);
+  }
+};
+
+const stageWaits = (words: readonly string[]): boolean => {
+  const [program, ...args] = unwrapped(words);
+  const plain = args.filter((arg) => !arg.startsWith("-"));
+  return WAITS.some(
+    ([head, ...tail]) =>
+      head === programOf(program) && (tail.length === 0 || plain.some((_, at) => tail.every((word, offset) => plain[at + offset] === word))),
+  );
+};
+
+const waitsOnState = (command: string): boolean => {
+  const kept = analyze(command).filter((stage) => stage.kept);
+  const silent = (words: readonly string[]): boolean => programOf(unwrapped(words)[0]) === "cd";
+  return kept.some((stage) => stageWaits(stage.words)) && kept.every((stage) => silent(stage.words) || stageWaits(stage.words) || OUTPUT_FILTERS.has(programOf(unwrapped(stage.words)[0])));
+};
+
 type AnalyzedStage = SplitStage & { kept: boolean };
 
 const analyze = (command: string): AnalyzedStage[] => {
@@ -73,7 +113,7 @@ const previousSignificant = (text: string, at: number): string => {
   return back >= 0 ? (text[back] ?? "") : "";
 };
 
-const unquote = (target: string): string =>
+export const unquote = (target: string): string =>
   target.length >= 2 &&
   ((target.startsWith('"') && target.endsWith('"')) || (target.startsWith("'") && target.endsWith("'")))
     ? target.slice(1, -1)
@@ -136,26 +176,6 @@ export const stripped = (command: string): string => {
     .join(" ")
     .replace(/\s+/g, " ")
     .trim();
-};
-
-export const quoted = (command: string): boolean[] => {
-  const inside = new Array<boolean>(command.length).fill(false);
-  let quote = "";
-  for (let at = 0; at < command.length; at += 1) {
-    const char = command.charAt(at);
-    if (quote !== "") {
-      inside[at] = true;
-      if (char === quote) quote = "";
-    } else if (char === "'" || char === '"') {
-      inside[at] = true;
-      quote = char;
-    } else if (char === "\\") {
-      inside[at] = true;
-      if (at + 1 < command.length) inside[at + 1] = true;
-      at += 1;
-    }
-  }
-  return inside;
 };
 
 export const outputGoesToFile = (command: string): boolean => {
@@ -330,6 +350,7 @@ export const slowResult = (event: SlowResult, state: RunState): { actions: []; s
     return { actions: [], state: clearedSlow(state) };
   }
   const base = mutating && !failed ? [] : entries;
+  if (waitsOnState(event.command)) return { actions: [], state: base === entries ? state : clearedSlow(state) };
   const slow = [...base, { full: [full], canon, ...(saved ? { recovered: true } : {}) }].slice(-SLOW_KEEP);
   return { actions: [], state: { ...state, slow } };
 };

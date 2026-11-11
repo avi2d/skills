@@ -1,57 +1,17 @@
 import { existsSync, readFileSync, realpathSync } from "node:fs";
-import { homedir, tmpdir } from "node:os";
-import { dirname, join, resolve, sep } from "node:path";
+import { homedir } from "node:os";
+import { dirname, join, resolve } from "node:path";
 import { isPipeGap, quoted, splitStages, type SplitStage } from "./rerun";
+import { LEADING_ASSIGNMENT, andOnly, expandVars, openGap, shapeVar, underTemp, withoutEnv } from "./shell-vars";
 
 export const COMMIT_IDENTITY_REFUSAL =
   "This commit sets its own author or committer. Commit as the identity the repository already resolves to, which git config user.name and git config user.email print. Set an identity only inside a throwaway repository a test creates under the temp directory.";
 
 export const COMMIT_IDENTITY_LINE = "commit-identity: refused a commit that sets its own author or committer";
 
-const tempRoots = (): string[] => {
-  const roots = new Set<string>();
-  for (const candidate of [tmpdir(), "/tmp", "/private/tmp"]) {
-    try {
-      roots.add(realpathSync(candidate));
-    } catch {
-    }
-  }
-  return [...roots];
-};
-
-const underTemp = (cwd: string): boolean => {
-  if (cwd.includes("$") || cwd.includes("`")) return false;
-  try {
-    const roots = tempRoots();
-    try {
-      const dir = realpathSync(resolve(cwd));
-      return roots.some((root) => dir === root || dir.startsWith(root + sep));
-    } catch {
-      let base = resolve(cwd);
-      for (;;) {
-        if (existsSync(base)) {
-          const dir = realpathSync(base);
-          return roots.some((root) => dir === root || dir.startsWith(root + sep));
-        }
-        const parent = dirname(base);
-        if (parent === base) return false;
-        base = parent;
-      }
-    }
-  } catch {
-    return false;
-  }
-};
 
 const IDENTITY_VAR = /^GIT_(AUTHOR|COMMITTER)_[A-Z][A-Z_]*=/;
 
-const LEADING_ASSIGNMENT = /^[A-Za-z_][A-Za-z0-9_]*=.*/;
-
-const withoutEnv = (words: readonly string[]): readonly string[] => {
-  let at = 0;
-  while (at < words.length && LEADING_ASSIGNMENT.test(words[at] ?? "")) at += 1;
-  return words.slice(at);
-};
 
 const expandHome = (dir: string, home: string): string =>
   dir === "~" || dir.startsWith("~/") ? join(home, dir.slice(1)) : dir;
@@ -168,8 +128,6 @@ const gitDirOf = (
   return explicit ?? envGitDir(words, bare, vars, home) ?? discoverGitDir(dir);
 };
 
-const andOnly = (gap: string): boolean =>
-  gap.includes("&&") && !gap.includes(";") && !gap.includes("||") && !gap.includes("\n");
 
 type Track = {
   current: string;
@@ -250,20 +208,21 @@ const recordAssignments = (track: Track, words: readonly string[], piped: boolea
   }
 };
 
-const resolveFrom = (track: Track, index: number, stages: readonly SplitStage[]): string => {
+const resolveFrom = (track: Track, index: number, stages: readonly SplitStage[], inside: readonly boolean[]): string => {
   if (track.missingSince === undefined) return track.current;
   for (let at = track.missingSince + 1; at <= index; at += 1) {
-    if (!andOnly(stages[at]?.gap ?? "")) return track.effective;
+    const gap = stages[at]?.gap ?? "";
+    if (!andOnly(gap, inside, (stages[at]?.start ?? 0) - gap.length)) return track.effective;
   }
   return track.current;
 };
 
-const commitDirFor = (track: Track, words: readonly string[], bare: readonly string[], index: number, stages: readonly SplitStage[], home: string): string | undefined => {
+const commitDirFor = (track: Track, words: readonly string[], bare: readonly string[], index: number, stages: readonly SplitStage[], home: string, inside: readonly boolean[]): string | undefined => {
   const git = bare.indexOf("git");
   if (git === -1) return undefined;
   const commitAt = bare.indexOf("commit", git + 1);
   if (commitAt === -1) return undefined;
-  return gitDirOf(words, bare, git, commitAt, resolveFrom(track, index, stages), track.vars, home);
+  return gitDirOf(words, bare, git, commitAt, resolveFrom(track, index, stages, inside), track.vars, home);
 };
 
 const commitDirs = (stages: readonly SplitStage[], command: string, cwd: string, home: string): string[] => {
@@ -271,23 +230,27 @@ const commitDirs = (stages: readonly SplitStage[], command: string, cwd: string,
   const bodies = functionBodies(command);
   const insideBody = (at: number): boolean => bodies.some(({ from, to }) => at >= from && at < to);
   const track = makeTrack(cwd);
+  const shape = shapeVar(stages, command, inside);
   const targets: string[] = [];
   for (let index = 0; index < stages.length; index += 1) {
     const stage = stages[index];
     if (stage === undefined) continue;
     if (insideBody(stage.start)) continue;
     applyGapParens(track, stage, stage.start - stage.gap.length, inside, insideBody);
-    const words = stage.words;
+    const words = stage.words.map((word, at) => (stage.noExpand[at] === true ? word : expandVars(word, shape)));
     const bare = withoutEnv(words);
+    const rawBare = withoutEnv(stage.words);
     const next = stages[index + 1];
-    const piped = isPipeGap(stage.gap) || (next !== undefined && isPipeGap(next.gap));
+    const piped =
+      isPipeGap(openGap(stage.gap, inside, stage.start - stage.gap.length)) ||
+      (next !== undefined && isPipeGap(openGap(next.gap, inside, next.start - next.gap.length)));
     if (applyCd(track, words, bare, piped, home, index)) continue;
-    if (bare[0] === "export") recordExports(track, bare, piped);
-    else if (isAssignmentStage(words)) {
-      recordAssignments(track, words, piped);
+    if (rawBare[0] === "export") recordExports(track, rawBare, piped);
+    else if (isAssignmentStage(stage.words)) {
+      recordAssignments(track, stage.words, piped);
       continue;
     }
-    const found = commitDirFor(track, words, bare, index, stages, home);
+    const found = commitDirFor(track, words, bare, index, stages, home, inside);
     if (found !== undefined) targets.push(found);
   }
   return targets;

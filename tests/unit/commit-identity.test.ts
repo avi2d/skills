@@ -52,6 +52,16 @@ test("a cd that a subshell, a pipeline, or a function body discards never moves 
   expect(refused(`(cd ${fixture} && git commit --author=spark -m 'x')`)).toBeUndefined();
 });
 
+test("a subshell cd after an escaped quote never moves the commit target", () => {
+  expect(refused('echo "a\\"b"; (cd /tmp); git -c user.name=t commit -m x')).toBe(COMMIT_IDENTITY_REFUSAL);
+  expect(refused('d=$(mktemp -d); echo "a\\"b"; (cd "$d"); git -c user.name=t commit -m x')).toBe(COMMIT_IDENTITY_REFUSAL);
+});
+
+test("a quote in a heredoc body or comment never hides a subshell cd", () => {
+  expect(refused("d=$(mktemp -d)\ncat > /tmp/note <<EOF\nit's\nEOF\n(cd \"$d\" && git init -q)\ngit -c user.name=t commit -m x")).toBe(COMMIT_IDENTITY_REFUSAL);
+  expect(refused("d=$(mktemp -d)\n# don't reuse\n(cd \"$d\" && git init -q)\ngit -c user.name=t commit -m x")).toBe(COMMIT_IDENTITY_REFUSAL);
+});
+
 test("the commit target follows the repository selectors, and the work tree never moves it", () => {
   expect(refused(`GIT_DIR=/repo/.git git commit --author=spark -m 'x'`, fixture)).toBe(COMMIT_IDENTITY_REFUSAL);
   expect(refused(`git --git-dir=${fixture} commit --author=spark -m 'x'`)).toBeUndefined();
@@ -91,9 +101,104 @@ test("a not yet created path under /tmp stays exempt through its nearest existin
   expect(refused("cd /tmp/skills-commit-identity-missing && git commit --author=spark -m 'x'")).toBeUndefined();
 });
 
-test("a target holding an unexpanded variable stays refused even from a temp working directory", () => {
-  expect(refused("d=$(mktemp -d) && cd \"$d\" && git commit --author=spark -m 'x'")).toBe(COMMIT_IDENTITY_REFUSAL);
+test("a target holding a variable the command never assigns stays refused even from a temp working directory", () => {
   expect(refused("cd \"$d\" && git commit --author=spark -m 'x'", fixture)).toBe(COMMIT_IDENTITY_REFUSAL);
+});
+
+test.each([
+  "d=$(mktemp -d); cd \"$d\" && git init -q && git -c user.name=t -c user.email=t@example.com commit -q -m x",
+  "d=$(mktemp -d) && cd \"$d\" && git commit --author=spark -m 'x'",
+  "d=\"$(mktemp -d)\"; cd $d && git -c user.name=t commit -m x",
+  "d=`mktemp -d`; git -C \"$d\" -c user.name=t commit -m x",
+  "d=$(mktemp -d -t fixture.XXXXXX); git -C \"${d}\" -c user.name=t commit -m x",
+  "d=$(mktemp -d /tmp/fixture.XXXXXX); cd \"$d\"; git -c user.name=t commit -m x",
+  "tmp=$(mktemp -d); cp /tmp/seed $tmp/ && cd $tmp && git init -q && git -c user.name=t commit -m x",
+  "d=$(mktemp -d /tmp/d.XXXX); cd $d && git -c user.name=t commit -m x",
+  "repo=$(mktemp -d); cd \"$repo\" && git init -q && git -c user.name=t commit -m \"init repo\"",
+  "t=$(mktemp -d); cd $t && git init -q && git -c user.name=t commit -m x",
+  "d=$(mktemp -d); cd \"$d\" && git init -q && echo x > f && git add . && git -c user.name=t -c user.email=t@e commit -m x",
+  "G=/tmp/x/repo; git -C $G -c user.name=t -c user.email=t@example.com commit -m x",
+  "d=$(mktemp -dt foo.XXXX); cd \"$d\" && git -c user.name=t commit -m x",
+  "d=$(mktemp -d); echo \"it's\" > \"$d/f\"; cd \"$d\" && git init -q && git add f && git -c user.name=t commit -m x",
+  "d=$(mktemp -d); cd \"$d\" && git init -q && cat > f <<EOF\na | b\nEOF\ngit add f && git -c user.name=t commit -m x",
+  "d=$(mktemp -d) # scratch repo\ncd \"$d\" && git init -q && git -c user.name=t commit -m x",
+])("a commit into a temp directory held in a shell variable stays exempt: %s", (command) => {
+  expect(refused(command)).toBeUndefined();
+});
+
+test.each([
+  "export GIT_DIR=/tmp/x/.git; git -c user.name=t commit -m x",
+  "GIT_DIR=/tmp/x/.git; export GIT_DIR; git -c user.name=t commit -m x",
+  "export GIT_DIR=/tmp/x/.git && git -c user.name=t commit -m x",
+])("a commit with an exported git dir under the temp directory stays exempt: %s", (command) => {
+  expect(refused(command)).toBeUndefined();
+});
+
+test.each([
+  "d=/repo; cd \"$d\" && git -c user.name=t commit -m x",
+  "d=$(pwd); cd \"$d\" && git -c user.name=t commit -m x",
+  "d=$(git rev-parse --show-toplevel); git -C \"$d\" -c user.name=t commit -m x",
+  "d=$(mktemp -d -p /repo); cd \"$d\" && git -c user.name=t commit -m x",
+  "d=$(mktemp -d --tmpdir=/repo); cd \"$d\" && git -c user.name=t commit -m x",
+  "d=$(mktemp -d /repo/fixture.XXXXXX); cd \"$d\" && git -c user.name=t commit -m x",
+  "d=/tmp/x; d=/repo; cd \"$d\" && git -c user.name=t commit -m x",
+  "d=$(mktemp -d) | cat; cd \"$d\" && git -c user.name=t commit -m x",
+  "d=/tmp/x git -C $d -c user.name=t commit -m x",
+  "d=$(mktemp -d) git -C \"$d\" -c user.name=t commit -m x",
+  "d=$(mktemp -d) cd \"$d\" && git -c user.name=t commit -m x",
+  "d=$(mktemp -d fixture.XXXXXX); cd \"$d\" && git -c user.name=t commit -m x",
+  "d=$(mktemp -d -t /tmp/x.XXXX); cd \"$d\"; git -c user.name=t commit -m x",
+  "f=$(mktemp -u); cd \"$f\"; git -c user.name=t commit -m x",
+  "f=$(mktemp); cd \"$f\"; git -c user.name=t commit -m x",
+  "d=$(mktemp -d); if [ -n \"$KEEP\" ]; then d=/repo; fi; git -C \"$d\" -c user.name=t commit -m x",
+  "d=/tmp/x; for i in 1; do d=/repo; done; git -C $d -c user.name=t commit -m x",
+  "d=$(mktemp -d); { d=/repo; }; git -C $d -c user.name=t commit -m x",
+  "d=$(mktemp -d); ! d=/repo; git -C $d -c user.name=t commit -m x",
+  "d=/tmp/x; read d < /tmp/f; git -C $d -c user.name=t commit -m x",
+  "d=/tmp/x; f() { d=/repo; }; f; git -C $d -c user.name=t commit -m x",
+  "test -n \"$CI\" && d=/tmp/x; git -C \"$d\" -c user.name=t commit -m x",
+  "false && d=/tmp/x; git -C \"$d\" -c user.name=t commit -m x",
+  "grep -q x f && d=/tmp/x; git -C \"$d\" -c user.name=t commit -m x",
+  "d=/tmp/x; IFS= read -r d < f; git -C $d -c user.name=t commit -m x",
+  "d=/tmp/x; printf -v d %s /repo; git -C $d -c user.name=t commit -m x",
+  "d=/tmp/x; mapfile -t d < f; git -C $d -c user.name=t commit -m x",
+  "d=/tmp/x; readarray -t d < f; git -C $d -c user.name=t commit -m x",
+  "d=/tmp/x; getopts a d; git -C $d -c user.name=t commit -m x",
+  "d=/tmp/x; d+=/../../repo; git -C $d -c user.name=t commit -m x",
+  "d=/tmp/x; unset d; git -C \"$d\" -c user.name=t commit -m x",
+  "d=/tmp/x; source ./f; git -C $d -c user.name=t commit -m x",
+  "d=/tmp/x; . ./f; git -C $d -c user.name=t commit -m x",
+  "d=$(mktemp -d); eval \"$(cat f)\"; git -C $d -c user.name=t commit -m x",
+  "d=/tmp/x & git -C \"$d\" -c user.name=t commit -m x",
+  "d=$(mktemp -d) & git -C \"$d\" -c user.name=t commit -m x",
+  "true; d=/tmp/x & git -C \"$d\" -c user.name=t commit -m x",
+  "export d=/tmp/x & git -C \"$d\" -c user.name=t commit -m x",
+  "d=$(mktemp -d) |& cat; git -C \"$d\" -c user.name=t commit -m x",
+  "export GIT_DIR=/repo/.git; if [ -n \"$X\" ]; then\nGIT_DIR=$(mktemp -d)\nfi; git -c user.name=t commit -m x",
+  "GIT_DIR=/repo/.git; true || GIT_DIR=$(mktemp -d); git -c user.name=t commit -m x",
+  "true; GIT_DIR=$(mktemp -d); git -c user.name=t commit -m x",
+  "d=$(mktemp -d); cd \"$d\" & git -c user.name=t commit -m x",
+  "R=$(mktemp -d); GIT_DIR=$R/.git; git -c user.name=t commit -m x",
+  "G=/tmp/x; GIT_DIR=$G/.git; git -c user.name=t commit -m x",
+  "R=$(mktemp -d); export GIT_DIR=$R/.git; git -c user.name=t commit -m x",
+  "G=/tmp/x; export GIT_DIR=$G/.git; git -c user.name=t commit -m x",
+  "d=$(mktemp -d); echo \"'\"; cd '$d'; git -c user.name=t commit -m x",
+  "d=$(mktemp -d); cd \"a\\\"b'$d\"; git -c user.name=t commit -m x",
+  "d=$(mktemp -d); cd '$d'; git -c user.name=t commit -m x",
+  "d=$(mktemp -d); cd \\$d; git -c user.name=t commit -m x",
+  "G=/tmp/x; cd '$G'; git -c user.name=t commit -m x",
+  "R=$(mktemp -d); G=$R/repo; mkdir -p $G && cd $G && git init -q && git -c user.name=t commit -m x",
+  "G=/repo/x; git -C $G -c user.name=t commit -m x",
+  "G=/tmp/x/*.repo; git -C $G -c user.name=t commit -m x",
+  "f=$(mktemp -du); cd \"$f\"; git -c user.name=t commit -m x",
+  "if [ -n \"$X\" ]; then echo hi; d=/tmp/x; fi; git -C \"$d\" -c user.name=t commit -m x",
+  "if [ -n \"$X\" ]; then\nd=$(mktemp -d)\nfi; git -C \"$d\" -c user.name=t commit -m x",
+  "test -n \"$X\" && { echo hi; d=/tmp/x; }; git -C \"$d\" -c user.name=t commit -m x",
+  "while false; do echo; d=/tmp/x; done; git -C \"$d\" -c user.name=t commit -m x",
+  "d=/tmp/x || true & git -C \"$d\" -c user.name=t commit -m x",
+  "git -c user.name=\"$(git config user.name)\" -c user.email=\"$(git config user.email)\" commit -m x",
+])("a variable that does not resolve into the temp directory leaves the commit refused: %s", (command) => {
+  expect(refused(command)).toBe(COMMIT_IDENTITY_REFUSAL);
 });
 
 test("a not yet created path under an unexpanded temp variable stays refused", () => {

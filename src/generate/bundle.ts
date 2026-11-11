@@ -53,6 +53,7 @@ const CORE_FILES = {
   "src/dispatcher/rerun-mutation.ts": "rerun-mutation.ts",
   "src/dispatcher/credential-reads.ts": "credential-reads.ts",
   "src/dispatcher/commit-identity.ts": "commit-identity.ts",
+  "src/dispatcher/shell-vars.ts": "shell-vars.ts",
   "src/dispatcher/shell-words.ts": "shell-words.ts",
   "src/dispatcher/tool-call-fired.ts": "tool-call-fired.ts",
   "src/dispatcher/requested.ts": "requested.ts",
