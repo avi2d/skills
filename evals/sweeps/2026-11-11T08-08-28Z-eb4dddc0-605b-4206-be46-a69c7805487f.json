@@ -1,0 +1,332 @@
+{
+  "startedAt": "2026-11-11T08:08:28Z",
+  "runId": "eb4dddc0-605b-4206-be46-a69c7805487f",
+  "commit": "d6bdd081c3e13efd4ad6788a5177e371b97e780a",
+  "prose": {
+    "files": {
+      "library/engineering/rules/typescript-best-practices/SKILL.md": "cabd35b4593382fd162e1814647631a587eb0d6be6dfb023ce0919b4d0894226"
+    },
+    "uncommitted": false
+  },
+  "model": "claude-bridge/claude-opus-5-5",
+  "thinking": "high",
+  "repeats": 2,
+  "planned": 12,
+  "missing": [],
+  "runs": [
+    {
+      "rule": "typescript-best-practices",
+      "case": "json-config",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-type-assertion",
+        "kind": "program",
+        "evidence": [
+          "2 changed TypeScript file(s) add no type assertion: src/config.ts, tests/config.test.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 138,
+        "turns": 14,
+        "input": 28,
+        "output": 7472,
+        "cacheRead": 152392,
+        "cacheWrite": 18859,
+        "cacheWrite1h": 0,
+        "cost": 0.27432540000000005,
+        "costEstimated": true
+      },
+      "wroteTest": true
+    },
+    {
+      "rule": "typescript-best-practices",
+      "case": "json-config",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "no-type-assertion",
+        "kind": "program",
+        "evidence": [
+          "src/config.ts:18 makes an `as` assertion",
+          "src/config.ts:26 makes an `as` assertion"
+        ]
+      },
+      "spend": {
+        "seconds": 56,
+        "turns": 7,
+        "input": 14,
+        "output": 3930,
+        "cacheRead": 29542,
+        "cacheWrite": 7254,
+        "cacheWrite1h": 0,
+        "cost": 0.12083440000000001,
+        "costEstimated": true
+      },
+      "wroteTest": true
+    },
+    {
+      "rule": "typescript-best-practices",
+      "case": "error-message",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-type-assertion",
+        "kind": "program",
+        "evidence": [
+          "2 changed TypeScript file(s) add no type assertion: src/ledger-file.ts, tests/ledger-file.test.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 54,
+        "turns": 7,
+        "input": 14,
+        "output": 2923,
+        "cacheRead": 35602,
+        "cacheWrite": 4523,
+        "cacheWrite1h": 0,
+        "cost": 0.08825140000000001,
+        "costEstimated": true
+      },
+      "wroteTest": true
+    },
+    {
+      "rule": "typescript-best-practices",
+      "case": "error-message",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "no-type-assertion",
+        "kind": "program",
+        "evidence": [
+          "tests/ledger-file.test.ts:36 makes an `as` assertion"
+        ]
+      },
+      "spend": {
+        "seconds": 49,
+        "turns": 6,
+        "input": 12,
+        "output": 2650,
+        "cacheRead": 21593,
+        "cacheWrite": 5967,
+        "cacheWrite1h": 0,
+        "cost": 0.0872016,
+        "costEstimated": true
+      },
+      "wroteTest": true
+    },
+    {
+      "rule": "typescript-best-practices",
+      "case": "schema-twin",
+      "arm": "injected",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-schema-twin",
+        "kind": "program",
+        "evidence": [
+          "2 changed TypeScript file(s) repeat no schema's fields: src/users.ts, tests/users.test.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 121,
+        "turns": 12,
+        "input": 24,
+        "output": 5723,
+        "cacheRead": 81412,
+        "cacheWrite": 9164,
+        "cacheWrite1h": 0,
+        "cost": 0.17665840000000002,
+        "costEstimated": true
+      },
+      "wroteTest": true
+    },
+    {
+      "rule": "typescript-best-practices",
+      "case": "schema-twin",
+      "arm": "withheld",
+      "repeat": 1,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-schema-twin",
+        "kind": "program",
+        "evidence": [
+          "2 changed TypeScript file(s) repeat no schema's fields: src/users.ts, tests/users.test.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 112,
+        "turns": 9,
+        "input": 18,
+        "output": 5109,
+        "cacheRead": 58945,
+        "cacheWrite": 9996,
+        "cacheWrite1h": 0,
+        "cost": 0.164021,
+        "costEstimated": true
+      },
+      "wroteTest": true
+    },
+    {
+      "rule": "typescript-best-practices",
+      "case": "json-config",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-type-assertion",
+        "kind": "program",
+        "evidence": [
+          "2 changed TypeScript file(s) add no type assertion: src/config.ts, tests/config.test.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 135,
+        "turns": 9,
+        "input": 18,
+        "output": 9622,
+        "cacheRead": 71126,
+        "cacheWrite": 11286,
+        "cacheWrite1h": 0,
+        "cost": 0.26316720000000005,
+        "costEstimated": true
+      },
+      "wroteTest": true
+    },
+    {
+      "rule": "typescript-best-practices",
+      "case": "json-config",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "no-type-assertion",
+        "kind": "program",
+        "evidence": [
+          "src/config.ts:18 makes an `as` assertion",
+          "src/config.ts:26 makes an `as` assertion"
+        ]
+      },
+      "spend": {
+        "seconds": 40,
+        "turns": 7,
+        "input": 14,
+        "output": 3658,
+        "cacheRead": 32780,
+        "cacheWrite": 4708,
+        "cacheWrite1h": 0,
+        "cost": 0.10331200000000001,
+        "costEstimated": true
+      },
+      "wroteTest": true
+    },
+    {
+      "rule": "typescript-best-practices",
+      "case": "error-message",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-type-assertion",
+        "kind": "program",
+        "evidence": [
+          "2 changed TypeScript file(s) add no type assertion: src/ledger-file.ts, tests/ledger-file.test.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 56,
+        "turns": 8,
+        "input": 16,
+        "output": 3793,
+        "cacheRead": 47877,
+        "cacheWrite": 5342,
+        "cacheWrite1h": 0,
+        "cost": 0.11220940000000001,
+        "costEstimated": true
+      },
+      "wroteTest": true
+    },
+    {
+      "rule": "typescript-best-practices",
+      "case": "error-message",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "fail",
+        "judge": "no-type-assertion",
+        "kind": "program",
+        "evidence": [
+          "tests/ledger-file.test.ts:36 makes an `as` assertion"
+        ]
+      },
+      "spend": {
+        "seconds": 43,
+        "turns": 6,
+        "input": 12,
+        "output": 2821,
+        "cacheRead": 24867,
+        "cacheWrite": 3425,
+        "cacheWrite1h": 0,
+        "cost": 0.07856640000000001,
+        "costEstimated": true
+      },
+      "wroteTest": true
+    },
+    {
+      "rule": "typescript-best-practices",
+      "case": "schema-twin",
+      "arm": "injected",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-schema-twin",
+        "kind": "program",
+        "evidence": [
+          "2 changed TypeScript file(s) repeat no schema's fields: src/users.ts, tests/users.test.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 125,
+        "turns": 18,
+        "input": 36,
+        "output": 8002,
+        "cacheRead": 179295,
+        "cacheWrite": 12774,
+        "cacheWrite1h": 0,
+        "cost": 0.25991300000000006,
+        "costEstimated": true
+      },
+      "wroteTest": true
+    },
+    {
+      "rule": "typescript-best-practices",
+      "case": "schema-twin",
+      "arm": "withheld",
+      "repeat": 2,
+      "verdict": {
+        "outcome": "pass",
+        "judge": "no-schema-twin",
+        "kind": "program",
+        "evidence": [
+          "2 changed TypeScript file(s) repeat no schema's fields: src/users.ts, tests/users.test.ts"
+        ]
+      },
+      "spend": {
+        "seconds": 79,
+        "turns": 11,
+        "input": 22,
+        "output": 5883,
+        "cacheRead": 78264,
+        "cacheWrite": 12804,
+        "cacheWrite1h": 0,
+        "cost": 0.19742080000000004,
+        "costEstimated": true
+      },
+      "wroteTest": true
+    }
+  ]
+}
