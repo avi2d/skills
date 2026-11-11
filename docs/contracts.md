@@ -64,7 +64,8 @@ Codex trusts a hook by its hash, so installing or changing the file also needs o
 
 `bun run generate` writes the no-mistakes global config to `generated/no-mistakes/config.yaml` from `src/generate/no-mistakes-config.ts`, for the `$HOME` it runs under, and `bun run link` links `~/.no-mistakes/config.yaml` to it.
 The schema knows only the fields no-mistakes reads, because no-mistakes refuses a config file with a field it does not know.
-In `reviewer_chain`, the review step tries Opus 5.5 on the clauth account `main` first, then Opus 5.5 on the clauth account `second` last.
+In `reviewer_chain`, the review step tries Opus 5.5 on the clauth account `main` first, then GPT-6.1 Sol on the Codex sign-in, then Opus 5.5 on the clauth account `second` last.
+pi names Sol `openai/gpt-6.1-sol`.
 No entry carries a floor, so the review step moves to the next entry only after a usage limit.
 The login folders of `second` and `main` sit under `~/.claude-accounts/`.
 `review` holds one path instruction over every changed file that reviews added comments against comment discipline as warnings that never fix or block.

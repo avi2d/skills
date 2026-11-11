@@ -19,16 +19,17 @@ test("the comment review reports a warning with no-op, never an error or an esca
   expect(emitted()).toMatchObject({ review: { path_instructions: [{ path: "**/*", instructions: expect.stringContaining("will go stale") }] } });
 });
 
-test("the reviewer chain runs Opus on main then Opus on second, with Astra refused a slot and every floor gone", () => {
+test("the reviewer chain runs Opus on main, then Sol with no floor, then Opus on second, so Astra holds no slot", () => {
   expect(noMistakesConfigOf(HOME).reviewer_chain).toEqual([
     { agent: "pi", model: "claude-bridge/claude-opus-5-5", effort: "high", env: { CLAUDE_CONFIG_DIR: "/home/someone/.claude-accounts/main" } },
+    { agent: "pi", model: "openai/gpt-6.1-sol", effort: "high" },
     { agent: "pi", model: "claude-bridge/claude-opus-5-5", effort: "high", env: { CLAUDE_CONFIG_DIR: "/home/someone/.claude-accounts/second" } },
   ]);
 });
 
-test("the generated no-mistakes config names no Sol reviewer and no floor", async () => {
+test("the generated no-mistakes config carries no floor, which would skip Sol on every run now that Codex reports no five-hour window", async () => {
   const yaml = await valueOf(noMistakesYaml(noMistakesConfigOf(HOME)));
-  expect(yaml).not.toMatch(/-sol\b|floor|five_hour/);
+  expect(yaml).not.toMatch(/floor|five_hour/);
 });
 
 test("generation writes this machine's no-mistakes config under the generated root, with each login folder in $HOME", async () => {
@@ -36,7 +37,7 @@ test("generation writes this machine's no-mistakes config under the generated ro
   const config = Bun.YAML.parse(new TextDecoder().decode(bytes));
   const home = process.env.HOME ?? expect.unreachable("the test runs with no $HOME");
   expect(config).toEqual(noMistakesConfigOf(home));
-  expect(config).toMatchObject({ reviewer_chain: [{ env: { CLAUDE_CONFIG_DIR: `${home}/.claude-accounts/main` } }, { env: { CLAUDE_CONFIG_DIR: `${home}/.claude-accounts/second` } }] });
+  expect(config).toMatchObject({ reviewer_chain: [{ env: { CLAUDE_CONFIG_DIR: `${home}/.claude-accounts/main` } }, { model: "openai/gpt-6.1-sol" }, { env: { CLAUDE_CONFIG_DIR: `${home}/.claude-accounts/second` } }] });
 });
 
 type Chain = readonly Record<string, unknown>[];
@@ -49,19 +50,22 @@ const withChain = (reorder: (chain: Chain) => readonly unknown[]) => {
 const codexFloor = { command: "true", field: "remaining_percent", minimum: 30 };
 
 test.each([
-  ["a Codex floor left on main", ([main, second]: Chain) => [{ ...main, floor: codexFloor }, second], /no excess property\n {2}at \["reviewer_chain"\]\[0\]\["floor"\]$/],
-  ["a floor on the second account", ([main, second]: Chain) => [main, { ...second, floor: codexFloor }], /no excess property\n {2}at \["reviewer_chain"\]\[1\]\["floor"\]$/],
-  ["Sol left first in the chain", ([, second]: Chain) => [{ agent: "pi", model: "openai/gpt-6.1-sol", effort: "high" }, second], /at \["reviewer_chain"\]\[0\]\["model"\]$/],
-  ["Sol added back as a third reviewer", (chain: Chain) => [...chain, { agent: "pi", model: "openai/gpt-6.1-sol", effort: "high" }], /reviewer_chain/],
-  ["Astra added back first", ([, second]: Chain) => [{ agent: "pi", model: "openai/gpt-6-astra", effort: "high" }, second], /at \["reviewer_chain"\]\[0\]\["model"\]$/],
-  ["a chain that drops second", ([main]: Chain) => [main], /reviewer_chain/],
-  ["the second account login ahead of main", ([main, second]: Chain) => [second, main], /at \["reviewer_chain"\]\[0\]/],
+  ["a Codex floor left on main", ([main, sol, second]: Chain) => [{ ...main, floor: codexFloor }, sol, second], /no excess property\n {2}at \["reviewer_chain"\]\[0\]\["floor"\]$/],
+  ["a floor on Sol", ([main, sol, second]: Chain) => [main, { ...sol, floor: codexFloor }, second], /no excess property\n {2}at \["reviewer_chain"\]\[1\]\["floor"\]$/],
+  ["a floor on the second account", ([main, sol, second]: Chain) => [main, sol, { ...second, floor: codexFloor }], /no excess property\n {2}at \["reviewer_chain"\]\[2\]\["floor"\]$/],
+  ["Sol left first in the chain", ([main, sol, second]: Chain) => [sol, main, second], /at \["reviewer_chain"\]\[0\]\["model"\]$/],
+  ["Sol added back as a fourth reviewer", ([main, sol, second]: Chain) => [main, sol, second, sol], /reviewer_chain/],
+  ["Astra in Sol's slot", ([main, , second]: Chain) => [main, { agent: "pi", model: "openai/gpt-6-astra", effort: "high" }, second], /at \["reviewer_chain"\]\[1\]\["model"\]$/],
+  ["Astra added back first", ([, sol, second]: Chain) => [{ agent: "pi", model: "openai/gpt-6-astra", effort: "high" }, sol, second], /at \["reviewer_chain"\]\[0\]\["model"\]$/],
+  ["a chain that drops Sol", ([main, , second]: Chain) => [main, second], /reviewer_chain/],
+  ["a chain that drops second", ([main, sol]: Chain) => [main, sol], /reviewer_chain/],
+  ["the second account login ahead of main", ([main, sol, second]: Chain) => [second, sol, main], /at \["reviewer_chain"\]\[0\]/],
 ])("generation refuses a reviewer chain with %s", async (_, reorder, named) => {
   expect(await saidBy(noMistakesYaml(withChain(reorder)))).toMatch(named);
 });
 
 test("generation refuses a login folder written with a tilde, which no-mistakes passes to the agent unexpanded", async () => {
-  const source = withChain(([main, second]) => [main, { ...second, env: { CLAUDE_CONFIG_DIR: "~/.claude-accounts/second" } }]);
+  const source = withChain(([main, sol, second]) => [main, sol, { ...second, env: { CLAUDE_CONFIG_DIR: "~/.claude-accounts/second" } }]);
   expect(await saidBy(noMistakesYaml(source))).toMatch(/Expected a string starting with "\/"\n {2}at .*\["CLAUDE_CONFIG_DIR"\]$/);
 });
 
