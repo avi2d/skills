@@ -72,7 +72,7 @@
   "docs/why.md": 1,
   "harness/claude-code/settings.json": 5,
   "harness/codex/hooks.json": 3,
-  "harness/orc/orchestrator.md": 4,
+  "harness/orc/orchestrator.md": 8,
   "harness/pi/extensions/herdr-model-label.ts": 37,
   "harness/pi/extensions/session-name.ts": 14,
   "harness/pi/extensions/transcript-style/index.ts": 7,
@@ -87,6 +87,7 @@
   "scripts/replay-haiku-compaction/report.ts": 2,
   "scripts/replay-haiku-compaction/rescore.ts": 1,
   "src/dispatcher/gate.ts": 5,
+  "src/dispatcher/rerun.ts": 4,
   "src/dispatcher/verdict.ts": 1,
   "src/generate/claude-accounts.ts": 2,
   "src/generate/generate.ts": 1,
@@ -117,6 +118,7 @@
   "tests/unit/preflight.test.ts": 6,
   "tests/unit/replay-haiku-compaction.test.ts": 17,
   "tests/unit/replay-haiku-retention.test.ts": 2,
+  "tests/unit/rerun.test.ts": 10,
   "tests/unit/selection-models.test.ts": 4,
   "tests/unit/transcript-style.test.ts": 12
 }
