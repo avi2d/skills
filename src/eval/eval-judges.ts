@@ -172,7 +172,7 @@ export const reproducedBeforeFix = (source: RegExp, runs: RegExp, input: string,
   },
 });
 
-const withoutDigitGrouping = (answer: string): string => answer.replace(/(?<=\d)[,\u2009\u202f](?=\d{3}(?!\d))/g, "");
+const withoutDigitGrouping = (answer: string): string => answer.replace(/(?<=\d),(?=\d{3}(?!\d))/g, "");
 
 export const answeredFromSavedOutput = (first: RegExp, second: RegExp, slow: RegExp, budget: number): ProgramJudge => ({
   name: "answered-from-saved-output",

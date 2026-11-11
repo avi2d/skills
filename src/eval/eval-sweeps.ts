@@ -61,9 +61,18 @@ export const sweepRecords = Effect.fnUntraced(function* (
   return records;
 });
 
+// A record is never edited, so a Rule's renames are applied where the records are read.
+const RENAMED_RULES: ReadonlyMap<string, string> = new Map([["guard-the-context-window-spark", "guard-the-context-window-slow-output"]]);
+
+const underCurrentNames = (record: SweepRecord): SweepRecord => ({
+  ...record,
+  runs: record.runs.map((run) => ({ ...run, rule: RENAMED_RULES.get(run.rule) ?? run.rule })),
+});
+
 export function stalest(catalog: ReadonlyArray<{ rule: string }>, history: readonly SweepRecord[], model: string): string[] {
+  const current = history.map(underCurrentNames);
   const newest = (rule: string): string =>
-    history
+    current
       .filter((record) => record.model === model && record.runs.some((run) => run.rule === rule && run.verdict.outcome !== "unjudged"))
       .map((record) => record.startedAt)
       .toSorted()
@@ -91,14 +100,6 @@ const dollars = (record: SweepRecord) => {
   if (cost === 0) return "not measured";
   return `${record.runs.some((run) => run.spend.costEstimated === true) ? "estimated " : ""}$${cost.toFixed(4)}`;
 };
-
-// A record is never edited, so a Rule's renames are applied where the page reads it.
-const RENAMED_RULES: ReadonlyMap<string, string> = new Map([["guard-the-context-window-spark", "guard-the-context-window-slow-output"]]);
-
-const underCurrentNames = (record: SweepRecord): SweepRecord => ({
-  ...record,
-  runs: record.runs.map((run) => ({ ...run, rule: RENAMED_RULES.get(run.rule) ?? run.rule })),
-});
 
 const ruleSection = (rule: string, records: readonly SweepRecord[]): string[] => [
   `## ${rule}`,

@@ -45,6 +45,12 @@ describe("the Rule a bare sweep measures", () => {
     expect(stalest(catalog, history, "m")).toEqual(["prove-it-works"]);
   });
 
+  test("counts a sweep kept under a Rule's old name toward its current name", () => {
+    const renamed = [{ rule: "guard-the-context-window-slow-output" }, { rule: "prove-it-works" }];
+    const history = [sweep("2026-11-10T20:49:24Z", "m", [ran("guard-the-context-window-spark", "slow-report", "injected", pass)])];
+    expect(stalest(renamed, history, "m")).toEqual(["prove-it-works"]);
+  });
+
   test("once every Rule has been swept on the model, is the one whose newest sweep is oldest", () => {
     const history = [
       sweep("2026-09-24T11:00:00Z", "m", [ran("comment-discipline", "a", "injected", pass)]),
