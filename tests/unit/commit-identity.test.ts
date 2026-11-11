@@ -126,11 +126,32 @@ test.each([
   expect(refused(command)).toBeUndefined();
 });
 
+test("an unexported GIT_DIR assignment cannot exempt a commit", () => {
+  expect(refused("GIT_DIR=/tmp/x/.git; git -c user.name=t commit -m x")).toBe(COMMIT_IDENTITY_REFUSAL);
+});
+
 test.each([
+  "GIT_DIR=/tmp/x/.git git -c user.name=t commit -m x",
   "export GIT_DIR=/tmp/x/.git; git -c user.name=t commit -m x",
   "GIT_DIR=/tmp/x/.git; export GIT_DIR; git -c user.name=t commit -m x",
   "export GIT_DIR=/tmp/x/.git && git -c user.name=t commit -m x",
 ])("a commit with an exported git dir under the temp directory stays exempt: %s", (command) => {
+  expect(refused(command)).toBeUndefined();
+});
+
+test.each([
+  "export -n GIT_DIR=/tmp/x/.git; git -c user.name=t commit -m x",
+  "export GIT_DIR=/tmp/x/.git; export -n GIT_DIR; git -c user.name=t commit -m x",
+  "export GIT_DIR=/tmp/x/.git; unset GIT_DIR; git -c user.name=t commit -m x",
+  "export GIT_DIR=/tmp/x/.git; unset -v GIT_DIR; git -c user.name=t commit -m x",
+])("an unexported or unset GIT_DIR leaves the commit refused: %s", (command) => {
+  expect(refused(command)).toBe(COMMIT_IDENTITY_REFUSAL);
+});
+
+test.each([
+  "export GIT_DIR=/tmp/x/.git; (unset GIT_DIR); git -c user.name=t commit -m x",
+  "export GIT_DIR=/tmp/x/.git; unset -f GIT_DIR; git -c user.name=t commit -m x",
+])("an unset confined to a subshell or a function leaves the exported git dir exempt: %s", (command) => {
   expect(refused(command)).toBeUndefined();
 });
 
