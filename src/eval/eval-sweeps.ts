@@ -92,6 +92,14 @@ const dollars = (record: SweepRecord) => {
   return `${record.runs.some((run) => run.spend.costEstimated === true) ? "estimated " : ""}$${cost.toFixed(4)}`;
 };
 
+// A record is never edited, so a Rule's renames are applied where the page reads it.
+const RENAMED_RULES: ReadonlyMap<string, string> = new Map([["guard-the-context-window-spark", "guard-the-context-window-slow-output"]]);
+
+const underCurrentNames = (record: SweepRecord): SweepRecord => ({
+  ...record,
+  runs: record.runs.map((run) => ({ ...run, rule: RENAMED_RULES.get(run.rule) ?? run.rule })),
+});
+
 const ruleSection = (rule: string, records: readonly SweepRecord[]): string[] => [
   `## ${rule}`,
   "",
@@ -113,7 +121,7 @@ const ruleSection = (rule: string, records: readonly SweepRecord[]): string[] =>
 ];
 
 export const sweepPage = (records: readonly SweepRecord[]): string => {
-  const sorted = records.toSorted((a, b) => a.startedAt.localeCompare(b.startedAt));
+  const sorted = records.map(underCurrentNames).toSorted((a, b) => a.startedAt.localeCompare(b.startedAt));
   const rules = [...new Set(sorted.flatMap((record) => record.runs.map((run) => run.rule)))].toSorted();
   return [
     "# Eval sweeps",
@@ -126,6 +134,7 @@ export const sweepPage = (records: readonly SweepRecord[]): string => {
     "It holds every run's verdict, spend and turns, and whether the run wrote a test.",
     "No record is edited once committed, so a new measurement is a new record.",
     "A Rule's pooled row treats every run as independent, so read the case rows beneath it.",
+    "A renamed Rule is listed under its current name, and its older records keep the name it had when they ran.",
     "New sweep records store input, output, cache-read, and cache-write token totals.",
     "Older records show missing cache counts as not recorded.",
     "Where cache counts are not recorded, the input column leaves out cached prompt tokens, so it undercounts the prompt.",

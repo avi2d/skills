@@ -53,13 +53,13 @@ Tool definitions are absent from this repository and have no character size in t
 
 | Part | Characters | Share of Rules by characters |
 | --- | ---: | ---: |
-| rule: `comment-discipline` | 2671 | 22.9% |
+| rule: `comment-discipline` | 2671 | 22.8% |
 | rule: `finish-the-task` | 362 | 3.1% |
 | rule: `fix-what-you-see` | 328 | 2.8% |
-| rule: `guard-the-context-window-spark` | 618 | 5.3% |
+| rule: `guard-the-context-window-slow-output` | 626 | 5.4% |
 | rule: `prove-it-works` | 2760 | 23.6% |
 | rule: `typescript-best-practices` | 1768 | 15.1% |
-| rule: `agents-md-router` | 754 | 6.5% |
+| rule: `agents-md-router` | 754 | 6.4% |
 | rule: `readme-front-door` | 678 | 5.8% |
 | rule: `credential-files` | 369 | 3.2% |
 | rule: `git-hygiene-stash` | 516 | 4.4% |
@@ -98,7 +98,7 @@ Tool definitions are absent from this repository and have no character size in t
 | rule: `fix-what-you-see` | 328 | 2.9% |
 | rule: `force-determinism` | 647 | 5.8% |
 | rule: `git-hygiene` | 100 | 0.9% |
-| rule: `guard-the-context-window-spark` | 618 | 5.5% |
+| rule: `guard-the-context-window-slow-output` | 626 | 5.6% |
 | rule: `prove-it-works` | 2760 | 24.6% |
 | rule: `typescript-best-practices` | 1768 | 15.8% |
 | rule: `agents-md-router` | 754 | 6.7% |
@@ -174,10 +174,10 @@ Tool definitions are absent from this repository and have no character size in t
 
 | Part | Characters | Share of Rules by characters |
 | --- | ---: | ---: |
-| rule: `comment-discipline` | 2671 | 25.3% |
+| rule: `comment-discipline` | 2671 | 25.2% |
 | rule: `fix-what-you-see` | 328 | 3.1% |
 | rule: `git-hygiene-co-author` | 112 | 1.1% |
-| rule: `guard-the-context-window-spark` | 618 | 5.8% |
+| rule: `guard-the-context-window-slow-output` | 626 | 5.9% |
 | rule: `prove-it-works` | 2760 | 26.1% |
 | rule: `typescript-best-practices` | 1768 | 16.7% |
 | rule: `agents-md-router` | 754 | 7.1% |
@@ -216,7 +216,7 @@ Tool definitions are absent from this repository and have no character size in t
 | --- | ---: | ---: |
 | rule: `comment-discipline` | 2671 | 25.5% |
 | rule: `fix-what-you-see` | 328 | 3.1% |
-| rule: `guard-the-context-window-spark` | 618 | 5.9% |
+| rule: `guard-the-context-window-slow-output` | 626 | 6.0% |
 | rule: `prove-it-works` | 2760 | 26.4% |
 | rule: `typescript-best-practices` | 1768 | 16.9% |
 | rule: `agents-md-router` | 754 | 7.2% |
@@ -253,12 +253,12 @@ Tool definitions are absent from this repository and have no character size in t
 
 | Part | Characters | Share of Rules by characters |
 | --- | ---: | ---: |
-| rule: `guard-the-context-window-spark` | 618 | 10.9% |
-| rule: `prove-it-works` | 2760 | 48.5% |
+| rule: `guard-the-context-window-slow-output` | 626 | 11.0% |
+| rule: `prove-it-works` | 2760 | 48.4% |
 | rule: `agents-md-router` | 754 | 13.2% |
 | rule: `readme-front-door` | 678 | 11.9% |
 | rule: `credential-files` | 369 | 6.5% |
-| rule: `git-hygiene-stash` | 516 | 9.1% |
+| rule: `git-hygiene-stash` | 516 | 9.0% |
 | skill: `build-and-review-motion` | 5794 |  |
 | skill: `develop-a-website` | 8421 |  |
 | skill: `grilling` | 3528 |  |

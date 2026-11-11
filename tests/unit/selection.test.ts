@@ -111,13 +111,13 @@ describe("profile selection", () => {
   test("every configured profile resolves to the Rules it declared before", () => {
     const resolved = new Map(selection.profiles.map((profile) => [profile.name, profile.rules]));
     expect(resolved.get("default")).toEqual(["comment-discipline", "fix-what-you-see", "prove-it-works", "typescript-best-practices", "agents-md-router", "readme-front-door", "credential-files", "git-hygiene-stash"]);
-    expect(resolved.get("muse-spark")).toEqual(["comment-discipline", "finish-the-task", "fix-what-you-see", "guard-the-context-window-spark", "prove-it-works", "typescript-best-practices", "agents-md-router", "readme-front-door", "credential-files", "git-hygiene-stash", "writing-for-people"]);
+    expect(resolved.get("muse-spark")).toEqual(["comment-discipline", "finish-the-task", "fix-what-you-see", "guard-the-context-window-slow-output", "prove-it-works", "typescript-best-practices", "agents-md-router", "readme-front-door", "credential-files", "git-hygiene-stash", "writing-for-people"]);
     expect(resolved.get("gpt-6")).toEqual([
       "comment-discipline",
       "fix-what-you-see",
       "force-determinism",
       "git-hygiene",
-      "guard-the-context-window-spark",
+      "guard-the-context-window-slow-output",
       "prove-it-works",
       "typescript-best-practices",
       "agents-md-router",
@@ -140,7 +140,7 @@ describe("profile selection", () => {
       "comment-discipline",
       "fix-what-you-see",
       "git-hygiene-co-author",
-      "guard-the-context-window-spark",
+      "guard-the-context-window-slow-output",
       "prove-it-works",
       "typescript-best-practices",
       "agents-md-router",
@@ -151,7 +151,7 @@ describe("profile selection", () => {
     expect(resolved.get("claude-haiku-5-5")).toEqual([
       "comment-discipline",
       "fix-what-you-see",
-      "guard-the-context-window-spark",
+      "guard-the-context-window-slow-output",
       "prove-it-works",
       "typescript-best-practices",
       "agents-md-router",
@@ -160,7 +160,7 @@ describe("profile selection", () => {
       "git-hygiene-stash",
     ]);
     expect(resolved.get("ollama-qwen")).toEqual([
-      "guard-the-context-window-spark",
+      "guard-the-context-window-slow-output",
       "prove-it-works",
       "agents-md-router",
       "readme-front-door",
