@@ -57,6 +57,14 @@ test("a subshell cd after an escaped quote never moves the commit target", () =>
   expect(refused('d=$(mktemp -d); echo "a\\"b"; (cd "$d"); git -c user.name=t commit -m x')).toBe(COMMIT_IDENTITY_REFUSAL);
 });
 
+test("an arithmetic shift does not hide a later commit", () => {
+  expect(refused("echo $((1 << 2))\ngit -c user.name=t commit -m x")).toBe(COMMIT_IDENTITY_REFUSAL);
+});
+
+test("a heredoc after an arithmetic shift still hides its body", () => {
+  expect(refused("echo $((1 << 2))\ncat <<EOF\ngit -c user.name=t commit -m x\nEOF")).toBeUndefined();
+});
+
 test("a quote in a heredoc body or comment never hides a subshell cd", () => {
   expect(refused("d=$(mktemp -d)\ncat > /tmp/note <<EOF\nit's\nEOF\n(cd \"$d\" && git init -q)\ngit -c user.name=t commit -m x")).toBe(COMMIT_IDENTITY_REFUSAL);
   expect(refused("d=$(mktemp -d)\n# don't reuse\n(cd \"$d\" && git init -q)\ngit -c user.name=t commit -m x")).toBe(COMMIT_IDENTITY_REFUSAL);

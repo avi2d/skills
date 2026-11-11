@@ -12,7 +12,7 @@ const hasEscapedDollar = (inner: string): boolean => {
   return false;
 };
 
-type Lexer = { segments: Word[][]; word: string | undefined; from: number; to: number; noExpand: boolean; target: "drop" | "heredoc" | undefined; heredocs: string[]; inside: boolean[] };
+type Lexer = { segments: Word[][]; word: string | undefined; from: number; to: number; noExpand: boolean; target: "drop" | "heredoc" | undefined; heredocs: string[]; inside: boolean[]; arithmetic: number };
 
 function append(lexer: Lexer, text: string, from: number, to: number): void {
   if (lexer.word === undefined) lexer.from = from;
@@ -101,6 +101,17 @@ function step(lexer: Lexer, command: string, at: number): number {
     lexer.inside.fill(true, at, next);
     return next - 1;
   }
+  if (char === "$" && command.slice(at, at + 3) === "$((") {
+    lexer.arithmetic += 2;
+    append(lexer, "$((", at, at + 3);
+    return at + 2;
+  }
+  if (lexer.arithmetic > 0 && char === "(") lexer.arithmetic += 1;
+  else if (lexer.arithmetic > 0 && char === ")") lexer.arithmetic -= 1;
+  if (lexer.arithmetic > 0 && (char === "<" || char === ">")) {
+    append(lexer, char, at, at + 1);
+    return at;
+  }
   if (char === "<" || char === ">") return redirect(lexer, command, at);
   if (SEPARATORS.has(char) || BLANKS.has(char)) return separate(lexer, command, at);
   append(lexer, char, at, at + 1);
@@ -110,7 +121,7 @@ function step(lexer: Lexer, command: string, at: number): number {
 type Scan = { segments: Word[][]; inside: boolean[] };
 
 function scan(command: string): Scan {
-  const lexer: Lexer = { segments: [[]], word: undefined, from: 0, to: 0, noExpand: false, target: undefined, heredocs: [], inside: new Array<boolean>(command.length).fill(false) };
+  const lexer: Lexer = { segments: [[]], word: undefined, from: 0, to: 0, noExpand: false, target: undefined, heredocs: [], inside: new Array<boolean>(command.length).fill(false), arithmetic: 0 };
   for (let at = 0; at < command.length; at += 1) at = step(lexer, command, at);
   endWord(lexer);
   return { segments: lexer.segments.filter((segment) => segment.length > 0), inside: lexer.inside };
