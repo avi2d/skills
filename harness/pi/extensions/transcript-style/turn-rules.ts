@@ -178,7 +178,12 @@ const innerWidth = (piece: Piece, width: number): number => width - (piece.kind 
 
 const sameRows = (a: readonly string[], b: readonly string[]): boolean => a.length === b.length && a.every((row, index) => row === b[index]);
 
-type Kept = { readonly theme: RuleTheme; readonly key: string; readonly rows: readonly string[]; readonly decorated: Decorated };
+type Kept = { readonly key: string; readonly rows: readonly string[]; readonly decorated: Decorated };
+
+const themeSignature = (theme: RuleTheme): string =>
+  [theme.fg("borderMuted", ""), theme.fg("accent", ""), theme.fg("dim", ""), theme.fg("muted", ""), theme.fg("warning", ""), theme.bold("")].join("\x1f");
+
+const clockSignature = (piece: Piece): string => (piece.kind === "turn" ? formatTime(piece.timestamp) : "");
 
 export type Keep = (component: object, piece: Piece, render: Render, width: number, theme: RuleTheme) => Decorated;
 
@@ -186,13 +191,14 @@ export type Keep = (component: object, piece: Piece, render: Render, width: numb
 export function keepDecorations(decorateWith: Decorate = decorate): Keep {
   const kept = new WeakMap<object, Kept>();
   return (component, piece, render, width, theme) => {
+    const inner = innerWidth(piece, width);
     // Copied, because pi may reuse the array it returned and change it in place.
-    const rows = [...render(innerWidth(piece, width))];
-    const key = JSON.stringify([width, piece]);
+    const rows = [...render(inner)];
+    const key = JSON.stringify([width, piece, clockSignature(piece), themeSignature(theme)]);
     const last = kept.get(component);
-    if (last && last.theme === theme && last.key === key && sameRows(last.rows, rows)) return last.decorated;
-    const decorated = decorateWith(piece, () => rows, width, theme);
-    kept.set(component, { theme, key, rows, decorated });
+    if (last && last.key === key && sameRows(last.rows, rows)) return last.decorated;
+    const decorated = decorateWith(piece, (w) => (w === inner ? rows : render(w)), width, theme);
+    kept.set(component, { key, rows, decorated });
     return decorated;
   };
 }

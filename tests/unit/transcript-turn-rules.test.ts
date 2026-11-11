@@ -235,14 +235,46 @@ describe("keepDecorations", () => {
     expect(visibleWidth(narrow.lines[1] ?? "")).toBe(60);
   });
 
-  test("serves a stale rule when the theme changed", () => {
+  test("serves a stale rule when the palette changed behind one theme object", () => {
+    let palette = "old";
+    const stable: RuleTheme = {
+      fg: (color, text) => "<" + palette + ":" + color + ">" + text + "</" + palette + ":" + color + ">",
+      bold: (text) => "*" + palette + ":" + text + "*",
+    };
     const { calls, keep } = counting();
-    keep(component, turn(false), rows(" Thinking..."), 400, plain);
-    const painted = keep(component, turn(false), rows(" Thinking..."), 400, tagged);
+    keep(component, turn(false), rows(" Thinking..."), 400, stable);
+    palette = "new";
+    const repainted = keep(component, turn(false), rows(" Thinking..."), 400, stable);
     expect(calls.count).toBe(2);
-    expect(painted.lines[1]).toStartWith("<borderMuted>── </borderMuted>");
+    expect(repainted.lines[1]).toContain("<new:borderMuted>");
   });
 
+  test("serves a stale rule when the clock rolled past midnight", () => {
+    const fresh = {};
+    const { calls, keep } = counting();
+    setSystemTime(NOON);
+    keep(fresh, turn(false), rows(" Thinking..."), WIDTH, plain);
+    setSystemTime(NOON + 24 * 60 * 60 * 1000);
+    try {
+      const rolled = keep(fresh, turn(false), rows(" Thinking..."), WIDTH, plain);
+      expect(calls.count).toBe(2);
+      expect(rolled.lines[1]).toContain("2026-10-07 12:00");
+    } finally {
+      setSystemTime();
+    }
+  });
+
+  test("keeps a tool turn within the width it was asked for", () => {
+    const fresh = {};
+    const { calls, keep } = counting();
+    const tool: Piece = { kind: "tool", tokens: { basis: "measured", tokens: 142 } };
+    const draw = (inner: number): string[] => ["", "", "$ ls -la", "", "ok 5 lines", ""].map((line) => line.padEnd(inner));
+    const first = keep(fresh, tool, draw, WIDTH, plain);
+    expect(first.lines.filter((line) => visibleWidth(line) > WIDTH)).toEqual([]);
+    const second = keep(fresh, tool, draw, WIDTH, plain);
+    expect(calls.count).toBe(1);
+    expect(second).toBe(first);
+  });
   test("serves a stale rule when the piece changed", () => {
     const { calls, keep } = counting();
     keep(component, turn(true), rows(), WIDTH, plain);
