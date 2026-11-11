@@ -21,7 +21,7 @@ What each Rule's eval cases measure, and each Reference's measured on its own, l
 | `git-hygiene-co-author` | `co-author` | no commit it made carries a `Co-Authored-By` trailer |
 | `git-hygiene-stash` | none | the Rule has no case yet, as Unmeasured Rules says |
 | `guard-the-context-window` | `build-log`, `lockfile` | it found the answer with less tool output entering its context than the case's byte budget |
-| `guard-the-context-window-spark` | `slow-report` | it answered from the saved file with less tool output entering its context than the case's byte budget |
+| `guard-the-context-window-slow-output` | `slow-report` | it answered from the saved file with less tool output entering its context than the case's byte budget |
 | `readme-front-door` | none | the Rule has no case yet, as Unmeasured Rules says |
 | `prove-it-works` | `verify-the-fix`, `reproduce-first`, `git-ignored`, `cron-next` | a test command ran after its last write, or a command run on the reported input printed its wrong value before its first fix, or, for an outcome case, its hidden verifier passes |
 | `right-size-the-work` | `csv-migration`, `fixture-rename` | it did a one-off migration and left no new script behind, as a file or as a `package.json` script |
