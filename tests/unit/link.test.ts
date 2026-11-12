@@ -327,7 +327,7 @@ test("pi compacts every OpenAI chat model with a window above 150k on either pro
   const { getBuiltinModels } = await import("@earendil-works/pi-ai/providers/all");
   const settings = SettingsManager.inMemory(piSettingsFile);
   const defaults = SettingsManager.inMemory({});
-  for (const provider of ["openai", "openai-codex"]) {
+  for (const provider of ["openai", "openai-codex"] as const) {
     const gpt6 = getBuiltinModels(provider).filter(({ contextWindow }) => contextWindow > 150_000);
     expect(gpt6.map(({ id }) => id)).toEqual(expect.arrayContaining(provider === "openai" ? ["gpt-4.1", "gpt-5", "gpt-6-luna", "gpt-6.1-sol", "o3"] : ["gpt-5.6-luna", "gpt-6-luna", "gpt-6.1-sol"]));
     for (const { id, contextWindow } of gpt6) {
