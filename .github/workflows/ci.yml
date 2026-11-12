@@ -13,7 +13,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
-      - run: echo "TMPDIR=$RUNNER_TEMP" >> "$GITHUB_ENV"
       # The head, not GitHub's merge ref, so the tree the gates read is the commit the range ends at.
       # The whole history, since the range starts where the head branched from the base branch.
       - uses: avi2d/workflows/setup@v1
@@ -36,9 +35,9 @@ jobs:
           outcome: ${{ steps.title.outcome }}
       - id: filter
         name: tell a docs-only change
-        env:
-          BASE_SHA: ${{ github.event.pull_request.base.sha }}
-        run: bunx checks-docs-only ${BASE_SHA:+"$BASE_SHA" HEAD} >> "$GITHUB_OUTPUT"
+        uses: avi2d/workflows/actions/docs-only@v2
+        with:
+          base: ${{ github.event.pull_request.base.sha }}
       - run: bun run generate
       - run: bun run build
       - run: git diff --exit-code
