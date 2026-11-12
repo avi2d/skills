@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { copyFileSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { appendFileSync, copyFileSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { Schema } from "effect";
@@ -28,6 +28,8 @@ const Step = Schema.StructWithRest(
   Schema.Struct({
     id: Schema.optionalKey(Schema.String),
     run: Schema.optionalKey(Schema.String),
+    uses: Schema.optionalKey(Schema.String),
+    with: Schema.optionalKey(Schema.Record(Schema.String, Schema.Union(Schema.String, Schema.Number, Schema.Boolean))),
     if: Schema.optionalKey(Schema.Union([Schema.Boolean, Schema.String])),
     env: Schema.optionalKey(Names),
     "continue-on-error": Schema.optionalKey(Schema.Union([Schema.Boolean, Schema.String])),
@@ -223,11 +225,26 @@ const contextAfterChange = (steps: ReadonlyArray<WorkflowStep>, changed: string,
     for (const step of steps.filter((candidate) => candidate.id !== undefined && referenced.has(candidate.id))) {
       writeFileSync(output, "");
       const env = Object.fromEntries(Object.entries(step.env ?? {}).map(([name, value]) => [name, substitute(value, context)]));
-      const ran = Bun.spawnSync(["bash", "--noprofile", "--norc", "-eo", "pipefail", "-c", step.run ?? ""], {
-        cwd: dir,
-        env: { ...gitEnv, ...env, GITHUB_OUTPUT: output },
-      });
-      expect(ran.exitCode, `step ${step.id} fails: ${ran.stderr.toString()}`).toBe(0);
+      if ((step.uses ?? "").startsWith("avi2d/workflows/actions/docs-only@")) {
+        const base = substitute(String(step.with?.["base"] ?? ""), context);
+        if (base === "") {
+          writeFileSync(output, "docs-only=false\n");
+        } else {
+          const ran = Bun.spawnSync([`${repo}node_modules/.bin/checks-docs-only`, base, "HEAD"], {
+            cwd: dir,
+            env: { ...gitEnv, ...env, GITHUB_OUTPUT: output },
+          });
+          expect(ran.exitCode, `step ${step.id} fails: ${ran.stderr.toString()}`).toBe(0);
+          const printed = ran.stdout.toString();
+          if (printed !== "") appendFileSync(output, printed);
+        }
+      } else {
+        const ran = Bun.spawnSync(["bash", "--noprofile", "--norc", "-eo", "pipefail", "-c", step.run ?? ""], {
+          cwd: dir,
+          env: { ...gitEnv, ...env, GITHUB_OUTPUT: output },
+        });
+        expect(ran.exitCode, `step ${step.id} fails: ${ran.stderr.toString()}`).toBe(0);
+      }
       for (const line of readFileSync(output, "utf8").split("\n").filter(Boolean)) {
         const [name = "", ...value] = line.split("=");
         context[`steps.${step.id}.outputs.${name}`] = value.join("=");
