@@ -226,17 +226,16 @@ const contextAfterChange = (steps: ReadonlyArray<WorkflowStep>, changed: string,
       writeFileSync(output, "");
       const env = Object.fromEntries(Object.entries(step.env ?? {}).map(([name, value]) => [name, substitute(value, context)]));
       if ((step.uses ?? "").startsWith("avi2d/workflows/actions/docs-only@")) {
-        const base = substitute(String(step.with?.["base"] ?? ""), context);
-        if (base === "") {
+        const filterBase = substitute(String(step.with?.["base"] ?? ""), context);
+        if (filterBase === "") {
           writeFileSync(output, "docs-only=false\n");
         } else {
-          const ran = Bun.spawnSync([`${repo}node_modules/.bin/checks-docs-only`, base, "HEAD"], {
+          const ran = Bun.spawnSync([`${repo}node_modules/.bin/checks-docs-only`, filterBase, "HEAD"], {
             cwd: dir,
             env: { ...gitEnv, ...env, GITHUB_OUTPUT: output },
           });
           expect(ran.exitCode, `step ${step.id} fails: ${ran.stderr.toString()}`).toBe(0);
-          const printed = ran.stdout.toString();
-          if (printed !== "") appendFileSync(output, printed);
+          appendFileSync(output, ran.stdout.toString());
         }
       } else {
         const ran = Bun.spawnSync(["bash", "--noprofile", "--norc", "-eo", "pipefail", "-c", step.run ?? ""], {
