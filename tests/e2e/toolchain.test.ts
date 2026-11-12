@@ -29,7 +29,7 @@ const Step = Schema.StructWithRest(
     id: Schema.optionalKey(Schema.String),
     run: Schema.optionalKey(Schema.String),
     uses: Schema.optionalKey(Schema.String),
-    with: Schema.optionalKey(Schema.Record(Schema.String, Schema.Union(Schema.String, Schema.Number, Schema.Boolean))),
+    with: Schema.optionalKey(Schema.Record(Schema.String, Schema.Union([Schema.String, Schema.Number, Schema.Boolean]))),
     if: Schema.optionalKey(Schema.Union([Schema.Boolean, Schema.String])),
     env: Schema.optionalKey(Names),
     "continue-on-error": Schema.optionalKey(Schema.Union([Schema.Boolean, Schema.String])),
