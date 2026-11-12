@@ -59,6 +59,11 @@ model pays for it out of the plan's five-hour window, so both compact near
 | `openai/gpt-6-sol` | 150,000 | 272,000 - 150,000 = 122,000 |
 | `openai/gpt-6.1-sol` | 150,000 | 272,000 - 150,000 = 122,000 |
 | `openai/gpt-6.1-terra` | 150,000 | 272,000 - 150,000 = 122,000 |
+| `openai-codex/gpt-6-astra` | 150,000 | 272,000 - 150,000 = 122,000 |
+| `openai-codex/gpt-6-luna` | 150,000 | 272,000 - 150,000 = 122,000 |
+| `openai-codex/gpt-6-sol` | 150,000 | 272,000 - 150,000 = 122,000 |
+| `openai-codex/gpt-6.1-sol` | 150,000 | 500,000 - 150,000 = 350,000 |
+| `openai-codex/gpt-6.1-terra` | 150,000 | 500,000 - 150,000 = 350,000 |
 
 Both opus ids are keyed because the bridge registers both at 1M and the lookup
 is exact; firstmate's crew dispatches `claude-opus-5-5`, `claude-sonnet-5-5`

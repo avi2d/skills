@@ -76,6 +76,21 @@
       },
       "openai/gpt-6.1-terra": {
         "reserveTokens": 122000
+      },
+      "openai-codex/gpt-6-astra": {
+        "reserveTokens": 122000
+      },
+      "openai-codex/gpt-6-luna": {
+        "reserveTokens": 122000
+      },
+      "openai-codex/gpt-6-sol": {
+        "reserveTokens": 122000
+      },
+      "openai-codex/gpt-6.1-sol": {
+        "reserveTokens": 350000
+      },
+      "openai-codex/gpt-6.1-terra": {
+        "reserveTokens": 350000
       }
     }
   },

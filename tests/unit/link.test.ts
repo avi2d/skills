@@ -322,18 +322,21 @@ test("every compaction override is keyed by a provider and id that pi resolves i
   expect(unmatched, "pi never matches these keys, so each model keeps the 16384-token default reserve").toEqual([]);
 });
 
-test("pi compacts every OpenAI GPT-6 chat model at 150k of its registered window, not at pi's default reserve near the window's end", async () => {
+test("pi compacts every OpenAI GPT-6 chat model on either provider at 150k of its registered window, not at pi's default reserve near the window's end", async () => {
   const { SettingsManager, shouldCompact } = await import("@earendil-works/pi-coding-agent");
   const { getBuiltinModels } = await import("@earendil-works/pi-ai/providers/all");
   const settings = SettingsManager.inMemory(piSettingsFile);
   const defaults = SettingsManager.inMemory({});
-  const gpt6 = getBuiltinModels("openai").filter(({ id }) => id.startsWith("gpt-6"));
-  expect(gpt6.map(({ id }) => id)).toEqual(expect.arrayContaining(["gpt-6-astra", "gpt-6-luna", "gpt-6.1-sol", "gpt-6.1-terra"]));
-  for (const { id, contextWindow } of gpt6) {
-    const compactsAt = (tokens: number) => shouldCompact(tokens, contextWindow, settings.getCompactionSettings({ provider: "openai", id }));
-    expect(compactsAt(150_000), `openai/${id} compacts before 150k`).toBe(false);
-    expect(compactsAt(150_001), `openai/${id} runs past 150k`).toBe(true);
-    expect(settings.getCompactionKeepRecentTokens({ provider: "openai", id })).toBe(defaults.getCompactionKeepRecentTokens());
+  for (const provider of ["openai", "openai-codex"]) {
+    const gpt6 = getBuiltinModels(provider).filter(({ id }) => id.startsWith("gpt-6"));
+    expect(gpt6.map(({ id }) => id)).toEqual(expect.arrayContaining(["gpt-6-luna", "gpt-6.1-sol"]));
+    for (const { id, contextWindow } of gpt6) {
+      const compactsAt = (tokens: number) => shouldCompact(tokens, contextWindow, settings.getCompactionSettings({ provider, id }));
+      expect(compactsAt(150_000), `${provider}/${id} compacts before 150k`).toBe(false);
+      expect(compactsAt(150_001), `${provider}/${id} runs past 150k`).toBe(true);
+      expect(settings.getCompactionReserveTokens({ provider, id }), `${provider}/${id} reserves its window minus 150k`).toBe(contextWindow - 150_000);
+      expect(settings.getCompactionKeepRecentTokens({ provider, id })).toBe(defaults.getCompactionKeepRecentTokens());
+    }
   }
 });
 
