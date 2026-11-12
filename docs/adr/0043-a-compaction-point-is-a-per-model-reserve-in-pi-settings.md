@@ -54,6 +54,11 @@ model pays for it out of the plan's five-hour window, so both compact near
 | `opencode-go/glm-5.3` | 150,000 | 1,000,000 - 150,000 = 850,000 |
 | `openrouter/deepseek/deepseek-v4-pro-0813` | 150,000 | 1,048,576 - 150,000 = 898,576 |
 | `openrouter/z-ai/glm-5.3` | 150,000 | 1,048,575 - 150,000 = 898,575 |
+| `openai/gpt-6-astra` | 150,000 | 272,000 - 150,000 = 122,000 |
+| `openai/gpt-6-luna` | 150,000 | 272,000 - 150,000 = 122,000 |
+| `openai/gpt-6-sol` | 150,000 | 272,000 - 150,000 = 122,000 |
+| `openai/gpt-6.1-sol` | 150,000 | 272,000 - 150,000 = 122,000 |
+| `openai/gpt-6.1-terra` | 150,000 | 272,000 - 150,000 = 122,000 |
 
 Both opus ids are keyed because the bridge registers both at 1M and the lookup
 is exact; firstmate's crew dispatches `claude-opus-5-5`, `claude-sonnet-5-5`

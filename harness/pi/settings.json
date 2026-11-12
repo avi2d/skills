@@ -61,6 +61,21 @@
       },
       "openrouter/z-ai/glm-5.3": {
         "reserveTokens": 898575
+      },
+      "openai/gpt-6-astra": {
+        "reserveTokens": 122000
+      },
+      "openai/gpt-6-luna": {
+        "reserveTokens": 122000
+      },
+      "openai/gpt-6-sol": {
+        "reserveTokens": 122000
+      },
+      "openai/gpt-6.1-sol": {
+        "reserveTokens": 122000
+      },
+      "openai/gpt-6.1-terra": {
+        "reserveTokens": 122000
       }
     }
   },
