@@ -9,7 +9,7 @@
   "fullscreenCopyOnSelect": false,
   "packages": [
     "npm:@ff-labs/pi-fff@0.10.5",
-    "git:github.com/avi2d/pi-claude-bridge@v0.12.0+avi2d.1"
+    "git:github.com/avi2d/pi-claude-bridge@v0.12.0+avi2d.2"
   ],
   "extensions": [
     "extensions/herdr-agent-state.ts"
