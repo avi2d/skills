@@ -322,15 +322,13 @@ test("every compaction override is keyed by a provider and id that pi resolves i
   expect(unmatched, "pi never matches these keys, so each model keeps the 16384-token default reserve").toEqual([]);
 });
 
-test("pi compacts every OpenAI chat model with a window above 150k on either provider at 150k of its registered window, not at pi's default reserve near the window's end", async () => {
+test("pi compacts the latest sol, astra, terra and luna on either OpenAI provider at 150k of its registered window, not at pi's default reserve near the window's end", async () => {
   const { SettingsManager, shouldCompact } = await import("@earendil-works/pi-coding-agent");
-  const { getBuiltinModels } = await import("@earendil-works/pi-ai/providers/all");
+  const { getBuiltinModel } = await import("@earendil-works/pi-ai/providers/all");
   const settings = SettingsManager.inMemory(piSettingsFile);
   const defaults = SettingsManager.inMemory({});
   for (const provider of ["openai", "openai-codex"] as const) {
-    const gpt6 = getBuiltinModels(provider).filter(({ contextWindow }) => contextWindow > 150_000);
-    expect(gpt6.map(({ id }) => id)).toEqual(expect.arrayContaining(provider === "openai" ? ["gpt-4.1", "gpt-5", "gpt-6-luna", "gpt-6.1-sol", "o3"] : ["gpt-5.6-luna", "gpt-6-luna", "gpt-6.1-sol"]));
-    for (const { id, contextWindow } of gpt6) {
+    for (const { id, contextWindow } of (["gpt-6.1-sol", "gpt-6-astra", "gpt-6.1-terra", "gpt-6-luna"] as const).map((latest) => getBuiltinModel(provider, latest))) {
       const compactsAt = (tokens: number) => shouldCompact(tokens, contextWindow, settings.getCompactionSettings({ provider, id }));
       expect(compactsAt(150_000), `${provider}/${id} compacts before 150k`).toBe(false);
       expect(compactsAt(150_001), `${provider}/${id} runs past 150k`).toBe(true);
@@ -338,6 +336,13 @@ test("pi compacts every OpenAI chat model with a window above 150k on either pro
       expect(settings.getCompactionKeepRecentTokens({ provider, id })).toBe(defaults.getCompactionKeepRecentTokens());
     }
   }
+});
+
+test("an OpenAI model other than the latest sol, astra, terra and luna carries no compaction override instead of one per catalog entry", () => {
+  const openai = Object.keys(piSettings.compaction?.modelOverrides ?? {}).filter((key) => /^openai(-codex)?\//.test(key));
+  expect(openai.toSorted()).toEqual(
+    ["openai", "openai-codex"].flatMap((provider) => ["gpt-6.1-sol", "gpt-6-astra", "gpt-6.1-terra", "gpt-6-luna"].map((id) => `${provider}/${id}`)).toSorted(),
+  );
 });
 
 test("the statusline is the frozen path, generated where the colors live", () => {

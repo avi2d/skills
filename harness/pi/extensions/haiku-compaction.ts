@@ -77,12 +77,17 @@ export const HAIKU_MODEL = "claude-haiku-5-5";
 
 export const MUSE_FAMILY = { provider: "opencode-go", idPrefix: "muse-spark" } as const;
 
-const SUMMARIZED_BY_HAIKU = [{ provider: "claude-bridge", idPrefix: "" }, MUSE_FAMILY, { provider: "openai", idPrefix: "" }, { provider: "openai-codex", idPrefix: "" }] as const;
+const SUMMARIZED_BY_HAIKU = [{ provider: "claude-bridge", idPrefix: "" }, MUSE_FAMILY] as const;
+
+const OPENAI_PROVIDERS = new Set<string>(["openai", "openai-codex"]);
+
+const OPENAI_MODEL_IDS = new Set<string>(["gpt-6.1-sol", "gpt-6-astra", "gpt-6.1-terra", "gpt-6-luna"]);
 
 export function summarizedByHaiku(model: SessionModel | undefined): boolean {
   if (typeof model?.provider !== "string") return false;
   const id: unknown = model.id;
   if (typeof id !== "string") return false;
+  if (OPENAI_PROVIDERS.has(model.provider)) return OPENAI_MODEL_IDS.has(id);
   return SUMMARIZED_BY_HAIKU.some((family) => model.provider === family.provider && id.startsWith(family.idPrefix));
 }
 
