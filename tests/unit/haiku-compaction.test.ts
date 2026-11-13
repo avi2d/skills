@@ -186,6 +186,33 @@ describe("haiku-compaction", () => {
     expect(calls[0]?.[0].id).toBe(HAIKU_MODEL);
   });
 
+  test("summarizes an OpenAI session with Haiku instead of leaving it to the OpenAI model", async () => {
+    const { registry, calls } = registryOf(async () => responseOf("## Goal\nHaiku wrote this."));
+    const result = await settled(eventOf([userOf("do the thing")]), { model: { provider: "openai", id: "gpt-6.1-sol" }, modelRegistry: registry }, true);
+    expect(result?.compaction?.summary).toContain("Haiku wrote this.");
+    expect(result?.compaction?.firstKeptEntryId).toBe("keep-1");
+    expect(calls).toHaveLength(1);
+    expect(calls[0]?.[0].id).toBe(HAIKU_MODEL);
+  });
+
+  test("summarizes a non-GPT-6 OpenAI session with Haiku instead of leaving it to the session model", async () => {
+    const { registry, calls } = registryOf(async () => responseOf("## Goal\nHaiku wrote this."));
+    const result = await settled(eventOf([userOf("do the thing")]), { model: { provider: "openai", id: "gpt-4.1" }, modelRegistry: registry }, true);
+    expect(result?.compaction?.summary).toContain("Haiku wrote this.");
+    expect(result?.compaction?.firstKeptEntryId).toBe("keep-1");
+    expect(calls).toHaveLength(1);
+    expect(calls[0]?.[0].id).toBe(HAIKU_MODEL);
+  });
+
+  test("summarizes an OpenAI Codex session with Haiku instead of leaving it to the session model", async () => {
+    const { registry, calls } = registryOf(async () => responseOf("## Goal\nHaiku wrote this."));
+    const result = await settled(eventOf([userOf("do the thing")]), { model: { provider: "openai-codex", id: "gpt-6.1-sol" }, modelRegistry: registry }, true);
+    expect(result?.compaction?.summary).toContain("Haiku wrote this.");
+    expect(result?.compaction?.firstKeptEntryId).toBe("keep-1");
+    expect(calls).toHaveLength(1);
+    expect(calls[0]?.[0].id).toBe(HAIKU_MODEL);
+  });
+
   test("the kill switch also leaves a Muse session for pi's own compaction", async () => {
     const { registry, calls } = registryOf(async () => responseOf("summary"));
     const result = await settled(eventOf([userOf("hi")]), { model: MUSE, modelRegistry: registry }, haikuCompactionEnabled({ haikuCompaction: { enabled: false } }));

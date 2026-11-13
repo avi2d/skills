@@ -77,7 +77,7 @@ export const HAIKU_MODEL = "claude-haiku-5-5";
 
 export const MUSE_FAMILY = { provider: "opencode-go", idPrefix: "muse-spark" } as const;
 
-const SUMMARIZED_BY_HAIKU = [{ provider: "claude-bridge", idPrefix: "" }, MUSE_FAMILY] as const;
+const SUMMARIZED_BY_HAIKU = [{ provider: "claude-bridge", idPrefix: "" }, MUSE_FAMILY, { provider: "openai", idPrefix: "" }, { provider: "openai-codex", idPrefix: "" }] as const;
 
 export function summarizedByHaiku(model: SessionModel | undefined): boolean {
   if (typeof model?.provider !== "string") return false;

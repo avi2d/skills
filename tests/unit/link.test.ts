@@ -322,6 +322,24 @@ test("every compaction override is keyed by a provider and id that pi resolves i
   expect(unmatched, "pi never matches these keys, so each model keeps the 16384-token default reserve").toEqual([]);
 });
 
+test("pi compacts every OpenAI chat model with a window above 150k on either provider at 150k of its registered window, not at pi's default reserve near the window's end", async () => {
+  const { SettingsManager, shouldCompact } = await import("@earendil-works/pi-coding-agent");
+  const { getBuiltinModels } = await import("@earendil-works/pi-ai/providers/all");
+  const settings = SettingsManager.inMemory(piSettingsFile);
+  const defaults = SettingsManager.inMemory({});
+  for (const provider of ["openai", "openai-codex"] as const) {
+    const gpt6 = getBuiltinModels(provider).filter(({ contextWindow }) => contextWindow > 150_000);
+    expect(gpt6.map(({ id }) => id)).toEqual(expect.arrayContaining(provider === "openai" ? ["gpt-4.1", "gpt-5", "gpt-6-luna", "gpt-6.1-sol", "o3"] : ["gpt-5.6-luna", "gpt-6-luna", "gpt-6.1-sol"]));
+    for (const { id, contextWindow } of gpt6) {
+      const compactsAt = (tokens: number) => shouldCompact(tokens, contextWindow, settings.getCompactionSettings({ provider, id }));
+      expect(compactsAt(150_000), `${provider}/${id} compacts before 150k`).toBe(false);
+      expect(compactsAt(150_001), `${provider}/${id} runs past 150k`).toBe(true);
+      expect(settings.getCompactionReserveTokens({ provider, id }), `${provider}/${id} reserves its window minus 150k`).toBe(contextWindow - 150_000);
+      expect(settings.getCompactionKeepRecentTokens({ provider, id })).toBe(defaults.getCompactionKeepRecentTokens());
+    }
+  }
+});
+
 test("the statusline is the frozen path, generated where the colors live", () => {
   expect(ccSettings.statusLine?.command).toBe("$HOME/.claude/cc-statusline");
 });
