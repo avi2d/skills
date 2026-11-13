@@ -186,31 +186,26 @@ describe("haiku-compaction", () => {
     expect(calls[0]?.[0].id).toBe(HAIKU_MODEL);
   });
 
-  test("summarizes an OpenAI session with Haiku instead of leaving it to the OpenAI model", async () => {
-    const { registry, calls } = registryOf(async () => responseOf("## Goal\nHaiku wrote this."));
-    const result = await settled(eventOf([userOf("do the thing")]), { model: { provider: "openai", id: "gpt-6.1-sol" }, modelRegistry: registry }, true);
-    expect(result?.compaction?.summary).toContain("Haiku wrote this.");
-    expect(result?.compaction?.firstKeptEntryId).toBe("keep-1");
-    expect(calls).toHaveLength(1);
-    expect(calls[0]?.[0].id).toBe(HAIKU_MODEL);
-  });
+  for (const provider of ["openai", "openai-codex"]) {
+    for (const id of ["gpt-6.1-sol", "gpt-6-astra", "gpt-6.1-terra", "gpt-6-luna"]) {
+      test(`summarizes a ${provider}/${id} session with Haiku instead of leaving it to the OpenAI model`, async () => {
+        const { registry, calls } = registryOf(async () => responseOf("## Goal\nHaiku wrote this."));
+        const result = await settled(eventOf([userOf("do the thing")]), { model: { provider, id }, modelRegistry: registry }, true);
+        expect(result?.compaction?.summary).toContain("Haiku wrote this.");
+        expect(result?.compaction?.firstKeptEntryId).toBe("keep-1");
+        expect(calls).toHaveLength(1);
+        expect(calls[0]?.[0].id).toBe(HAIKU_MODEL);
+      });
+    }
+  }
 
-  test("summarizes a non-GPT-6 OpenAI session with Haiku instead of leaving it to the session model", async () => {
-    const { registry, calls } = registryOf(async () => responseOf("## Goal\nHaiku wrote this."));
-    const result = await settled(eventOf([userOf("do the thing")]), { model: { provider: "openai", id: "gpt-4.1" }, modelRegistry: registry }, true);
-    expect(result?.compaction?.summary).toContain("Haiku wrote this.");
-    expect(result?.compaction?.firstKeptEntryId).toBe("keep-1");
-    expect(calls).toHaveLength(1);
-    expect(calls[0]?.[0].id).toBe(HAIKU_MODEL);
-  });
-
-  test("summarizes an OpenAI Codex session with Haiku instead of leaving it to the session model", async () => {
-    const { registry, calls } = registryOf(async () => responseOf("## Goal\nHaiku wrote this."));
-    const result = await settled(eventOf([userOf("do the thing")]), { model: { provider: "openai-codex", id: "gpt-6.1-sol" }, modelRegistry: registry }, true);
-    expect(result?.compaction?.summary).toContain("Haiku wrote this.");
-    expect(result?.compaction?.firstKeptEntryId).toBe("keep-1");
-    expect(calls).toHaveLength(1);
-    expect(calls[0]?.[0].id).toBe(HAIKU_MODEL);
+  test("leaves an older OpenAI model for pi's own compaction instead of routing the whole OpenAI catalog to Haiku", async () => {
+    const { registry, calls } = registryOf(async () => responseOf("summary"));
+    for (const model of [{ provider: "openai", id: "gpt-4.1" }, { provider: "openai", id: "o3" }, { provider: "openai", id: "gpt-6-sol" }, { provider: "openai-codex", id: "gpt-5.6-terra" }]) {
+      const result = await settled(eventOf([userOf("hi")]), { model, modelRegistry: registry }, true);
+      expect(result, `${model.provider}/${model.id}`).toBeUndefined();
+    }
+    expect(calls).toEqual([]);
   });
 
   test("the kill switch also leaves a Muse session for pi's own compaction", async () => {

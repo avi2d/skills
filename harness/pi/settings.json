@@ -62,79 +62,10 @@
       "openrouter/z-ai/glm-5.3": {
         "reserveTokens": 898575
       },
-      "openai/chat-latest": {
-        "reserveTokens": 250000
-      },
-      "openai/gpt-4.1": {
-        "reserveTokens": 897576
-      },
-      "openai/gpt-4.1-mini": {
-        "reserveTokens": 897576
-      },
-      "openai/gpt-4.1-nano": {
-        "reserveTokens": 897576
-      },
-      "openai/gpt-5": {
-        "reserveTokens": 250000
-      },
-      "openai/gpt-5-mini": {
-        "reserveTokens": 250000
-      },
-      "openai/gpt-5-nano": {
-        "reserveTokens": 250000
-      },
-      "openai/gpt-5-pro": {
-        "reserveTokens": 250000
-      },
-      "openai/gpt-5.1": {
-        "reserveTokens": 250000
-      },
-      "openai/gpt-5.2": {
-        "reserveTokens": 250000
-      },
-      "openai/gpt-5.2-pro": {
-        "reserveTokens": 250000
-      },
-      "openai/gpt-5.3-codex": {
-        "reserveTokens": 250000
-      },
-      "openai/gpt-5.4": {
-        "reserveTokens": 122000
-      },
-      "openai/gpt-5.4-mini": {
-        "reserveTokens": 250000
-      },
-      "openai/gpt-5.4-nano": {
-        "reserveTokens": 250000
-      },
-      "openai/gpt-5.4-pro": {
-        "reserveTokens": 900000
-      },
-      "openai/gpt-5.5": {
-        "reserveTokens": 122000
-      },
-      "openai/gpt-5.5-pro": {
-        "reserveTokens": 900000
-      },
-      "openai/gpt-5.6-cyber": {
-        "reserveTokens": 250000
-      },
-      "openai/gpt-5.6-luna": {
-        "reserveTokens": 122000
-      },
-      "openai/gpt-5.6-sol": {
-        "reserveTokens": 122000
-      },
-      "openai/gpt-5.6-terra": {
-        "reserveTokens": 122000
-      },
       "openai/gpt-6-astra": {
         "reserveTokens": 122000
       },
       "openai/gpt-6-luna": {
-        "reserveTokens": 122000
-      },
-      "openai/gpt-6-sol": {
         "reserveTokens": 122000
       },
       "openai/gpt-6.1-sol": {
@@ -143,46 +74,10 @@
       "openai/gpt-6.1-terra": {
         "reserveTokens": 122000
       },
-      "openai/gpt-daybreak-blue-latest": {
-        "reserveTokens": 900000
-      },
-      "openai/gpt-daybreak-red-latest": {
-        "reserveTokens": 250000
-      },
-      "openai/o1": {
-        "reserveTokens": 50000
-      },
-      "openai/o1-pro": {
-        "reserveTokens": 50000
-      },
-      "openai/o3": {
-        "reserveTokens": 50000
-      },
-      "openai/o3-mini": {
-        "reserveTokens": 50000
-      },
-      "openai/o3-pro": {
-        "reserveTokens": 50000
-      },
-      "openai/o4-mini": {
-        "reserveTokens": 50000
-      },
-      "openai-codex/gpt-5.6-luna": {
-        "reserveTokens": 122000
-      },
-      "openai-codex/gpt-5.6-sol": {
-        "reserveTokens": 122000
-      },
-      "openai-codex/gpt-5.6-terra": {
-        "reserveTokens": 122000
-      },
       "openai-codex/gpt-6-astra": {
         "reserveTokens": 122000
       },
       "openai-codex/gpt-6-luna": {
-        "reserveTokens": 122000
-      },
-      "openai-codex/gpt-6-sol": {
         "reserveTokens": 122000
       },
       "openai-codex/gpt-6.1-sol": {
@@ -190,7 +85,8 @@
       },
       "openai-codex/gpt-6.1-terra": {
         "reserveTokens": 350000
-      }    }
+      }
+    }
   },
   "retry": {
     "provider": {
