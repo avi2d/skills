@@ -40,7 +40,7 @@ The `visitor-job` reference sets the latitude: Persuade and Experience may let d
 - Numbers that change or align take `font-variant-numeric: tabular-nums`.
 - Only used font files and weights load, each with a metric-compatible fallback through `size-adjust` or the ascent and descent overrides, and text renders during the load through `font-display`.
 - A subset of a font keeps every script the product ships.
-- Browser zoom, the person's font settings and platform text scaling keep working: a `clamp()` font size's minimum and maximum are font-relative, because viewport units do not grow under browser zoom, and its maximum is at most 2.5 times its minimum, the bound for a 500 % zoom (5 / 2).
+- Browser zoom, the person's font settings and platform text scaling keep working: a `clamp()` font size's minimum and maximum are font-relative, because viewport units do not grow under browser zoom, and its maximum is at most 2.5 times its minimum, so text still reaches the 200 % that WCAG 1.4.4 asks for under a 500 % browser zoom (5 / 2).
 - Paragraph rhythm comes from spacing or a first-line indent, and not both.
 
 ## Verify
