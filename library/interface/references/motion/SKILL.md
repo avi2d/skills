@@ -125,6 +125,7 @@ A spring suits a drag with momentum, a gesture the person can reverse, and an el
 - A stagger of 30 to 80 ms suits a list appearing as a list, caps its total delay, and never blocks interaction.
 - Content stays visible in its default state, so a failed script never hides the page.
 - A loop that is not essential stops when it is offscreen or hidden, and autoplay respects the person's preference.
+- Motion that starts by itself, runs longer than five seconds and sits beside other content needs a visible, keyboard-operable control to pause, stop or hide it. `prefers-reduced-motion` does not replace that control, because people who need to pause the motion may not have set the preference. Only essential motion is exempt.
 
 ## Reduced motion and hover
 
