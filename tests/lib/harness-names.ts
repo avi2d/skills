@@ -21,7 +21,7 @@ export function texts(body: Body): Map<string, string> {
 }
 
 export function undeclared(body: Body): string[] {
-  const declared = new Set(body.harnesses ?? []);
+  const declared = new Set(body.harnesses ?? HARNESSES);
   return [...texts(body)].flatMap(([rel, text]) =>
     named(text)
       .filter((h) => !declared.has(h))

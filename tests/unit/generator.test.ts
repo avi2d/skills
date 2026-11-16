@@ -383,6 +383,7 @@ describe("harness names", () => {
   test("a harness named by a Body that did not declare it is reported by file", () => {
     const smuggled: Body = {
       ...byName("unslop"),
+      harnesses: ["pi"],
       skill: `${byName("unslop").skill}\nRun this under ${["claude", "code"].join(" ")} only.\n`,
     };
     expect(undeclared(smuggled)).toEqual([
