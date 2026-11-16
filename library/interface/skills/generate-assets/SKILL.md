@@ -3,6 +3,7 @@ name: generate-assets
 description: "Generate an image asset, such as character art, a logo with its favicon sizes or a set of status marks, with an OpenAI image model through the Codex CLI, and hand the file back to the design work. Use when a design or prototype task needs a raster image made."
 kind: skill
 source: local
+harnesses: [pi, claude-code, codex]
 ---
 # Generate assets
 
@@ -38,7 +39,7 @@ Write one prompt per asset, in your own words, from these rules:
 | Asset | Ask Codex for | Then derive |
 | --- | --- | --- |
 | Character image | a 1536x1024 PNG, or 1024x1536 for a portrait, with the whole figure inside the frame | nothing |
-| Logo | a 1024x1024 PNG with the mark centred and a clear margin on every side | the favicon sizes in step 4 |
+| Logo | a square PNG at least 1024 pixels on each side with the mark centred and a clear margin on every side | the favicon sizes in step 4 |
 | Set of status marks | one 1536x1024 PNG sheet with every mark in one row of equal cells, in one stroke weight and one palette | one PNG per mark in step 4 |
 
 **Done when** each asset has a prompt that names its subject, its background colour, its file name, its format and its size.
@@ -48,11 +49,11 @@ Write one prompt per asset, in your own words, from these rules:
 Codex runs on winwsl, where it is signed in with the ChatGPT plan.
 From another machine, run each shell below over `ssh winwsl`, and copy the files back with `scp`.
 
-1. In one shell on winwsl, make a scratch folder outside every repository: `scratch=$(mktemp -d /tmp/assets-XXXXXX)`, because the `workspace-write` sandbox lets Codex write only there.
-1. In that same shell, run Codex inside it with the first model in the order below:
+1. On winwsl, make a scratch folder outside every repository and print its path: `scratch=$(mktemp -d /tmp/assets-XXXXXX) && echo "$scratch"`, because the `workspace-write` sandbox lets Codex write only there.
+1. Run Codex in that printed folder, writing the printed path in place of `<scratch>` in each command below, with the first model in the order below:
 
    ```sh
-   cd "$scratch" && codex exec --skip-git-repo-check -s workspace-write -m gpt-6-astra "<prompt>"
+   cd "<scratch>" && codex exec --skip-git-repo-check -s workspace-write -m gpt-6-astra "<prompt>"
    ```
 
 1. Run it again with the next model when a run exits nonzero or saves no file.
@@ -66,10 +67,10 @@ Codex saves the file in the scratch folder and keeps its own copy under `~/.code
 
 ## 4. Derive and check
 
-Derive the favicon sizes from a logo with Pillow, in the same shell on winwsl:
+Derive the favicon sizes from a logo with Pillow, in the scratch folder:
 
 ```sh
-cd "$scratch" && python3 -I -c '
+cd "<scratch>" && python3 -I -c '
 import sys
 from PIL import Image
 src = Image.open(sys.argv[1]).convert("RGBA")
@@ -79,10 +80,10 @@ for name, edge in (("apple-touch-icon.png", 180), ("icon-192.png", 192), ("icon-
 ' logo.png
 ```
 
-Cut a sheet of status marks into one square PNG per mark, naming the marks from left to right, in the same shell on winwsl:
+Cut a sheet of status marks into one square PNG per mark, naming the marks from left to right, in the scratch folder:
 
 ```sh
-cd "$scratch" && python3 -I -c '
+cd "<scratch>" && python3 -I -c '
 import sys
 from PIL import Image
 sheet = Image.open(sys.argv[1])
@@ -98,11 +99,11 @@ for i, name in enumerate(names):
 
 Then check every file:
 
-1. In the scratch folder, read its format and pixel size with `cd "$scratch" && file <name>`, and compare them with the table.
+1. In the scratch folder, read its format and pixel size with `cd "<scratch>" && file <name>`, and compare them with the table, accepting any square logo source at least 1024 pixels on each side.
 1. Open it and look at it: the subject is original, the background is flat where text will sit, and each cut mark sits whole inside its square.
 1. Run a failed file through steps 2 and 3 again with a corrected prompt.
 
-**Done when** every file has the format and size the table names and has passed the look.
+**Done when** every derived file has the format and size the table names and has passed the look, and the logo source is square and at least 1024 pixels on each side.
 
 ## 5. Hand back
 

@@ -25,7 +25,7 @@ Tool definitions are absent from this repository and have no character size in t
 | rule: `git-hygiene-stash` | 516 | 5.2% |
 | skill: `build-and-review-motion` | 5794 |  |
 | skill: `develop-a-website` | 8421 |  |
-| skill: `generate-assets` | 5261 |  |
+| skill: `generate-assets` | 5556 |  |
 | skill: `grilling` | 3528 |  |
 | skill: `refine-design` | 5708 |  |
 | skill: `stress-test-content` | 6585 |  |
@@ -66,7 +66,7 @@ Tool definitions are absent from this repository and have no character size in t
 | rule: `writing-for-people` | 861 | 7.6% |
 | skill: `build-and-review-motion` | 5794 |  |
 | skill: `develop-a-website` | 8421 |  |
-| skill: `generate-assets` | 5261 |  |
+| skill: `generate-assets` | 5556 |  |
 | skill: `grilling` | 3528 |  |
 | skill: `refine-design` | 5708 |  |
 | skill: `stress-test-content` | 6585 |  |
@@ -108,7 +108,7 @@ Tool definitions are absent from this repository and have no character size in t
 | rule: `git-hygiene-stash` | 516 | 4.6% |
 | skill: `build-and-review-motion` | 5794 |  |
 | skill: `develop-a-website` | 8421 |  |
-| skill: `generate-assets` | 5261 |  |
+| skill: `generate-assets` | 5556 |  |
 | skill: `grilling` | 3528 |  |
 | skill: `refine-design` | 5708 |  |
 | skill: `stress-test-content` | 6585 |  |
@@ -148,7 +148,7 @@ Tool definitions are absent from this repository and have no character size in t
 | rule: `git-hygiene-stash` | 516 | 5.2% |
 | skill: `build-and-review-motion` | 5794 |  |
 | skill: `develop-a-website` | 8421 |  |
-| skill: `generate-assets` | 5261 |  |
+| skill: `generate-assets` | 5556 |  |
 | skill: `grilling` | 3528 |  |
 | skill: `refine-design` | 5708 |  |
 | skill: `stress-test-content` | 6585 |  |
@@ -189,7 +189,7 @@ Tool definitions are absent from this repository and have no character size in t
 | rule: `git-hygiene-stash` | 516 | 4.9% |
 | skill: `build-and-review-motion` | 5794 |  |
 | skill: `develop-a-website` | 8421 |  |
-| skill: `generate-assets` | 5261 |  |
+| skill: `generate-assets` | 5556 |  |
 | skill: `grilling` | 3528 |  |
 | skill: `refine-design` | 5708 |  |
 | skill: `stress-test-content` | 6585 |  |
@@ -229,7 +229,7 @@ Tool definitions are absent from this repository and have no character size in t
 | rule: `git-hygiene-stash` | 516 | 4.9% |
 | skill: `build-and-review-motion` | 5794 |  |
 | skill: `develop-a-website` | 8421 |  |
-| skill: `generate-assets` | 5261 |  |
+| skill: `generate-assets` | 5556 |  |
 | skill: `grilling` | 3528 |  |
 | skill: `refine-design` | 5708 |  |
 | skill: `stress-test-content` | 6585 |  |
@@ -266,7 +266,7 @@ Tool definitions are absent from this repository and have no character size in t
 | rule: `git-hygiene-stash` | 516 | 9.0% |
 | skill: `build-and-review-motion` | 5794 |  |
 | skill: `develop-a-website` | 8421 |  |
-| skill: `generate-assets` | 5261 |  |
+| skill: `generate-assets` | 5556 |  |
 | skill: `grilling` | 3528 |  |
 | skill: `refine-design` | 5708 |  |
 | skill: `stress-test-content` | 6585 |  |
