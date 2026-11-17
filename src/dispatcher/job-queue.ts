@@ -1,6 +1,6 @@
 import { spawnSync } from "node:child_process";
 import { segments, type Word } from "./shell-words";
-import { BIN_TEST_RUN, BIN_TEST_SCRIPT, EVAL_CONFIG, program, SCRIPT_RUNNERS, startsWith, stripped, texts } from "./shell-commands";
+import { BIN_TEST_RUN, BIN_TEST_SCRIPT, EVAL_CONFIG, program, RESERVED_WORDS, SCRIPT_RUNNERS, startsWith, stripped, texts } from "./shell-commands";
 
 export type Group = "tests" | "gpu" | "evals";
 
@@ -225,7 +225,11 @@ function evalCapEdits({ words, prefix }: Queued): Edit[] {
   const assigned = words.slice(0, prefix).filter(({ text }) => EVAL_ASSIGNMENT.test(text));
   const capped = `EVAL_CONCURRENCY=${EVAL_CONCURRENCY_CAP}`;
   const [first] = words;
-  if (assigned.length === 0) return first === undefined ? [] : [{ from: first.from, to: first.from, text: `${capped} ` }];
+  if (assigned.length === 0) {
+    if (first === undefined) return [];
+    const anchor = words.find(({ text }) => !RESERVED_WORDS.has(text)) ?? first;
+    return [{ from: anchor.from, to: anchor.from, text: `${capped} ` }];
+  }
   return assigned.filter(({ text }) => !fitsCap(EVAL_ASSIGNMENT.exec(text)?.[1] ?? "")).map(({ from, to }) => ({ from, to, text: capped }));
 }
 

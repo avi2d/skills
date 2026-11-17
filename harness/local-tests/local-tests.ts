@@ -198,7 +198,7 @@ function checksBody(body: string, cwd: string, seen: ReadonlySet<string>): boole
   const listed = segments(body);
   if (listed.length === 0) return false;
   return listed.every((segment) => {
-    const words = stripped(texts(segment)).map((word, at) => (at === 0 ? program(word) : word));
+    const words = commandWords(texts(segment)).map((word, at) => (at === 0 ? program(word) : word));
     if (CHECK_TOOLS.has(words[0] ?? "")) return true;
     const { name } = scriptCall(words);
     if (name === undefined || name === "eval" || TEST_SCRIPT.test(name)) return false;
@@ -243,12 +243,20 @@ function isTestScript(bare: readonly string[]): boolean {
 
 const SHELLS = new Set(["sh", "bash", "dash", "zsh"]);
 
+const SHELL_TEXT = new Set(["eval", "source", "."]);
+
+function commandWords(raw: readonly string[]): string[] {
+  let rest = stripped(raw);
+  while (rest.length > 0 && SHELL_TEXT.has(rest[0] ?? "")) rest = stripped(rest.slice(1));
+  return rest;
+}
+
 function testDirectories(command: string, cwd: string, seen: ReadonlySet<string> = new Set()): string[] {
   let dir = cwd;
   const found: string[] = [];
   for (const listed of segments(command)) {
     const raw = texts(listed);
-    const bare = stripped(raw);
+    const bare = commandWords(raw);
     const words = bare.map((word, at) => (at === 0 ? program(word) : word));
     if (words[0] === "cd" && words[1] !== undefined) {
       dir = resolve(dir, expandHome(words[1]));

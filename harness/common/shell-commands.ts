@@ -37,9 +37,9 @@ function pastWrapper(words: readonly string[], { runs, values, operands }: Wrapp
   return [];
 }
 
-const RESERVED_WORDS = new Set([
+export const RESERVED_WORDS = new Set([
   "if", "then", "else", "elif", "fi", "while", "until", "for", "select", "do", "done",
-  "case", "esac", "function", "coproc", "{", "}", "!", "source", "eval", ".",
+  "case", "esac", "function", "coproc", "{", "}", "!",
 ]);
 
 function unwrapOnce(words: readonly string[]): string[] | undefined {

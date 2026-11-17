@@ -58,6 +58,7 @@ test.each([
   "if true; then bun test; fi",
   "{ bun test; }",
   "! bun test",
+  "eval bun test",
   "git ls-files '*.test.ts' | xargs bun test",
   "deno test",
   "poetry run pytest",

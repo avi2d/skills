@@ -121,6 +121,7 @@ describe("a shell command", () => {
     ["cd && cat .codex/auth.json", ".codex/auth.json"],
     ["pushd ~/.config/gh && cat hosts.yml", ".config/gh/hosts.yml"],
     ["cp ~/.pi/agent/auth.json /tmp/a && cat /tmp/a", ".pi/agent/auth.json"],
+    ['eval "cat ~/.npmrc #/bin/ls"', ".npmrc"],
     ['ls "$(cat ~/.npmrc)"', ".npmrc"],
     ["ls `cat ~/.npmrc`", ".npmrc"],
     ["jq 'keys' \"$(cat ~/.npmrc)\"", ".npmrc"],

@@ -1,4 +1,5 @@
 import { afterAll, afterEach, beforeEach, describe, expect, test } from "bun:test";
+import { spawnSync } from "node:child_process";
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
@@ -487,6 +488,33 @@ describe("steer", () => {
   test.each(["EVAL_CONCURRENCY=3 bun run eval", "EVAL_CONCURRENCY=2 bun run eval", 'EVAL_CONCURRENCY="2" bun run eval'])("%s already fits one slot, so it queues as it is", (command) => {
     expect(steer(command, work, () => ["default", "tests", "gpu", "evals"])).toEqual({ type: "queue", group: "evals", command: queued(command, "evals") });
   });
+
+  test.each(["for i in 1 2; do bun run eval; done", "if bun run eval; then echo done; fi"])(
+    "%s caps the eval past its leading keyword, so bash still accepts the queued command",
+    (command) => {
+      const steered = steer(command, work, () => ["default", "tests", "gpu", "evals"]);
+      expect(steered?.type).toBe("queue");
+      if (steered?.type !== "queue") return;
+      expect(steered.group).toBe("evals");
+      const unquote = (text: string, at: number): [string, number] => {
+        let out = "";
+        for (;;) {
+          const next = text.indexOf("'", at);
+          if (next === -1) throw new Error("unterminated bash payload");
+          if (text.startsWith("'\\''", next)) {
+            out += `${text.slice(at, next)}'`;
+            at = next + 4;
+          } else return [out + text.slice(at, next), next + 1];
+        }
+      };
+      const outer = steered.command.lastIndexOf("-- '") + "-- '".length;
+      const [workload] = unquote(steered.command, outer);
+      const nested = workload.lastIndexOf("bash -c '") + "bash -c '".length;
+      const [payload] = unquote(workload, nested);
+      expect(payload).toContain("EVAL_CONCURRENCY=3 bun run eval");
+      expect(spawnSync("bash", ["-n"], { input: payload }).status).toBe(0);
+    },
+  );
 
   test("the harness default stays above the cap, so a bare run still needs the assignment", () => {
     expect(settingsFrom({}).concurrency).toBeGreaterThan(EVAL_CONCURRENCY_CAP);
