@@ -10,6 +10,7 @@ import { credentialRead, refusedLine, refusedText } from "./credential-reads";
 import type { Change } from "./forbid";
 import { VERIFY_BUDGET_SECONDS, fingerprint, sight, unreadableNote, verify } from "./gate";
 import { steer, steeredLine, type Steered } from "./job-queue";
+import { LOCAL_TESTS_LINE, refusedTests as harnessRefusedTests } from "./local-tests";
 import { readProject, type Project } from "./project";
 import { cappedNote, repoFiles } from "./repo-walk";
 import { hear, isPlace, listenFor, readTranscript, type EntryReader, type Place } from "./transcript";
@@ -379,6 +380,13 @@ export function refusedCommit(hook: Hook, payload: Payload): string | undefined 
   if (text === undefined) return undefined;
   note(sessionOf(payload), COMMIT_IDENTITY_LINE);
   return hookOutput(hook, text, "deny");
+}
+
+export function refusedTests(hook: Hook, payload: Payload): string | undefined {
+  const reply = harnessRefusedTests(hook, payload);
+  if (reply === undefined) return undefined;
+  note(sessionOf(payload), LOCAL_TESTS_LINE);
+  return reply;
 }
 
 export async function answer(payload: Payload, reply: () => Promise<string | undefined>): Promise<void> {

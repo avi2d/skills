@@ -4,7 +4,8 @@ import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { settingsFrom } from "../../evals/settings";
 import { unsandboxed } from "../../src/dispatcher/codex-dispatcher";
-import { EVAL_CONCURRENCY_CAP, LOG_LINES, SEPARATE_CALLS, SEPARATE_EVAL_CALLS, queueFor, queued, simpleCommands, steer, steeredLine } from "../../src/dispatcher/job-queue";
+import { EVAL_CONCURRENCY_CAP, LOG_LINES, SEPARATE_CALLS, SEPARATE_EVAL_CALLS, queueFor, queued, steer, steeredLine } from "../../src/dispatcher/job-queue";
+import { simpleCommands } from "../../src/dispatcher/shell-commands";
 
 const work = mkdtempSync(join(tmpdir(), "skills-job-queue-"));
 afterAll(() => rmSync(work, { recursive: true, force: true }));

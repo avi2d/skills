@@ -1,8 +1,6 @@
 import { spawnSync } from "node:child_process";
 import { segments, type Word } from "./shell-words";
-import { program, simpleCommands, startsWith, stripped, texts } from "./shell-commands";
-
-export { simpleCommands };
+import { program, startsWith, stripped, texts } from "./shell-commands";
 
 export type Group = "tests" | "gpu" | "evals";
 

@@ -1,1 +1,1 @@
-export { simpleCommands } from "../common/shell-commands";
+export { program, segments, stripped, texts } from "../common/shell-commands";

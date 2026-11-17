@@ -17,6 +17,7 @@ import {
   readPayload,
   refusedCommit,
   refusedRead,
+  refusedTests,
   sessionOf,
   type Hook,
   type HookAdapter,
@@ -25,7 +26,6 @@ import {
   type Writes,
 } from "./hook-harness";
 import { readIndex } from "./read-index";
-import { refusedTests } from "./local-tests";
 import { scrub, scrubbedLine, stringsIn, withStrings } from "./redact";
 import { field, textsOf, type Entry } from "./transcript";
 

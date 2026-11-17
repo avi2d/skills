@@ -140,6 +140,7 @@ If the kit command is unavailable or fails, the Dispatcher refuses the command r
 With `CI=true`, the Dispatcher lets the command run.
 Build, lint, and typecheck commands remain available unless their package scripts start a recognised test command.
 
+An eval run is not a test run, so the check allows `bun run eval` and a vitest run on the evals config.
 The check follows package scripts in `package.json` and recognises common test runners and their wrappers.
 It does not inspect arbitrary scripts, computed shell commands, or runner invocations hidden in other tools.
 The checks kit also guards its own runners when an agent carries its marker.

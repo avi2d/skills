@@ -4,9 +4,8 @@ import { fileURLToPath } from "node:url";
 import { carriage } from "./dispatch";
 import type { Change, CodexHunk } from "./forbid";
 import { standing } from "./repo-walk";
-import { answer, handle, isHook, readPayload, refusedCommit, refusedRead, type HookAdapter, type Payload, type Writes } from "./hook-harness";
+import { answer, handle, isHook, readPayload, refusedCommit, refusedRead, refusedTests, type HookAdapter, type Payload, type Writes } from "./hook-harness";
 import { readIndex } from "./read-index";
-import { refusedTests } from "./local-tests";
 import { field, readTranscript, textsOf, type Entry } from "./transcript";
 
 const INDEX_PATH = fileURLToPath(new URL("./dispatch.json", import.meta.url));

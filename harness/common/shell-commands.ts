@@ -1,4 +1,5 @@
 import { segments, type Word } from "./shell-words";
+export { segments };
 
 type Wrapper = { runs: readonly string[]; values: readonly string[]; operands: number };
 
@@ -12,6 +13,7 @@ const WRAPPERS: readonly Wrapper[] = [
   { runs: ["npx"], values: ["-p", "--package"], operands: 0 },
   { runs: ["bun", "x"], values: ["-p", "--package"], operands: 0 },
   { runs: ["pnpm", "exec"], values: ["-C", "--dir", "-F", "--filter", "--resume-from"], operands: 0 },
+  { runs: ["npm", "exec"], values: ["-p", "--package"], operands: 0 },
   { runs: ["pnpm", "dlx"], values: ["--package", "--allow-build"], operands: 0 },
 ];
 
