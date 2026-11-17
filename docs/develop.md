@@ -183,7 +183,9 @@ To release what main holds since the last tag:
 
 To add a file a harness loads itself:
 
-1. Put it under `harness/`, which is not the Dispatcher, so neither [Where dispatch logic goes](how-a-rule-reaches-a-harness.md#where-dispatch-logic-goes) nor the Effect scope of [Write source code](#write-source-code) holds it.
+1. Put it under `harness/`.
+1. A file `src/generate/bundle.ts` names is the Dispatcher once bundled, so [Where dispatch logic goes](how-a-rule-reaches-a-harness.md#where-dispatch-logic-goes) holds it.
+1. Any other file there is harness material the harness loads itself, outside the Effect scope of [Write source code](#write-source-code).
 1. Wire it with an entry in `LINKS` in `src/generate/link.ts` pointing `$HOME` at it, and add the file to git first, because `tests/unit/link.test.ts` refuses an entry whose target a clone cannot come by.
 1. Write no line in `harness/pi/settings.json` for a pi extension linked under `~/.pi/agent/extensions/`, because pi discovers it there.
 

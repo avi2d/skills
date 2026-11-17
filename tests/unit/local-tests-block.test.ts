@@ -21,7 +21,7 @@ test.each(["bun test --watch", "npm run test:unit", "bunx checks-browser", "npx 
   (command) => expect(runsTests(command, root)).toBe(true),
 );
 
-test.each(["bun run build", "bun run lint", "bun run typecheck", "bin/lint", "npx playwright install", "echo bun test"])(
+test.each(["bun run build", "bun run lint", "bun run typecheck", "bin/lint", "npx playwright install", "echo bun test", 'for f in a; do echo "$f"; done', "if true; then echo hi; fi", "seq 3 | xargs -n 1 echo"])(
   "leaves %s available rather than blocking a non-test command",
   (command) => expect(runsTests(command, root)).toBe(false),
 );
@@ -54,6 +54,11 @@ test.each([
   "uv run --with x pytest",
   "bin/fm-test-run.sh --watch",
   "bun run vitest",
+  'for f in a b; do bun test "$f"; done',
+  "if true; then bun test; fi",
+  "{ bun test; }",
+  "! bun test",
+  "git ls-files '*.test.ts' | xargs bun test",
   "deno test",
   "poetry run pytest",
   "pnpm -w test",
@@ -84,7 +89,22 @@ test("honours a directory flag instead of reading scripts from the wrong directo
   else process.env.HOME = savedHome;
   expect(runsTests("FOO=1 npm --prefix sub run verify", flagged)).toBe(true);
   expect(runsTests("time bun --cwd sub run verify", flagged)).toBe(true);
+  expect(runsTests("bun run --cwd sub verify", flagged)).toBe(true);
+  expect(runsTests("pnpm run --dir sub verify", flagged)).toBe(true);
+  expect(runsTests("npm run verify --prefix sub", flagged)).toBe(true);
+  const deep = join(sub, "deep");
+  mkdirSync(deep, { recursive: true });
+  expect(runsTests("bun run verify", deep)).toBe(true);
   expect(refuseLocalTests("npm --prefix sub run verify", flagged)).toContain("CI is the test run");
+});
+
+test("runs a script body with its package root instead of the caller directory", () => {
+  delete process.env.CI;
+  const inner = join(root, "outer", "pkg", "inner");
+  mkdirSync(inner, { recursive: true });
+  mkdirSync(join(root, "outer", "pkg", "sub"), { recursive: true });
+  writeFileSync(join(root, "outer", "pkg", "package.json"), JSON.stringify({ scripts: { down: "cd sub && bun test" } }));
+  expect(runsTests("bun run down", inner)).toBe(true);
 });
 
 test("blocks bun shorthand instead of missing a script without run", () => {
@@ -100,11 +120,29 @@ test("leaves check scripts available instead of refusing their test-like names",
   delete process.env.CI;
   const checks = join(root, "checks");
   mkdirSync(checks, { recursive: true });
-  writeFileSync(join(checks, "package.json"), JSON.stringify({ scripts: { "test:types": "tsc --noEmit", "test:lint": "eslint .", build: "bun test" } }));
+  writeFileSync(join(checks, "package.json"), JSON.stringify({ scripts: {
+    "test:types": "tsc --noEmit",
+    "test:lint": "eslint .",
+    "test:strict": "effect-tsgo --noEmit",
+    "test:css": "stylelint src",
+    "test:vue": "vue-tsc --noEmit",
+    "test:smoke": "tsgo --noEmit",
+    lint: "oxlint && checks-lint",
+    "test:via": "bun run lint",
+    "test:all": "bun run test:types",
+    build: "bun test",
+  } }));
   expect(runsTests("npm run test:types", checks)).toBe(false);
   expect(runsTests("bun run test:lint", checks)).toBe(false);
+  expect(runsTests("bun run test:strict", checks)).toBe(false);
+  expect(runsTests("bun run test:css", checks)).toBe(false);
+  expect(runsTests("bun run test:vue", checks)).toBe(false);
+  expect(runsTests("bun run test:smoke", checks)).toBe(false);
+  expect(runsTests("bun run test:via", checks)).toBe(false);
+  expect(runsTests("bun run test:all", checks)).toBe(true);
   expect(runsTests("bun build", checks)).toBe(false);
   expect(refuseLocalTests("npm run test:types", checks)).toBeUndefined();
+  expect(refuseLocalTests("bun run test:via", checks)).toBeUndefined();
 });
 
 test("blocks a test-named script instead of trusting an unrecognised body", () => {

@@ -89,6 +89,19 @@ function scriptCall(words: readonly string[]): { name: string | undefined; rest:
   return { name: undefined, rest: [] };
 }
 
+function packageDir(words: readonly string[], cwd: string): string {
+  const dash = words.indexOf("--");
+  const scoped = dash === -1 ? words.slice(1) : words.slice(1, dash);
+  const here = flagDir(scoped, cwd, words[0] ?? "", true);
+  let at = here;
+  for (;;) {
+    if (existsSync(join(at, "package.json"))) return at;
+    const parent = dirname(at);
+    if (parent === at) return here;
+    at = parent;
+  }
+}
+
 function scriptsAt(cwd: string): Record<string, unknown> {
   try {
     const parsed: unknown = JSON.parse(readFileSync(join(cwd, "package.json"), "utf8"));
@@ -177,31 +190,47 @@ const BUN_COMMANDS = new Set([
 
 const TEST_SCRIPT = /^(?:test|test:.*|mutate|mutate:.*)$/;
 
-const CHECK_TOOLS = new Set(["tsc", "eslint", "oxlint", "biome", "prettier"]);
+const CHECK_TOOLS = new Set([
+  "tsc", "tsgo", "effect-tsgo", "vue-tsc", "eslint", "stylelint", "oxlint", "biome", "prettier", "checks-lint",
+]);
 
-function checksBody(body: string): boolean {
+function checksBody(body: string, cwd: string, seen: ReadonlySet<string>): boolean {
   const listed = segments(body);
   if (listed.length === 0) return false;
-  return listed.every((segment) => CHECK_TOOLS.has(program(stripped(texts(segment))[0] ?? "")));
+  return listed.every((segment) => {
+    const words = stripped(texts(segment)).map((word, at) => (at === 0 ? program(word) : word));
+    if (CHECK_TOOLS.has(words[0] ?? "")) return true;
+    const { name } = scriptCall(words);
+    if (name === undefined || name === "eval" || TEST_SCRIPT.test(name)) return false;
+    const home = packageDir(words, cwd);
+    const key = home + ":" + name;
+    if (seen.has(key)) return false;
+    const value = scriptsAt(home)[name];
+    if (typeof value !== "string") return false;
+    return checksBody(value, home, new Set([...seen, key]));
+  });
 }
 
 function scriptDirectories(words: readonly string[], cwd: string, seen: ReadonlySet<string>): string[] {
   const { name: script, rest } = scriptCall(words);
   if (!script || script === "eval") return [];
-  if (seen.has(cwd + ":" + script)) {
+  const home = packageDir(words, cwd);
+  const key = home + ":" + script;
+  if (seen.has(key)) {
     if (!TEST_SCRIPT.test(script)) return [];
-    const value = scriptsAt(cwd)[script];
-    if (typeof value === "string" && checksBody(value)) return [];
-    return [cwd];
+    const value = scriptsAt(home)[script];
+    if (typeof value === "string" && checksBody(value, home, seen)) return [];
+    return [home];
   }
-  const value = scriptsAt(cwd)[script];
+  const value = scriptsAt(home)[script];
   if (typeof value === "string") {
-    const inner = testDirectories(value, cwd, new Set([...seen, cwd + ":" + script]));
+    const depth = new Set([...seen, key]);
+    const inner = testDirectories(value, home, depth);
     if (inner.length > 0) return inner;
-    if (checksBody(value)) return [];
+    if (checksBody(value, home, depth)) return [];
   }
-  if (directRunner([script, ...rest])) return [cwd];
-  return TEST_SCRIPT.test(script) ? [cwd] : [];
+  if (directRunner([script, ...rest])) return [home];
+  return TEST_SCRIPT.test(script) ? [home] : [];
 }
 
 function isTestScript(bare: readonly string[]): boolean {

@@ -15,6 +15,7 @@ const WRAPPERS: readonly Wrapper[] = [
   { runs: ["pnpm", "exec"], values: ["-C", "--dir", "-F", "--filter", "--resume-from"], operands: 0 },
   { runs: ["npm", "exec"], values: ["-p", "--package"], operands: 0 },
   { runs: ["pnpm", "dlx"], values: ["--package", "--allow-build"], operands: 0 },
+  { runs: ["xargs"], values: ["-n", "-I", "-P", "-L"], operands: 0 },
 ];
 
 const ASSIGNMENT = /^[A-Za-z_][A-Za-z0-9_]*=/;
@@ -36,12 +37,19 @@ function pastWrapper(words: readonly string[], { runs, values, operands }: Wrapp
   return [];
 }
 
+const RESERVED_WORDS = new Set([
+  "if", "then", "else", "elif", "fi", "while", "until", "for", "select", "do", "done",
+  "case", "esac", "function", "coproc", "{", "}", "!", "source", "eval", ".",
+]);
+
 function unwrapOnce(words: readonly string[]): string[] | undefined {
   const [head = "", ...rest] = words;
   if (ASSIGNMENT.test(head)) return rest;
   const named = [program(head), ...rest];
   const wrapper = WRAPPERS.find(({ runs }) => startsWith(named, runs));
-  return wrapper === undefined ? undefined : pastWrapper(words, wrapper);
+  if (wrapper !== undefined) return pastWrapper(words, wrapper);
+  if (RESERVED_WORDS.has(head)) return rest;
+  return undefined;
 }
 
 export function stripped(words: readonly string[]): string[] {

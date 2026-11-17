@@ -75,7 +75,8 @@ A `forbid` spends no context, so it stands unless a project switches the Rule of
 Reading a hook's reply back from a harness's transcript is translation the two hook adapters share, so it is `src/dispatcher/transcript.ts`, bundled into both.
 The rest the two hook adapters share is `src/dispatcher/hook-harness.ts`, also bundled into both, so an adapter hands it a `HookAdapter` holding only what its harness does differently.
 The index check all three adapters share is `src/dispatcher/read-index.ts`.
-Which shell command goes to the job queue is decided in `src/dispatcher/job-queue.ts`, which reads a command's words through `src/dispatcher/shell-words.ts`, and each adapter hands it the command and applies what it returns, as [Heavy commands go to the job queue](#heavy-commands-go-to-the-job-queue) describes.
+Which shell command goes to the job queue is decided in `src/dispatcher/job-queue.ts`, which reads a command's words through `harness/common/shell-words.ts`, and each adapter hands it the command and applies what it returns, as [Heavy commands go to the job queue](#heavy-commands-go-to-the-job-queue) describes.
+Whether a shell command may start its tests locally is decided in `harness/local-tests/local-tests.ts`, which every bundle carries into all three Dispatchers.
 Whether a call reads a credential file is decided in `src/dispatcher/credential-reads.ts`, and each adapter refuses the call it names, as [A credential file is not read](#a-credential-file-is-not-read) describes.
 `src/dispatcher/gate.ts` is I/O the three adapters share for the verdict gate, reading `.no-mistakes.yaml` through `src/dispatcher/gate-config.ts`, and whether a settle is checked, held or let go is decided in `src/dispatcher/verdict.ts`, as [record 0048](adr/0048-a-session-that-changed-the-tree-settles-past-the-checks-its-push-gate-runs.md) records.
 
