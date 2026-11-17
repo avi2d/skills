@@ -41,21 +41,33 @@ function skipFlags(words: readonly string[], at: number, tool: string = words[0]
 
 const DIR_FLAGS = new Set(["-C", "--dir", "--cwd", "--prefix", "--chdir", "--directory"]);
 
-function flagDir(words: readonly string[], dir: string, tool = ""): string {
+function expandHome(path: string): string {
+  const home = process.env.HOME;
+  if (home === undefined || home === "") return path;
+  if (path === "~") return home;
+  return path.startsWith("~/") ? home + path.slice(1) : path;
+}
+
+function flagDir(words: readonly string[], dir: string, tool = "", prefix = false): string {
   let here = dir;
-  let at = 1;
+  let at = prefix ? 0 : 1;
   for (;;) {
+    if (at >= words.length) break;
     const word = words[at] ?? "";
     if (word === "--") break;
-    if (!word.startsWith("-") || word === "-") break;
+    if (!word.startsWith("-") || word === "-") {
+      if (!prefix) break;
+      at += 1;
+      continue;
+    }
     at += 1;
     const [name = "", inline] = word.split(/=(.*)/s);
     if (inline !== undefined) {
-      if (DIR_FLAGS.has(name)) here = resolve(here, inline);
+      if (DIR_FLAGS.has(name)) here = resolve(here, expandHome(inline));
       continue;
     }
     if (at < words.length && !(words[at] ?? "").startsWith("-")) {
-      if (DIR_FLAGS.has(word)) here = resolve(here, words[at] ?? "");
+      if (DIR_FLAGS.has(word)) here = resolve(here, expandHome(words[at] ?? ""));
       if (DIR_FLAGS.has(word) || takesValue(tool, word)) at += 1;
     }
   }
@@ -168,9 +180,9 @@ const TEST_SCRIPT = /^(?:test|test:.*|mutate|mutate:.*)$/;
 const CHECK_TOOLS = new Set(["tsc", "eslint", "oxlint", "biome", "prettier"]);
 
 function checksBody(body: string): boolean {
-  const first = segments(body)[0];
-  if (first === undefined) return false;
-  return CHECK_TOOLS.has(program(stripped(texts(first))[0] ?? ""));
+  const listed = segments(body);
+  if (listed.length === 0) return false;
+  return listed.every((segment) => CHECK_TOOLS.has(program(stripped(texts(segment))[0] ?? "")));
 }
 
 function scriptDirectories(words: readonly string[], cwd: string, seen: ReadonlySet<string>): string[] {
@@ -210,12 +222,12 @@ function testDirectories(command: string, cwd: string, seen: ReadonlySet<string>
     const bare = stripped(raw);
     const words = bare.map((word, at) => (at === 0 ? program(word) : word));
     if (words[0] === "cd" && words[1] !== undefined) {
-      dir = resolve(dir, words[1]);
+      dir = resolve(dir, expandHome(words[1]));
       continue;
     }
     if (words.includes("--help") || words.includes("--version")) continue;
     const prefix = raw.slice(0, raw.length - bare.length);
-    const here = flagDir(words, flagDir(prefix, dir), words[0] ?? "");
+    const here = flagDir(words, flagDir(prefix, dir, "", true), words[0] ?? "");
     if (SHELLS.has(words[0] ?? "")) {
       const flag = words.findIndex((word) => /^-[^-]*c[^-]*$/.test(word));
       if (flag !== -1) {

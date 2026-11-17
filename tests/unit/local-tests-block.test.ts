@@ -75,6 +75,13 @@ test("honours a directory flag instead of reading scripts from the wrong directo
   expect(runsTests("bun --cwd sub run verify", flagged)).toBe(true);
   expect(runsTests("pnpm -C sub verify", flagged)).toBe(true);
   expect(runsTests("env -C sub bun run verify", flagged)).toBe(true);
+  expect(runsTests("FOO=1 env -C sub bun run verify", flagged)).toBe(true);
+  expect(runsTests("time env -C sub bun run verify", flagged)).toBe(true);
+  const savedHome = process.env.HOME;
+  process.env.HOME = flagged;
+  expect(runsTests("cd ~/sub && bun run verify", flagged)).toBe(true);
+  if (savedHome === undefined) delete process.env.HOME;
+  else process.env.HOME = savedHome;
   expect(runsTests("FOO=1 npm --prefix sub run verify", flagged)).toBe(true);
   expect(runsTests("time bun --cwd sub run verify", flagged)).toBe(true);
   expect(refuseLocalTests("npm --prefix sub run verify", flagged)).toContain("CI is the test run");
@@ -104,10 +111,12 @@ test("blocks a test-named script instead of trusting an unrecognised body", () =
   delete process.env.CI;
   const named = join(root, "named");
   mkdirSync(named, { recursive: true });
-  writeFileSync(join(named, "package.json"), JSON.stringify({ scripts: { test: "turbo run test", "test:ci": "node scripts/run-tests.mjs" } }));
+  writeFileSync(join(named, "package.json"), JSON.stringify({ scripts: { test: "turbo run test", "test:ci": "node scripts/run-tests.mjs", "test:mixed": "tsc --noEmit && node scripts/run-tests.mjs", "test:checks": "tsc --noEmit && eslint ." } }));
   expect(runsTests("npm test", named)).toBe(true);
   expect(runsTests("bun run test", named)).toBe(true);
   expect(runsTests("bun run test:ci", named)).toBe(true);
+  expect(runsTests("bun run test:mixed", named)).toBe(true);
+  expect(runsTests("bun run test:checks", named)).toBe(false);
 });
 
 test("blocks a workspace fan-out instead of trusting a recursive test script", () => {
