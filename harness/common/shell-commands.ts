@@ -63,7 +63,17 @@ function unwrapped(words: readonly string[]): string[] {
 
 export const texts = (words: readonly Word[]): string[] => words.map(({ text }) => text);
 
-export const EVAL_CONFIG = /(^|\/)evals\/vitest\.config\.ts$/;
+const EVAL_CONFIG = /(^|\/)evals\/vitest\.config\.ts$/;
+
+export function hasEvalConfig(args: readonly string[]): boolean {
+  for (let at = 0; at < args.length; at += 1) {
+    const arg = args[at] ?? "";
+    const [name = "", value] = arg.split(/=(.*)/s);
+    if (name !== "-c" && name !== "--config") continue;
+    if (EVAL_CONFIG.test(value ?? args[at + 1] ?? "")) return true;
+  }
+  return false;
+}
 
 export const SCRIPT_RUNNERS = new Set(["bun", "node", "sh", "bash", "zsh", "dash"]);
 

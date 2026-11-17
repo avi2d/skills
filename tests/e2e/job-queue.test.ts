@@ -205,6 +205,32 @@ describe("an eval run's queued command, run by a real shell", () => {
   test("a count already under the cap reaches the eval as it was asked", () => {
     expect(evalSees("EVAL_CONCURRENCY=2 bun run eval")).toContain("eval sees 2");
   });
+
+  test.each(["for i in 1 2; do bun run eval; done", "if bun run eval; then echo done; fi"])(
+    "%s caps the eval past its leading keyword, so bash still accepts the queued command",
+    (command) => {
+      const steered = steer(command, repo, () => ["default", "tests", "gpu", "evals"]);
+      expect(steered?.type).toBe("queue");
+      if (steered?.type !== "queue") return;
+      const unquote = (text: string, at: number): [string, number] => {
+        let out = "";
+        for (;;) {
+          const next = text.indexOf("'", at);
+          if (next === -1) throw new Error("unterminated bash payload");
+          if (text.startsWith("'\\''", next)) {
+            out += `${text.slice(at, next)}'`;
+            at = next + 4;
+          } else return [out + text.slice(at, next), next + 1];
+        }
+      };
+      const outer = steered.command.lastIndexOf("-- '") + "-- '".length;
+      const [workload] = unquote(steered.command, outer);
+      const nested = workload.lastIndexOf("bash -c '") + "bash -c '".length;
+      const [payload] = unquote(workload, nested);
+      expect(payload).toContain("EVAL_CONCURRENCY=3 bun run eval");
+      expect(spawnSync("bash", ["-n"], { input: payload }).status).toBe(0);
+    },
+  );
 });
 
 describe("pi running a command through its tool_call event", () => {

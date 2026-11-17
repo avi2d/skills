@@ -2,7 +2,7 @@ import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync, realpathSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { BIN_TEST_RUN, BIN_TEST_SCRIPT, EVAL_CONFIG, program, SCRIPT_RUNNERS, segments, stripped, texts } from "./shell-commands";
+import { BIN_TEST_RUN, BIN_TEST_SCRIPT, hasEvalConfig, program, SCRIPT_RUNNERS, segments, stripped, texts } from "./shell-commands";
 
 export const LOCAL_TESTS_LINE = "local-tests: refused a test command";
 
@@ -11,15 +11,7 @@ const UNKNOWN = "Cannot read checks.config.ts localTests through checks-local-te
 const RUNNERS = new Set(["checks-test", "checks-browser", "checks-flake", "checks-mutation", "pytest", "vitest", "jest", "playwright", "mocha", "ava", "tap", "stryker"]);
 const PACKAGES = new Set(["npm", "pnpm", "yarn", "bun"]);
 
-function evalConfig(args: readonly string[]): boolean {
-  for (let at = 0; at < args.length; at += 1) {
-    const arg = args[at] ?? "";
-    const [name = "", value] = arg.split(/=(.*)/s);
-    if (name !== "-c" && name !== "--config") continue;
-    if (EVAL_CONFIG.test(value ?? args[at + 1] ?? "")) return true;
-  }
-  return false;
-}
+
 
 const TAKES_VALUE = new Set(["-C", "--dir", "--cwd", "--prefix", "-F", "--filter", "--resume-from", "--project", "--directory", "--group", "-p", "--package", "--workspace", "--with"]);
 
@@ -148,7 +140,7 @@ function uvDelegated(words: readonly string[], tool: string): boolean | undefine
 function directRunner(words: readonly string[]): boolean {
   const tool = words[0] ?? "";
   if (tool === "playwright" || tool === "stryker") return playwrightTarget(tool, words[1] ?? "");
-  if (tool === "vitest" && evalConfig(words.slice(1))) return false;
+  if (tool === "vitest" && hasEvalConfig(words.slice(1))) return false;
   if (RUNNERS.has(tool)) return true;
   if (bunLikeTool(tool)) return (words[skipFlags(words, 1)] ?? "") === "test";
   if (tool === "node") return words.slice(1).includes("--test");

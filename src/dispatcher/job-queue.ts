@@ -1,6 +1,6 @@
 import { spawnSync } from "node:child_process";
 import { segments, type Word } from "./shell-words";
-import { BIN_TEST_RUN, BIN_TEST_SCRIPT, EVAL_CONFIG, program, RESERVED_WORDS, SCRIPT_RUNNERS, startsWith, stripped, texts } from "./shell-commands";
+import { BIN_TEST_RUN, BIN_TEST_SCRIPT, hasEvalConfig, program, RESERVED_WORDS, SCRIPT_RUNNERS, startsWith, stripped, texts } from "./shell-commands";
 
 export type Group = "tests" | "gpu" | "evals";
 
@@ -30,16 +30,7 @@ const scripts = (...runner: string[]): Entry[] => [
 
 const evalScripts = (...runner: string[]): Entry[] => [{ group: "evals", runs: [...runner, "eval"], when: exits }];
 
-const evalConfig = (args: readonly string[]): boolean => {
-  if (!exits(args)) return false;
-  for (let at = 0; at < args.length; at += 1) {
-    const arg = args[at] ?? "";
-    const [name = "", value] = arg.split(/=(.*)/s);
-    if (name !== "-c" && name !== "--config") continue;
-    if (EVAL_CONFIG.test(value ?? args[at + 1] ?? "")) return true;
-  }
-  return false;
-};
+const evalConfig = (args: readonly string[]): boolean => exits(args) && hasEvalConfig(args);
 
 type Gate = (args: readonly string[]) => boolean;
 
