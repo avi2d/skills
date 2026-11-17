@@ -122,6 +122,7 @@ describe("a shell command", () => {
     ["pushd ~/.config/gh && cat hosts.yml", ".config/gh/hosts.yml"],
     ["cp ~/.pi/agent/auth.json /tmp/a && cat /tmp/a", ".pi/agent/auth.json"],
     ['eval "cat ~/.npmrc #/bin/ls"', ".npmrc"],
+    ["xargs --arg-file=~/.npmrc ls", ".npmrc"],
     ['ls "$(cat ~/.npmrc)"', ".npmrc"],
     ["ls `cat ~/.npmrc`", ".npmrc"],
     ["jq 'keys' \"$(cat ~/.npmrc)\"", ".npmrc"],
@@ -183,6 +184,7 @@ describe("a shell command", () => {
     ["git add hosts.yml", "does not refuse a project inventory the command never prints"],
     ["git diff hosts.yml", "does not refuse a project inventory the command never prints"],
     ["ansible-playbook -i hosts.yml site.yml", "does not refuse a project inventory passed as an inventory flag"],
+    ["xargs -n 1 echo hi", "does not refuse an xargs run that prints no credential file"],
   ])("%s passes, %s", (command) => {
     expect(bash(command)).toBeUndefined();
   });

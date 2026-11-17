@@ -15,7 +15,6 @@ const WRAPPERS: readonly Wrapper[] = [
   { runs: ["pnpm", "exec"], values: ["-C", "--dir", "-F", "--filter", "--resume-from"], operands: 0 },
   { runs: ["npm", "exec"], values: ["-p", "--package"], operands: 0 },
   { runs: ["pnpm", "dlx"], values: ["--package", "--allow-build"], operands: 0 },
-  { runs: ["xargs"], values: ["-n", "-I", "-P", "-L"], operands: 0 },
 ];
 
 const ASSIGNMENT = /^[A-Za-z_][A-Za-z0-9_]*=/;

@@ -243,11 +243,32 @@ function isTestScript(bare: readonly string[]): boolean {
 
 const SHELLS = new Set(["sh", "bash", "dash", "zsh"]);
 
-const SHELL_TEXT = new Set(["eval", "source", "."]);
+const SHELL_TEXT = new Set(["eval", "source", ".", "exec", "command"]);
+
+const XARGS_VALUES = new Set([
+  "-a", "--arg-file", "-d", "--delimiter", "-E", "--eof", "-I", "--replace",
+  "-L", "--max-lines", "-n", "--max-args", "-P", "--max-procs", "-s", "--max-chars",
+  "--process-slot-var",
+]);
+
+function pastXargs(words: readonly string[]): string[] {
+  for (let at = 1; at < words.length; at += 1) {
+    const word = words[at] ?? "";
+    if (word === "--") return words.slice(at + 1);
+    if (!word.startsWith("-") || word.length === 1) return words.slice(at);
+    if (XARGS_VALUES.has(word)) at += 1;
+  }
+  return [];
+}
 
 function commandWords(raw: readonly string[]): string[] {
   let rest = stripped(raw);
-  while (rest.length > 0 && SHELL_TEXT.has(rest[0] ?? "")) rest = stripped(rest.slice(1));
+  while (rest.length > 0) {
+    const [head = "", ...tail] = rest;
+    if (SHELL_TEXT.has(head)) rest = stripped(tail);
+    else if (program(head) === "xargs") rest = stripped(pastXargs(rest));
+    else return rest;
+  }
   return rest;
 }
 
@@ -265,6 +286,11 @@ function testDirectories(command: string, cwd: string, seen: ReadonlySet<string>
     if (words.includes("--help") || words.includes("--version")) continue;
     const prefix = raw.slice(0, raw.length - bare.length);
     const here = flagDir(words, flagDir(prefix, dir, "", true), words[0] ?? "");
+    const said = stripped(raw);
+    if (said.length > 1 && program(said[0] ?? "") === "eval") {
+      found.push(...testDirectories(said.slice(1).join(" "), here, seen));
+      continue;
+    }
     if (SHELLS.has(words[0] ?? "")) {
       const flag = words.findIndex((word) => /^-[^-]*c[^-]*$/.test(word));
       if (flag !== -1) {
