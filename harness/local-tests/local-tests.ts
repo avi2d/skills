@@ -73,7 +73,7 @@ function scriptCall(words: readonly string[]): { name: string | undefined; rest:
   }
   if (tool !== "bun" && (next === "test" || next === "t")) return { name: "test", rest: words.slice(at + 1) };
   if (tool === "yarn" && next === "workspace") return scriptCall(["yarn", ...words.slice(skipFlags(words, at + 2))]);
-  if (tool === "pnpm" || tool === "yarn") return { name: next === "" ? undefined : next, rest: words.slice(at + 1) };
+  if (tool === "pnpm" || tool === "yarn" || (tool === "bun" && !BUN_COMMANDS.has(next))) return { name: next === "" ? undefined : next, rest: words.slice(at + 1) };
   return { name: undefined, rest: [] };
 }
 
@@ -126,16 +126,67 @@ function managerRunner(words: readonly string[]): boolean {
   return directRunner([head, ...words.slice(at + 1)]);
 }
 
+const BUN_COMMANDS = new Set([
+  "add",
+  "audit",
+  "build",
+  "bump",
+  "create",
+  "deploy",
+  "init",
+  "install",
+  "link",
+  "login",
+  "logout",
+  "migrate",
+  "outdated",
+  "patch",
+  "pm",
+  "publish",
+  "remove",
+  "run",
+  "test",
+  "uninstall",
+  "unlink",
+  "update",
+  "upgrade",
+  "whoami",
+  "why",
+  "info",
+  "x",
+  "i",
+  "a",
+  "r",
+  "rm",
+  "un",
+  "v",
+  "view",
+]);
+
 const TEST_SCRIPT = /^(?:test|test:.*|mutate|mutate:.*)$/;
+
+const CHECK_TOOLS = new Set(["tsc", "eslint", "oxlint", "biome", "prettier"]);
+
+function checksBody(body: string): boolean {
+  const first = segments(body)[0];
+  if (first === undefined) return false;
+  return CHECK_TOOLS.has(program(stripped(texts(first))[0] ?? ""));
+}
 
 function scriptDirectories(words: readonly string[], cwd: string, seen: ReadonlySet<string>): string[] {
   const { name: script, rest } = scriptCall(words);
   if (!script || script === "eval") return [];
-  if (seen.has(cwd + ":" + script)) return TEST_SCRIPT.test(script) ? [cwd] : [];
+  if (seen.has(cwd + ":" + script)) {
+    if (!TEST_SCRIPT.test(script)) return [];
+    const value = scriptsAt(cwd)[script];
+    if (typeof value === "string" && checksBody(value)) return [];
+    return [cwd];
+  }
   const value = scriptsAt(cwd)[script];
   if (typeof value === "string") {
     const inner = testDirectories(value, cwd, new Set([...seen, cwd + ":" + script]));
     if (inner.length > 0) return inner;
+    if (checksBody(value)) return [];
   }
   if (directRunner([script, ...rest])) return [cwd];
   return TEST_SCRIPT.test(script) ? [cwd] : [];

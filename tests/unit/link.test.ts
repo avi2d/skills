@@ -1,11 +1,11 @@
 import { describe, expect, setDefaultTimeout, test } from "bun:test";
-import { existsSync, lstatSync } from "node:fs";
+import { existsSync, lstatSync, readFileSync } from "node:fs";
 import { cp, mkdir, mkdtemp, readdir, readlink, rm, symlink } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { DefaultResourceLoader } from "@earendil-works/pi-coding-agent";
 import { REACHABLE, SKILL_FILE, consulted, dirOf, loadBodies, type Body } from "../../src/bodies/bodies";
-import { DEFAULT_GENERATED_ROOT } from "../../src/generate/bundle";
+import { CLAUDE_BUNDLE, CODEX_BUNDLE, DEFAULT_GENERATED_ROOT, PI_BUNDLE, runtimeImports } from "../../src/generate/bundle";
 import { MACOS_INDEX, filesUnder } from "../../src/platform/files";
 import { active, checkout } from "../../src/generate/generate";
 import { dormantRules, loadSelection, selected, type Selection } from "../../src/bodies/selection";
@@ -130,12 +130,38 @@ describe("a path $HOME used to take from here", () => {
 
 test("every file under harness/ is reachable through the link map", async () => {
   const targets = [...Object.values(LINKS), ...Object.values(MERGED).map(({ from }) => from)];
-  const covered = (path: string) => targets.some((t) => t === path || path.startsWith(`${t}/`));
+  const held = new Set([...Object.keys(PI_BUNDLE.files), ...Object.keys(CLAUDE_BUNDLE.files), ...Object.keys(CODEX_BUNDLE.files)]);
+  const queue = [...held];
+  while (queue.length > 0) {
+    const from = queue.pop() ?? "";
+    let text: string;
+    try {
+      text = readFileSync(`${REPO}${from}`, "utf8");
+    } catch {
+      continue;
+    }
+    const base = from.slice(0, from.lastIndexOf("/")).split("/");
+    for (const specifier of runtimeImports(text)) {
+      const parts = [...base];
+      for (const part of specifier.split("/")) {
+        if (part === "." || part === "") continue;
+        else if (part === "..") parts.pop();
+        else parts.push(part);
+      }
+      const resolved = parts.join("/");
+      const path = resolved.endsWith(".ts") ? resolved : `${resolved}.ts`;
+      if (!held.has(path)) {
+        held.add(path);
+        queue.push(path);
+      }
+    }
+  }
+  const covered = (path: string) => held.has(path) || targets.some((t) => t === path || path.startsWith(`${t}/`));
   const inert: string[] = [];
   for (const rel of await valueOf(filesUnder(`${REPO}harness`))) {
     if (!covered(`harness/${rel}`)) inert.push(`harness/${rel}`);
   }
-  expect(inert, "in the tree, in no link and no merged file - installed-looking and never read").toEqual([]);
+  expect(inert, "in the tree, in no link, no merged file and no Dispatcher bundle - installed-looking and never read").toEqual([]);
 });
 
 const PI = `${REPO}node_modules/.bin/pi`;

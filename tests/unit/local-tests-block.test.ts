@@ -80,6 +80,26 @@ test("honours a directory flag instead of reading scripts from the wrong directo
   expect(refuseLocalTests("npm --prefix sub run verify", flagged)).toContain("CI is the test run");
 });
 
+test("blocks bun shorthand instead of missing a script without run", () => {
+  delete process.env.CI;
+  const shorthand = join(root, "shorthand");
+  mkdirSync(shorthand, { recursive: true });
+  writeFileSync(join(shorthand, "package.json"), JSON.stringify({ scripts: { "test:unit": "checks-test --tier=unit", verify: "bun test" } }));
+  expect(runsTests("bun test:unit", shorthand)).toBe(true);
+  expect(runsTests("bun verify", shorthand)).toBe(true);
+});
+
+test("leaves check scripts available instead of refusing their test-like names", () => {
+  delete process.env.CI;
+  const checks = join(root, "checks");
+  mkdirSync(checks, { recursive: true });
+  writeFileSync(join(checks, "package.json"), JSON.stringify({ scripts: { "test:types": "tsc --noEmit", "test:lint": "eslint .", build: "bun test" } }));
+  expect(runsTests("npm run test:types", checks)).toBe(false);
+  expect(runsTests("bun run test:lint", checks)).toBe(false);
+  expect(runsTests("bun build", checks)).toBe(false);
+  expect(refuseLocalTests("npm run test:types", checks)).toBeUndefined();
+});
+
 test("blocks a test-named script instead of trusting an unrecognised body", () => {
   delete process.env.CI;
   const named = join(root, "named");
