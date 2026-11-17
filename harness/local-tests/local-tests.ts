@@ -23,7 +23,7 @@ function evalConfig(args: readonly string[]): boolean {
   return false;
 }
 
-const TAKES_VALUE = new Set(["-C", "--dir", "--cwd", "--prefix", "-F", "--filter", "--resume-from", "--project", "--directory", "--group", "-p", "--package"]);
+const TAKES_VALUE = new Set(["-C", "--dir", "--cwd", "--prefix", "-F", "--filter", "--resume-from", "--project", "--directory", "--group", "-p", "--package", "-w", "--workspace", "--with"]);
 
 function skipFlags(words: readonly string[], at: number): number {
   let next = at;
@@ -43,6 +43,7 @@ function scriptName(words: readonly string[]): string | undefined {
   const next = words[at] ?? "";
   if (next === "run" || next === "run-script") return words[skipFlags(words, at + 1)];
   if (tool !== "bun" && (next === "test" || next === "t")) return "test";
+  if (tool === "yarn" && next === "workspace") return scriptName(["yarn", ...words.slice(skipFlags(words, at + 2))]);
   if (tool === "pnpm" || tool === "yarn") return next === "" ? undefined : next;
   return undefined;
 }
@@ -98,18 +99,16 @@ function managerRunner(words: readonly string[]): boolean {
 
 function scriptDirectories(words: readonly string[], cwd: string, seen: ReadonlySet<string>): string[] {
   const script = scriptName(words);
-  if (!script || script === "eval" || seen.has(cwd + ":" + script)) return [];
+  if (!script || script === "eval") return [];
+  if (seen.has(cwd + ":" + script)) return /^(?:test|test:.*|mutate|mutate:.*)$/.test(script) ? [cwd] : [];
   const value = scriptsAt(cwd)[script];
   if (typeof value === "string") return testDirectories(value, cwd, new Set([...seen, cwd + ":" + script]));
   return /^(?:test|test:.*|mutate|mutate:.*)$/.test(script) ? [cwd] : [];
 }
 
 const SCRIPT_RUNNERS = new Set(["bun", "node", "sh", "bash", "zsh", "dash"]);
-const TOOL_PATHS = new Set(["lint", "typecheck", "build"]);
 const BIN_TEST_RUN = /(^|\/)bin\/fm-test-run\.sh$/;
 const BIN_TEST_SCRIPT = /(^|\/)bin\/[^/]*\.test\.sh$/;
-
-const base = (word: string): string => word.slice(word.lastIndexOf("/") + 1);
 
 function watched(arg: string): boolean {
   const [name = "", value] = arg.split(/=(.*)/s);
@@ -121,8 +120,6 @@ function isTestScript(bare: readonly string[]): boolean {
   const through = SCRIPT_RUNNERS.has(program(head)) ? rest : bare;
   const [first = "", ...args] = through;
   if (first === "" || args.some(watched)) return false;
-  if (first.includes("/") && TOOL_PATHS.has(base(first))) return true;
-  if (base(first) === "fm-sim-boot.sh") return true;
   return BIN_TEST_RUN.test(first) || BIN_TEST_SCRIPT.test(first);
 }
 
@@ -140,7 +137,7 @@ function testDirectories(command: string, cwd: string, seen: ReadonlySet<string>
     }
     if (words.includes("--help") || words.includes("--version")) continue;
     if (SHELLS.has(words[0] ?? "")) {
-      const flag = words.indexOf("-c");
+      const flag = words.findIndex((word) => /^-[^-]*c[^-]*$/.test(word));
       if (flag !== -1) {
         const nested = words[flag + 1];
         if (nested !== undefined) found.push(...testDirectories(nested, dir, seen));

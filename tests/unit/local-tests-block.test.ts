@@ -21,7 +21,7 @@ test.each(["bun test --watch", "npm run test:unit", "bunx checks-browser", "npx 
   (command) => expect(runsTests(command, root)).toBe(true),
 );
 
-test.each(["bun run build", "bun run lint", "bun run typecheck", "npx playwright install", "echo bun test"])(
+test.each(["bun run build", "bun run lint", "bun run typecheck", "bin/lint", "npx playwright install", "echo bun test"])(
   "leaves %s available rather than blocking a non-test command",
   (command) => expect(runsTests(command, root)).toBe(false),
 );
@@ -48,10 +48,21 @@ test.each([
   "uv run pytest",
   "uv run --group dev pytest",
   "python -m unittest",
+  "bash -lc 'bun test'",
+  "npm -w app test",
+  "yarn workspace app test",
+  "uv run --with x pytest",
 ])("blocks %s instead of missing a common test spelling", (command) => {
   const shapes = join(root, "shapes");
   mkdirSync(shapes, { recursive: true });
   expect(runsTests(command, shapes)).toBe(true);
+});
+
+test("blocks a workspace fan-out instead of trusting a recursive test script", () => {
+  const mono = join(root, "mono");
+  mkdirSync(mono, { recursive: true });
+  writeFileSync(join(mono, "package.json"), JSON.stringify({ scripts: { test: "pnpm -r test" } }));
+  expect(runsTests("pnpm test", mono)).toBe(true);
 });
 
 test("allows an eval script instead of blocking the documented local sweep", () => {
