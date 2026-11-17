@@ -36,16 +36,42 @@ function skipFlags(words: readonly string[], at: number): number {
   }
 }
 
-function scriptName(words: readonly string[]): string | undefined {
+const DIR_FLAGS = new Set(["-C", "--dir", "--cwd", "--prefix", "--chdir", "--directory"]);
+
+function flagDir(words: readonly string[], dir: string): string {
+  let here = dir;
+  let at = 1;
+  for (;;) {
+    const word = words[at] ?? "";
+    if (word === "--") break;
+    if (!word.startsWith("-") || word === "-") break;
+    at += 1;
+    const [name = "", inline] = word.split(/=(.*)/s);
+    if (inline !== undefined) {
+      if (DIR_FLAGS.has(name)) here = resolve(here, inline);
+      continue;
+    }
+    if (at < words.length && !(words[at] ?? "").startsWith("-")) {
+      if (DIR_FLAGS.has(word)) here = resolve(here, words[at] ?? "");
+      if (DIR_FLAGS.has(word) || TAKES_VALUE.has(word)) at += 1;
+    }
+  }
+  return here;
+}
+
+function scriptCall(words: readonly string[]): { name: string | undefined; rest: readonly string[] } {
   const tool = words[0] ?? "";
-  if (!PACKAGES.has(tool)) return undefined;
+  if (!PACKAGES.has(tool)) return { name: undefined, rest: [] };
   const at = skipFlags(words, 1);
   const next = words[at] ?? "";
-  if (next === "run" || next === "run-script") return words[skipFlags(words, at + 1)];
-  if (tool !== "bun" && (next === "test" || next === "t")) return "test";
-  if (tool === "yarn" && next === "workspace") return scriptName(["yarn", ...words.slice(skipFlags(words, at + 2))]);
-  if (tool === "pnpm" || tool === "yarn") return next === "" ? undefined : next;
-  return undefined;
+  if (next === "run" || next === "run-script") {
+    const nameAt = skipFlags(words, at + 1);
+    return { name: words[nameAt], rest: words.slice(nameAt + 1) };
+  }
+  if (tool !== "bun" && (next === "test" || next === "t")) return { name: "test", rest: words.slice(at + 1) };
+  if (tool === "yarn" && next === "workspace") return scriptCall(["yarn", ...words.slice(skipFlags(words, at + 2))]);
+  if (tool === "pnpm" || tool === "yarn") return { name: next === "" ? undefined : next, rest: words.slice(at + 1) };
+  return { name: undefined, rest: [] };
 }
 
 function scriptsAt(cwd: string): Record<string, unknown> {
@@ -98,11 +124,12 @@ function managerRunner(words: readonly string[]): boolean {
 }
 
 function scriptDirectories(words: readonly string[], cwd: string, seen: ReadonlySet<string>): string[] {
-  const script = scriptName(words);
+  const { name: script, rest } = scriptCall(words);
   if (!script || script === "eval") return [];
   if (seen.has(cwd + ":" + script)) return /^(?:test|test:.*|mutate|mutate:.*)$/.test(script) ? [cwd] : [];
   const value = scriptsAt(cwd)[script];
   if (typeof value === "string") return testDirectories(value, cwd, new Set([...seen, cwd + ":" + script]));
+  if (directRunner([script, ...rest])) return [cwd];
   return /^(?:test|test:.*|mutate|mutate:.*)$/.test(script) ? [cwd] : [];
 }
 
@@ -110,16 +137,11 @@ const SCRIPT_RUNNERS = new Set(["bun", "node", "sh", "bash", "zsh", "dash"]);
 const BIN_TEST_RUN = /(^|\/)bin\/fm-test-run\.sh$/;
 const BIN_TEST_SCRIPT = /(^|\/)bin\/[^/]*\.test\.sh$/;
 
-function watched(arg: string): boolean {
-  const [name = "", value] = arg.split(/=(.*)/s);
-  return (name === "-w" || name === "--watch" || name === "--watchAll") && value !== "false";
-}
-
 function isTestScript(bare: readonly string[]): boolean {
   const [head = "", ...rest] = bare;
   const through = SCRIPT_RUNNERS.has(program(head)) ? rest : bare;
-  const [first = "", ...args] = through;
-  if (first === "" || args.some(watched)) return false;
+  const [first = ""] = through;
+  if (first === "") return false;
   return BIN_TEST_RUN.test(first) || BIN_TEST_SCRIPT.test(first);
 }
 
@@ -129,26 +151,28 @@ function testDirectories(command: string, cwd: string, seen: ReadonlySet<string>
   let dir = cwd;
   const found: string[] = [];
   for (const listed of segments(command)) {
-    const bare = stripped(texts(listed));
+    const raw = texts(listed);
+    const bare = stripped(raw);
     const words = bare.map((word, at) => (at === 0 ? program(word) : word));
     if (words[0] === "cd" && words[1] !== undefined) {
       dir = resolve(dir, words[1]);
       continue;
     }
     if (words.includes("--help") || words.includes("--version")) continue;
+    const here = flagDir(raw, dir);
     if (SHELLS.has(words[0] ?? "")) {
       const flag = words.findIndex((word) => /^-[^-]*c[^-]*$/.test(word));
       if (flag !== -1) {
         const nested = words[flag + 1];
-        if (nested !== undefined) found.push(...testDirectories(nested, dir, seen));
+        if (nested !== undefined) found.push(...testDirectories(nested, here, seen));
         continue;
       }
     }
-    if (scriptName(words) === "eval") continue;
-    if (directRunner(words)) found.push(dir);
-    else if (managerRunner(words)) found.push(dir);
-    else if (isTestScript(bare)) found.push(dir);
-    else found.push(...scriptDirectories(words, dir, seen));
+    if (scriptCall(words).name === "eval") continue;
+    if (directRunner(words)) found.push(here);
+    else if (managerRunner(words)) found.push(here);
+    else if (isTestScript(bare)) found.push(here);
+    else found.push(...scriptDirectories(words, here, seen));
   }
   return found;
 }

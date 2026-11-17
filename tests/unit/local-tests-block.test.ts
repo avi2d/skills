@@ -52,10 +52,26 @@ test.each([
   "npm -w app test",
   "yarn workspace app test",
   "uv run --with x pytest",
+  "bin/fm-test-run.sh --watch",
+  "bun run vitest",
 ])("blocks %s instead of missing a common test spelling", (command) => {
   const shapes = join(root, "shapes");
   mkdirSync(shapes, { recursive: true });
   expect(runsTests(command, shapes)).toBe(true);
+});
+
+test("honours a directory flag instead of reading scripts from the wrong directory", () => {
+  delete process.env.CI;
+  const flagged = join(root, "flagged");
+  mkdirSync(flagged, { recursive: true });
+  const sub = join(flagged, "sub");
+  mkdirSync(sub, { recursive: true });
+  writeFileSync(join(sub, "package.json"), JSON.stringify({ scripts: { verify: "bun test" } }));
+  expect(runsTests("npm --prefix sub run verify", flagged)).toBe(true);
+  expect(runsTests("bun --cwd sub run verify", flagged)).toBe(true);
+  expect(runsTests("pnpm -C sub verify", flagged)).toBe(true);
+  expect(runsTests("env -C sub bun run verify", flagged)).toBe(true);
+  expect(refuseLocalTests("npm --prefix sub run verify", flagged)).toContain("CI is the test run");
 });
 
 test("blocks a workspace fan-out instead of trusting a recursive test script", () => {
