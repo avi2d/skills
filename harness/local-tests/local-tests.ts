@@ -261,15 +261,33 @@ function pastXargs(words: readonly string[]): string[] {
   return [];
 }
 
+function stripStep(rest: readonly string[]): string[] | undefined {
+  const [head = "", ...tail] = rest;
+  if (SHELL_TEXT.has(head)) return stripped(tail);
+  if (program(head) === "xargs") return stripped(pastXargs(rest));
+  return undefined;
+}
+
 function commandWords(raw: readonly string[]): string[] {
   let rest = stripped(raw);
-  while (rest.length > 0) {
-    const [head = "", ...tail] = rest;
-    if (SHELL_TEXT.has(head)) rest = stripped(tail);
-    else if (program(head) === "xargs") rest = stripped(pastXargs(rest));
-    else return rest;
+  for (;;) {
+    if (rest.length === 0) return rest;
+    const next = stripStep(rest);
+    if (next === undefined) return rest;
+    rest = next;
   }
-  return rest;
+}
+
+function evalSplit(raw: readonly string[]): { before: string[]; after: string[] } | undefined {
+  let rest = stripped(raw);
+  for (;;) {
+    if (rest.length < 2) return undefined;
+    const [head = ""] = rest;
+    if (program(head) === "eval") return { before: raw.slice(0, raw.length - rest.length), after: rest.slice(1) };
+    const next = stripStep(rest);
+    if (next === undefined) return undefined;
+    rest = next;
+  }
 }
 
 function testDirectories(command: string, cwd: string, seen: ReadonlySet<string> = new Set()): string[] {
@@ -277,6 +295,11 @@ function testDirectories(command: string, cwd: string, seen: ReadonlySet<string>
   const found: string[] = [];
   for (const listed of segments(command)) {
     const raw = texts(listed);
+    const split = evalSplit(raw);
+    if (split !== undefined) {
+      found.push(...testDirectories(split.after.join(" "), flagDir(split.before, dir, "", true), seen));
+      continue;
+    }
     const bare = commandWords(raw);
     const words = bare.map((word, at) => (at === 0 ? program(word) : word));
     if (words[0] === "cd" && words[1] !== undefined) {
@@ -286,11 +309,6 @@ function testDirectories(command: string, cwd: string, seen: ReadonlySet<string>
     if (words.includes("--help") || words.includes("--version")) continue;
     const prefix = raw.slice(0, raw.length - bare.length);
     const here = flagDir(words, flagDir(prefix, dir, "", true), words[0] ?? "");
-    const said = stripped(raw);
-    if (said.length > 1 && program(said[0] ?? "") === "eval") {
-      found.push(...testDirectories(said.slice(1).join(" "), here, seen));
-      continue;
-    }
     if (SHELLS.has(words[0] ?? "")) {
       const flag = words.findIndex((word) => /^-[^-]*c[^-]*$/.test(word));
       if (flag !== -1) {

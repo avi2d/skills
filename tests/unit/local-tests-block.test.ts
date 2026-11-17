@@ -61,6 +61,9 @@ test.each([
   "eval bun test",
   'eval "bun test"',
   'eval \'cd x && bun test\'',
+  'command eval "bun test"',
+  'exec eval "bun test"',
+  'xargs eval "bun test"',
   "exec bun test",
   "command bun test",
   "xargs -a args.txt bun test",
@@ -102,6 +105,18 @@ test("honours a directory flag instead of reading scripts from the wrong directo
   mkdirSync(deep, { recursive: true });
   expect(runsTests("bun run verify", deep)).toBe(true);
   expect(refuseLocalTests("npm --prefix sub run verify", flagged)).toContain("CI is the test run");
+});
+
+test("eval applies a directory flag once, like the command without eval", () => {
+  delete process.env.CI;
+  const once = join(root, "once");
+  const sub = join(once, "sub");
+  mkdirSync(join(sub, "sub"), { recursive: true });
+  mkdirSync(join(sub, "sub", "sub"), { recursive: true });
+  writeFileSync(join(sub, "sub", "package.json"), JSON.stringify({ scripts: { t: "bun test" } }));
+  writeFileSync(join(sub, "sub", "sub", "package.json"), JSON.stringify({ scripts: { t: "tsc --noEmit" } }));
+  expect(runsTests("bun --cwd sub run t", once)).toBe(true);
+  expect(runsTests("eval bun --cwd sub run t", once)).toBe(true);
 });
 
 test("runs a script body with its package root instead of the caller directory", () => {
