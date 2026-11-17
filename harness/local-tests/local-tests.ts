@@ -308,7 +308,8 @@ function testDirectories(command: string, cwd: string, seen: ReadonlySet<string>
     }
     if (words.includes("--help") || words.includes("--version")) continue;
     const prefix = raw.slice(0, raw.length - bare.length);
-    const here = flagDir(words, flagDir(prefix, dir, "", true), words[0] ?? "");
+    const base = flagDir(prefix, dir, "", true);
+    const here = flagDir(words, base, words[0] ?? "");
     if (SHELLS.has(words[0] ?? "")) {
       const flag = words.findIndex((word) => /^-[^-]*c[^-]*$/.test(word));
       if (flag !== -1) {
@@ -321,7 +322,7 @@ function testDirectories(command: string, cwd: string, seen: ReadonlySet<string>
     if (directRunner(words)) found.push(here);
     else if (managerRunner(words)) found.push(here);
     else if (isTestScript(bare)) found.push(here);
-    else found.push(...scriptDirectories(words, here, seen));
+    else found.push(...scriptDirectories(words, base, seen));
   }
   return found;
 }

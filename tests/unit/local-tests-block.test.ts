@@ -107,14 +107,24 @@ test("honours a directory flag instead of reading scripts from the wrong directo
   expect(refuseLocalTests("npm --prefix sub run verify", flagged)).toContain("CI is the test run");
 });
 
-test("eval applies a directory flag once, like the command without eval", () => {
+test("applies a leading directory flag once instead of resolving past the package", () => {
+  delete process.env.CI;
+  const repo = join(root, "repo");
+  const sub = join(repo, "sub");
+  mkdirSync(sub, { recursive: true });
+  writeFileSync(join(repo, "package.json"), JSON.stringify({ scripts: { verify: "bun test" } }));
+  expect(runsTests("bun --cwd .. run verify", sub)).toBe(true);
+  expect(runsTests("npm --prefix .. run verify", sub)).toBe(true);
+  expect(runsTests("eval bun --cwd .. run verify", sub)).toBe(true);
+});
+
+test("reads the package the directory flag names instead of one level deeper", () => {
   delete process.env.CI;
   const once = join(root, "once");
   const sub = join(once, "sub");
   mkdirSync(join(sub, "sub"), { recursive: true });
-  mkdirSync(join(sub, "sub", "sub"), { recursive: true });
-  writeFileSync(join(sub, "sub", "package.json"), JSON.stringify({ scripts: { t: "bun test" } }));
-  writeFileSync(join(sub, "sub", "sub", "package.json"), JSON.stringify({ scripts: { t: "tsc --noEmit" } }));
+  writeFileSync(join(sub, "package.json"), JSON.stringify({ scripts: { t: "bun test" } }));
+  writeFileSync(join(sub, "sub", "package.json"), JSON.stringify({ scripts: { t: "tsc --noEmit" } }));
   expect(runsTests("bun --cwd sub run t", once)).toBe(true);
   expect(runsTests("eval bun --cwd sub run t", once)).toBe(true);
 });
