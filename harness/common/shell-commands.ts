@@ -56,4 +56,12 @@ function unwrapped(words: readonly string[]): string[] {
 
 export const texts = (words: readonly Word[]): string[] => words.map(({ text }) => text);
 
+export const EVAL_CONFIG = /(^|\/)evals\/vitest\.config\.ts$/;
+
+export const SCRIPT_RUNNERS = new Set(["bun", "node", "sh", "bash", "zsh", "dash"]);
+
+export const BIN_TEST_RUN = /(^|\/)bin\/fm-test-run\.sh$/;
+
+export const BIN_TEST_SCRIPT = /(^|\/)bin\/[^/]*\.test\.sh$/;
+
 export const simpleCommands = (command: string): string[][] => segments(command).map((words) => unwrapped(texts(words)));

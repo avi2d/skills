@@ -2,7 +2,7 @@ import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync, realpathSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { program, segments, stripped, texts } from "./shell-commands";
+import { BIN_TEST_RUN, BIN_TEST_SCRIPT, EVAL_CONFIG, program, SCRIPT_RUNNERS, segments, stripped, texts } from "./shell-commands";
 
 export const LOCAL_TESTS_LINE = "local-tests: refused a test command";
 
@@ -10,8 +10,6 @@ const REFUSAL = "checks.config.ts localTests is blocked. CI is the test run.";
 const UNKNOWN = "Cannot read checks.config.ts localTests through checks-local-tests. CI is the test run.";
 const RUNNERS = new Set(["checks-test", "checks-browser", "checks-flake", "checks-mutation", "pytest", "vitest", "jest", "playwright", "mocha", "ava", "tap", "stryker"]);
 const PACKAGES = new Set(["npm", "pnpm", "yarn", "bun"]);
-
-const EVAL_CONFIG = /(^|\/)evals\/vitest\.config\.ts$/;
 
 function evalConfig(args: readonly string[]): boolean {
   for (let at = 0; at < args.length; at += 1) {
@@ -23,22 +21,27 @@ function evalConfig(args: readonly string[]): boolean {
   return false;
 }
 
-const TAKES_VALUE = new Set(["-C", "--dir", "--cwd", "--prefix", "-F", "--filter", "--resume-from", "--project", "--directory", "--group", "-p", "--package", "-w", "--workspace", "--with"]);
+const TAKES_VALUE = new Set(["-C", "--dir", "--cwd", "--prefix", "-F", "--filter", "--resume-from", "--project", "--directory", "--group", "-p", "--package", "--workspace", "--with"]);
 
-function skipFlags(words: readonly string[], at: number): number {
+function takesValue(tool: string, word: string): boolean {
+  if (word === "-w") return tool === "npm";
+  return TAKES_VALUE.has(word);
+}
+
+function skipFlags(words: readonly string[], at: number, tool: string = words[0] ?? ""): number {
   let next = at;
   for (;;) {
     const word = words[next] ?? "";
     if (word === "--") return next + 1;
     if (!word.startsWith("-") || word === "-") return next;
     next += 1;
-    if (!word.includes("=") && TAKES_VALUE.has(word) && next < words.length && !(words[next] ?? "").startsWith("-")) next += 1;
+    if (!word.includes("=") && takesValue(tool, word) && next < words.length && !(words[next] ?? "").startsWith("-")) next += 1;
   }
 }
 
 const DIR_FLAGS = new Set(["-C", "--dir", "--cwd", "--prefix", "--chdir", "--directory"]);
 
-function flagDir(words: readonly string[], dir: string): string {
+function flagDir(words: readonly string[], dir: string, tool = ""): string {
   let here = dir;
   let at = 1;
   for (;;) {
@@ -53,7 +56,7 @@ function flagDir(words: readonly string[], dir: string): string {
     }
     if (at < words.length && !(words[at] ?? "").startsWith("-")) {
       if (DIR_FLAGS.has(word)) here = resolve(here, words[at] ?? "");
-      if (DIR_FLAGS.has(word) || TAKES_VALUE.has(word)) at += 1;
+      if (DIR_FLAGS.has(word) || takesValue(tool, word)) at += 1;
     }
   }
   return here;
@@ -93,7 +96,7 @@ function directRunner(words: readonly string[]): boolean {
   }
   if (tool === "vitest" && evalConfig(words.slice(1))) return false;
   if (RUNNERS.has(tool)) return true;
-  if (tool === "bun" || tool === "cargo" || tool === "go") return (words[skipFlags(words, 1)] ?? "") === "test";
+  if (tool === "bun" || tool === "cargo" || tool === "deno" || tool === "go") return (words[skipFlags(words, 1)] ?? "") === "test";
   if (tool === "node") return words.slice(1).includes("--test");
   if (tool === "python" || tool === "python3") {
     for (let at = 1; at < words.length - 1; at += 1) {
@@ -101,7 +104,7 @@ function directRunner(words: readonly string[]): boolean {
     }
     return false;
   }
-  if (tool === "uv") {
+  if (tool === "uv" || tool === "poetry") {
     const at = skipFlags(words, 1);
     if (words[at] !== "run") return false;
     const rest = words.slice(skipFlags(words, at + 1));
@@ -123,19 +126,20 @@ function managerRunner(words: readonly string[]): boolean {
   return directRunner([head, ...words.slice(at + 1)]);
 }
 
+const TEST_SCRIPT = /^(?:test|test:.*|mutate|mutate:.*)$/;
+
 function scriptDirectories(words: readonly string[], cwd: string, seen: ReadonlySet<string>): string[] {
   const { name: script, rest } = scriptCall(words);
   if (!script || script === "eval") return [];
-  if (seen.has(cwd + ":" + script)) return /^(?:test|test:.*|mutate|mutate:.*)$/.test(script) ? [cwd] : [];
+  if (seen.has(cwd + ":" + script)) return TEST_SCRIPT.test(script) ? [cwd] : [];
   const value = scriptsAt(cwd)[script];
-  if (typeof value === "string") return testDirectories(value, cwd, new Set([...seen, cwd + ":" + script]));
+  if (typeof value === "string") {
+    const inner = testDirectories(value, cwd, new Set([...seen, cwd + ":" + script]));
+    if (inner.length > 0) return inner;
+  }
   if (directRunner([script, ...rest])) return [cwd];
-  return /^(?:test|test:.*|mutate|mutate:.*)$/.test(script) ? [cwd] : [];
+  return TEST_SCRIPT.test(script) ? [cwd] : [];
 }
-
-const SCRIPT_RUNNERS = new Set(["bun", "node", "sh", "bash", "zsh", "dash"]);
-const BIN_TEST_RUN = /(^|\/)bin\/fm-test-run\.sh$/;
-const BIN_TEST_SCRIPT = /(^|\/)bin\/[^/]*\.test\.sh$/;
 
 function isTestScript(bare: readonly string[]): boolean {
   const [head = "", ...rest] = bare;
@@ -159,7 +163,8 @@ function testDirectories(command: string, cwd: string, seen: ReadonlySet<string>
       continue;
     }
     if (words.includes("--help") || words.includes("--version")) continue;
-    const here = flagDir(raw, dir);
+    const prefix = raw.slice(0, raw.length - bare.length);
+    const here = flagDir(words, flagDir(prefix, dir), words[0] ?? "");
     if (SHELLS.has(words[0] ?? "")) {
       const flag = words.findIndex((word) => /^-[^-]*c[^-]*$/.test(word));
       if (flag !== -1) {

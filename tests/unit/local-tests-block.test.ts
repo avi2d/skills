@@ -1,3 +1,4 @@
+import { spawnSync } from "node:child_process";
 import { afterAll, afterEach, expect, test } from "bun:test";
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -6,7 +7,6 @@ import { LOCAL_TESTS_LINE, refuseLocalTests, runsTests } from "../../harness/loc
 import { bashCall } from "../../src/dispatcher/pi-bash";
 
 const root = mkdtempSync(join(tmpdir(), "skills-local-tests-"));
-process.env.XDG_STATE_HOME = join(root, "state");
 const { refusedTests } = await import("../../src/dispatcher/hook-harness");
 const ci = process.env.CI;
 
@@ -54,6 +54,10 @@ test.each([
   "uv run --with x pytest",
   "bin/fm-test-run.sh --watch",
   "bun run vitest",
+  "deno test",
+  "poetry run pytest",
+  "pnpm -w test",
+  "pnpm -w vitest run",
 ])("blocks %s instead of missing a common test spelling", (command) => {
   const shapes = join(root, "shapes");
   mkdirSync(shapes, { recursive: true });
@@ -71,7 +75,19 @@ test("honours a directory flag instead of reading scripts from the wrong directo
   expect(runsTests("bun --cwd sub run verify", flagged)).toBe(true);
   expect(runsTests("pnpm -C sub verify", flagged)).toBe(true);
   expect(runsTests("env -C sub bun run verify", flagged)).toBe(true);
+  expect(runsTests("FOO=1 npm --prefix sub run verify", flagged)).toBe(true);
+  expect(runsTests("time bun --cwd sub run verify", flagged)).toBe(true);
   expect(refuseLocalTests("npm --prefix sub run verify", flagged)).toContain("CI is the test run");
+});
+
+test("blocks a test-named script instead of trusting an unrecognised body", () => {
+  delete process.env.CI;
+  const named = join(root, "named");
+  mkdirSync(named, { recursive: true });
+  writeFileSync(join(named, "package.json"), JSON.stringify({ scripts: { test: "turbo run test", "test:ci": "node scripts/run-tests.mjs" } }));
+  expect(runsTests("npm test", named)).toBe(true);
+  expect(runsTests("bun run test", named)).toBe(true);
+  expect(runsTests("bun run test:ci", named)).toBe(true);
 });
 
 test("blocks a workspace fan-out instead of trusting a recursive test script", () => {
@@ -140,7 +156,14 @@ test("Bash hook denies a test command before execution", () => {
 test("the hook denial lands in the dispatch log instead of vanishing", () => {
   delete process.env.CI;
   rmSync(join(root, "checks.config.ts"), { force: true });
-  refusedTests("PreToolUse", { tool_name: "Bash", tool_input: { command: "bun test" }, cwd: root, session_id: "local-tests-log" });
+  const probe = join(root, "log-probe.ts");
+  writeFileSync(
+    probe,
+    `import { refusedTests } from ${JSON.stringify(new URL("../../src/dispatcher/hook-harness", import.meta.url).href)};\n` +
+      `refusedTests("PreToolUse", { tool_name: "Bash", tool_input: { command: "bun test" }, cwd: ${JSON.stringify(root)}, session_id: "local-tests-log" });\n`,
+  );
+  const ran = spawnSync(process.execPath, [probe], { env: { ...process.env, XDG_STATE_HOME: join(root, "state") } });
+  expect(ran.status).toBe(0);
   expect(readFileSync(join(root, "state", "skills", "dispatch.log"), "utf8")).toContain(LOCAL_TESTS_LINE);
 });
 

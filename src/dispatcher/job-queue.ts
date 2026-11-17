@@ -1,6 +1,6 @@
 import { spawnSync } from "node:child_process";
 import { segments, type Word } from "./shell-words";
-import { program, startsWith, stripped, texts } from "./shell-commands";
+import { BIN_TEST_RUN, BIN_TEST_SCRIPT, EVAL_CONFIG, program, SCRIPT_RUNNERS, startsWith, stripped, texts } from "./shell-commands";
 
 export type Group = "tests" | "gpu" | "evals";
 
@@ -29,8 +29,6 @@ const scripts = (...runner: string[]): Entry[] => [
 ];
 
 const evalScripts = (...runner: string[]): Entry[] => [{ group: "evals", runs: [...runner, "eval"], when: exits }];
-
-const EVAL_CONFIG = /(^|\/)evals\/vitest\.config\.ts$/;
 
 const evalConfig = (args: readonly string[]): boolean => {
   if (!exits(args)) return false;
@@ -150,17 +148,12 @@ type Queued = { group: Group; words: readonly Word[]; prefix: number };
 
 const base = (word: string): string => word.slice(word.lastIndexOf("/") + 1);
 
-const SCRIPT_RUNNERS = ["bun", "node", "sh", "bash", "zsh", "dash"];
-
-const BIN_TEST_RUN = /(^|\/)bin\/fm-test-run\.sh$/;
-
-const BIN_TEST_SCRIPT = /(^|\/)bin\/[^/]*\.test\.sh$/;
 
 const TOOL_PATHS = new Set(["lint", "typecheck", "build"]);
 
 const scripted = (bare: readonly string[]): { group: Group } | undefined => {
   const [rawHead = "", ...rawRest] = bare;
-  const through = SCRIPT_RUNNERS.includes(program(rawHead)) ? rawRest : bare;
+  const through = SCRIPT_RUNNERS.has(program(rawHead)) ? rawRest : bare;
   const [first = "", ...args] = through;
   if (args.some(watching)) return undefined;
   if (first.includes("/") && TOOL_PATHS.has(base(first))) return { group: "tests" };
