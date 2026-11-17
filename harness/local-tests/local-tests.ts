@@ -48,11 +48,22 @@ function expandHome(path: string): string {
   return path.startsWith("~/") ? home + path.slice(1) : path;
 }
 
+function inlineDir(name: string, inline: string | undefined, here: string): string {
+  if (inline === undefined || !DIR_FLAGS.has(name)) return here;
+  return resolve(here, expandHome(inline));
+}
+function separateDir(word: string, next: string | undefined, here: string): string {
+  if (next === undefined || next.startsWith("-") || !DIR_FLAGS.has(word)) return here;
+  return resolve(here, expandHome(next));
+}
+function consumesNext(word: string, inline: string | undefined, next: string | undefined, tool: string): boolean {
+  if (inline !== undefined || next === undefined || next.startsWith("-")) return false;
+  return DIR_FLAGS.has(word) || takesValue(tool, word);
+}
 function flagDir(words: readonly string[], dir: string, tool = "", prefix = false): string {
   let here = dir;
   let at = prefix ? 0 : 1;
-  for (;;) {
-    if (at >= words.length) break;
+  while (at < words.length) {
     const word = words[at] ?? "";
     if (word === "--") break;
     if (!word.startsWith("-") || word === "-") {
@@ -60,16 +71,10 @@ function flagDir(words: readonly string[], dir: string, tool = "", prefix = fals
       at += 1;
       continue;
     }
-    at += 1;
     const [name = "", inline] = word.split(/=(.*)/s);
-    if (inline !== undefined) {
-      if (DIR_FLAGS.has(name)) here = resolve(here, expandHome(inline));
-      continue;
-    }
-    if (at < words.length && !(words[at] ?? "").startsWith("-")) {
-      if (DIR_FLAGS.has(word)) here = resolve(here, expandHome(words[at] ?? ""));
-      if (DIR_FLAGS.has(word) || takesValue(tool, word)) at += 1;
-    }
+    const next = words[at + 1];
+    here = inline === undefined ? separateDir(word, next, here) : inlineDir(name, inline, here);
+    at += consumesNext(word, inline, next, tool) ? 2 : 1;
   }
   return here;
 }
@@ -113,33 +118,42 @@ function scriptsAt(cwd: string): Record<string, unknown> {
   }
 }
 
-function directRunner(words: readonly string[]): boolean {
-  const tool = words[0] ?? "";
-  if (tool === "playwright" || tool === "stryker") {
-    const arg = words[1] ?? "";
-    return arg === "test" || (tool === "stryker" && arg === "run");
+function playwrightTarget(tool: string, arg: string): boolean {
+  if (tool !== "playwright" && tool !== "stryker") return false;
+  return arg === "test" || (tool === "stryker" && arg === "run");
+}
+function bunLikeTool(tool: string): boolean {
+  return tool === "bun" || tool === "cargo" || tool === "deno" || tool === "go";
+}
+function pythonTool(tool: string): boolean {
+  return tool === "python" || tool === "python3";
+}
+function pythonModuleTest(words: readonly string[]): boolean {
+  for (let at = 1; at < words.length - 1; at += 1) {
+    if (words[at] === "-m" && (words[at + 1] === "pytest" || words[at + 1] === "unittest")) return true;
   }
-  if (tool === "vitest" && evalConfig(words.slice(1))) return false;
-  if (RUNNERS.has(tool)) return true;
-  if (tool === "bun" || tool === "cargo" || tool === "deno" || tool === "go") return (words[skipFlags(words, 1)] ?? "") === "test";
-  if (tool === "node") return words.slice(1).includes("--test");
-  if (tool === "python" || tool === "python3") {
-    for (let at = 1; at < words.length - 1; at += 1) {
-      if (words[at] === "-m" && (words[at + 1] === "pytest" || words[at + 1] === "unittest")) return true;
-    }
-    return false;
-  }
-  if (tool === "uv" || tool === "poetry") {
-    const at = skipFlags(words, 1);
-    if (words[at] !== "run") return false;
-    const rest = words.slice(skipFlags(words, at + 1));
-    return rest.length > 0 && directRunner(rest);
-  }
+  return false;
+}
+function uvDelegated(words: readonly string[], tool: string): boolean | undefined {
   if (tool === "uvx") {
     const rest = words.slice(skipFlags(words, 1));
     return rest.length > 0 && directRunner(rest);
   }
-  return false;
+  if (tool !== "uv" && tool !== "poetry") return undefined;
+  const at = skipFlags(words, 1);
+  if (words[at] !== "run") return false;
+  const rest = words.slice(skipFlags(words, at + 1));
+  return rest.length > 0 && directRunner(rest);
+}
+function directRunner(words: readonly string[]): boolean {
+  const tool = words[0] ?? "";
+  if (tool === "playwright" || tool === "stryker") return playwrightTarget(tool, words[1] ?? "");
+  if (tool === "vitest" && evalConfig(words.slice(1))) return false;
+  if (RUNNERS.has(tool)) return true;
+  if (bunLikeTool(tool)) return (words[skipFlags(words, 1)] ?? "") === "test";
+  if (tool === "node") return words.slice(1).includes("--test");
+  if (pythonTool(tool)) return pythonModuleTest(words);
+  return uvDelegated(words, tool) ?? false;
 }
 
 function managerRunner(words: readonly string[]): boolean {
@@ -151,42 +165,7 @@ function managerRunner(words: readonly string[]): boolean {
   return directRunner([head, ...words.slice(at + 1)]);
 }
 
-const BUN_COMMANDS = new Set([
-  "add",
-  "audit",
-  "build",
-  "bump",
-  "create",
-  "deploy",
-  "init",
-  "install",
-  "link",
-  "login",
-  "logout",
-  "migrate",
-  "outdated",
-  "patch",
-  "pm",
-  "publish",
-  "remove",
-  "run",
-  "test",
-  "uninstall",
-  "unlink",
-  "update",
-  "upgrade",
-  "whoami",
-  "why",
-  "info",
-  "x",
-  "i",
-  "a",
-  "r",
-  "rm",
-  "un",
-  "v",
-  "view",
-]);
+const BUN_COMMANDS = new Set("add audit build bump create deploy init install link login logout migrate outdated patch pm publish remove run test uninstall unlink update upgrade whoami why info x i a r rm un v view".split(" "));
 
 const TEST_SCRIPT = /^(?:test|test:.*|mutate|mutate:.*)$/;
 
@@ -290,6 +269,21 @@ function evalSplit(raw: readonly string[]): { before: string[]; after: string[] 
   }
 }
 
+function shellNested(words: readonly string[], here: string, seen: ReadonlySet<string>): string[] | undefined {
+  if (!SHELLS.has(words[0] ?? "")) return undefined;
+  const flag = words.findIndex((word) => /^-[^-]*c[^-]*$/.test(word));
+  if (flag === -1) return undefined;
+  const nested = words[flag + 1];
+  if (nested === undefined) return [];
+  return testDirectories(nested, here, seen);
+}
+function wordDirs(words: readonly string[], bare: readonly string[], base: string, here: string, seen: ReadonlySet<string>): string[] {
+  if (scriptCall(words).name === "eval") return [];
+  if (directRunner(words)) return [here];
+  if (managerRunner(words)) return [here];
+  if (isTestScript(bare)) return [here];
+  return scriptDirectories(words, base, seen);
+}
 function testDirectories(command: string, cwd: string, seen: ReadonlySet<string> = new Set()): string[] {
   let dir = cwd;
   const found: string[] = [];
@@ -310,19 +304,12 @@ function testDirectories(command: string, cwd: string, seen: ReadonlySet<string>
     const prefix = raw.slice(0, raw.length - bare.length);
     const base = flagDir(prefix, dir, "", true);
     const here = flagDir(words, base, words[0] ?? "");
-    if (SHELLS.has(words[0] ?? "")) {
-      const flag = words.findIndex((word) => /^-[^-]*c[^-]*$/.test(word));
-      if (flag !== -1) {
-        const nested = words[flag + 1];
-        if (nested !== undefined) found.push(...testDirectories(nested, here, seen));
-        continue;
-      }
+    const shelled = shellNested(words, here, seen);
+    if (shelled !== undefined) {
+      found.push(...shelled);
+      continue;
     }
-    if (scriptCall(words).name === "eval") continue;
-    if (directRunner(words)) found.push(here);
-    else if (managerRunner(words)) found.push(here);
-    else if (isTestScript(bare)) found.push(here);
-    else found.push(...scriptDirectories(words, base, seen));
+    found.push(...wordDirs(words, bare, base, here, seen));
   }
   return found;
 }
