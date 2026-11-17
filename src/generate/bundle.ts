@@ -32,6 +32,7 @@ export type Bundle = {
 };
 
 const CORE_FILES = {
+  "harness/local-tests/local-tests.ts": "local-tests.ts",
   "src/dispatcher/dispatch.ts": "dispatch.ts",
   "src/dispatcher/dispatch-types.ts": "dispatch-types.ts",
   "src/dispatcher/dispatch-log.ts": "dispatch-log.ts",
@@ -54,7 +55,8 @@ const CORE_FILES = {
   "src/dispatcher/credential-reads.ts": "credential-reads.ts",
   "src/dispatcher/commit-identity.ts": "commit-identity.ts",
   "src/dispatcher/shell-vars.ts": "shell-vars.ts",
-  "src/dispatcher/shell-words.ts": "shell-words.ts",
+  "harness/common/shell-words.ts": "shell-words.ts",
+  "harness/common/shell-commands.ts": "shell-commands.ts",
   "src/dispatcher/tool-call-fired.ts": "tool-call-fired.ts",
   "src/dispatcher/requested.ts": "requested.ts",
 };

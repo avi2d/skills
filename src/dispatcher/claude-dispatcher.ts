@@ -25,6 +25,7 @@ import {
   type Writes,
 } from "./hook-harness";
 import { readIndex } from "./read-index";
+import { refusedTests } from "./local-tests";
 import { scrub, scrubbedLine, stringsIn, withStrings } from "./redact";
 import { field, textsOf, type Entry } from "./transcript";
 
@@ -207,7 +208,7 @@ if (import.meta.main) {
     await answer(payload, async () =>
       carrier
         ? carry(payload, slot)
-        : (refusedRead(name, payload) ?? refusedCommit(name, payload) ?? handle(CLAUDE, readIndex(INDEX_PATH, "claude-code"), name, payload)),
+        : (refusedRead(name, payload) ?? refusedCommit(name, payload) ?? refusedTests(name, payload) ?? handle(CLAUDE, readIndex(INDEX_PATH, "claude-code"), name, payload)),
     );
     if (name === "UserPromptSubmit" && !carrier) release(payload);
   }

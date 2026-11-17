@@ -130,9 +130,23 @@ Both name a transcript to every hook, so the Dispatcher reads the reply back fro
 It reads only the entries each harness writes for a hook's reply after that hook ran, and waits until the model has answered after them.
 A Rule that is not there whole reads as `broken`, and a transcript the Dispatcher could not read says so in the log, as [record 0053](adr/0053-a-hook-harness-reads-a-rules-arrival-back-from-its-transcript.md) records.
 
+## Local test commands are refused
+
+Each Dispatcher checks shell commands before the job queue sees them.
+For a recognised test command, `checks-local-tests` reads the repository's `localTests` setting.
+The kit defaults that setting to `blocked`, and `allowed` permits the command.
+The Dispatcher refuses a blocked command and says that CI is the test run.
+If the kit command is unavailable or fails, the Dispatcher refuses the command rather than guessing the setting.
+With `CI=true`, the Dispatcher lets the command run.
+Build, lint, and typecheck commands remain available unless their package scripts start a recognised test command.
+
+The check follows package scripts in `package.json` and recognises common test runners and their wrappers.
+It does not inspect arbitrary scripts, computed shell commands, or runner invocations hidden in other tools.
+The checks kit also guards its own runners when an agent carries its marker.
+
 ## Heavy commands go to the job queue
 
-A test run, an eval run, or a GPU benchmark or model inference an agent starts goes through pueue, so sessions on one machine take turns at it.
+An allowed test run, an eval run, or a GPU benchmark or model inference an agent starts goes through pueue, so sessions on one machine take turns at it.
 Every Dispatcher asks `src/dispatcher/job-queue.ts` about each shell command before it runs.
 That module is no Rule, so it costs the model no context.
 Its table sends every test run, such as `bun test` or `bun run test`, and every mutation run to the `tests` group.
