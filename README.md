@@ -69,7 +69,7 @@ To see what fired:
 | `library/<domain>/rules/` | the Rules, one directory each, which a Dispatcher fires by trigger |
 | `library/<domain>/skills/`, `library/<domain>/references/` | the other two Kinds of Body |
 | `selection.toml` | the Rule, Skill and Reference lists of the default Profile, and each model Profile's Rule additions and removals against it, with optional tool limits, and in `default_models` the models that run the default Profile on purpose |
-| `src/dispatcher/` | one Dispatcher adapter per harness and the dispatch core |
+| `src/dispatcher/` | one Dispatcher adapter per harness, the dispatch core, and every other module a Dispatcher bundle ships |
 | `src/generate/` | the generator, which writes the bundles, the dispatch index, the Hub and the no-mistakes config, and the linker |
 | `src/bodies/` | what reads the Bodies and `selection.toml` |
 | `src/eval/` | what `bun run eval` runs to measure a Rule |
