@@ -2,6 +2,7 @@ import { afterAll, afterEach, expect, test } from "bun:test";
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { LOCAL_TESTS_LINE, refuseLocalTests, runsTests } from "../../harness/local-tests/local-tests";
 import { bashCall } from "../../src/dispatcher/pi-bash";
 
@@ -14,6 +15,13 @@ afterEach(() => {
   else process.env.CI = ci;
 });
 afterAll(() => rmSync(root, { recursive: true, force: true }));
+
+function repoWith(name: string, localTests: Record<string, unknown>): string {
+  const dir = join(root, name);
+  mkdirSync(dir, { recursive: true });
+  writeFileSync(join(dir, ".skills.json"), JSON.stringify({ localTests }));
+  return dir;
+}
 
 test.each(["bun test --watch", "npm run test:unit", "bunx vitest", "npx playwright test", "go test ./...", "python -m pytest"])(
   "recognises %s instead of allowing a test runner",
@@ -44,8 +52,6 @@ test("follows a package script instead of allowing a renamed test command", () =
 });
 
 test.each([
-  "bin/fm-test-run.sh",
-  "sh bin/worker.test.sh",
   "bash -c 'bun test'",
   "pnpm vitest run",
   "yarn jest",
@@ -64,7 +70,6 @@ test.each([
   "npm -w app test",
   "yarn workspace app test",
   "uv run --with x pytest",
-  "bin/fm-test-run.sh --watch",
   "bun run vitest",
   'for f in a b; do bun test "$f"; done',
   "if true; then bun test; fi",
@@ -214,17 +219,56 @@ test("blocks a workspace fan-out instead of trusting a recursive test script", (
   expect(runsTests("pnpm test", mono)).toBe(true);
 });
 
-test("allows an eval script instead of blocking the documented local sweep", () => {
+const evalScripts = { sweep: "vitest run --config evals/vitest.config.ts --configLoader runner" };
+
+test("allows an eval script in a repository that names its evals config instead of blocking the documented local sweep", () => {
   delete process.env.CI;
-  const sweep = join(root, "sweep");
-  mkdirSync(sweep, { recursive: true });
-  writeFileSync(join(sweep, "package.json"), JSON.stringify({ scripts: { eval: "vitest run --config evals/vitest.config.ts --configLoader runner" } }));
-  expect(runsTests("bun run eval", sweep)).toBe(false);
-  expect(refuseLocalTests("bun run eval", sweep)).toBeUndefined();
+  const sweep = repoWith("sweep", { blocked: true, evalConfigs: ["evals/vitest.config.ts"] });
+  writeFileSync(join(sweep, "package.json"), JSON.stringify({ scripts: evalScripts }));
+  expect(runsTests("bun run sweep", sweep)).toBe(false);
+  expect(refuseLocalTests("bun run sweep", sweep)).toBeUndefined();
 });
 
-test("allows the evals config instead of treating a sweep as a test run", () => {
-  expect(runsTests("vitest run --config evals/vitest.config.ts", root)).toBe(false);
+test("blocks an eval script in a repository that does not name its evals config instead of exempting every vitest run", () => {
+  delete process.env.CI;
+  const plain = repoWith("plain-sweep", { blocked: true });
+  writeFileSync(join(plain, "package.json"), JSON.stringify({ scripts: evalScripts }));
+  expect(refuseLocalTests("bun run sweep", plain)).toContain("CI is the test run");
+});
+
+test("allows a vitest run on an evals config only in the repository that names it instead of on any config", () => {
+  const named = repoWith("named-evals", { blocked: true, evalConfigs: ["evals/vitest.config.ts"] });
+  expect(runsTests("vitest run --config evals/vitest.config.ts", named)).toBe(false);
+  expect(runsTests("vitest run -c ./evals/vitest.config.ts", named)).toBe(false);
+  expect(runsTests("vitest run --config=evals/vitest.config.ts", named)).toBe(false);
+  expect(runsTests("vitest run --config other.config.ts", named)).toBe(true);
+  expect(runsTests("vitest run --config evals/vitest.config.ts", repoWith("unnamed-evals", { blocked: true }))).toBe(true);
+});
+
+test("does not block bin/fm-test-run.sh in a repository that does not name it instead of keeping the built-in name", () => {
+  delete process.env.CI;
+  const unnamed = repoWith("unnamed-script", { blocked: true });
+  expect(refuseLocalTests("bin/fm-test-run.sh", unnamed)).toBeUndefined();
+  expect(refuseLocalTests("sh bin/worker.test.sh", unnamed)).toBeUndefined();
+});
+
+test("blocks a script path the repository names in localTests.scripts instead of only the built-in shapes", () => {
+  delete process.env.CI;
+  const scripted = repoWith("named-script", { blocked: true, scripts: ["bin/fm-test-run.sh", "bin/*.test.sh"] });
+  expect(refuseLocalTests("bin/fm-test-run.sh", scripted)).toContain("CI is the test run");
+  expect(refuseLocalTests("bin/fm-test-run.sh --watch", scripted)).toContain("CI is the test run");
+  expect(refuseLocalTests("sh bin/worker.test.sh", scripted)).toContain("CI is the test run");
+  expect(refuseLocalTests("bin/lint.sh", scripted)).toBeUndefined();
+  expect(refuseLocalTests("bin/sub/worker.test.sh", scripted)).toBeUndefined();
+});
+
+test("keeps this repository's own names blocked through its .skills.json instead of the shared code", () => {
+  delete process.env.CI;
+  const repo = fileURLToPath(new URL("../../", import.meta.url));
+  expect(refuseLocalTests("bin/fm-test-run.sh", repo)).toContain("CI is the test run");
+  expect(refuseLocalTests("sh bin/worker.test.sh", repo)).toContain("CI is the test run");
+  expect(refuseLocalTests("vitest run --config evals/vitest.config.ts", repo)).toBeUndefined();
+  expect(refuseLocalTests("bun run eval", repo)).toBeUndefined();
 });
 
 test("checks the target repository instead of allowing a script that changes directory", () => {

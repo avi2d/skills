@@ -1,6 +1,8 @@
 {
   "localTests": {
     "blocked": true,
-    "commands": ["checks-test", "checks-browser", "checks-flake", "checks-mutation"]
+    "commands": ["checks-test", "checks-browser", "checks-flake", "checks-mutation"],
+    "scripts": ["bin/fm-test-run.sh", "bin/*.test.sh"],
+    "evalConfigs": ["evals/vitest.config.ts"]
   }
 }

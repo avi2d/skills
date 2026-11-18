@@ -80,7 +80,7 @@ test("the suppressions baseline is absent or empty", () => {
 for (const rule of ASSERTION_RULES) {
   test(`a new ${rule} site fails the lint in an existing file`, () => {
     const file = "src/dispatcher/dispatch.ts";
-    inScratch(["src"], (dir, lint) => {
+    inScratch(["src", "harness/common/glob.ts"], (dir, lint) => {
       appendFileSync(join(dir, file), `\n${PROBES[rule]}`);
       failsOn(lint(file), file, rule);
     });
