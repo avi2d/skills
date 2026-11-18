@@ -1,7 +1,7 @@
 import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
-import { hasConfig, pathPattern, program, SCRIPT_RUNNERS, segments, stripped, texts } from "./shell-commands";
+import { compileGlob, hasConfig, program, SCRIPT_RUNNERS, segments, stripped, texts } from "./shell-commands";
 
 export const LOCAL_TESTS_LINE = "local-tests: refused a test command";
 
@@ -172,7 +172,7 @@ function listAt(root: string, scan: Scan, key: ListKey): string[] {
 }
 
 function pathsAt(root: string, scan: Scan, key: "scripts" | "evalConfigs"): RegExp[] {
-  return listAt(root, scan, key).map((glob) => pathPattern(glob));
+  return listAt(root, scan, key).map((glob) => compileGlob(`**/${glob}`));
 }
 
 function extraAt(root: string, scan: Scan): string[] {

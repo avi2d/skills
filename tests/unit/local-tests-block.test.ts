@@ -219,21 +219,21 @@ test("blocks a workspace fan-out instead of trusting a recursive test script", (
   expect(runsTests("pnpm test", mono)).toBe(true);
 });
 
-const evalScripts = { eval: "vitest run --config evals/vitest.config.ts --configLoader runner" };
+const evalScripts = { sweep: "vitest run --config evals/vitest.config.ts --configLoader runner" };
 
 test("allows an eval script in a repository that names its evals config instead of blocking the documented local sweep", () => {
   delete process.env.CI;
   const sweep = repoWith("sweep", { blocked: true, evalConfigs: ["evals/vitest.config.ts"] });
   writeFileSync(join(sweep, "package.json"), JSON.stringify({ scripts: evalScripts }));
-  expect(runsTests("bun run eval", sweep)).toBe(false);
-  expect(refuseLocalTests("bun run eval", sweep)).toBeUndefined();
+  expect(runsTests("bun run sweep", sweep)).toBe(false);
+  expect(refuseLocalTests("bun run sweep", sweep)).toBeUndefined();
 });
 
 test("blocks an eval script in a repository that does not name its evals config instead of exempting every vitest run", () => {
   delete process.env.CI;
   const plain = repoWith("plain-sweep", { blocked: true });
   writeFileSync(join(plain, "package.json"), JSON.stringify({ scripts: evalScripts }));
-  expect(refuseLocalTests("bun run eval", plain)).toContain("CI is the test run");
+  expect(refuseLocalTests("bun run sweep", plain)).toContain("CI is the test run");
 });
 
 test("allows a vitest run on an evals config only in the repository that names it instead of on any config", () => {

@@ -1,5 +1,6 @@
 import { segments, type Word } from "./shell-words";
 export { segments };
+export { compileGlob } from "./glob";
 
 type Wrapper = { runs: readonly string[]; values: readonly string[]; operands: number };
 
@@ -78,11 +79,6 @@ export function hasConfig(args: readonly string[], configs: readonly RegExp[]): 
 
 export function hasEvalConfig(args: readonly string[]): boolean {
   return hasConfig(args, [EVAL_CONFIG]);
-}
-
-export function pathPattern(glob: string): RegExp {
-  const body = glob.split("*").map((part) => part.replace(/[.+?^${}()|[\]\\]/g, "\\$&")).join("[^/]*");
-  return new RegExp(`(^|/)${body}$`);
 }
 
 export const SCRIPT_RUNNERS = new Set(["bun", "node", "sh", "bash", "zsh", "dash"]);
