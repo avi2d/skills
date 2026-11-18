@@ -134,16 +134,17 @@ A Rule that is not there whole reads as `broken`, and a transcript the Dispatche
 ## Local test commands are refused
 
 Each Dispatcher checks shell commands before the job queue sees them.
-For a recognised test command, `checks-local-tests` reads the repository's `localTests` setting.
-The kit defaults that setting to `blocked`, and `allowed` permits the command.
+For a recognised test command, the Dispatcher reads `.skills.json` at the repository root.
+The block stays off unless that file opts in with a `localTests` key.
 The Dispatcher refuses a blocked command and says that CI is the test run.
-If the kit command is unavailable or fails, the Dispatcher refuses the command rather than guessing the setting.
+A repository without the key runs its tests as usual.
 With `CI=true`, the Dispatcher lets the command run.
 Build, lint, and typecheck commands remain available unless their package scripts start a recognised test command.
 
 An eval run is not a test run, so the check allows `bun run eval` and a vitest run on the evals config.
 The check follows package scripts in `package.json` and recognises common test runners and their wrappers.
-To add runner executable names for a repository, put `{"localTests":{"commands":["custom-runner"]}}` in `.skills.json` at its root.
+To block local tests, put `{"localTests":{"blocked":true}}` in `.skills.json` at its root.
+To add runner executable names for a repository, put `{"localTests":{"blocked":true,"commands":["custom-runner"]}}` in `.skills.json` at its root.
 The extra names apply to direct commands, wrappers, and package scripts in that repository.
 It does not inspect arbitrary scripts, computed shell commands, or runner invocations hidden in other tools.
 The checks kit also guards its own runners when an agent carries its marker.

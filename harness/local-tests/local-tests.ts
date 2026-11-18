@@ -1,13 +1,11 @@
 import { spawnSync } from "node:child_process";
-import { existsSync, readFileSync, realpathSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
 import { BIN_TEST_RUN, BIN_TEST_SCRIPT, hasEvalConfig, program, SCRIPT_RUNNERS, segments, stripped, texts } from "./shell-commands";
 
 export const LOCAL_TESTS_LINE = "local-tests: refused a test command";
 
-const REFUSAL = "checks.config.ts localTests is blocked. CI is the test run.";
-const UNKNOWN = "Cannot read checks.config.ts localTests through checks-local-tests. CI is the test run.";
+const REFUSAL = "localTests is blocked. CI is the test run.";
 const RUNNERS = new Set(["pytest", "vitest", "jest", "playwright", "mocha", "ava", "tap", "stryker"]);
 const PACKAGES = new Set(["npm", "pnpm", "yarn", "bun"]);
 
@@ -126,35 +124,102 @@ function pythonModuleTest(words: readonly string[]): boolean {
   }
   return false;
 }
-function uvDelegated(words: readonly string[], tool: string, cwd: string): boolean | undefined {
+type Scan = { seen: Set<string>; roots: Map<string, string>; skills: Map<string, unknown>; extras: Map<string, Set<string>>; blocks: Map<string, boolean> };
+
+function freshScan(seen: ReadonlySet<string> = new Set()): Scan {
+  return { seen: new Set(seen), roots: new Map(), skills: new Map(), extras: new Map(), blocks: new Map() };
+}
+
+function childScan(scan: Scan, key: string): Scan {
+  return { seen: new Set([...scan.seen, key]), roots: scan.roots, skills: scan.skills, extras: scan.extras, blocks: scan.blocks };
+}
+
+function cachedRoot(cwd: string, scan: Scan): string {
+  const hit = scan.roots.get(cwd);
+  if (hit !== undefined) return hit;
+  const root = rootOf(cwd);
+  scan.roots.set(cwd, root);
+  return root;
+}
+
+function cachedSkills(root: string, scan: Scan): unknown {
+  if (scan.skills.has(root)) return scan.skills.get(root);
+  let value: unknown;
+  try {
+    const parsed: unknown = JSON.parse(readFileSync(join(root, ".skills.json"), "utf8"));
+    value = typeof parsed === "object" && parsed !== null && "localTests" in parsed ? (parsed as { localTests: unknown }).localTests : undefined;
+  } catch {
+    value = undefined;
+  }
+  scan.skills.set(root, value);
+  return value;
+}
+
+function blockedValue(value: unknown): boolean {
+  if (value === true) return true;
+  if (value === false) return false;
+  if (value === "blocked") return true;
+  if (value === "allowed") return false;
+  if (typeof value === "object" && value !== null) {
+    const rec = value as Record<string, unknown>;
+    if (rec.blocked === true) return true;
+    if (rec.blocked === false) return false;
+    if (rec.mode === "blocked") return true;
+    if (rec.mode === "allowed") return false;
+    return true;
+  }
+  return false;
+}
+
+function blockedAt(root: string, scan: Scan): boolean {
+  const hit = scan.blocks.get(root);
+  if (hit !== undefined) return hit;
+  const blocked = blockedValue(cachedSkills(root, scan));
+  scan.blocks.set(root, blocked);
+  return blocked;
+}
+
+function extraAt(root: string, scan: Scan): Set<string> {
+  const hit = scan.extras.get(root);
+  if (hit !== undefined) return hit;
+  const value = cachedSkills(root, scan);
+  const names = typeof value === "object" && value !== null && "commands" in value && Array.isArray((value as { commands: unknown }).commands) ? (value as { commands: unknown[] }).commands.filter((name): name is string => typeof name === "string") : [];
+  const found = new Set(names);
+  scan.extras.set(root, found);
+  return found;
+}
+
+function uvDelegated(words: readonly string[], tool: string, cwd: string, scan: Scan): boolean | undefined {
   if (tool === "uvx") {
     const rest = words.slice(skipFlags(words, 1));
-    return rest.length > 0 && directRunner(rest, cwd);
+    return rest.length > 0 && directRunner(rest, cwd, scan);
   }
   if (tool !== "uv" && tool !== "poetry") return undefined;
   const at = skipFlags(words, 1);
   if (words[at] !== "run") return false;
   const rest = words.slice(skipFlags(words, at + 1));
-  return rest.length > 0 && directRunner(rest, cwd);
+  return rest.length > 0 && directRunner(rest, cwd, scan);
 }
-function directRunner(words: readonly string[], cwd: string): boolean {
+function directRunner(words: readonly string[], cwd: string, scan: Scan): boolean {
   const tool = words[0] ?? "";
   if (tool === "playwright" || tool === "stryker") return playwrightTarget(tool, words[1] ?? "");
   if (tool === "vitest" && hasEvalConfig(words.slice(1))) return false;
-  if (RUNNERS.has(tool) || extraRunners(cwd).has(tool)) return true;
+  if (RUNNERS.has(tool)) return true;
   if (bunLikeTool(tool)) return (words[skipFlags(words, 1)] ?? "") === "test";
   if (tool === "node") return words.slice(1).includes("--test");
   if (pythonTool(tool)) return pythonModuleTest(words);
-  return uvDelegated(words, tool, cwd) ?? false;
+  const delegated = uvDelegated(words, tool, cwd, scan);
+  if (delegated !== undefined) return delegated;
+  return extraAt(cachedRoot(cwd, scan), scan).has(tool);
 }
 
-function managerRunner(words: readonly string[], cwd: string): boolean {
+function managerRunner(words: readonly string[], cwd: string, scan: Scan): boolean {
   const tool = words[0] ?? "";
   if (!PACKAGES.has(tool)) return false;
   const at = skipFlags(words, 1);
   const head = words[at] ?? "";
   if (head === "" || head === "run" || head === "run-script") return false;
-  return directRunner([head, ...words.slice(at + 1)], cwd);
+  return directRunner([head, ...words.slice(at + 1)], cwd, scan);
 }
 
 const BUN_COMMANDS = new Set("add audit build bump create deploy init install link login logout migrate outdated patch pm publish remove run test uninstall unlink update upgrade whoami why info x i a r rm un v view".split(" "));
@@ -182,25 +247,25 @@ function checksBody(body: string, cwd: string, seen: ReadonlySet<string>): boole
   });
 }
 
-function scriptDirectories(words: readonly string[], cwd: string, seen: ReadonlySet<string>): string[] {
+function scriptDirectories(words: readonly string[], cwd: string, scan: Scan): string[] {
   const { name: script, rest } = scriptCall(words);
   if (!script || script === "eval") return [];
   const home = packageDir(words, cwd);
   const key = home + ":" + script;
-  if (seen.has(key)) {
+  if (scan.seen.has(key)) {
     if (!TEST_SCRIPT.test(script)) return [];
     const value = scriptsAt(home)[script];
-    if (typeof value === "string" && checksBody(value, home, seen)) return [];
+    if (typeof value === "string" && checksBody(value, home, scan.seen)) return [];
     return [home];
   }
   const value = scriptsAt(home)[script];
   if (typeof value === "string") {
-    const depth = new Set([...seen, key]);
+    const depth = childScan(scan, key);
     const inner = testDirectories(value, home, depth);
     if (inner.length > 0) return inner;
-    if (checksBody(value, home, depth)) return [];
+    if (checksBody(value, home, depth.seen)) return [];
   }
-  if (directRunner([script, ...rest], home)) return [home];
+  if (directRunner([script, ...rest], home, scan)) return [home];
   return TEST_SCRIPT.test(script) ? [home] : [];
 }
 
@@ -261,29 +326,29 @@ function evalSplit(raw: readonly string[]): { before: string[]; after: string[] 
   }
 }
 
-function shellNested(words: readonly string[], here: string, seen: ReadonlySet<string>): string[] | undefined {
+function shellNested(words: readonly string[], here: string, scan: Scan): string[] | undefined {
   if (!SHELLS.has(words[0] ?? "")) return undefined;
   const flag = words.findIndex((word) => /^-[^-]*c[^-]*$/.test(word));
   if (flag === -1) return undefined;
   const nested = words[flag + 1];
   if (nested === undefined) return [];
-  return testDirectories(nested, here, seen);
+  return testDirectories(nested, here, scan);
 }
-function wordDirs(words: readonly string[], bare: readonly string[], base: string, here: string, seen: ReadonlySet<string>): string[] {
+function wordDirs(words: readonly string[], bare: readonly string[], base: string, here: string, scan: Scan): string[] {
   if (scriptCall(words).name === "eval") return [];
-  if (directRunner(words, here)) return [here];
-  if (managerRunner(words, here)) return [here];
+  if (directRunner(words, here, scan)) return [here];
+  if (managerRunner(words, here, scan)) return [here];
   if (isTestScript(bare)) return [here];
-  return scriptDirectories(words, base, seen);
+  return scriptDirectories(words, base, scan);
 }
-function testDirectories(command: string, cwd: string, seen: ReadonlySet<string> = new Set()): string[] {
+function testDirectories(command: string, cwd: string, scan: Scan = freshScan()): string[] {
   let dir = cwd;
   const found: string[] = [];
   for (const listed of segments(command)) {
     const raw = texts(listed);
     const split = evalSplit(raw);
     if (split !== undefined) {
-      found.push(...testDirectories(split.after.join(" "), flagDir(split.before, dir, "", true), seen));
+      found.push(...testDirectories(split.after.join(" "), flagDir(split.before, dir, "", true), scan));
       continue;
     }
     const bare = commandWords(raw);
@@ -296,18 +361,18 @@ function testDirectories(command: string, cwd: string, seen: ReadonlySet<string>
     const prefix = raw.slice(0, raw.length - bare.length);
     const base = flagDir(prefix, dir, "", true);
     const here = flagDir(words, base, words[0] ?? "");
-    const shelled = shellNested(words, here, seen);
+    const shelled = shellNested(words, here, scan);
     if (shelled !== undefined) {
       found.push(...shelled);
       continue;
     }
-    found.push(...wordDirs(words, bare, base, here, seen));
+    found.push(...wordDirs(words, bare, base, here, scan));
   }
   return found;
 }
 
 export function runsTests(command: string, cwd: string, seen: ReadonlySet<string> = new Set()): boolean {
-  return testDirectories(command, cwd, seen).length > 0;
+  return testDirectories(command, cwd, freshScan(seen)).length > 0;
 }
 
 function rootOf(cwd: string): string {
@@ -315,28 +380,7 @@ function rootOf(cwd: string): string {
   return git.status === 0 ? git.stdout.trim() : cwd;
 }
 
-function extraRunners(cwd: string): Set<string> {
-  try {
-    const config: unknown = JSON.parse(readFileSync(join(rootOf(cwd), ".skills.json"), "utf8"));
-    if (typeof config !== "object" || config === null || !("localTests" in config)) return new Set();
-    const localTests = config.localTests;
-    if (typeof localTests !== "object" || localTests === null || !("commands" in localTests)) return new Set();
-    return new Set(Array.isArray(localTests.commands) ? localTests.commands.filter((command): command is string => typeof command === "string") : []);
-  } catch {
-    return new Set();
-  }
-}
 
-function binFrom(start: string): string | undefined {
-  let at = start;
-  for (;;) {
-    const candidate = join(at, "node_modules", ".bin", "checks-local-tests");
-    if (existsSync(candidate)) return candidate;
-    const parent = dirname(at);
-    if (parent === at) return undefined;
-    at = parent;
-  }
-}
 
 type HookPayload = { cwd?: string; tool_name?: string; tool_input?: Record<string, unknown> };
 
@@ -350,19 +394,14 @@ export function refusedTests(hook: string, payload: HookPayload): string | undef
 
 export function refuseLocalTests(command: string, cwd: string): string | undefined {
   if (process.env.CI === "true") return undefined;
-  const own = dirname(realpathSync(fileURLToPath(import.meta.url)));
+  const scan = freshScan();
   const roots: string[] = [];
-  for (const dir of new Set(testDirectories(command, cwd))) {
-    const root = rootOf(dir);
+  for (const dir of new Set(testDirectories(command, cwd, scan))) {
+    const root = cachedRoot(dir, scan);
     if (!roots.includes(root)) roots.push(root);
   }
   for (const root of roots) {
-    const bin = binFrom(root) ?? binFrom(own);
-    if (bin === undefined) return UNKNOWN;
-    const setting = spawnSync(bin, [], { cwd: root, encoding: "utf8", timeout: 4_000, env: process.env });
-    if (setting.status !== 0) return UNKNOWN;
-    if (setting.stdout.trim() === "blocked") return REFUSAL;
-    if (setting.stdout.trim() !== "allowed") return UNKNOWN;
+    if (blockedAt(root, scan)) return REFUSAL;
   }
   return undefined;
 }

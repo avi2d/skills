@@ -100,6 +100,7 @@ test("honours a directory flag instead of reading scripts from the wrong directo
   writeFileSync(join(flagged, "package.json"), JSON.stringify({ scripts: { verify: "tsc --noEmit" } }));
   mkdirSync(join(sub, "sub"), { recursive: true });
   writeFileSync(join(sub, "sub", "package.json"), JSON.stringify({ scripts: { verify: "tsc --noEmit" } }));
+  writeFileSync(join(sub, ".skills.json"), JSON.stringify({ localTests: { blocked: true } }));
   expect(runsTests("npm --prefix sub run verify", flagged)).toBe(true);
   expect(runsTests("bun --cwd sub run verify", flagged)).toBe(true);
   expect(runsTests("pnpm -C sub verify", flagged)).toBe(true);
@@ -229,27 +230,27 @@ test("checks the target repository instead of allowing a script that changes dir
   const blocked = join(root, "blocked");
   mkdirSync(allowed, { recursive: true });
   mkdirSync(blocked, { recursive: true });
-  writeFileSync(join(allowed, "checks.config.ts"), 'export default { localTests: "allowed" };\n');
+  writeFileSync(join(allowed, ".skills.json"), JSON.stringify({ localTests: { blocked: false } }));
+  writeFileSync(join(blocked, ".skills.json"), JSON.stringify({ localTests: { blocked: true } }));
   writeFileSync(join(allowed, "package.json"), JSON.stringify({ scripts: { cross: "cd ../blocked && bun test" } }));
   expect(refuseLocalTests("bun run cross", allowed)).toContain("localTests is blocked");
 });
 
-test("uses the kit default instead of allowing tests when the setting is absent", () => {
+test("allows tests instead of blocking when the setting is absent", () => {
   delete process.env.CI;
-  rmSync(join(root, "checks.config.ts"), { force: true });
-  expect(refuseLocalTests("bun test", root)).toContain("localTests is blocked");
-  expect(refuseLocalTests("bun test", root)).toContain("CI is the test run");
+  rmSync(join(root, ".skills.json"), { force: true });
+  expect(refuseLocalTests("bun test", root)).toBeUndefined();
 });
 
 test("respects localTests allowed instead of refusing the repository's tests", () => {
   delete process.env.CI;
-  writeFileSync(join(root, "checks.config.ts"), 'export default { localTests: "allowed" };\n');
+  writeFileSync(join(root, ".skills.json"), JSON.stringify({ localTests: "allowed" }));
   expect(refuseLocalTests("bun test", root)).toBeUndefined();
 });
 
 test("pi refuses a nested bash call instead of sending it to the queue", () => {
   delete process.env.CI;
-  rmSync(join(root, "checks.config.ts"), { force: true });
+  writeFileSync(join(root, ".skills.json"), JSON.stringify({ localTests: { blocked: true } }));
   const event = { type: "tool_call", toolName: "bash", toolCallId: "parent/1", parentToolCallId: "parent", input: { command: "bun test" } } as const;
   const clock = new Map();
   const lines: string[] = [];
@@ -260,7 +261,7 @@ test("pi refuses a nested bash call instead of sending it to the queue", () => {
 
 test("Bash hook denies a test command before execution", () => {
   delete process.env.CI;
-  rmSync(join(root, "checks.config.ts"), { force: true });
+  writeFileSync(join(root, ".skills.json"), JSON.stringify({ localTests: { blocked: true } }));
   const reply = refusedTests("PreToolUse", { tool_name: "Bash", tool_input: { command: "bun test" }, cwd: root });
   expect(reply).toContain('"permissionDecision":"deny"');
   expect(reply).toContain("localTests is blocked");

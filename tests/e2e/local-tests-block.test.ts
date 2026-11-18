@@ -15,7 +15,7 @@ afterEach(() => {
 
 test("the hook denial lands in the dispatch log instead of vanishing", () => {
   delete process.env.CI;
-  rmSync(join(root, "checks.config.ts"), { force: true });
+  writeFileSync(join(root, ".skills.json"), JSON.stringify({ localTests: { blocked: true } }));
   const probe = join(root, "log-probe.ts");
   writeFileSync(
     probe,
