@@ -167,6 +167,7 @@ test("leaves check scripts available instead of refusing their test-like names",
   delete process.env.CI;
   const checks = join(root, "checks");
   mkdirSync(checks, { recursive: true });
+  writeFileSync(join(checks, ".skills.json"), JSON.stringify({ localTests: { checks: ["custom-lint"] } }));
   writeFileSync(join(checks, "package.json"), JSON.stringify({ scripts: {
     "test:types": "tsc --noEmit",
     "test:lint": "eslint .",
@@ -174,7 +175,7 @@ test("leaves check scripts available instead of refusing their test-like names",
     "test:css": "stylelint src",
     "test:vue": "vue-tsc --noEmit",
     "test:smoke": "tsgo --noEmit",
-    lint: "oxlint && checks-lint",
+    lint: "oxlint && custom-lint",
     "test:via": "bun run lint",
     "test:all": "bun run test:types",
     build: "bun test",
@@ -190,6 +191,8 @@ test("leaves check scripts available instead of refusing their test-like names",
   expect(runsTests("bun build", checks)).toBe(false);
   expect(refuseLocalTests("npm run test:types", checks)).toBeUndefined();
   expect(refuseLocalTests("bun run test:via", checks)).toBeUndefined();
+  rmSync(join(checks, ".skills.json"));
+  expect(runsTests("bun run test:via", checks)).toBe(true);
 });
 
 test("blocks a test-named script instead of trusting an unrecognised body", () => {

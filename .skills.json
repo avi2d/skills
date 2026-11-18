@@ -1,6 +1,7 @@
 {
   "localTests": {
     "blocked": true,
-    "commands": ["checks-test", "checks-browser", "checks-flake", "checks-mutation"]
+    "commands": ["checks-test", "checks-browser", "checks-flake", "checks-mutation"],
+    "checks": ["checks-lint"]
   }
 }

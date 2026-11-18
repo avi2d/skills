@@ -207,23 +207,25 @@ const BUN_COMMANDS = new Set("add audit build bump create deploy init install li
 const TEST_SCRIPT = /^(?:test|test:.*|mutate|mutate:.*)$/;
 
 const CHECK_TOOLS = new Set([
-  "tsc", "tsgo", "effect-tsgo", "vue-tsc", "eslint", "stylelint", "oxlint", "biome", "prettier", "checks-lint",
+  "tsc", "tsgo", "effect-tsgo", "vue-tsc", "eslint", "stylelint", "oxlint", "biome", "prettier",
 ]);
 
-function checksBody(body: string, cwd: string, seen: ReadonlySet<string>): boolean {
+function checksBody(body: string, cwd: string, scan: Scan): boolean {
   const listed = segments(body);
   if (listed.length === 0) return false;
   return listed.every((segment) => {
     const words = commandWords(texts(segment)).map((word, at) => (at === 0 ? program(word) : word));
-    if (CHECK_TOOLS.has(words[0] ?? "")) return true;
+    const value = cachedSkills(cachedRoot(cwd, scan), scan);
+    const checks = typeof value === "object" && value !== null && "checks" in value && Array.isArray(value.checks) ? value.checks : [];
+    if (CHECK_TOOLS.has(words[0] ?? "") || checks.includes(words[0])) return true;
     const { name } = scriptCall(words);
     if (name === undefined || name === "eval" || TEST_SCRIPT.test(name)) return false;
     const home = packageDir(words, cwd);
     const key = home + ":" + name;
-    if (seen.has(key)) return false;
-    const value = scriptsAt(home)[name];
-    if (typeof value !== "string") return false;
-    return checksBody(value, home, new Set([...seen, key]));
+    if (scan.seen.has(key)) return false;
+    const script = scriptsAt(home)[name];
+    if (typeof script !== "string") return false;
+    return checksBody(script, home, childScan(scan, key));
   });
 }
 
@@ -235,7 +237,7 @@ function scriptDirectories(words: readonly string[], cwd: string, scan: Scan): s
   if (scan.seen.has(key)) {
     if (!TEST_SCRIPT.test(script)) return [];
     const value = scriptsAt(home)[script];
-    if (typeof value === "string" && checksBody(value, home, scan.seen)) return [];
+    if (typeof value === "string" && checksBody(value, home, scan)) return [];
     return [home];
   }
   const value = scriptsAt(home)[script];
@@ -243,7 +245,7 @@ function scriptDirectories(words: readonly string[], cwd: string, scan: Scan): s
     const depth = childScan(scan, key);
     const inner = testDirectories(value, home, depth);
     if (inner.length > 0) return inner;
-    if (checksBody(value, home, depth.seen)) return [];
+    if (checksBody(value, home, depth)) return [];
   }
   if (directRunner([script, ...rest], home, scan)) return [home];
   return TEST_SCRIPT.test(script) ? [home] : [];
