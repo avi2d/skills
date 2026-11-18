@@ -37,6 +37,8 @@ Any other change runs `tests/e2e/fleet-names.test.ts` only inside `bun run test`
 A push to main starts no `ci.yml` run, and the release pull request's dispatched run is the first run to check the merged tree.
 
 `bun run test` is the kit's `checks-test`, which runs `bun test --randomize` with workers sized from free memory up to the machine core count and prints the seed that reproduces a failure.
+In an agent session, the Dispatcher refuses a test command the repository blocks.
+CI runs those steps instead, as [Local test commands are refused](how-a-rule-reaches-a-harness.md#local-test-commands-are-refused) describes.
 `bun run test:unit` and `bun run test:e2e` run the unit and e2e tiers.
 Bun hands each test file to one worker process, and each file runs in a fresh global, so a file cannot lean on state another file left behind.
 It fails on a skipped test that declares no reason with `skipReason` at its test site, because bun exits 0 over a test that never ran.
@@ -49,7 +51,8 @@ A changed test file runs on its own, and a shared file never widens the run to t
 The run fails before any test runs when `origin/main` is missing, because then the reached files are unknown.
 `.no-mistakes.yaml` names `bunx checks-test --changed` as the push gate test step.
 
-`bun test` preloads `tests/lib/emitted.ts`, which generates into a `generated-<pid>/` of the test process's own.
+`bun test` preloads `@avi2dg/checks/local-test-preload` before `tests/lib/emitted.ts`.
+`tests/lib/emitted.ts` generates into a `generated-<pid>/` of the test process's own.
 A fresh clone and a fresh worktree are green without a command anyone has to remember, parallel test processes never read each other's output, and the suite writes none of the `generated/` tree the harnesses load.
 One test holds the emitted tree to exactly what the generator would write, and asserts it had something to look at.
 
@@ -109,7 +112,7 @@ To add a test:
 
 A test under `tests/e2e/` runs out of process, so mutation testing cannot see through it, and it stays out of the mutation scope.
 Stryker's runners share the one working tree they mutate in place, so nothing a test process writes may be shared.
-The preload sets `SKILLS_GENERATED_ROOT` to the process's own `generated-<pid>`.
+`tests/lib/emitted.ts` sets `SKILLS_GENERATED_ROOT` to the process's own `generated-<pid>`.
 `readGeneratedRoot` in `src/generate/bundle.ts` reads it through `Config` wherever the source writes or reads the emitted tree, and `GENERATED_ROOT` runs the same read for a test.
 
 A check that walks the filesystem excludes the fetched tree under `repos/`, and keeps a test that decides something whether or not the tree is there.
@@ -131,9 +134,9 @@ The out-of-process tests under `tests/e2e/` and everything under `tests/quaranti
 
 `inPlace` is the preset's true, so Stryker mutates the working tree, keeps a backup in `../.stryker-tmp` and restores the files from it when the run ends.
 Leave `src/` untouched until the run ends, since the restore overwrites an edit made during the run and a commit made during the run records mutated files.
-Each test process's preload generates into its own `generated-<pid>`, and generates nothing when the source resolves any other root.
+Each test process's `tests/lib/emitted.ts` generates into its own `generated-<pid>`, and generates nothing when the source resolves any other root.
 It sweeps a dead process's root by renaming it into its own root and removing it there, so no remove runs inside a directory another process reads.
-A unit test that writes, reconciles or checks a generated tree does it in a temporary repository of its own, and the one that checks the preload's output reads `generated-<pid>` by name rather than through the root the source resolves.
+A unit test that writes, reconciles or checks a generated tree does it in a temporary repository of its own, and the one that checks the `tests/lib/emitted.ts` output reads `generated-<pid>` by name rather than through the root the source resolves.
 A mutant that makes `generatedRoot` in `src/generate/bundle.ts` fall back to `generated` writes into the `generated/` tree the harnesses load, and Stryker does not restore that tree, so `bun run generate` rebuilds it after a run.
 
 `concurrency` is the preset's half of the cores the machine reports, so `stryker.conf.mjs` does not set it.
@@ -141,7 +144,7 @@ A mutant that makes `generatedRoot` in `src/generate/bundle.ts` fall back to `ge
 The baseline, measured on 2026-09-24 over 4,296 mutants, is 37.58 in total and 63.11 on covered code.
 Two full sweeps at concurrency 10 on the same head agreed mutant by mutant, in about 20 minutes each.
 One full sweep at the same concurrency took 177 minutes on a GitHub runner.
-A mutant that breaks generation throws in the preload and lands as a RuntimeError, outside the score, and all but one of the baseline's 382 RuntimeErrors are that.
+A mutant that breaks generation throws in `tests/lib/emitted.ts` and lands as a RuntimeError, outside the score, and all but one of the baseline's 382 RuntimeErrors are that.
 
 ## Replay a flaky test
 
@@ -183,7 +186,9 @@ To release what main holds since the last tag:
 
 To add a file a harness loads itself:
 
-1. Put it under `harness/`, which is not the Dispatcher, so neither [Where dispatch logic goes](how-a-rule-reaches-a-harness.md#where-dispatch-logic-goes) nor the Effect scope of [Write source code](#write-source-code) holds it.
+1. Put it under `harness/`.
+1. A file `src/generate/bundle.ts` names is the Dispatcher once bundled, so [Where dispatch logic goes](how-a-rule-reaches-a-harness.md#where-dispatch-logic-goes) holds it.
+1. Any other file there is harness material the harness loads itself, outside the Effect scope of [Write source code](#write-source-code).
 1. Wire it with an entry in `LINKS` in `src/generate/link.ts` pointing `$HOME` at it, and add the file to git first, because `tests/unit/link.test.ts` refuses an entry whose target a clone cannot come by.
 1. Write no line in `harness/pi/settings.json` for a pi extension linked under `~/.pi/agent/extensions/`, because pi discovers it there.
 

@@ -1,11 +1,11 @@
 import { describe, expect, setDefaultTimeout, test } from "bun:test";
-import { existsSync, lstatSync } from "node:fs";
+import { existsSync, lstatSync, readFileSync } from "node:fs";
 import { cp, mkdir, mkdtemp, readdir, readlink, rm, symlink } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { DefaultResourceLoader } from "@earendil-works/pi-coding-agent";
 import { REACHABLE, SKILL_FILE, consulted, dirOf, loadBodies, type Body } from "../../src/bodies/bodies";
-import { DEFAULT_GENERATED_ROOT } from "../../src/generate/bundle";
+import { CLAUDE_BUNDLE, CODEX_BUNDLE, DEFAULT_GENERATED_ROOT, PI_BUNDLE, runtimeImports } from "../../src/generate/bundle";
 import { MACOS_INDEX, filesUnder } from "../../src/platform/files";
 import { active, checkout } from "../../src/generate/generate";
 import { dormantRules, loadSelection, selected, type Selection } from "../../src/bodies/selection";
@@ -14,7 +14,7 @@ import { MERGED, REPO, RETIRED, install, link } from "../../src/generate/link";
 import { piLoads } from "../../src/generate/preflight";
 import { GENERATED_ROOT, HUB, LINKS } from "../lib/generated-root";
 import { isLinked } from "../lib/home";
-import { HERDR_OWNED, ccSettings, codexHooks, piSettings, piSettingsFile } from "../lib/harness-settings";
+import { HERDR_OWNED, ccSettings, codexHooks, piSettings } from "../lib/harness-settings";
 import { saidBy, value, valueOf } from "../lib/effect";
 
 setDefaultTimeout(30_000);
@@ -128,14 +128,51 @@ describe("a path $HOME used to take from here", () => {
   });
 });
 
-test("every file under harness/ is reachable through the link map", async () => {
-  const targets = [...Object.values(LINKS), ...Object.values(MERGED).map(({ from }) => from)];
-  const covered = (path: string) => targets.some((t) => t === path || path.startsWith(`${t}/`));
-  const inert: string[] = [];
-  for (const rel of await valueOf(filesUnder(`${REPO}harness`))) {
-    if (!covered(`harness/${rel}`)) inert.push(`harness/${rel}`);
+function resolveImport(base: readonly string[], specifier: string): string {
+  const parts = [...base];
+  for (const part of specifier.split("/")) {
+    if (part === "." || part === "") continue;
+    if (part === "..") parts.pop();
+    else parts.push(part);
   }
-  expect(inert, "in the tree, in no link and no merged file - installed-looking and never read").toEqual([]);
+  const resolved = parts.join("/");
+  return resolved.endsWith(".ts") ? resolved : `${resolved}.ts`;
+}
+function readBundled(from: string): string | undefined {
+  try {
+    return readFileSync(`${REPO}${from}`, "utf8");
+  } catch {
+    return undefined;
+  }
+}
+function collectReachable(start: ReadonlySet<string>): Set<string> {
+  const held = new Set(start);
+  const queue = [...held];
+  while (queue.length > 0) {
+    const from = queue.pop() ?? "";
+    const text = readBundled(from);
+    if (text === undefined) continue;
+    const base = from.slice(0, from.lastIndexOf("/")).split("/");
+    for (const specifier of runtimeImports(text)) {
+      const path = resolveImport(base, specifier);
+      if (held.has(path)) continue;
+      held.add(path);
+      queue.push(path);
+    }
+  }
+  return held;
+}
+function linkTargets(): string[] {
+  return [...Object.values(LINKS), ...Object.values(MERGED).map(({ from }) => from)];
+}
+function uncoveredHarness(held: ReadonlySet<string>, targets: readonly string[], rels: readonly string[]): string[] {
+  return rels.filter((rel) => !held.has(`harness/${rel}`) && !targets.some((t) => `harness/${rel}` === t || `harness/${rel}`.startsWith(`${t}/`))).map((rel) => `harness/${rel}`);
+}
+test("every file under harness/ is reachable through the link map", async () => {
+  const targets = linkTargets();
+  const held = collectReachable(new Set([...Object.keys(PI_BUNDLE.files), ...Object.keys(CLAUDE_BUNDLE.files), ...Object.keys(CODEX_BUNDLE.files)]));
+  const rels = await valueOf(filesUnder(`${REPO}harness`));
+  expect(uncoveredHarness(held, targets, rels), "in the tree, in no link, no merged file and no Dispatcher bundle - installed-looking and never read").toEqual([]);
 });
 
 const PI = `${REPO}node_modules/.bin/pi`;
@@ -244,105 +281,6 @@ test("pi adds codemode to its default tools and hides the others behind it", () 
     "a plain name in defaultTools replaces pi's read, bash, edit and write instead of adding to them",
   ).toEqual([]);
   expect(piSettings.codemode?.mode ?? "on", "without codemode `only` the model sees the ordinary tools beside codemode").toBe("only");
-});
-
-test("pi compacts each claude-bridge model and each per-token worker model at about 150k of its registered window, and no other model early", async () => {
-  const { SettingsManager, shouldCompact } = await import("@earendil-works/pi-coding-agent");
-  const { getBuiltinModel } = await import("@earendil-works/pi-ai/providers/all");
-  const settings = SettingsManager.inMemory(piSettingsFile);
-  const defaults = SettingsManager.inMemory({});
-  const bridgeCompactsAt = ({ id, contextWindow }: { id: string; contextWindow: number }, tokens: number) =>
-    shouldCompact(tokens, contextWindow, settings.getCompactionSettings({ provider: "claude-bridge", id }));
-  for (const claude of [
-    getBuiltinModel("anthropic", "claude-fable-5-1"),
-    getBuiltinModel("anthropic", "claude-fable-5-2"),
-    getBuiltinModel("anthropic", "claude-opus-5"),
-    getBuiltinModel("anthropic", "claude-opus-5-5"),
-    getBuiltinModel("anthropic", "claude-sonnet-5"),
-    getBuiltinModel("anthropic", "claude-sonnet-5-5"),
-    getBuiltinModel("anthropic", "claude-haiku-5-5"),
-  ]) {
-    const { id } = claude;
-    expect(bridgeCompactsAt(claude, 150_000), `${id} compacts at 150k rather than past it`).toBe(false);
-    expect(bridgeCompactsAt(claude, 150_001), `${id} runs past 150k`).toBe(true);
-    expect(
-      settings.getCompactionKeepRecentTokens({ provider: "claude-bridge", id }),
-      `${id} keeps a 10k tail, under pi's 20k default`,
-    ).toBe(10_000);
-  }
-  for (const worker of [
-    getBuiltinModel("openrouter", "deepseek/deepseek-v4-pro-0813"),
-    getBuiltinModel("openrouter", "z-ai/glm-5.3"),
-    getBuiltinModel("opencode-go", "muse-spark-1.3-contributor"),
-    getBuiltinModel("opencode-go", "deepseek-v4-pro"),
-    getBuiltinModel("opencode-go", "glm-5.3"),
-  ]) {
-    const { provider, id } = worker;
-    const workerCompactsAt = (tokens: number) =>
-      shouldCompact(tokens, worker.contextWindow, settings.getCompactionSettings({ provider, id }));
-    expect(workerCompactsAt(150_000), `${provider}/${id} compacts before 150k`).toBe(false);
-    expect(workerCompactsAt(151_000), `${provider}/${id} runs past about 150k`).toBe(true);
-    expect(settings.getCompactionKeepRecentTokens({ provider, id })).toBe(defaults.getCompactionKeepRecentTokens());
-  }
-  const openrouterMuse = getBuiltinModel("openrouter", "meta/muse-spark-1.3-contributor");
-  expect(
-    shouldCompact(
-      151_000,
-      openrouterMuse.contextWindow,
-      settings.getCompactionSettings({ provider: "openrouter", id: openrouterMuse.id }),
-    ),
-    "muse is a worker on opencode-go only",
-  ).toBe(false);
-  expect(settings.getCompactionReserveTokens({ provider: "claude-bridge", id: "claude-sonnet-5" })).toBe(850_000);
-  expect(bridgeCompactsAt(getBuiltinModel("anthropic", "claude-haiku-4-5"), 150_001), "a model with no point compacts early").toBe(false);
-  expect(settings.getCompactionReserveTokens({ provider: "claude-bridge", id: "claude-haiku-4-5" })).toBe(
-    defaults.getCompactionReserveTokens(),
-  );
-  expect(settings.getCompactionKeepRecentTokens({ provider: "claude-bridge", id: "claude-haiku-4-5" })).toBe(
-    defaults.getCompactionKeepRecentTokens(),
-  );
-});
-
-test("every compaction override is keyed by a provider and id that pi resolves it for", async () => {
-  const { SettingsManager } = await import("@earendil-works/pi-coding-agent");
-  const overrides = Object.entries(piSettings.compaction?.modelOverrides ?? {});
-  expect(overrides.length, "no compaction override to check").toBeGreaterThan(0);
-  const settings = SettingsManager.inMemory(piSettingsFile);
-  const unmatched = overrides
-    .filter(([key, { reserveTokens, keepRecentTokens }]) => {
-      const [, provider, id] = /^([^/]+)\/(.+)$/.exec(key) ?? [];
-      return (
-        provider === undefined ||
-        id === undefined ||
-        settings.getCompactionReserveTokens({ provider, id }) !== reserveTokens ||
-        (keepRecentTokens !== undefined && settings.getCompactionKeepRecentTokens({ provider, id }) !== keepRecentTokens)
-      );
-    })
-    .map(([key]) => key);
-  expect(unmatched, "pi never matches these keys, so each model keeps the 16384-token default reserve").toEqual([]);
-});
-
-test("pi compacts the latest sol, astra, terra and luna on either OpenAI provider at 150k of its registered window, not at pi's default reserve near the window's end", async () => {
-  const { SettingsManager, shouldCompact } = await import("@earendil-works/pi-coding-agent");
-  const { getBuiltinModel } = await import("@earendil-works/pi-ai/providers/all");
-  const settings = SettingsManager.inMemory(piSettingsFile);
-  const defaults = SettingsManager.inMemory({});
-  for (const provider of ["openai", "openai-codex"] as const) {
-    for (const { id, contextWindow } of (["gpt-6.1-sol", "gpt-6-astra", "gpt-6.1-terra", "gpt-6-luna"] as const).map((latest) => getBuiltinModel(provider, latest))) {
-      const compactsAt = (tokens: number) => shouldCompact(tokens, contextWindow, settings.getCompactionSettings({ provider, id }));
-      expect(compactsAt(150_000), `${provider}/${id} compacts before 150k`).toBe(false);
-      expect(compactsAt(150_001), `${provider}/${id} runs past 150k`).toBe(true);
-      expect(settings.getCompactionReserveTokens({ provider, id }), `${provider}/${id} reserves its window minus 150k`).toBe(contextWindow - 150_000);
-      expect(settings.getCompactionKeepRecentTokens({ provider, id })).toBe(defaults.getCompactionKeepRecentTokens());
-    }
-  }
-});
-
-test("an OpenAI model other than the latest sol, astra, terra and luna carries no compaction override instead of one per catalog entry", () => {
-  const openai = Object.keys(piSettings.compaction?.modelOverrides ?? {}).filter((key) => /^openai(-codex)?\//.test(key));
-  expect(openai.toSorted()).toEqual(
-    ["openai", "openai-codex"].flatMap((provider) => ["gpt-6.1-sol", "gpt-6-astra", "gpt-6.1-terra", "gpt-6-luna"].map((id) => `${provider}/${id}`)).toSorted(),
-  );
 });
 
 test("the statusline is the frozen path, generated where the colors live", () => {

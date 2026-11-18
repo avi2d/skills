@@ -17,6 +17,7 @@ import {
   readPayload,
   refusedCommit,
   refusedRead,
+  refusedTests,
   sessionOf,
   type Hook,
   type HookAdapter,
@@ -207,7 +208,7 @@ if (import.meta.main) {
     await answer(payload, async () =>
       carrier
         ? carry(payload, slot)
-        : (refusedRead(name, payload) ?? refusedCommit(name, payload) ?? handle(CLAUDE, readIndex(INDEX_PATH, "claude-code"), name, payload)),
+        : (refusedRead(name, payload) ?? refusedCommit(name, payload) ?? refusedTests(name, payload) ?? handle(CLAUDE, readIndex(INDEX_PATH, "claude-code"), name, payload)),
     );
     if (name === "UserPromptSubmit" && !carrier) release(payload);
   }

@@ -87,7 +87,7 @@ function hookHarness(name: string, rig: Rig, decision: string | undefined): void
     test("a whole test suite is rewritten to queue in the tests group, every other field kept", async () => {
       const { path } = stubPueue(["default", "tests", "gpu"]);
       const driven = await rig.install(index);
-      const { reply, log } = await driven.fire("PreToolUse", bash("bun run test"), undefined, { PATH: path });
+      const { reply, log } = await driven.fire("PreToolUse", bash("bun run test"), undefined, { PATH: path, CI: "true" });
       expect(reply?.hookSpecificOutput?.permissionDecision).toBe(decision);
       expect(reply?.hookSpecificOutput?.updatedInput).toEqual({ command: queued("bun run test", "tests", 1), description: "run it" });
       expect(log).toContainEqual(expect.stringContaining("job-queue tests: queued the command through pueue"));
@@ -96,14 +96,14 @@ function hookHarness(name: string, rig: Rig, decision: string | undefined): void
     test("a model benchmark is rewritten to queue in the gpu group", async () => {
       const { path } = stubPueue(["default", "tests", "gpu"]);
       const driven = await rig.install(index);
-      const { reply } = await driven.fire("PreToolUse", bash("llama-bench -m model.gguf"), undefined, { PATH: path });
+      const { reply } = await driven.fire("PreToolUse", bash("llama-bench -m model.gguf"), undefined, { PATH: path, CI: "true" });
       expect(reply?.hookSpecificOutput?.updatedInput?.command).toBe(queued("llama-bench -m model.gguf", "gpu"));
     });
 
     test("an eval run is rewritten to queue in the evals group with its concurrency capped", async () => {
       const { path } = stubPueue(["default", "tests", "gpu", "evals"]);
       const driven = await rig.install(index);
-      const { reply, log } = await driven.fire("PreToolUse", bash("bun run eval"), undefined, { PATH: path });
+      const { reply, log } = await driven.fire("PreToolUse", bash("bun run eval"), undefined, { PATH: path, CI: "true" });
       expect(reply?.hookSpecificOutput?.updatedInput?.command).toBe(queued("EVAL_CONCURRENCY=3 bun run eval", "evals"));
       expect(log).toContainEqual(expect.stringContaining("job-queue evals: queued the command through pueue"));
     });
@@ -111,7 +111,7 @@ function hookHarness(name: string, rig: Rig, decision: string | undefined): void
     test("a call that needs both groups is refused with a word to run them as separate calls", async () => {
       const { path } = stubPueue(["default", "tests", "gpu"]);
       const driven = await rig.install(index);
-      const { reply, log } = await driven.fire("PreToolUse", bash("bun test && llama-bench -m model.gguf"), undefined, { PATH: path });
+      const { reply, log } = await driven.fire("PreToolUse", bash("bun test && llama-bench -m model.gguf"), undefined, { PATH: path, CI: "true" });
       expect(reply?.hookSpecificOutput?.permissionDecision).toBe("deny");
       expect(reply?.hookSpecificOutput?.permissionDecisionReason).toBe(SEPARATE_CALLS);
       expect(reply?.hookSpecificOutput?.updatedInput).toBeUndefined();
@@ -121,7 +121,7 @@ function hookHarness(name: string, rig: Rig, decision: string | undefined): void
     test("a targeted test queues with priority in the tests group", async () => {
       const { path } = stubPueue(["default", "tests", "gpu"]);
       const driven = await rig.install(index);
-      const { reply, log } = await driven.fire("PreToolUse", { ...bash("bun test tests/unit/glob.test.ts"), cwd: repo }, undefined, { PATH: path });
+      const { reply, log } = await driven.fire("PreToolUse", { ...bash("bun test tests/unit/glob.test.ts"), cwd: repo }, undefined, { PATH: path, CI: "true" });
       expect(reply?.hookSpecificOutput?.updatedInput?.command).toBe(queued("bun test tests/unit/glob.test.ts", "tests", 1));
       expect(log).toContainEqual(expect.stringContaining("job-queue tests: queued the command through pueue"));
     });
@@ -129,7 +129,7 @@ function hookHarness(name: string, rig: Rig, decision: string | undefined): void
     test("a heavy command runs directly with the reason told to the model where pueue has no such group", async () => {
       const { path } = stubPueue(["default"]);
       const driven = await rig.install(index);
-      const { reply, log } = await driven.fire("PreToolUse", bash("bun test"), undefined, { PATH: path });
+      const { reply, log } = await driven.fire("PreToolUse", bash("bun test"), undefined, { PATH: path, CI: "true" });
       expect(reply?.hookSpecificOutput?.updatedInput).toBeUndefined();
       expect(reply?.hookSpecificOutput?.additionalContext).toContain("pueue has no tests group");
       expect(log).toContainEqual(expect.stringContaining("job-queue tests: not queued (pueue has no tests group)"));
@@ -137,7 +137,7 @@ function hookHarness(name: string, rig: Rig, decision: string | undefined): void
 
     test("a heavy command runs directly with the reason told to the model where pueue is not installed", async () => {
       const driven = await rig.install(index);
-      const { reply, log } = await driven.fire("PreToolUse", bash("bun test"), undefined, { PATH: join(temporary("skills-no-pueue-"), "bin") });
+      const { reply, log } = await driven.fire("PreToolUse", bash("bun test"), undefined, { PATH: join(temporary("skills-no-pueue-"), "bin"), CI: "true" });
       expect(reply?.hookSpecificOutput?.updatedInput).toBeUndefined();
       expect(reply?.hookSpecificOutput?.additionalContext).toContain("pueue group listing failed");
       expect(log).toContainEqual(expect.stringContaining("job-queue tests: not queued (the pueue group listing failed)"));
@@ -158,14 +158,14 @@ describe("Codex's sandbox around the command", () => {
   ])("a heavy command passes through untouched in a %s sandbox, because a queued job would run outside it", async (_name, sandbox) => {
     const { path } = stubPueue(["default", "tests"]);
     const driven = await CODEX.install(index);
-    const { reply } = await driven.fire("PreToolUse", { ...shell("bun test"), transcript_path: rollout(sandbox) }, undefined, { PATH: path });
+    const { reply } = await driven.fire("PreToolUse", { ...shell("bun test"), transcript_path: rollout(sandbox) }, undefined, { PATH: path, CI: "true" });
     expect(reply).toBeUndefined();
   });
 
   test("a heavy command passes through untouched when Codex names no rollout to read the sandbox from", async () => {
     const { path } = stubPueue(["default", "tests"]);
     const driven = await CODEX.install(index);
-    const { reply } = await driven.fire("PreToolUse", shell("bun test"), undefined, { PATH: path });
+    const { reply } = await driven.fire("PreToolUse", shell("bun test"), undefined, { PATH: path, CI: "true" });
     expect(reply).toBeUndefined();
   });
 });
@@ -205,6 +205,32 @@ describe("an eval run's queued command, run by a real shell", () => {
   test("a count already under the cap reaches the eval as it was asked", () => {
     expect(evalSees("EVAL_CONCURRENCY=2 bun run eval")).toContain("eval sees 2");
   });
+
+  test.each(["for i in 1 2; do bun run eval; done", "if bun run eval; then echo done; fi"])(
+    "%s caps the eval past its leading keyword, so bash still accepts the queued command",
+    (command) => {
+      const steered = steer(command, repo, () => ["default", "tests", "gpu", "evals"]);
+      expect(steered?.type).toBe("queue");
+      if (steered?.type !== "queue") return;
+      const unquote = (text: string, at: number): [string, number] => {
+        let out = "";
+        for (;;) {
+          const next = text.indexOf("'", at);
+          if (next === -1) throw new Error("unterminated bash payload");
+          if (text.startsWith("'\\''", next)) {
+            out += `${text.slice(at, next)}'`;
+            at = next + 4;
+          } else return [out + text.slice(at, next), next + 1];
+        }
+      };
+      const outer = steered.command.lastIndexOf("-- '") + "-- '".length;
+      const [workload] = unquote(steered.command, outer);
+      const nested = workload.lastIndexOf("bash -c '") + "bash -c '".length;
+      const [payload] = unquote(workload, nested);
+      expect(payload).toContain("EVAL_CONCURRENCY=3 bun run eval");
+      expect(spawnSync("bash", ["-n"], { input: payload }).status).toBe(0);
+    },
+  );
 });
 
 describe("pi running a command through its tool_call event", () => {
@@ -214,11 +240,15 @@ describe("pi running a command through its tool_call event", () => {
     const dispatcher = await load(bare, { cwd: repo });
     const input = { command };
     const was = process.env.PATH;
+    const wasCi = process.env.CI;
     process.env.PATH = path;
+    process.env.CI = "true";
     try {
       return { input, result: await dispatcher.call("bash", input) };
     } finally {
       process.env.PATH = was;
+      if (wasCi === undefined) delete process.env.CI;
+      else process.env.CI = wasCi;
     }
   }
 
@@ -372,6 +402,7 @@ async function claudeRuns(command: string): Promise<string> {
       stderr: "pipe",
       env: {
         PATH: stubPueue(["default", "tests"]).path,
+        CI: "true",
         HOME: process.env.HOME ?? root,
         TMPDIR: join(root, "tmp"),
         CLAUDE_CONFIG_DIR: join(root, "config"),

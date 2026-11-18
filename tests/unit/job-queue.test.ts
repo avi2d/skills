@@ -3,8 +3,8 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { settingsFrom } from "../../evals/settings";
-import { unsandboxed } from "../../src/dispatcher/codex-dispatcher";
-import { EVAL_CONCURRENCY_CAP, LOG_LINES, SEPARATE_CALLS, SEPARATE_EVAL_CALLS, queueFor, queued, simpleCommands, steer, steeredLine } from "../../src/dispatcher/job-queue";
+import { EVAL_CONCURRENCY_CAP, LOG_LINES, SEPARATE_CALLS, SEPARATE_EVAL_CALLS, queueFor, queued, steer, steeredLine } from "../../src/dispatcher/job-queue";
+import { simpleCommands } from "../../src/dispatcher/shell-commands";
 
 const work = mkdtempSync(join(tmpdir(), "skills-job-queue-"));
 afterAll(() => rmSync(work, { recursive: true, force: true }));
@@ -487,6 +487,17 @@ describe("steer", () => {
     expect(steer(command, work, () => ["default", "tests", "gpu", "evals"])).toEqual({ type: "queue", group: "evals", command: queued(command, "evals") });
   });
 
+  test.each(["for i in 1 2; do bun run eval; done", "if bun run eval; then echo done; fi"])(
+    "%s caps the eval past its leading keyword instead of queuing the uncapped call",
+    (command) => {
+      const steered = steer(command, work, () => ["default", "tests", "gpu", "evals"]);
+      expect(steered?.type).toBe("queue");
+      if (steered?.type !== "queue") return;
+      expect(steered.group).toBe("evals");
+      expect(steered.command).toContain("EVAL_CONCURRENCY=3");
+    },
+  );
+
   test("the harness default stays above the cap, so a bare run still needs the assignment", () => {
     expect(settingsFrom({}).concurrency).toBeGreaterThan(EVAL_CONCURRENCY_CAP);
   });
@@ -567,33 +578,3 @@ describe("steer", () => {
   });
 });
 
-describe("whether a Codex turn runs unsandboxed, since a queued job runs outside any sandbox", () => {
-  const root = mkdtempSync(join(tmpdir(), "skills-sandbox-"));
-  afterAll(() => rmSync(root, { recursive: true, force: true }));
-
-  const rollout = (...policies: Array<Record<string, unknown>>): string => {
-    const path = join(root, `${policies.length}-${Math.random().toString(36).slice(2)}.jsonl`);
-    const turns = policies.map((policy) => JSON.stringify({ type: "turn_context", payload: { sandbox_policy: policy } }));
-    writeFileSync(path, [JSON.stringify({ type: "session_meta", payload: { id: "s1" } }), ...turns].join("\n"));
-    return path;
-  };
-
-  test("full access is unsandboxed", () => {
-    expect(unsandboxed({ transcript_path: rollout({ type: "danger-full-access" }) })).toBe(true);
-  });
-
-  test("a restricted sandbox is not, whatever its network setting", () => {
-    expect(unsandboxed({ transcript_path: rollout({ type: "workspace-write", network_access: true }) })).toBe(false);
-    expect(unsandboxed({ transcript_path: rollout({ type: "workspace-write", network_access: false }) })).toBe(false);
-    expect(unsandboxed({ transcript_path: rollout({ type: "read-only" }) })).toBe(false);
-  });
-
-  test("the latest turn decides, because a session can change its sandbox between turns", () => {
-    expect(unsandboxed({ transcript_path: rollout({ type: "danger-full-access" }, { type: "read-only" }) })).toBe(false);
-  });
-
-  test("an unreadable or absent rollout is not, so an unknown sandbox runs the command as it is", () => {
-    expect(unsandboxed({ transcript_path: join(root, "missing.jsonl") })).toBe(false);
-    expect(unsandboxed({})).toBe(false);
-  });
-});

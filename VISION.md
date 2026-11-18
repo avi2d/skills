@@ -24,6 +24,11 @@ Each Rule is measured by ablation and a Rule that shows no gain is switched off,
 Source outside the tests, `evals/`, `harness/` and the Dispatcher bundles is Effect v4, and a Dispatcher bundle loads without `node_modules`, so it cannot import `effect`.
 The Contracts in `harness/` stay hand-written because each harness rewrites its own settings, which trades generated uniformity for settings that survive the harness's own writes.
 
+## Public and configurable
+
+skills serves public users, not one project or kit.
+It stays close to native tools and lets each repository configure its own commands.
+
 ## Scope
 
 skills is the instruction library, not shared CI plumbing: reusable workflows and composite actions belong to the avi2d/workflows repository that this repository's own CI calls.

@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 import { carriage } from "./dispatch";
 import type { Change, CodexHunk } from "./forbid";
 import { standing } from "./repo-walk";
-import { answer, handle, isHook, readPayload, refusedCommit, refusedRead, type HookAdapter, type Payload, type Writes } from "./hook-harness";
+import { answer, handle, isHook, readPayload, refusedCommit, refusedRead, refusedTests, type HookAdapter, type Payload, type Writes } from "./hook-harness";
 import { readIndex } from "./read-index";
 import { field, readTranscript, textsOf, type Entry } from "./transcript";
 
@@ -168,5 +168,5 @@ if (import.meta.main) {
   const payload = readPayload(readFileSync(0, "utf8"));
   const name = process.argv[2] ?? payload.hook_event_name ?? "";
   if (isHook(name))
-    await answer(payload, async () => refusedRead(name, payload) ?? refusedCommit(name, payload) ?? handle(CODEX, readIndex(INDEX_PATH, "codex"), name, payload));
+    await answer(payload, async () => refusedRead(name, payload) ?? refusedCommit(name, payload) ?? refusedTests(name, payload) ?? handle(CODEX, readIndex(INDEX_PATH, "codex"), name, payload));
 }

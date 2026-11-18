@@ -75,7 +75,8 @@ A `forbid` spends no context, so it stands unless a project switches the Rule of
 Reading a hook's reply back from a harness's transcript is translation the two hook adapters share, so it is `src/dispatcher/transcript.ts`, bundled into both.
 The rest the two hook adapters share is `src/dispatcher/hook-harness.ts`, also bundled into both, so an adapter hands it a `HookAdapter` holding only what its harness does differently.
 The index check all three adapters share is `src/dispatcher/read-index.ts`.
-Which shell command goes to the job queue is decided in `src/dispatcher/job-queue.ts`, which reads a command's words through `src/dispatcher/shell-words.ts`, and each adapter hands it the command and applies what it returns, as [Heavy commands go to the job queue](#heavy-commands-go-to-the-job-queue) describes.
+Which shell command goes to the job queue is decided in `src/dispatcher/job-queue.ts`, which reads a command's words through `harness/common/shell-words.ts`, and each adapter hands it the command and applies what it returns, as [Heavy commands go to the job queue](#heavy-commands-go-to-the-job-queue) describes.
+Whether a shell command may start its tests locally is decided in `harness/local-tests/local-tests.ts`, which every bundle carries into all three Dispatchers.
 Whether a call reads a credential file is decided in `src/dispatcher/credential-reads.ts`, and each adapter refuses the call it names, as [A credential file is not read](#a-credential-file-is-not-read) describes.
 `src/dispatcher/gate.ts` is I/O the three adapters share for the verdict gate, reading `.no-mistakes.yaml` through `src/dispatcher/gate-config.ts`, and whether a settle is checked, held or let go is decided in `src/dispatcher/verdict.ts`, as [record 0048](adr/0048-a-session-that-changed-the-tree-settles-past-the-checks-its-push-gate-runs.md) records.
 
@@ -130,12 +131,31 @@ Both name a transcript to every hook, so the Dispatcher reads the reply back fro
 It reads only the entries each harness writes for a hook's reply after that hook ran, and waits until the model has answered after them.
 A Rule that is not there whole reads as `broken`, and a transcript the Dispatcher could not read says so in the log, as [record 0053](adr/0053-a-hook-harness-reads-a-rules-arrival-back-from-its-transcript.md) records.
 
+## Local test commands are refused
+
+Each Dispatcher checks shell commands before the job queue sees them.
+For a recognised test command, the Dispatcher reads `.skills.json` at the repository root.
+The block stays off unless that file sets `localTests` to `{"blocked":true}`.
+The Dispatcher refuses a blocked command and says that CI is the test run.
+A repository without the key runs its tests as usual.
+With `CI=true`, the Dispatcher lets the command run.
+Build, lint, and typecheck commands remain available unless their package scripts start a recognised test command.
+
+An eval run is not a test run, so the check allows `bun run eval` and a vitest run on the evals config.
+The check follows package scripts in `package.json` and recognises common test runners and their wrappers.
+To block local tests, put `{"localTests":{"blocked":true}}` in `.skills.json` at its root.
+To add runner executable names for a repository, put `{"localTests":{"blocked":true,"commands":["custom-runner"]}}` in `.skills.json` at its root.
+The extra names apply to direct commands, wrappers, and package scripts in that repository.
+To recognise a repository-specific check in a test-named script, add its executable name to `localTests.checks`, such as `{"localTests":{"blocked":true,"checks":["custom-lint"]}}`.
+It does not inspect arbitrary scripts, computed shell commands, or runner invocations hidden in other tools.
+The checks kit also guards its own runners when an agent carries its marker.
+
 ## Heavy commands go to the job queue
 
-A test run, an eval run, or a GPU benchmark or model inference an agent starts goes through pueue, so sessions on one machine take turns at it.
+An allowed test run, an eval run, or a GPU benchmark or model inference an agent starts goes through pueue, so sessions on one machine take turns at it.
 Every Dispatcher asks `src/dispatcher/job-queue.ts` about each shell command before it runs.
 That module is no Rule, so it costs the model no context.
-Its table sends every test run, such as `bun test` or `bun run test`, and every mutation run to the `tests` group.
+Its table sends every allowed test run, such as `bun test` or `bun run test`, and every allowed mutation run to the `tests` group.
 It also sends the other heavy shapes to the `tests` group: `checks-test`, `bin/fm-test-run.sh`, any `bin/*.test.sh` script, `go test`, the `test:fast` script, a `lint`, `typecheck` or `build` executable in any directory, `xcrun simctl boot`, `xcrun simctl io` and `fm-sim-boot.sh`.
 Every heavy shape in the `tests` group queues with `pueue add --priority 1`, and the `gpu` group keeps its default scheduling.
 Only an enabled watch mode, `--watch`, `-w` or `--watchAll` with no value or `=true`, runs as it is, because a queued job would hold its slot forever, so `--watch=false` and `--no-watch` still queue.

@@ -44,7 +44,7 @@ const decode = (bytes: Uint8Array) => new TextDecoder().decode(bytes);
 
 const sourceCopy = async (prefix: string): Promise<string> => {
   const sandbox = `${mkdtempSync(join(tmpdir(), prefix))}/`;
-  for (const dir of [LIBRARY, SELECTION_PATH, "src"]) {
+  for (const dir of [LIBRARY, SELECTION_PATH, "src", "harness"]) {
     cpSync(`${repo}${dir}`, `${sandbox}${dir}`, { recursive: true });
   }
   await symlink(`${repo}node_modules`, `${sandbox}node_modules`, "dir");

@@ -1,7 +1,7 @@
 import { globSync, readFileSync, realpathSync, statSync } from "node:fs";
 import { homedir } from "node:os";
 import { basename, join, resolve, sep } from "node:path";
-import { simpleCommands } from "./job-queue";
+import { simpleCommands } from "./shell-commands";
 import { segments } from "./shell-words";
 
 const HOME = process.env.HOME ?? homedir();
