@@ -167,7 +167,7 @@ test("leaves check scripts available instead of refusing their test-like names",
   delete process.env.CI;
   const checks = join(root, "checks");
   mkdirSync(checks, { recursive: true });
-  writeFileSync(join(checks, ".skills.json"), JSON.stringify({ localTests: { checks: ["custom-lint"] } }));
+  writeFileSync(join(checks, ".skills.json"), JSON.stringify({ localTests: { blocked: true, checks: ["custom-lint"] } }));
   writeFileSync(join(checks, "package.json"), JSON.stringify({ scripts: {
     "test:types": "tsc --noEmit",
     "test:lint": "eslint .",

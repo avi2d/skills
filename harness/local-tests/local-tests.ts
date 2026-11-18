@@ -165,7 +165,9 @@ function blockedAt(root: string, scan: Scan): boolean {
 
 function namesAt(root: string, scan: Scan, key: "commands" | "checks"): Set<string> {
   const value = cachedSkills(root, scan);
-  const list = typeof value === "object" && value !== null && key in value ? (value as Record<string, unknown>)[key] : [];
+  const list: unknown = key === "commands"
+    ? typeof value === "object" && value !== null && "commands" in value ? value.commands : []
+    : typeof value === "object" && value !== null && "checks" in value ? value.checks : [];
   return new Set(Array.isArray(list) ? list.filter((name): name is string => typeof name === "string") : []);
 }
 
