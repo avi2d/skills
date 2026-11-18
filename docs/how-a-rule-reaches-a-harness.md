@@ -141,12 +141,16 @@ A repository without the key runs its tests as usual.
 With `CI=true`, the Dispatcher lets the command run.
 Build, lint, and typecheck commands remain available unless their package scripts start a recognised test command.
 
-An eval run is not a test run, so the check allows `bun run eval` and a vitest run on the evals config.
+An eval run is not a test run, so the check allows `bun run eval`.
+A vitest run on an evals config that the repository lists in `localTests.evalConfigs` is allowed too.
 The check follows package scripts in `package.json` and recognises common test runners and their wrappers.
 To block local tests, put `{"localTests":{"blocked":true}}` in `.skills.json` at its root.
 To add runner executable names for a repository, put `{"localTests":{"blocked":true,"commands":["custom-runner"]}}` in `.skills.json` at its root.
 The extra names apply to direct commands, wrappers, and package scripts in that repository.
 To recognise a repository-specific check in a test-named script, add its executable name to `localTests.checks`, such as `{"localTests":{"blocked":true,"checks":["custom-lint"]}}`.
+To name a test-run script by path, put `{"localTests":{"blocked":true,"scripts":["bin/fm-test-run.sh","bin/*.test.sh"]}}` in `.skills.json` at its root.
+A `*` matches within one folder or file name, and never crosses a `/`.
+To name an evals config, put `{"localTests":{"blocked":true,"evalConfigs":["evals/vitest.config.ts"]}}` in `.skills.json` at its root.
 It does not inspect arbitrary scripts, computed shell commands, or runner invocations hidden in other tools.
 The checks kit also guards its own runners when an agent carries its marker.
 

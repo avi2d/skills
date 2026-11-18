@@ -65,14 +65,24 @@ export const texts = (words: readonly Word[]): string[] => words.map(({ text }) 
 
 const EVAL_CONFIG = /(^|\/)evals\/vitest\.config\.ts$/;
 
-export function hasEvalConfig(args: readonly string[]): boolean {
+export function hasConfig(args: readonly string[], configs: readonly RegExp[]): boolean {
   for (let at = 0; at < args.length; at += 1) {
     const arg = args[at] ?? "";
     const [name = "", value] = arg.split(/=(.*)/s);
     if (name !== "-c" && name !== "--config") continue;
-    if (EVAL_CONFIG.test(value ?? args[at + 1] ?? "")) return true;
+    const path = value ?? args[at + 1] ?? "";
+    if (configs.some((config) => config.test(path))) return true;
   }
   return false;
+}
+
+export function hasEvalConfig(args: readonly string[]): boolean {
+  return hasConfig(args, [EVAL_CONFIG]);
+}
+
+export function pathPattern(glob: string): RegExp {
+  const body = glob.split("*").map((part) => part.replace(/[.+?^${}()|[\]\\]/g, "\\$&")).join("[^/]*");
+  return new RegExp(`(^|/)${body}$`);
 }
 
 export const SCRIPT_RUNNERS = new Set(["bun", "node", "sh", "bash", "zsh", "dash"]);

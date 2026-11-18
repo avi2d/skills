@@ -1,7 +1,7 @@
 import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
-import { BIN_TEST_RUN, BIN_TEST_SCRIPT, hasEvalConfig, program, SCRIPT_RUNNERS, segments, stripped, texts } from "./shell-commands";
+import { hasConfig, pathPattern, program, SCRIPT_RUNNERS, segments, stripped, texts } from "./shell-commands";
 
 export const LOCAL_TESTS_LINE = "local-tests: refused a test command";
 
@@ -163,16 +163,20 @@ function blockedAt(root: string, scan: Scan): boolean {
   return blockedValue(cachedSkills(root, scan));
 }
 
-function namesAt(root: string, scan: Scan, key: "commands" | "checks"): Set<string> {
+type ListKey = "commands" | "checks" | "scripts" | "evalConfigs";
+
+function listAt(root: string, scan: Scan, key: ListKey): string[] {
   const value = cachedSkills(root, scan);
-  const list: unknown = key === "commands"
-    ? typeof value === "object" && value !== null && "commands" in value ? value.commands : []
-    : typeof value === "object" && value !== null && "checks" in value ? value.checks : [];
-  return new Set(Array.isArray(list) ? list.filter((name): name is string => typeof name === "string") : []);
+  const list: unknown = typeof value === "object" && value !== null && key in value ? Reflect.get(value, key) : [];
+  return Array.isArray(list) ? list.filter((name): name is string => typeof name === "string") : [];
 }
 
-function extraAt(root: string, scan: Scan): Set<string> {
-  return namesAt(root, scan, "commands");
+function pathsAt(root: string, scan: Scan, key: "scripts" | "evalConfigs"): RegExp[] {
+  return listAt(root, scan, key).map((glob) => pathPattern(glob));
+}
+
+function extraAt(root: string, scan: Scan): string[] {
+  return listAt(root, scan, "commands");
 }
 
 function uvDelegated(words: readonly string[], tool: string, cwd: string, scan: Scan): boolean | undefined {
@@ -189,14 +193,14 @@ function uvDelegated(words: readonly string[], tool: string, cwd: string, scan: 
 function directRunner(words: readonly string[], cwd: string, scan: Scan): boolean {
   const tool = words[0] ?? "";
   if (tool === "playwright" || tool === "stryker") return playwrightTarget(tool, words[1] ?? "");
-  if (tool === "vitest" && hasEvalConfig(words.slice(1))) return false;
+  if (tool === "vitest" && hasConfig(words.slice(1), pathsAt(cachedRoot(cwd, scan), scan, "evalConfigs"))) return false;
   if (RUNNERS.has(tool)) return true;
   if (bunLikeTool(tool)) return (words[skipFlags(words, 1)] ?? "") === "test";
   if (tool === "node") return words.slice(1).includes("--test");
   if (pythonTool(tool)) return pythonModuleTest(words);
   const delegated = uvDelegated(words, tool, cwd, scan);
   if (delegated !== undefined) return delegated;
-  return extraAt(cachedRoot(cwd, scan), scan).has(tool);
+  return extraAt(cachedRoot(cwd, scan), scan).includes(tool);
 }
 
 function managerRunner(words: readonly string[], cwd: string, scan: Scan): boolean {
@@ -219,11 +223,11 @@ const CHECK_TOOLS = new Set([
 function checksBody(body: string, cwd: string, scan: Scan): boolean {
   const listed = segments(body);
   if (listed.length === 0) return false;
-  const checks = namesAt(cachedRoot(cwd, scan), scan, "checks");
+  const checks = listAt(cachedRoot(cwd, scan), scan, "checks");
   return listed.every((segment) => {
     const words = commandWords(texts(segment)).map((word, at) => (at === 0 ? program(word) : word));
     const head = words[0];
-    if (CHECK_TOOLS.has(head ?? "") || (head !== undefined && checks.has(head))) return true;
+    if (CHECK_TOOLS.has(head ?? "") || (head !== undefined && checks.includes(head))) return true;
     const { name } = scriptCall(words);
     if (name === undefined || name === "eval" || TEST_SCRIPT.test(name)) return false;
     const home = packageDir(words, cwd);
@@ -257,12 +261,12 @@ function scriptDirectories(words: readonly string[], cwd: string, scan: Scan): s
   return TEST_SCRIPT.test(script) ? [home] : [];
 }
 
-function isTestScript(bare: readonly string[]): boolean {
+function isTestScript(bare: readonly string[], scripts: readonly RegExp[]): boolean {
   const [head = "", ...rest] = bare;
   const through = SCRIPT_RUNNERS.has(program(head)) ? rest : bare;
   const [first = ""] = through;
   if (first === "") return false;
-  return BIN_TEST_RUN.test(first) || BIN_TEST_SCRIPT.test(first);
+  return scripts.some((script) => script.test(first));
 }
 
 const SHELLS = new Set(["sh", "bash", "dash", "zsh"]);
@@ -326,7 +330,7 @@ function wordDirs(words: readonly string[], bare: readonly string[], base: strin
   if (scriptCall(words).name === "eval") return [];
   if (directRunner(words, here, scan)) return [here];
   if (managerRunner(words, here, scan)) return [here];
-  if (isTestScript(bare)) return [here];
+  if (isTestScript(bare, pathsAt(cachedRoot(here, scan), scan, "scripts"))) return [here];
   return scriptDirectories(words, base, scan);
 }
 function testDirectories(command: string, cwd: string, scan: Scan = freshScan()): string[] {
