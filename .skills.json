@@ -1,0 +1,5 @@
+{
+  "localTests": {
+    "commands": ["checks-test", "checks-browser", "checks-flake", "checks-mutation"]
+  }
+}

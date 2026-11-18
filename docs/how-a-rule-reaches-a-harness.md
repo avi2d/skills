@@ -143,6 +143,8 @@ Build, lint, and typecheck commands remain available unless their package script
 
 An eval run is not a test run, so the check allows `bun run eval` and a vitest run on the evals config.
 The check follows package scripts in `package.json` and recognises common test runners and their wrappers.
+To add runner executable names for a repository, put `{"localTests":{"commands":["custom-runner"]}}` in `.skills.json` at its root.
+The extra names apply to direct commands, wrappers, and package scripts in that repository.
 It does not inspect arbitrary scripts, computed shell commands, or runner invocations hidden in other tools.
 The checks kit also guards its own runners when an agent carries its marker.
 

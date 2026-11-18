@@ -15,7 +15,7 @@ afterEach(() => {
 });
 afterAll(() => rmSync(root, { recursive: true, force: true }));
 
-test.each(["bun test --watch", "npm run test:unit", "bunx checks-browser", "npx playwright test", "go test ./...", "python -m pytest"])(
+test.each(["bun test --watch", "npm run test:unit", "bunx vitest", "npx playwright test", "go test ./...", "python -m pytest"])(
   "recognises %s instead of allowing a test runner",
   (command) => expect(runsTests(command, root)).toBe(true),
 );
@@ -24,6 +24,19 @@ test.each(["bun run build", "bun run lint", "bun run typecheck", "bin/lint", "np
   "leaves %s available rather than blocking a non-test command",
   (command) => expect(runsTests(command, root)).toBe(false),
 );
+
+test("recognises configured commands only in their repository instead of treating them as built-in", () => {
+  const configured = join(root, "configured");
+  const other = join(root, "other");
+  mkdirSync(configured, { recursive: true });
+  mkdirSync(other, { recursive: true });
+  writeFileSync(join(configured, ".skills.json"), JSON.stringify({ localTests: { commands: ["custom-runner"] } }));
+  writeFileSync(join(configured, "package.json"), JSON.stringify({ scripts: { verify: "custom-runner --all" } }));
+  expect(runsTests("custom-runner", configured)).toBe(true);
+  expect(runsTests("bunx custom-runner", configured)).toBe(true);
+  expect(runsTests("bun run verify", configured)).toBe(true);
+  expect(runsTests("custom-runner", other)).toBe(false);
+});
 
 test("follows a package script instead of allowing a renamed test command", () => {
   writeFileSync(join(root, "package.json"), JSON.stringify({ scripts: { verify: "bun run unit", unit: "bun test" } }));
@@ -144,7 +157,7 @@ test("blocks bun shorthand instead of missing a script without run", () => {
   delete process.env.CI;
   const shorthand = join(root, "shorthand");
   mkdirSync(shorthand, { recursive: true });
-  writeFileSync(join(shorthand, "package.json"), JSON.stringify({ scripts: { "test:unit": "checks-test --tier=unit", verify: "bun test" } }));
+  writeFileSync(join(shorthand, "package.json"), JSON.stringify({ scripts: { "test:unit": "bun test", verify: "bun test" } }));
   expect(runsTests("bun test:unit", shorthand)).toBe(true);
   expect(runsTests("bun verify", shorthand)).toBe(true);
 });

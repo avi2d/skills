@@ -8,7 +8,7 @@ export const LOCAL_TESTS_LINE = "local-tests: refused a test command";
 
 const REFUSAL = "checks.config.ts localTests is blocked. CI is the test run.";
 const UNKNOWN = "Cannot read checks.config.ts localTests through checks-local-tests. CI is the test run.";
-const RUNNERS = new Set(["checks-test", "checks-browser", "checks-flake", "checks-mutation", "pytest", "vitest", "jest", "playwright", "mocha", "ava", "tap", "stryker"]);
+const RUNNERS = new Set(["pytest", "vitest", "jest", "playwright", "mocha", "ava", "tap", "stryker"]);
 const PACKAGES = new Set(["npm", "pnpm", "yarn", "bun"]);
 
 
@@ -126,35 +126,35 @@ function pythonModuleTest(words: readonly string[]): boolean {
   }
   return false;
 }
-function uvDelegated(words: readonly string[], tool: string): boolean | undefined {
+function uvDelegated(words: readonly string[], tool: string, cwd: string): boolean | undefined {
   if (tool === "uvx") {
     const rest = words.slice(skipFlags(words, 1));
-    return rest.length > 0 && directRunner(rest);
+    return rest.length > 0 && directRunner(rest, cwd);
   }
   if (tool !== "uv" && tool !== "poetry") return undefined;
   const at = skipFlags(words, 1);
   if (words[at] !== "run") return false;
   const rest = words.slice(skipFlags(words, at + 1));
-  return rest.length > 0 && directRunner(rest);
+  return rest.length > 0 && directRunner(rest, cwd);
 }
-function directRunner(words: readonly string[]): boolean {
+function directRunner(words: readonly string[], cwd: string): boolean {
   const tool = words[0] ?? "";
   if (tool === "playwright" || tool === "stryker") return playwrightTarget(tool, words[1] ?? "");
   if (tool === "vitest" && hasEvalConfig(words.slice(1))) return false;
-  if (RUNNERS.has(tool)) return true;
+  if (RUNNERS.has(tool) || extraRunners(cwd).has(tool)) return true;
   if (bunLikeTool(tool)) return (words[skipFlags(words, 1)] ?? "") === "test";
   if (tool === "node") return words.slice(1).includes("--test");
   if (pythonTool(tool)) return pythonModuleTest(words);
-  return uvDelegated(words, tool) ?? false;
+  return uvDelegated(words, tool, cwd) ?? false;
 }
 
-function managerRunner(words: readonly string[]): boolean {
+function managerRunner(words: readonly string[], cwd: string): boolean {
   const tool = words[0] ?? "";
   if (!PACKAGES.has(tool)) return false;
   const at = skipFlags(words, 1);
   const head = words[at] ?? "";
   if (head === "" || head === "run" || head === "run-script") return false;
-  return directRunner([head, ...words.slice(at + 1)]);
+  return directRunner([head, ...words.slice(at + 1)], cwd);
 }
 
 const BUN_COMMANDS = new Set("add audit build bump create deploy init install link login logout migrate outdated patch pm publish remove run test uninstall unlink update upgrade whoami why info x i a r rm un v view".split(" "));
@@ -200,7 +200,7 @@ function scriptDirectories(words: readonly string[], cwd: string, seen: Readonly
     if (inner.length > 0) return inner;
     if (checksBody(value, home, depth)) return [];
   }
-  if (directRunner([script, ...rest])) return [home];
+  if (directRunner([script, ...rest], home)) return [home];
   return TEST_SCRIPT.test(script) ? [home] : [];
 }
 
@@ -271,8 +271,8 @@ function shellNested(words: readonly string[], here: string, seen: ReadonlySet<s
 }
 function wordDirs(words: readonly string[], bare: readonly string[], base: string, here: string, seen: ReadonlySet<string>): string[] {
   if (scriptCall(words).name === "eval") return [];
-  if (directRunner(words)) return [here];
-  if (managerRunner(words)) return [here];
+  if (directRunner(words, here)) return [here];
+  if (managerRunner(words, here)) return [here];
   if (isTestScript(bare)) return [here];
   return scriptDirectories(words, base, seen);
 }
@@ -313,6 +313,18 @@ export function runsTests(command: string, cwd: string, seen: ReadonlySet<string
 function rootOf(cwd: string): string {
   const git = spawnSync("git", ["-C", cwd, "rev-parse", "--show-toplevel"], { encoding: "utf8", timeout: 3_000 });
   return git.status === 0 ? git.stdout.trim() : cwd;
+}
+
+function extraRunners(cwd: string): Set<string> {
+  try {
+    const config: unknown = JSON.parse(readFileSync(join(rootOf(cwd), ".skills.json"), "utf8"));
+    if (typeof config !== "object" || config === null || !("localTests" in config)) return new Set();
+    const localTests = config.localTests;
+    if (typeof localTests !== "object" || localTests === null || !("commands" in localTests)) return new Set();
+    return new Set(Array.isArray(localTests.commands) ? localTests.commands.filter((command): command is string => typeof command === "string") : []);
+  } catch {
+    return new Set();
+  }
 }
 
 function binFrom(start: string): string | undefined {
