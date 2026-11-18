@@ -42,7 +42,7 @@ const CORE_FILES = {
   [KIT_COMMENTS]: "comments.ts",
   [KIT_PROSE]: "prose.ts",
   "src/dispatcher/types.ts": "types.ts",
-  "harness/common/glob.ts": "glob.ts",
+  "src/dispatcher/glob.ts": "glob.ts",
   "src/dispatcher/project.ts": "project.ts",
   "src/dispatcher/repo-walk.ts": "repo-walk.ts",
   "src/dispatcher/run-state.ts": "run-state.ts",
