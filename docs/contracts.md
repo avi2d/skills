@@ -4,6 +4,7 @@ kind: reference
 # The harness Contracts
 
 A harness's Contract is the settings, hooks and extensions `harness/<name>/` holds for it, and a reader looks one up to find what a harness is set to do.
+`harness/common/` and `harness/local-tests/` hold shared sources the Dispatcher bundles rather than a Contract, as [How a Rule reaches a harness](how-a-rule-reaches-a-harness.md#where-dispatch-logic-goes) records.
 [The link map](links.md) says where in $HOME each file is linked or written.
 
 ## Hand-written settings

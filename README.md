@@ -79,7 +79,7 @@ To see what fired:
 | `tests/` | the suite, run with `bunx checks-test --changed` |
 | `evals/` | the ablation that measures what a Rule or a Reference changes |
 | `evals/sweeps/` | one committed record per sweep, and the page `bun run docs` writes from them |
-| `harness/` | each harness's Contract, which [The harness Contracts](docs/contracts.md) describes |
+| `harness/` | each harness's Contract and the shared sources the Dispatcher bundles, which [The harness Contracts](docs/contracts.md) describes |
 | `generated/` | the Hub, the Dispatcher bundles and the dispatch index, written by `bun run generate` and never committed |
 | `repos/` | links to library source for agents to read, and never committed |
 | `docs/` | the pages linked below, and the decision records in `docs/adr/` |
