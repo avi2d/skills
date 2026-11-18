@@ -172,7 +172,13 @@ function listAt(root: string, scan: Scan, key: ListKey): string[] {
 }
 
 function pathsAt(root: string, scan: Scan, key: "scripts" | "evalConfigs"): RegExp[] {
-  return listAt(root, scan, key).map((glob) => compileGlob(`**/${glob}`));
+  return listAt(root, scan, key).flatMap((glob) => {
+    try {
+      return [compileGlob(`**/${glob}`)];
+    } catch {
+      return [];
+    }
+  });
 }
 
 function extraAt(root: string, scan: Scan): string[] {
