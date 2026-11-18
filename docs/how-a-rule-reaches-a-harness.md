@@ -150,7 +150,9 @@ The extra names apply to direct commands, wrappers, and package scripts in that 
 To recognise a repository-specific check in a test-named script, add its executable name to `localTests.checks`, such as `{"localTests":{"blocked":true,"checks":["custom-lint"]}}`.
 To name a test-run script by path, put `{"localTests":{"blocked":true,"scripts":["bin/fm-test-run.sh","bin/*.test.sh"]}}` in `.skills.json` at its root.
 A `*` matches within one folder or file name, and never crosses a `/`.
+An entry matches the end of the path as the command types it, so `../bin/fm-test-run.sh` and `./evals/vitest.config.ts` also match.
 To name an evals config, put `{"localTests":{"blocked":true,"evalConfigs":["evals/vitest.config.ts"]}}` in `.skills.json` at its root.
+An entry which is not a valid glob is ignored.
 It does not inspect arbitrary scripts, computed shell commands, or runner invocations hidden in other tools.
 The checks kit also guards its own runners when an agent carries its marker.
 
