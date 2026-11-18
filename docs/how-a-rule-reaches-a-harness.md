@@ -146,7 +146,7 @@ The check follows package scripts in `package.json` and recognises common test r
 To block local tests, put `{"localTests":{"blocked":true}}` in `.skills.json` at its root.
 To add runner executable names for a repository, put `{"localTests":{"blocked":true,"commands":["custom-runner"]}}` in `.skills.json` at its root.
 The extra names apply to direct commands, wrappers, and package scripts in that repository.
-To recognise a repository-specific check in a test-named script, add its executable name to `localTests.checks`, such as `{"localTests":{"checks":["custom-lint"]}}`.
+To recognise a repository-specific check in a test-named script, add its executable name to `localTests.checks`, such as `{"localTests":{"blocked":true,"checks":["custom-lint"]}}`.
 It does not inspect arbitrary scripts, computed shell commands, or runner invocations hidden in other tools.
 The checks kit also guards its own runners when an agent carries its marker.
 

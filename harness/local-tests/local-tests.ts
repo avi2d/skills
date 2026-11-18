@@ -163,10 +163,14 @@ function blockedAt(root: string, scan: Scan): boolean {
   return blockedValue(cachedSkills(root, scan));
 }
 
-function extraAt(root: string, scan: Scan): Set<string> {
+function namesAt(root: string, scan: Scan, key: "commands" | "checks"): Set<string> {
   const value = cachedSkills(root, scan);
-  const names = typeof value === "object" && value !== null && "commands" in value && Array.isArray(value.commands) ? value.commands.filter((name): name is string => typeof name === "string") : [];
-  return new Set(names);
+  const list = typeof value === "object" && value !== null && key in value ? (value as Record<string, unknown>)[key] : [];
+  return new Set(Array.isArray(list) ? list.filter((name): name is string => typeof name === "string") : []);
+}
+
+function extraAt(root: string, scan: Scan): Set<string> {
+  return namesAt(root, scan, "commands");
 }
 
 function uvDelegated(words: readonly string[], tool: string, cwd: string, scan: Scan): boolean | undefined {
@@ -213,11 +217,11 @@ const CHECK_TOOLS = new Set([
 function checksBody(body: string, cwd: string, scan: Scan): boolean {
   const listed = segments(body);
   if (listed.length === 0) return false;
+  const checks = namesAt(cachedRoot(cwd, scan), scan, "checks");
   return listed.every((segment) => {
     const words = commandWords(texts(segment)).map((word, at) => (at === 0 ? program(word) : word));
-    const value = cachedSkills(cachedRoot(cwd, scan), scan);
-    const checks = typeof value === "object" && value !== null && "checks" in value && Array.isArray(value.checks) ? value.checks : [];
-    if (CHECK_TOOLS.has(words[0] ?? "") || checks.includes(words[0])) return true;
+    const head = words[0];
+    if (CHECK_TOOLS.has(head ?? "") || (head !== undefined && checks.has(head))) return true;
     const { name } = scriptCall(words);
     if (name === undefined || name === "eval" || TEST_SCRIPT.test(name)) return false;
     const home = packageDir(words, cwd);
