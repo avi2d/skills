@@ -17,7 +17,6 @@ export default defineConfig({
       "src/dispatcher/forbid.ts",
       "src/dispatcher/gate.ts",
       "src/dispatcher/gate-config.ts",
-      "src/dispatcher/glob.ts",
       "src/dispatcher/hook-bash.ts",
       "src/dispatcher/hook-harness.ts",
       "src/dispatcher/job-queue.ts",
