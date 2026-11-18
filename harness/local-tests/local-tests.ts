@@ -147,7 +147,7 @@ function cachedSkills(root: string, scan: Scan): unknown {
   let value: unknown;
   try {
     const parsed: unknown = JSON.parse(readFileSync(join(root, ".skills.json"), "utf8"));
-    value = typeof parsed === "object" && parsed !== null && "localTests" in parsed ? (parsed as { localTests: unknown }).localTests : undefined;
+    value = typeof parsed === "object" && parsed !== null && "localTests" in parsed ? parsed.localTests : undefined;
   } catch {
     value = undefined;
   }
@@ -156,7 +156,7 @@ function cachedSkills(root: string, scan: Scan): unknown {
 }
 
 function blockedValue(value: unknown): boolean {
-  return typeof value === "object" && value !== null && (value as Record<string, unknown>).blocked === true;
+  return typeof value === "object" && value !== null && "blocked" in value && value.blocked === true;
 }
 
 function blockedAt(root: string, scan: Scan): boolean {
@@ -165,7 +165,7 @@ function blockedAt(root: string, scan: Scan): boolean {
 
 function extraAt(root: string, scan: Scan): Set<string> {
   const value = cachedSkills(root, scan);
-  const names = typeof value === "object" && value !== null && "commands" in value && Array.isArray((value as { commands: unknown }).commands) ? (value as { commands: unknown[] }).commands.filter((name): name is string => typeof name === "string") : [];
+  const names = typeof value === "object" && value !== null && "commands" in value && Array.isArray(value.commands) ? value.commands.filter((name): name is string => typeof name === "string") : [];
   return new Set(names);
 }
 
