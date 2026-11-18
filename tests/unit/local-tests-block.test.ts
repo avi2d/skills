@@ -244,7 +244,7 @@ test("allows tests instead of blocking when the setting is absent", () => {
 
 test("respects localTests allowed instead of refusing the repository's tests", () => {
   delete process.env.CI;
-  writeFileSync(join(root, ".skills.json"), JSON.stringify({ localTests: "allowed" }));
+  writeFileSync(join(root, ".skills.json"), JSON.stringify({ localTests: { blocked: false } }));
   expect(refuseLocalTests("bun test", root)).toBeUndefined();
 });
 

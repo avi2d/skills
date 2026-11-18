@@ -5,7 +5,7 @@ import { BIN_TEST_RUN, BIN_TEST_SCRIPT, hasEvalConfig, program, SCRIPT_RUNNERS, 
 
 export const LOCAL_TESTS_LINE = "local-tests: refused a test command";
 
-const REFUSAL = "localTests is blocked. CI is the test run.";
+const REFUSAL = ".skills.json localTests is blocked. CI is the test run.";
 const RUNNERS = new Set(["pytest", "vitest", "jest", "playwright", "mocha", "ava", "tap", "stryker"]);
 const PACKAGES = new Set(["npm", "pnpm", "yarn", "bun"]);
 
@@ -124,14 +124,14 @@ function pythonModuleTest(words: readonly string[]): boolean {
   }
   return false;
 }
-type Scan = { seen: Set<string>; roots: Map<string, string>; skills: Map<string, unknown>; extras: Map<string, Set<string>>; blocks: Map<string, boolean> };
+type Scan = { seen: Set<string>; roots: Map<string, string>; skills: Map<string, unknown> };
 
 function freshScan(seen: ReadonlySet<string> = new Set()): Scan {
-  return { seen: new Set(seen), roots: new Map(), skills: new Map(), extras: new Map(), blocks: new Map() };
+  return { seen: new Set(seen), roots: new Map(), skills: new Map() };
 }
 
 function childScan(scan: Scan, key: string): Scan {
-  return { seen: new Set([...scan.seen, key]), roots: scan.roots, skills: scan.skills, extras: scan.extras, blocks: scan.blocks };
+  return { seen: new Set([...scan.seen, key]), roots: scan.roots, skills: scan.skills };
 }
 
 function cachedRoot(cwd: string, scan: Scan): string {
@@ -156,37 +156,17 @@ function cachedSkills(root: string, scan: Scan): unknown {
 }
 
 function blockedValue(value: unknown): boolean {
-  if (value === true) return true;
-  if (value === false) return false;
-  if (value === "blocked") return true;
-  if (value === "allowed") return false;
-  if (typeof value === "object" && value !== null) {
-    const rec = value as Record<string, unknown>;
-    if (rec.blocked === true) return true;
-    if (rec.blocked === false) return false;
-    if (rec.mode === "blocked") return true;
-    if (rec.mode === "allowed") return false;
-    return true;
-  }
-  return false;
+  return typeof value === "object" && value !== null && (value as Record<string, unknown>).blocked === true;
 }
 
 function blockedAt(root: string, scan: Scan): boolean {
-  const hit = scan.blocks.get(root);
-  if (hit !== undefined) return hit;
-  const blocked = blockedValue(cachedSkills(root, scan));
-  scan.blocks.set(root, blocked);
-  return blocked;
+  return blockedValue(cachedSkills(root, scan));
 }
 
 function extraAt(root: string, scan: Scan): Set<string> {
-  const hit = scan.extras.get(root);
-  if (hit !== undefined) return hit;
   const value = cachedSkills(root, scan);
   const names = typeof value === "object" && value !== null && "commands" in value && Array.isArray((value as { commands: unknown }).commands) ? (value as { commands: unknown[] }).commands.filter((name): name is string => typeof name === "string") : [];
-  const found = new Set(names);
-  scan.extras.set(root, found);
-  return found;
+  return new Set(names);
 }
 
 function uvDelegated(words: readonly string[], tool: string, cwd: string, scan: Scan): boolean | undefined {

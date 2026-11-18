@@ -135,7 +135,7 @@ A Rule that is not there whole reads as `broken`, and a transcript the Dispatche
 
 Each Dispatcher checks shell commands before the job queue sees them.
 For a recognised test command, the Dispatcher reads `.skills.json` at the repository root.
-The block stays off unless that file opts in with a `localTests` key.
+The block stays off unless that file sets `localTests` to `{"blocked":true}`.
 The Dispatcher refuses a blocked command and says that CI is the test run.
 A repository without the key runs its tests as usual.
 With `CI=true`, the Dispatcher lets the command run.
