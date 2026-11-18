@@ -1,6 +1,6 @@
 import { Config, Effect, Schema } from "effect";
 import { FileFailure, MalformedMachineConfig } from "../platform/failures";
-import { MAIN_ACCOUNT, SECOND_ACCOUNT, accountDirUnder, type ClaudeAccount } from "./claude-accounts";
+import { SECOND_ACCOUNT, accountDirUnder, type ClaudeAccount } from "./claude-accounts";
 
 const Duration = Schema.TemplateLiteral([Schema.Finite, Schema.Literals(["ms", "s", "m", "h"])]);
 
@@ -24,19 +24,13 @@ const ReviewerChain = Schema.Tuple([
     agent: Schema.Literal("pi"),
     model: Schema.Literal(OPUS),
     effort: Effort,
-    env: Schema.Struct({ CLAUDE_CONFIG_DIR: accountDirOf(MAIN_ACCOUNT) }),
+    env: Schema.Struct({ CLAUDE_CONFIG_DIR: accountDirOf(SECOND_ACCOUNT) }),
   }).annotate({
-    description: "Opus 5.5 on the clauth account main, the Claude $200 Max account, logged in under its own config dir",
+    description: "Opus 5.5 on the clauth account second, the Claude $100 Max account, logged in under its own config dir",
   }),
   Schema.Struct({ agent: Schema.Literal("pi"), model: Schema.Literal(SOL), effort: Effort }).annotate({
     description: "GPT-6.1 Sol on the Codex $20 account",
   }),
-  Schema.Struct({
-    agent: Schema.Literal("pi"),
-    model: Schema.Literal(OPUS),
-    effort: Effort,
-    env: Schema.Struct({ CLAUDE_CONFIG_DIR: accountDirOf(SECOND_ACCOUNT) }),
-  }).annotate({ description: "Opus 5.5 on the clauth account second, the Claude $100 Max account, logged in under its own config dir" }),
 ]).annotate({ description: "Reviewers in order of preference, none behind a floor: the review step moves on only after a usage limit" });
 
 const loginDir = (home: string, account: ClaudeAccount) => `${home}/${accountDirUnder(account)}`;
@@ -121,9 +115,8 @@ export const noMistakesConfigOf = (home: string): NoMistakesConfig => ({
     pi: { model: SPARK, effort: "high" },
   },
   reviewer_chain: [
-    { agent: "pi", model: OPUS, effort: "high", env: { CLAUDE_CONFIG_DIR: loginDir(home, MAIN_ACCOUNT) } },
-    { agent: "pi", model: SOL, effort: "high" },
     { agent: "pi", model: OPUS, effort: "high", env: { CLAUDE_CONFIG_DIR: loginDir(home, SECOND_ACCOUNT) } },
+    { agent: "pi", model: SOL, effort: "high" },
   ],
   auto_fix: { rebase: 3, lint: 3, test: 3, review: 0, document: 3, ci: 3 },
   ci: { rerun_transient: 0, revalidate_repairs: false },
