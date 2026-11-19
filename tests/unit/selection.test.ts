@@ -110,8 +110,8 @@ describe("profile selection", () => {
 
   test("every configured profile resolves to the Rules it declared before", () => {
     const resolved = new Map(selection.profiles.map((profile) => [profile.name, profile.rules]));
-    expect(resolved.get("default")).toEqual(["comment-discipline", "fix-what-you-see", "prove-it-works", "typescript-best-practices", "agents-md-router", "readme-front-door", "credential-files", "git-hygiene-stash"]);
-expect(resolved.get("muse-spark")).toEqual(["comment-discipline", "fix-what-you-see", "guard-the-context-window-slow-output", "prove-it-works", "typescript-best-practices", "agents-md-router", "readme-front-door", "credential-files", "git-hygiene-stash", "writing-for-people"]);
+    expect(resolved.get("default")).toEqual(["comment-discipline", "fix-what-you-see", "prove-it-works", "typescript-best-practices", "agents-md-router", "readme-front-door", "credential-files", "git-hygiene-stash", "say-what-is-left"]);
+expect(resolved.get("muse-spark")).toEqual(["comment-discipline", "fix-what-you-see", "guard-the-context-window-slow-output", "prove-it-works", "typescript-best-practices", "agents-md-router", "readme-front-door", "credential-files", "git-hygiene-stash", "say-what-is-left", "writing-for-people"]);
     expect(resolved.get("gpt-6")).toEqual([
       "comment-discipline",
       "fix-what-you-see",
@@ -124,6 +124,7 @@ expect(resolved.get("muse-spark")).toEqual(["comment-discipline", "fix-what-you-
       "readme-front-door",
       "credential-files",
       "git-hygiene-stash",
+      "say-what-is-left",
     ]);
     expect(resolved.get("claude-opus-5-5")).toEqual([
       "comment-discipline",
@@ -135,6 +136,7 @@ expect(resolved.get("muse-spark")).toEqual(["comment-discipline", "fix-what-you-
       "readme-front-door",
       "credential-files",
       "git-hygiene-stash",
+      "say-what-is-left",
     ]);
     expect(resolved.get("claude-fable-5-2")).toEqual([
       "comment-discipline",
@@ -147,6 +149,7 @@ expect(resolved.get("muse-spark")).toEqual(["comment-discipline", "fix-what-you-
       "readme-front-door",
       "credential-files",
       "git-hygiene-stash",
+      "say-what-is-left",
     ]);
     expect(resolved.get("claude-haiku-5-5")).toEqual([
       "comment-discipline",
@@ -158,6 +161,7 @@ expect(resolved.get("muse-spark")).toEqual(["comment-discipline", "fix-what-you-
       "readme-front-door",
       "credential-files",
       "git-hygiene-stash",
+      "say-what-is-left",
     ]);
     expect(resolved.get("ollama-qwen")).toEqual([
       "guard-the-context-window-slow-output",
@@ -166,6 +170,7 @@ expect(resolved.get("muse-spark")).toEqual(["comment-discipline", "fix-what-you-
       "readme-front-door",
       "credential-files",
       "git-hygiene-stash",
+      "say-what-is-left",
     ]);
     expect(selection.profiles.find((profile) => profile.name === "gpt-6")?.models).toEqual([
       "openai-codex/gpt-6-luna",
