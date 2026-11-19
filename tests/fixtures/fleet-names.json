@@ -104,7 +104,7 @@
   "tests/e2e/link.test.ts": 24,
   "tests/e2e/no-mistakes-config.test.ts": 11,
   "tests/e2e/pi-dispatcher.test.ts": 1,
-  "tests/fixtures/fleet-names.json": 19,
+  "tests/fixtures/fleet-names.json": 18,
   "tests/fixtures/herdr-pi-session.ts": 2,
   "tests/lib/harness-settings.ts": 3,
   "tests/unit/budget.test.ts": 3,
