@@ -9,6 +9,7 @@ import { consultable, hubUnder, hubs, type HubOutcome } from "./hub";
 import { dormantRules, loadSelection, profilesOf, selected } from "../bodies/selection";
 import { main } from "../platform/platform";
 import { noMistakesConfigOf, noMistakesConfigUnder, noMistakesYaml, readHome } from "./no-mistakes-config";
+import { UserConfigSource } from "./user-config";
 
 export const DISPATCHERS: { harness: Harness; bundle: Bundle }[] = [
   { harness: "pi", bundle: PI_BUNDLE },
@@ -46,7 +47,7 @@ export const emitted = Effect.fnUntraced(function* (
     for (const [dest, bytes] of yield* bundle(spec, repo)) out.set(dest, bytes);
     out.set(`${root}/${spec.dir}/${INDEX}`, indexBytes(yield* indexFor(harness, bodies, profiles, dormant)));
   }
-  const noMistakes = yield* noMistakesYaml(noMistakesConfigOf(yield* readHome));
+  const noMistakes = yield* noMistakesYaml(noMistakesConfigOf(yield* readHome, yield* yield* UserConfigSource));
   out.set(noMistakesConfigUnder(root), new TextEncoder().encode(noMistakes));
   return out;
 });

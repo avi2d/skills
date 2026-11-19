@@ -13,7 +13,7 @@ A file that is not JSON, or a key that holds the wrong shape, stops `bun run lin
 
 | Key | Holds | What it does |
 | --- | --- | --- |
-| `claudeConfigDirs` | an array of directories, each relative to $HOME | `bun run link` writes the checkout's Claude Code hooks into each directory's `settings.json`, and an eval treats each directory as a live config it must not run inside |
+| `claudeConfigDirs` | an array of directories, each relative to $HOME | `bun run link` writes Claude Code hooks into each directory, an eval treats each as a live config, and the reviewer uses the first |
 
 A directory in `claudeConfigDirs` that is empty, starts with `/` or `~`, or holds a `..` segment is refused.
 [The keys it adds to a Claude config directory](links.md#the-keys-it-adds-to-a-claude-config-directory) says which keys `bun run link` writes there.

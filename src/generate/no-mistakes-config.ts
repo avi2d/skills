@@ -1,6 +1,6 @@
 import { Config, Effect, Schema } from "effect";
 import { FileFailure, MalformedMachineConfig } from "../platform/failures";
-import { SECOND_ACCOUNT, accountDirUnder, type ClaudeAccount } from "./claude-accounts";
+import type { UserConfig } from "./user-config";
 
 const Duration = Schema.TemplateLiteral([Schema.Finite, Schema.Literals(["ms", "s", "m", "h"])]);
 
@@ -14,26 +14,19 @@ const OPUS = "claude-bridge/claude-opus-5-5";
 
 const SPARK = "opencode-go/muse-spark-1.3-contributor";
 
-const accountDirOf = (account: ClaudeAccount) =>
-  Schema.String.check(Schema.isStartingWith("/")).check(Schema.isEndingWith(`/${accountDirUnder(account)}`)).annotate({
-    description: "no-mistakes hands an entry's env to the agent unexpanded, so a tilde would never reach a home",
-  });
+const ConfigDir = Schema.String.check(Schema.isStartingWith("/"));
 
 const ReviewerChain = Schema.Tuple([
   Schema.Struct({
     agent: Schema.Literal("pi"),
     model: Schema.Literal(OPUS),
     effort: Effort,
-    env: Schema.Struct({ CLAUDE_CONFIG_DIR: accountDirOf(SECOND_ACCOUNT) }),
-  }).annotate({
-    description: "Opus 5.5 on the clauth account second, the Claude $100 Max account, logged in under its own config dir",
+    env: Schema.optionalKey(Schema.Struct({ CLAUDE_CONFIG_DIR: ConfigDir })),
   }),
   Schema.Struct({ agent: Schema.Literal("pi"), model: Schema.Literal(SOL), effort: Effort }).annotate({
     description: "GPT-6.1 Sol on the Codex $20 account",
   }),
 ]).annotate({ description: "Reviewers in order of preference, none behind a floor: the review step moves on only after a usage limit" });
-
-const loginDir = (home: string, account: ClaudeAccount) => `${home}/${accountDirUnder(account)}`;
 
 // The base review prompt skips style, so the instruction says comments are wanted.
 const COMMENT_REVIEW = [
@@ -96,7 +89,7 @@ const NoMistakesConfig = Schema.Struct({
 
 type NoMistakesConfig = typeof NoMistakesConfig.Type;
 
-export const noMistakesConfigOf = (home: string): NoMistakesConfig => ({
+export const noMistakesConfigOf = (home: string, { claudeConfigDirs = [] }: UserConfig = {}): NoMistakesConfig => ({
   agent: "pi",
   forgejo_axi_path: "forgejo-axi",
   ci_timeout: "168h",
@@ -115,7 +108,7 @@ export const noMistakesConfigOf = (home: string): NoMistakesConfig => ({
     pi: { model: SPARK, effort: "high" },
   },
   reviewer_chain: [
-    { agent: "pi", model: OPUS, effort: "high", env: { CLAUDE_CONFIG_DIR: loginDir(home, SECOND_ACCOUNT) } },
+    { agent: "pi", model: OPUS, effort: "high", ...(claudeConfigDirs[0] === undefined ? {} : { env: { CLAUDE_CONFIG_DIR: `${home}/${claudeConfigDirs[0]}` } }) },
     { agent: "pi", model: SOL, effort: "high" },
   ],
   auto_fix: { rebase: 3, lint: 3, test: 3, review: 0, document: 3, ci: 3 },
