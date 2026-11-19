@@ -1,4 +1,6 @@
 import { expect, test } from "bun:test";
+import { Effect } from "effect";
+import { UserConfigSource } from "../../src/generate/user-config";
 import { generated } from "../../src/generate/generate";
 import { REPO } from "../../src/generate/link";
 import { noMistakesConfigOf, noMistakesConfigUnder, noMistakesYaml, yamlOf } from "../../src/generate/no-mistakes-config";
@@ -6,6 +8,17 @@ import { saidBy, valueOf } from "../lib/effect";
 import { GENERATED_ROOT } from "../lib/generated-root";
 
 const HOME = "/home/someone";
+
+test.each([
+  [[".custom-claude", ".another-claude"], `${process.env.HOME}/.custom-claude`],
+  [[], undefined],
+])("generation uses the first configured Claude directory or omits the environment", async (dirs, expected) => {
+  const files = await valueOf(generated(REPO).pipe(Effect.provideService(UserConfigSource, Effect.succeed({ claudeConfigDirs: dirs }))));
+  const bytes = files.get(noMistakesConfigUnder(GENERATED_ROOT)) ?? expect.unreachable("generation wrote no no-mistakes config");
+  const config = Bun.YAML.parse(new TextDecoder().decode(bytes));
+  const opus = expected === undefined ? { agent: "pi", model: "claude-bridge/claude-opus-5-5", effort: "high" } : { agent: "pi", model: "claude-bridge/claude-opus-5-5", effort: "high", env: { CLAUDE_CONFIG_DIR: expected } };
+  expect(config).toEqual({ ...noMistakesConfigOf(process.env.HOME ?? ""), reviewer_chain: [opus, { agent: "pi", model: "openai/gpt-6.1-sol", effort: "high" }] });
+});
 
 test("the no-mistakes config reads back as YAML into exactly its source", async () => {
   expect(Bun.YAML.parse(await valueOf(noMistakesYaml(noMistakesConfigOf(HOME))))).toEqual(noMistakesConfigOf(HOME));
@@ -19,9 +32,9 @@ test("the comment review reports a warning with no-op, never an error or an esca
   expect(emitted()).toMatchObject({ review: { path_instructions: [{ path: "**/*", instructions: expect.stringContaining("will go stale") }] } });
 });
 
-test("the reviewer chain rejects a duplicate Opus and runs second before Sol", () => {
+test("the reviewer chain rejects a duplicate Opus and runs Opus before Sol", () => {
   expect(noMistakesConfigOf(HOME).reviewer_chain).toEqual([
-    { agent: "pi", model: "claude-bridge/claude-opus-5-5", effort: "high", env: { CLAUDE_CONFIG_DIR: "/home/someone/.claude-accounts/second" } },
+    { agent: "pi", model: "claude-bridge/claude-opus-5-5", effort: "high" },
     { agent: "pi", model: "openai/gpt-6.1-sol", effort: "high" },
   ]);
 });
@@ -31,12 +44,12 @@ test("the generated no-mistakes config carries no floor, which would skip Sol on
   expect(yaml).not.toMatch(/floor|five_hour/);
 });
 
-test("generation writes this machine's no-mistakes config under the generated root, with each login folder in $HOME", async () => {
-  const bytes = (await valueOf(generated(REPO))).get(noMistakesConfigUnder(GENERATED_ROOT)) ?? expect.unreachable("generation wrote no no-mistakes config");
+test("generation writes this machine's no-mistakes config under the generated root", async () => {
+  const bytes = (await valueOf(generated(REPO).pipe(Effect.provideService(UserConfigSource, Effect.succeed({}))))).get(noMistakesConfigUnder(GENERATED_ROOT)) ?? expect.unreachable("generation wrote no no-mistakes config");
   const config = Bun.YAML.parse(new TextDecoder().decode(bytes));
   const home = process.env.HOME ?? expect.unreachable("the test runs with no $HOME");
   expect(config).toEqual(noMistakesConfigOf(home));
-  expect(config).toMatchObject({ reviewer_chain: [{ env: { CLAUDE_CONFIG_DIR: `${home}/.claude-accounts/second` } }, { model: "openai/gpt-6.1-sol" }] });
+  expect(config).toMatchObject({ reviewer_chain: [{ model: "claude-bridge/claude-opus-5-5" }, { model: "openai/gpt-6.1-sol" }] });
 });
 
 type Chain = readonly Record<string, unknown>[];
@@ -49,7 +62,7 @@ const withChain = (reorder: (chain: Chain) => readonly unknown[]) => {
 const codexFloor = { command: "true", field: "remaining_percent", minimum: 30 };
 
 test.each([
-  ["a floor on the second account", ([opus, sol]: Chain) => [{ ...opus, floor: codexFloor }, sol], /no excess property\n {2}at \["reviewer_chain"\]\[0\]\["floor"\]$/],
+  ["a floor on Opus", ([opus, sol]: Chain) => [{ ...opus, floor: codexFloor }, sol], /no excess property\n {2}at \["reviewer_chain"\]\[0\]\["floor"\]$/],
   ["a floor on Sol", ([opus, sol]: Chain) => [opus, { ...sol, floor: codexFloor }], /no excess property\n {2}at \["reviewer_chain"\]\[1\]\["floor"\]$/],
   ["Sol first", ([opus, sol]: Chain) => [sol, opus], /at \["reviewer_chain"\]\[0\]\["model"\]$/],
   ["a duplicate Opus reviewer", ([opus, sol]: Chain) => [opus, sol, opus], /reviewer_chain/],
@@ -57,13 +70,12 @@ test.each([
   ["Astra first", ([, sol]: Chain) => [{ agent: "pi", model: "openai/gpt-6-astra", effort: "high" }, sol], /at \["reviewer_chain"\]\[0\]\["model"\]$/],
   ["a chain that drops Sol", ([opus]: Chain) => [opus], /reviewer_chain/],
   ["a chain that drops Opus", ([, sol]: Chain) => [sol], /reviewer_chain/],
-  ["the removed main login", ([opus, sol]: Chain) => [{ ...opus, env: { CLAUDE_CONFIG_DIR: "/home/someone/.claude-accounts/main" } }, sol], /at \["reviewer_chain"\]\[0\]/],
 ])("generation refuses a reviewer chain with %s", async (_, reorder, named) => {
   expect(await saidBy(noMistakesYaml(withChain(reorder)))).toMatch(named);
 });
 
 test("generation refuses a login folder written with a tilde, which no-mistakes passes to the agent unexpanded", async () => {
-  const source = withChain(([opus, sol]) => [{ ...opus, env: { CLAUDE_CONFIG_DIR: "~/.claude-accounts/second" } }, sol]);
+  const source = withChain(([opus, sol]) => [{ ...opus, env: { CLAUDE_CONFIG_DIR: "~/.custom-claude" } }, sol]);
   expect(await saidBy(noMistakesYaml(source))).toMatch(/Expected a string starting with "\/"\n {2}at .*\["CLAUDE_CONFIG_DIR"\]$/);
 });
 

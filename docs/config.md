@@ -3,17 +3,17 @@ kind: reference
 ---
 # The skills config
 
-The skills config is one optional JSON file that names what `bun run link` writes beyond the paths [the link map](links.md) lists.
-`bun run link` and the evals read it from `$SKILLS_CONFIG` when that variable is set, and from `${XDG_CONFIG_HOME:-$HOME/.config}/skills/config.json` otherwise.
+The skills config is one optional JSON file that names what `bun run link` writes beyond the paths [the link map](links.md) lists and what `bun run generate` writes into the Opus reviewer entry.
+`bun run link`, `bun run generate` and the evals read it from `$SKILLS_CONFIG` when that variable is set, and from `${XDG_CONFIG_HOME:-$HOME/.config}/skills/config.json` otherwise.
 A path that holds no file reads as an empty config, so a clone with no config links only what the link map lists.
 A key the config does not declare is ignored, so a config written for a newer checkout still loads in an older one.
-A file that is not JSON, or a key that holds the wrong shape, stops `bun run link` before it links anything, naming the file.
+A file that is not JSON, or a key that holds the wrong shape, stops `bun run link` and `bun run generate` before either writes anything, naming the file.
 
 ## Keys
 
 | Key | Holds | What it does |
 | --- | --- | --- |
-| `claudeConfigDirs` | an array of directories, each relative to $HOME | `bun run link` writes the checkout's Claude Code hooks into each directory's `settings.json`, and an eval treats each directory as a live config it must not run inside |
+| `claudeConfigDirs` | an array of directories, each relative to $HOME | `bun run link` writes Claude Code hooks into each directory, an eval treats each as a live config, and the reviewer uses the first |
 
 A directory in `claudeConfigDirs` that is empty, starts with `/` or `~`, or holds a `..` segment is refused.
 [The keys it adds to a Claude config directory](links.md#the-keys-it-adds-to-a-claude-config-directory) says which keys `bun run link` writes there.

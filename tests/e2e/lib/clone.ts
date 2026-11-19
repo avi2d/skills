@@ -1,4 +1,6 @@
+import { Effect } from "effect";
 import { generated } from "../../../src/generate/generate";
+import { UserConfigSource } from "../../../src/generate/user-config";
 import { trackedFiles } from "./git";
 import { valueOf } from "../../lib/effect";
 import { HUB } from "../../lib/generated-root";
@@ -19,7 +21,7 @@ function withAncestors(paths: Iterable<string>): Set<string> {
 export async function clonePaths(repo: string): Promise<Set<string>> {
   return withAncestors([
     ...(await trackedFiles(repo)),
-    ...(await valueOf(generated(repo))).keys(),
+    ...(await valueOf(generated(repo).pipe(Effect.provideService(UserConfigSource, Effect.succeed({}))))).keys(),
     HUB,
   ]);
 }

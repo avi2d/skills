@@ -28,6 +28,8 @@ import { dangling } from "../lib/body-names";
 import { failureOf, said, saidBy, value, valueOf } from "../lib/effect";
 import { GENERATED_ROOT, HUB } from "../lib/generated-root";
 import { bodies, repo, selection } from "../lib/tree";
+import { Effect } from "effect";
+import { UserConfigSource } from "../../src/generate/user-config";
 import { closeSessions, load } from "../lib/pi";
 
 // Each test generates or bundles a tree, which a loaded machine slows past bun's 5s default.
@@ -181,7 +183,7 @@ describe("the dispatch index", () => {
   });
 
   test("the index is emitted inside the Dispatcher its emitter carries, under the generated root", async () => {
-    const emitted = await valueOf(generated(repo));
+    const emitted = await valueOf(generated(repo).pipe(Effect.provideService(UserConfigSource, Effect.succeed({}))));
     for (const { bundle: spec } of DISPATCHERS) expect(emitted.has(`${rootOf(spec)}/${INDEX}`), spec.dir).toBe(true);
   });
 
@@ -442,7 +444,7 @@ describe("the generated tree", () => {
   test("the preload wrote this process's own root, byte for byte what the generator emits", async () => {
     const own = `generated-${process.pid}`;
     const ownHub = hubUnder(own);
-    const wanted = new Map([...(await valueOf(generated(repo)))].map(([dest, bytes]): [string, Uint8Array] => [`${own}${dest.slice(dest.indexOf("/"))}`, bytes]));
+    const wanted = new Map([...(await valueOf(generated(repo).pipe(Effect.provideService(UserConfigSource, Effect.succeed({})))))].map(([dest, bytes]): [string, Uint8Array] => [`${own}${dest.slice(dest.indexOf("/"))}`, bytes]));
     const written = (await valueOf(filesUnder(`${repo}${own}`))).map((rel) => `${own}/${rel}`).filter((path) => !path.startsWith(`${ownHub}/`));
     expect(written, "the preload's root holds other files than the generator emits").toEqual([...wanted.keys()].toSorted());
     for (const [path, bytes] of wanted) expect(bytes, `${path} differs`).toEqual(await Bun.file(`${repo}${path}`).bytes());
@@ -453,7 +455,7 @@ describe("the generated tree", () => {
   });
 
   test("the check rejects a hand-edit to a generated file", async () => {
-    const emitted = await valueOf(generated(repo));
+    const emitted = await valueOf(generated(repo).pipe(Effect.provideService(UserConfigSource, Effect.succeed({}))));
     const dest = `${rootOf(piDispatcher.bundle)}/${ENTRY}`;
     const edited = new TextEncoder().encode(`${decode(emittedAt(emitted, dest))}\nAnd one more rule nobody asked for.\n`);
 
@@ -467,7 +469,7 @@ describe("the generated tree", () => {
   });
 
   test("the check rejects a file under the generated root that nothing wrote", async () => {
-    const emitted = await valueOf(generated(repo));
+    const emitted = await valueOf(generated(repo).pipe(Effect.provideService(UserConfigSource, Effect.succeed({}))));
     const stray = `${rootOf(piDispatcher.bundle)}/long-gone.ts`;
 
     const sandbox = `${tmpdir()}/skills-generator-fixture-${process.pid}-stray/`;
@@ -482,7 +484,7 @@ describe("the generated tree", () => {
 
   test("a Body edited but not regenerated names the index path that would change", async () => {
     const dest = `${rootOf(piDispatcher.bundle)}/${INDEX}`;
-    const emitted = await valueOf(generated(repo));
+    const emitted = await valueOf(generated(repo).pipe(Effect.provideService(UserConfigSource, Effect.succeed({}))));
     const edited = new Map(emitted);
     edited.set(dest, new TextEncoder().encode(`${decode(emittedAt(emitted, dest))}\n// an edit nobody ran generate for\n`));
 
@@ -498,12 +500,12 @@ describe("the generated tree", () => {
   test("the Hub shares the emitted root, and the generator writes no bytes into it", async () => {
     const sandbox = await sourceCopy("skills-generator-hub-");
     try {
-      await valueOf(checkout(sandbox));
+      await valueOf(checkout(sandbox).pipe(Effect.provideService(UserConfigSource, Effect.succeed({}))));
       expect(existsSync(`${sandbox}${HUB}`), "the Hub is reconciled somewhere else, so one command no longer writes one tree").toBe(true);
     } finally {
       discard(sandbox);
     }
-    const inHub = [...(await valueOf(generated(repo))).keys()].filter((dest) => dest.startsWith(`${HUB}/`));
+    const inHub = [...(await valueOf(generated(repo).pipe(Effect.provideService(UserConfigSource, Effect.succeed({}))))).keys()].filter((dest) => dest.startsWith(`${HUB}/`));
     expect(inHub, "the generator writes bytes into the Hub, which holds links").toEqual([]);
   });
 
@@ -512,7 +514,7 @@ describe("the generated tree", () => {
     const foreign = `${sandbox}${HUB}/foreign`;
     try {
       await Bun.write(`${foreign}/${SKILL_FILE}`, "---\nname: foreign\n---\n\nSomebody else's Body.\n");
-      const files = await valueOf(generated(repo));
+      const files = await valueOf(generated(repo).pipe(Effect.provideService(UserConfigSource, Effect.succeed({}))));
       expect(await valueOf(write(sandbox, files)), "the generator wrote nothing").toBeGreaterThan(0);
       expect(
         await Bun.file(`${foreign}/${SKILL_FILE}`).text(),
@@ -544,18 +546,18 @@ describe("a tool that ships its own skill", () => {
     const sandbox = await sourceCopy("skills-tool-");
     const home = `${mkdtempSync(join(tmpdir(), "skills-tool-home-"))}/`;
     try {
-      await valueOf(checkout(sandbox));
+      await valueOf(checkout(sandbox).pipe(Effect.provideService(UserConfigSource, Effect.succeed({}))));
       await mkdir(`${home}.agents`, { recursive: true });
       await symlink(`${sandbox}${HUB}`, `${home}.agents/skills`);
       const installed = `${home}.agents/skills/no-mistakes/${SKILL_FILE}`;
       await Bun.write(installed, "---\nname: no-mistakes\n---\n\nThe installed binary's own skill.\n");
 
-      const { hubs } = await valueOf(checkout(sandbox));
+      const { hubs } = await valueOf(checkout(sandbox).pipe(Effect.provideService(UserConfigSource, Effect.succeed({}))));
       expect(hubs.find((outcome) => outcome.entry === "no-mistakes")?.state).toBe("left");
       expect(await Bun.file(installed).text(), "generate took the skill its installer wrote").toContain(
         "The installed binary's own skill.",
       );
-      expect(await valueOf(drift(sandbox, await valueOf(generated(sandbox))))).toEqual([]);
+      expect(await valueOf(drift(sandbox, await valueOf(generated(sandbox).pipe(Effect.provideService(UserConfigSource, Effect.succeed({}))))))).toEqual([]);
     } finally {
       discard(sandbox);
       rmSync(home, { recursive: true, force: true });
