@@ -15,14 +15,15 @@ Tool definitions are absent from this repository and have no character size in t
 
 | Part | Characters | Share of Rules by characters |
 | --- | ---: | ---: |
-| rule: `comment-discipline` | 2671 | 27.1% |
-| rule: `fix-what-you-see` | 328 | 3.3% |
-| rule: `prove-it-works` | 2760 | 28.0% |
-| rule: `typescript-best-practices` | 1768 | 18.0% |
-| rule: `agents-md-router` | 754 | 7.7% |
-| rule: `readme-front-door` | 678 | 6.9% |
-| rule: `credential-files` | 369 | 3.7% |
-| rule: `git-hygiene-stash` | 516 | 5.2% |
+| rule: `comment-discipline` | 2671 | 25.0% |
+| rule: `fix-what-you-see` | 328 | 3.1% |
+| rule: `prove-it-works` | 2760 | 25.8% |
+| rule: `typescript-best-practices` | 1768 | 16.6% |
+| rule: `agents-md-router` | 754 | 7.1% |
+| rule: `readme-front-door` | 678 | 6.4% |
+| rule: `credential-files` | 369 | 3.5% |
+| rule: `git-hygiene-stash` | 516 | 4.8% |
+| rule: `say-what-is-left` | 833 | 7.8% |
 | skill: `build-and-review-motion` | 5794 |  |
 | skill: `develop-a-website` | 8421 |  |
 | skill: `generate-assets` | 5556 |  |
@@ -54,16 +55,17 @@ Tool definitions are absent from this repository and have no character size in t
 
 | Part | Characters | Share of Rules by characters |
 | --- | ---: | ---: |
-| rule: `comment-discipline` | 2671 | 23.6% |
-| rule: `fix-what-you-see` | 328 | 2.9% |
-| rule: `guard-the-context-window-slow-output` | 626 | 5.5% |
-| rule: `prove-it-works` | 2760 | 24.4% |
-| rule: `typescript-best-practices` | 1768 | 15.6% |
-| rule: `agents-md-router` | 754 | 6.7% |
-| rule: `readme-front-door` | 678 | 6.0% |
-| rule: `credential-files` | 369 | 3.3% |
-| rule: `git-hygiene-stash` | 516 | 4.6% |
-| rule: `writing-for-people` | 861 | 7.6% |
+| rule: `comment-discipline` | 2671 | 22.0% |
+| rule: `fix-what-you-see` | 328 | 2.7% |
+| rule: `guard-the-context-window-slow-output` | 626 | 5.1% |
+| rule: `prove-it-works` | 2760 | 22.7% |
+| rule: `typescript-best-practices` | 1768 | 14.5% |
+| rule: `agents-md-router` | 754 | 6.2% |
+| rule: `readme-front-door` | 678 | 5.6% |
+| rule: `credential-files` | 369 | 3.0% |
+| rule: `git-hygiene-stash` | 516 | 4.2% |
+| rule: `say-what-is-left` | 833 | 6.8% |
+| rule: `writing-for-people` | 861 | 7.1% |
 | skill: `build-and-review-motion` | 5794 |  |
 | skill: `develop-a-website` | 8421 |  |
 | skill: `generate-assets` | 5556 |  |
@@ -95,17 +97,18 @@ Tool definitions are absent from this repository and have no character size in t
 
 | Part | Characters | Share of Rules by characters |
 | --- | ---: | ---: |
-| rule: `comment-discipline` | 2671 | 23.8% |
-| rule: `fix-what-you-see` | 328 | 2.9% |
-| rule: `force-determinism` | 647 | 5.8% |
-| rule: `git-hygiene` | 100 | 0.9% |
-| rule: `guard-the-context-window-slow-output` | 626 | 5.6% |
-| rule: `prove-it-works` | 2760 | 24.6% |
-| rule: `typescript-best-practices` | 1768 | 15.8% |
-| rule: `agents-md-router` | 754 | 6.7% |
-| rule: `readme-front-door` | 678 | 6.0% |
-| rule: `credential-files` | 369 | 3.3% |
-| rule: `git-hygiene-stash` | 516 | 4.6% |
+| rule: `comment-discipline` | 2671 | 22.2% |
+| rule: `fix-what-you-see` | 328 | 2.7% |
+| rule: `force-determinism` | 647 | 5.4% |
+| rule: `git-hygiene` | 100 | 0.8% |
+| rule: `guard-the-context-window-slow-output` | 626 | 5.2% |
+| rule: `prove-it-works` | 2760 | 22.9% |
+| rule: `typescript-best-practices` | 1768 | 14.7% |
+| rule: `agents-md-router` | 754 | 6.3% |
+| rule: `readme-front-door` | 678 | 5.6% |
+| rule: `credential-files` | 369 | 3.1% |
+| rule: `git-hygiene-stash` | 516 | 4.3% |
+| rule: `say-what-is-left` | 833 | 6.9% |
 | skill: `build-and-review-motion` | 5794 |  |
 | skill: `develop-a-website` | 8421 |  |
 | skill: `generate-assets` | 5556 |  |
@@ -137,15 +140,16 @@ Tool definitions are absent from this repository and have no character size in t
 
 | Part | Characters | Share of Rules by characters |
 | --- | ---: | ---: |
-| rule: `comment-discipline` | 2671 | 26.8% |
-| rule: `fix-what-you-see` | 328 | 3.3% |
-| rule: `git-hygiene-co-author` | 112 | 1.1% |
-| rule: `prove-it-works` | 2760 | 27.7% |
-| rule: `typescript-best-practices` | 1768 | 17.8% |
-| rule: `agents-md-router` | 754 | 7.6% |
-| rule: `readme-front-door` | 678 | 6.8% |
-| rule: `credential-files` | 369 | 3.7% |
-| rule: `git-hygiene-stash` | 516 | 5.2% |
+| rule: `comment-discipline` | 2671 | 24.8% |
+| rule: `fix-what-you-see` | 328 | 3.0% |
+| rule: `git-hygiene-co-author` | 112 | 1.0% |
+| rule: `prove-it-works` | 2760 | 25.6% |
+| rule: `typescript-best-practices` | 1768 | 16.4% |
+| rule: `agents-md-router` | 754 | 7.0% |
+| rule: `readme-front-door` | 678 | 6.3% |
+| rule: `credential-files` | 369 | 3.4% |
+| rule: `git-hygiene-stash` | 516 | 4.8% |
+| rule: `say-what-is-left` | 833 | 7.7% |
 | skill: `build-and-review-motion` | 5794 |  |
 | skill: `develop-a-website` | 8421 |  |
 | skill: `generate-assets` | 5556 |  |
@@ -177,16 +181,17 @@ Tool definitions are absent from this repository and have no character size in t
 
 | Part | Characters | Share of Rules by characters |
 | --- | ---: | ---: |
-| rule: `comment-discipline` | 2671 | 25.2% |
-| rule: `fix-what-you-see` | 328 | 3.1% |
-| rule: `git-hygiene-co-author` | 112 | 1.1% |
-| rule: `guard-the-context-window-slow-output` | 626 | 5.9% |
-| rule: `prove-it-works` | 2760 | 26.1% |
-| rule: `typescript-best-practices` | 1768 | 16.7% |
-| rule: `agents-md-router` | 754 | 7.1% |
-| rule: `readme-front-door` | 678 | 6.4% |
-| rule: `credential-files` | 369 | 3.5% |
-| rule: `git-hygiene-stash` | 516 | 4.9% |
+| rule: `comment-discipline` | 2671 | 23.4% |
+| rule: `fix-what-you-see` | 328 | 2.9% |
+| rule: `git-hygiene-co-author` | 112 | 1.0% |
+| rule: `guard-the-context-window-slow-output` | 626 | 5.5% |
+| rule: `prove-it-works` | 2760 | 24.2% |
+| rule: `typescript-best-practices` | 1768 | 15.5% |
+| rule: `agents-md-router` | 754 | 6.6% |
+| rule: `readme-front-door` | 678 | 5.9% |
+| rule: `credential-files` | 369 | 3.2% |
+| rule: `git-hygiene-stash` | 516 | 4.5% |
+| rule: `say-what-is-left` | 833 | 7.3% |
 | skill: `build-and-review-motion` | 5794 |  |
 | skill: `develop-a-website` | 8421 |  |
 | skill: `generate-assets` | 5556 |  |
@@ -218,15 +223,16 @@ Tool definitions are absent from this repository and have no character size in t
 
 | Part | Characters | Share of Rules by characters |
 | --- | ---: | ---: |
-| rule: `comment-discipline` | 2671 | 25.5% |
-| rule: `fix-what-you-see` | 328 | 3.1% |
-| rule: `guard-the-context-window-slow-output` | 626 | 6.0% |
-| rule: `prove-it-works` | 2760 | 26.4% |
-| rule: `typescript-best-practices` | 1768 | 16.9% |
-| rule: `agents-md-router` | 754 | 7.2% |
-| rule: `readme-front-door` | 678 | 6.5% |
-| rule: `credential-files` | 369 | 3.5% |
-| rule: `git-hygiene-stash` | 516 | 4.9% |
+| rule: `comment-discipline` | 2671 | 23.6% |
+| rule: `fix-what-you-see` | 328 | 2.9% |
+| rule: `guard-the-context-window-slow-output` | 626 | 5.5% |
+| rule: `prove-it-works` | 2760 | 24.4% |
+| rule: `typescript-best-practices` | 1768 | 15.6% |
+| rule: `agents-md-router` | 754 | 6.7% |
+| rule: `readme-front-door` | 678 | 6.0% |
+| rule: `credential-files` | 369 | 3.3% |
+| rule: `git-hygiene-stash` | 516 | 4.6% |
+| rule: `say-what-is-left` | 833 | 7.4% |
 | skill: `build-and-review-motion` | 5794 |  |
 | skill: `develop-a-website` | 8421 |  |
 | skill: `generate-assets` | 5556 |  |
@@ -258,12 +264,13 @@ Tool definitions are absent from this repository and have no character size in t
 
 | Part | Characters | Share of Rules by characters |
 | --- | ---: | ---: |
-| rule: `guard-the-context-window-slow-output` | 626 | 11.0% |
-| rule: `prove-it-works` | 2760 | 48.4% |
-| rule: `agents-md-router` | 754 | 13.2% |
-| rule: `readme-front-door` | 678 | 11.9% |
-| rule: `credential-files` | 369 | 6.5% |
-| rule: `git-hygiene-stash` | 516 | 9.0% |
+| rule: `guard-the-context-window-slow-output` | 626 | 9.6% |
+| rule: `prove-it-works` | 2760 | 42.2% |
+| rule: `agents-md-router` | 754 | 11.5% |
+| rule: `readme-front-door` | 678 | 10.4% |
+| rule: `credential-files` | 369 | 5.6% |
+| rule: `git-hygiene-stash` | 516 | 7.9% |
+| rule: `say-what-is-left` | 833 | 12.7% |
 | skill: `build-and-review-motion` | 5794 |  |
 | skill: `develop-a-website` | 8421 |  |
 | skill: `generate-assets` | 5556 |  |
