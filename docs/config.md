@@ -3,11 +3,11 @@ kind: reference
 ---
 # The skills config
 
-The skills config is one optional JSON file that names what `bun run link` writes beyond the paths [the link map](links.md) lists.
-`bun run link` and the evals read it from `$SKILLS_CONFIG` when that variable is set, and from `${XDG_CONFIG_HOME:-$HOME/.config}/skills/config.json` otherwise.
+The skills config is one optional JSON file that names what `bun run link` writes beyond the paths [the link map](links.md) lists and what `bun run generate` writes into the Opus reviewer entry.
+`bun run link`, `bun run generate` and the evals read it from `$SKILLS_CONFIG` when that variable is set, and from `${XDG_CONFIG_HOME:-$HOME/.config}/skills/config.json` otherwise.
 A path that holds no file reads as an empty config, so a clone with no config links only what the link map lists.
 A key the config does not declare is ignored, so a config written for a newer checkout still loads in an older one.
-A file that is not JSON, or a key that holds the wrong shape, stops `bun run link` before it links anything, naming the file.
+A file that is not JSON, or a key that holds the wrong shape, stops `bun run link` and `bun run generate` before either writes anything, naming the file.
 
 ## Keys
 

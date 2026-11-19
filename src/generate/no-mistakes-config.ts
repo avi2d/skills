@@ -24,7 +24,7 @@ const ReviewerChain = Schema.Tuple([
     env: Schema.optionalKey(Schema.Struct({ CLAUDE_CONFIG_DIR: ConfigDir })),
   }),
   Schema.Struct({ agent: Schema.Literal("pi"), model: Schema.Literal(SOL), effort: Effort }).annotate({
-    description: "GPT-6.1 Sol on the Codex $20 account",
+    description: "GPT-6.1 Sol",
   }),
 ]).annotate({ description: "Reviewers in order of preference, none behind a floor: the review step moves on only after a usage limit" });
 
