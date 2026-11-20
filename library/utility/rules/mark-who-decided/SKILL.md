@@ -13,7 +13,7 @@ A report or record that lists decisions names who made each one: the person or t
 Keep the two in separate lists, so the person can see which choices were theirs.
 
 - **Decided by the person:** each choice the person made or approved.
-- **Decided by the agent:** each choice the agent made on its own judgment.
+- **Decided by the agent:** each choice the agent made on its own judgment, with its basis in a few words: the rule it applied, the owner's words it followed, or the evidence or reasoning it rests on.
 
 A choice the person has not made yet goes under **Waiting on the person**, not under either list.
 Do not move an agent's choice to the person's list because the person did not object.
