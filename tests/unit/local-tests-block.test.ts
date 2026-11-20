@@ -309,7 +309,7 @@ test("names a non-boolean allowLocal rather than coercing it or treating it as a
 test("names a misspelled key rather than running a command against invalid settings", () => {
   delete process.env.CI;
   const dir = repoWith("typo", { testComands: ["example-runner"] });
-  expect(refuseLocalTests("example-runner", dir)).toContain("unknown key: agentTests.testComands");
+  expect(refuseLocalTests("bun test", dir)).toContain("unknown key: agentTests.testComands");
 });
 
 test("pi refuses a nested bash call instead of sending it to the queue", () => {

@@ -42,7 +42,7 @@ describe("reading the package.json of the repository a session stands in", () =>
     const root = initialised();
     const path = join(root, ".skills.json");
     writeFileSync(path, JSON.stringify({ rules: { on: ["unslop"], off: ["unslop"] } }));
-    expect(readProject(root)).toEqual({ path, unreadable: 'switches "unslop" both on and off.' });
+    expect(readProject(root)).toEqual({ path, declares: [], on: [], off: [], settingsUnreadable: 'switches "unslop" both on and off' });
   });
 
   test("a repository without the file declares nothing, and is no problem to report", () => {

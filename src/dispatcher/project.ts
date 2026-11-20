@@ -10,6 +10,7 @@ export type Declaration = (typeof DECLARATIONS)[number];
 
 export type Project =
   | { path: string; declares: Declaration[]; on: string[]; off: string[] }
+  | { path: string; declares: Declaration[]; on: string[]; off: string[]; settingsUnreadable: string }
   | { path: string; unreadable: string };
 
 const because = (e: unknown): string => (e instanceof Error ? e.message : String(e));
@@ -71,6 +72,7 @@ export function readProject(cwd: string): Project | undefined {
   if (manifest && "unreadable" in manifest) return manifest;
   const read = readSkillsSettings(root);
   if (read === undefined) return manifest;
-  if ("unreadable" in read) return read;
+  if ("unreadable" in read)
+    return { path: read.path, declares: manifest?.declares ?? [], on: [], off: [], settingsUnreadable: read.unreadable };
   return { path: read.path, declares: manifest?.declares ?? [], ...read.settings.rules };
 }

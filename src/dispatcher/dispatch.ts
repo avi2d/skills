@@ -110,6 +110,10 @@ function heard(index: Index, project: Project | undefined, model: string | undef
     const why = `${project.path} ${project.unreadable}, so no Rule fires on what it declares and none of its switches apply`;
     return [{ type: "ignored", why }];
   }
+  if ("settingsUnreadable" in project) {
+    const why = `${project.path} ${project.settingsUnreadable}, so none of its switches apply`;
+    return [{ type: "ignored", why }];
+  }
   const actions: Action[] = [];
   const switches = [
     { to: "on", names: project.on },

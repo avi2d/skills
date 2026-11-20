@@ -324,21 +324,23 @@ export function refusedTests(hook: string, payload: HookPayload, note?: (line: s
 }
 
 export function refuseLocalTests(command: string, cwd: string, note?: (line: string) => void): string | undefined {
+  if (process.env.CI === "true") return undefined;
   const scan = freshScan();
-  cachedSkills(cachedRoot(cwd, scan), scan);
   const roots = new Set(testDirectories(command, cwd, scan).map((dir) => cachedRoot(dir, scan)));
+  if (roots.size === 0) return undefined;
   const tested = [...roots].map((root) => cachedSkills(root, scan));
-  const blocked = tested.some((read) => read === undefined || "unreadable" in read || !read.settings.agentTests.allowLocal);
-  for (const read of scan.skills.values()) {
-    if (read === undefined) continue;
-    if ("unreadable" in read) {
-      const reason = `${read.path}: ${read.unreadable}`;
+  for (const read of tested) {
+    if (read !== undefined && "unreadable" in read) {
+      const reason = `${read.path}: ${read.unreadable}.`;
       note?.(`local-tests: ${reason}`);
       return reason;
     }
-    if (read.migration !== undefined) note?.(read.migration);
   }
-  if (!blocked || process.env.CI === "true") return undefined;
+  for (const read of tested) {
+    if (read !== undefined && "settings" in read && read.migration !== undefined) note?.(read.migration);
+  }
+  const blocked = tested.some((read) => read === undefined || !read.settings.agentTests.allowLocal);
+  if (!blocked) return undefined;
   note?.(LOCAL_TESTS_LINE);
   return REFUSAL;
 }

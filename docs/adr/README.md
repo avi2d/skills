@@ -123,5 +123,6 @@
 | [0113](0113-finish-the-task-is-switched-off.md) | Finish the task is switched off | Accepted | `selection.toml` |
 | [0114](0114-sol-returns-to-the-reviewer-chain-with-no-floor.md) | Sol returns to the reviewer chain with no floor | Accepted | `src/generate/no-mistakes-config.ts`, `tests/unit/no-mistakes-config.test.ts` |
 | [0115](0115-the-web-tools-and-the-qwen-repair-leave-the-harness.md) | The web tools and the qwen repair leave the harness | Accepted | `src/generate/link.ts`, `harness/pi/settings.json`, `tests/e2e/extension-preflight.test.ts` |
+| [0116](0116-repository-settings-live-in-skills-json-and-local-tests-stay-refused-by-default.md) | Repository settings live in .skills.json and local tests stay refused by default | Accepted |  |
 
 <!-- end generated adr-index -->
