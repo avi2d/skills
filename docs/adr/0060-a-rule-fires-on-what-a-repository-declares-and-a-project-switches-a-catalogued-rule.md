@@ -1,3 +1,6 @@
+---
+governs: [src/dispatcher/project.ts, src/dispatcher/dispatch.ts, selection.toml]
+---
 # 60. A Rule fires on what a repository declares, and a project switches a catalogued Rule
 
 Date: 2026-09-24

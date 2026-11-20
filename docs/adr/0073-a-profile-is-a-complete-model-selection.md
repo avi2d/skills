@@ -1,3 +1,6 @@
+---
+governs: [selection.toml, src/bodies/selection.ts]
+---
 # 73. A Profile is a complete model selection
 
 Date: 2026-09-26

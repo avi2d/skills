@@ -1,3 +1,6 @@
+---
+governs: [src/dispatcher/project.ts]
+---
 # 74. A project declares itself in its package.json, and quality.json is gone
 
 Date: 2026-09-26

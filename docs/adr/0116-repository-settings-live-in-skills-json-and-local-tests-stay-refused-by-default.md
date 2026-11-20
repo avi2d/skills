@@ -1,3 +1,6 @@
+---
+governs: [.skills.json, schema/skills.schema.json, harness/local-tests/project-settings.ts, src/dispatcher/project.ts]
+---
 # 116. Repository settings live in .skills.json and local tests stay refused by default
 
 Date: 2026-11-20

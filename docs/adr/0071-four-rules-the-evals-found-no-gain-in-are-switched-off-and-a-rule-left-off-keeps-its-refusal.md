@@ -1,3 +1,6 @@
+---
+governs: [selection.toml]
+---
 # 71. Four Rules the evals found no gain in are switched off, and a Rule left off keeps its refusal
 
 Date: 2026-09-26

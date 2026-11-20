@@ -67,7 +67,7 @@
 | [0057](0057-a-rule-is-measured-by-ablation-on-vitest-evals-with-a-program-as-judge.md) | A Rule is measured by ablation, on vitest-evals, with a program as judge | Accepted |  |
 | [0058](0058-the-assertion-rules-are-a-ban-in-every-file.md) | The assertion rules are a ban in every file | Accepted |  |
 | [0059](0059-the-lint-runs-the-kits-gates-through-one-entry-point.md) | The lint runs the kit's gates through one entry point | Accepted |  |
-| [0060](0060-a-rule-fires-on-what-a-repository-declares-and-a-project-switches-a-catalogued-rule.md) | A Rule fires on what a repository declares, and a project switches a catalogued Rule | Accepted |  |
+| [0060](0060-a-rule-fires-on-what-a-repository-declares-and-a-project-switches-a-catalogued-rule.md) | A Rule fires on what a repository declares, and a project switches a catalogued Rule | Accepted | `src/dispatcher/project.ts`, `src/dispatcher/dispatch.ts`, `selection.toml` |
 | [0061](0061-guidance-for-people-docs-is-a-reference-a-rule-on-their-paths-names.md) | Guidance for people docs is a Reference that a Rule on their paths names | Accepted |  |
 | [0062](0062-a-separator-in-a-doc-is-refused-at-every-write-by-the-kits-prose-matchers.md) | A separator in a doc is refused at every write, by the kit's prose matchers | Accepted |  |
 | [0063](0063-a-sweep-commits-its-record-and-a-bare-sweep-measures-the-rule-least-recently-swept.md) | A sweep commits its record, and a bare sweep measures the Rule least recently swept | Accepted |  |
@@ -78,10 +78,10 @@
 | [0068](0068-a-reproduction-is-a-command-whose-output-shows-the-defect.md) | A reproduction is a command whose output shows the defect | Accepted |  |
 | [0069](0069-the-kits-consumer-suite-proves-each-effect-scope-rule-fails.md) | The kit's consumer suite proves each Effect scope rule fails | Accepted |  |
 | [0070](0070-vendoring-a-library-moves-to-the-kits-checks-vendor.md) | Vendoring a library moves to the kit's checks-vendor | Accepted |  |
-| [0071](0071-four-rules-the-evals-found-no-gain-in-are-switched-off-and-a-rule-left-off-keeps-its-refusal.md) | Four Rules the evals found no gain in are switched off, and a Rule left off keeps its refusal | Accepted |  |
+| [0071](0071-four-rules-the-evals-found-no-gain-in-are-switched-off-and-a-rule-left-off-keeps-its-refusal.md) | Four Rules the evals found no gain in are switched off, and a Rule left off keeps its refusal | Accepted | `selection.toml` |
 | [0072](0072-a-profile-scopes-named-rules-by-model-without-changing-tools.md) | A Profile scopes named Rules by model without changing tools | Accepted |  |
-| [0073](0073-a-profile-is-a-complete-model-selection.md) | A Profile is a complete model selection | Accepted |  |
-| [0074](0074-a-project-declares-itself-in-its-package-json-and-quality-json-is-gone.md) | A project declares itself in its package.json, and quality.json is gone | Accepted |  |
+| [0073](0073-a-profile-is-a-complete-model-selection.md) | A Profile is a complete model selection | Accepted | `selection.toml`, `src/bodies/selection.ts` |
+| [0074](0074-a-project-declares-itself-in-its-package-json-and-quality-json-is-gone.md) | A project declares itself in its package.json, and quality.json is gone | Accepted | `src/dispatcher/project.ts` |
 | [0075](0075-the-generated-root-is-read-through-config-where-the-program-touches-the-tree.md) | The generated root is read through Config where the program touches the tree | Accepted |  |
 | [0076](0076-the-verdict-gate-hands-each-check-the-files-the-settle-changed.md) | The verdict gate hands each check the files the settle changed | Accepted |  |
 | [0077](0077-the-verdict-gate-diffs-against-the-settle-baseline-commit.md) | The verdict gate diffs against the settle baseline commit | Accepted |  |
@@ -123,6 +123,6 @@
 | [0113](0113-finish-the-task-is-switched-off.md) | Finish the task is switched off | Accepted | `selection.toml` |
 | [0114](0114-sol-returns-to-the-reviewer-chain-with-no-floor.md) | Sol returns to the reviewer chain with no floor | Accepted | `src/generate/no-mistakes-config.ts`, `tests/unit/no-mistakes-config.test.ts` |
 | [0115](0115-the-web-tools-and-the-qwen-repair-leave-the-harness.md) | The web tools and the qwen repair leave the harness | Accepted | `src/generate/link.ts`, `harness/pi/settings.json`, `tests/e2e/extension-preflight.test.ts` |
-| [0116](0116-repository-settings-live-in-skills-json-and-local-tests-stay-refused-by-default.md) | Repository settings live in .skills.json and local tests stay refused by default | Accepted |  |
+| [0116](0116-repository-settings-live-in-skills-json-and-local-tests-stay-refused-by-default.md) | Repository settings live in .skills.json and local tests stay refused by default | Accepted | `.skills.json`, `schema/skills.schema.json`, `harness/local-tests/project-settings.ts`, `src/dispatcher/project.ts` |
 
 <!-- end generated adr-index -->
