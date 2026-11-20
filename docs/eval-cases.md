@@ -126,6 +126,7 @@ No case sets work aside mid-task, so no judge yet reads whether the agent commit
 ### `mark-who-decided`
 
 No case lists run decisions, so no judge yet reads whether each one is marked as decided by the person or by the agent.
+Each agent choice also names its basis in a few words.
 
 ### `readme-front-door`
 
