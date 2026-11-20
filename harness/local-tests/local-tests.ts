@@ -347,7 +347,7 @@ export function refuseLocalTests(command: string, cwd: string, note?: (line: str
   for (const read of tested) {
     if (read !== undefined && "settings" in read && read.migration !== undefined) note?.(read.migration);
   }
-  const blocked = tested.some((read) => read === undefined || !read.settings.agentTests.allowLocal);
+  const blocked = tested.some((read) => read === undefined || !("settings" in read) || !read.settings.agentTests.allowLocal);
   if (!blocked) return undefined;
   note?.(LOCAL_TESTS_LINE);
   return REFUSAL;
