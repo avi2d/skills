@@ -96,6 +96,24 @@ const isGateState = (value: unknown): value is GateState => {
 const isProject = (value: unknown): value is Project => {
   if (!isRecord(value) || typeof value.path !== "string") return false;
   if (value.unreadable !== undefined) return hasOnly(value, ["path", "unreadable"]) && typeof value.unreadable === "string";
+  if (value.settingsUnreadable !== undefined)
+    return (
+      hasOnly(value, ["path", "declares", "on", "off", "settingsUnreadable"]) &&
+      Array.isArray(value.declares) &&
+      value.declares.every((entry) => entry === "effect") &&
+      isStrings(value.on) &&
+      isStrings(value.off) &&
+      typeof value.settingsUnreadable === "string"
+    );
+  if (value.manifestUnreadable !== undefined)
+    return (
+      hasOnly(value, ["path", "declares", "on", "off", "manifestUnreadable"]) &&
+      Array.isArray(value.declares) &&
+      value.declares.every((entry) => entry === "effect") &&
+      isStrings(value.on) &&
+      isStrings(value.off) &&
+      typeof value.manifestUnreadable === "string"
+    );
   return (
     hasOnly(value, ["path", "declares", "on", "off"]) &&
     Array.isArray(value.declares) &&

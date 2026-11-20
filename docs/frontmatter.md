@@ -41,7 +41,7 @@ forbid: comments
 A write that adds what the matchers refuse is refused before it lands.
 pi blocks the call, Claude Code and Codex deny it, and the reason is the matchers' own words, naming the file, the line and what to do instead.
 The refusal fires every time rather than once a session, because a refusal records nothing, and it holds whether or not the Rule's trigger has fired yet.
-It also holds when `selection.toml` leaves the Rule off, because a refusal spends no context, and only a project's `package.json` switching the Rule off stands it down.
+It also holds when `selection.toml` leaves the Rule off, because a refusal spends no context, and only `rules.off` in the repository's `.skills.json` stands it down, as [repository settings](repository-settings.md) describes.
 A write is judged on the file as it would leave it and on the lines it adds or changes, the rule the kit's gate applies to a diff.
 A comment on a line the write touches is judged whole, and a comment on a line it leaves alone is not.
 An edit is placed where its harness would land it.

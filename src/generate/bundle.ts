@@ -43,6 +43,7 @@ const CORE_FILES = {
   [KIT_PROSE]: "prose.ts",
   "src/dispatcher/types.ts": "types.ts",
   "harness/common/glob.ts": "glob.ts",
+  "harness/local-tests/project-settings.ts": "project-settings.ts",
   "src/dispatcher/project.ts": "project.ts",
   "src/dispatcher/repo-walk.ts": "repo-walk.ts",
   "src/dispatcher/run-state.ts": "run-state.ts",

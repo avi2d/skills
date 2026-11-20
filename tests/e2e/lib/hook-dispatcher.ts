@@ -148,10 +148,12 @@ export function readsWhatTheRepositoryDeclares(rig: Rig): void {
 }
 
 export async function repoSwitchingTypescriptOff(driven: Driven): Promise<string> {
-  const dir = declaringRepo(join(driven.home, ".."), JSON.stringify({ skills: { rules: { off: ["typescript"] } } }));
+  const dir = declaringRepo(join(driven.home, ".."), "{}");
+  const settings = join(dir, ".skills.json");
+  writeFileSync(settings, JSON.stringify({ rules: { off: ["typescript"] } }));
   await driven.fire("SessionStart", { source: "startup", cwd: dir });
   const { log } = await driven.fire("UserPromptSubmit", { prompt: "one", cwd: dir });
-  expect(log).toContainEqual(expect.stringContaining(`switched typescript off: ${join(dir, "package.json")} switches it off`));
+  expect(log).toContainEqual(expect.stringContaining(`switched typescript off: ${settings} switches it off`));
   return dir;
 }
 

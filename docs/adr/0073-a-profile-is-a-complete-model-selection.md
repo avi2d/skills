@@ -1,3 +1,6 @@
+---
+governs: [selection.toml, src/bodies/selection.ts]
+---
 # 73. A Profile is a complete model selection
 
 Date: 2026-09-26
@@ -6,6 +9,7 @@ Date: 2026-09-26
 
 Accepted. Amends 0060, and amends 0072 in its selection and tool decisions while keeping its model identities.
 Amended by 0074: a repository switches a Rule under `skills.rules` in its `package.json`.
+Amended by 0116: a repository switches a Rule under `rules` in its `.skills.json`.
 Amended by 0085: only `profiles.default` names Skills and References, and every Profile shares them.
 Amended by 0088: a Profile outside the default names only additions in `add` and removals in `drop`.
 

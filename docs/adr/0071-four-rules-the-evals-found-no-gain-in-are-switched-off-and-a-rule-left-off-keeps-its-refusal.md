@@ -1,3 +1,6 @@
+---
+governs: [selection.toml]
+---
 # 71. Four Rules the evals found no gain in are switched off, and a Rule left off keeps its refusal
 
 Date: 2026-09-26
@@ -9,6 +12,7 @@ Records the Rule verdicts of 2026-09-25, which the captain accepted in full.
 Amends 0060: an inactive Rule still refuses a write, and only a project's `agentRules.off` stands that refusal down.
 Changes the premise of 0062: `writing-for-people` is switched off itself, and its prose refusal stands only through this record.
 Amended by 0074: the switch that stands a refusal down is `skills.rules.off` in a project's `package.json`.
+Amended by 0116: the switch that stands a refusal down is `rules.off` in a repository's `.skills.json`.
 Amended by 0078: the `release-pointer` case now measures `agents-md-router`, which every Profile switches on despite that case's result for `agent-docs`.
 
 ## Context

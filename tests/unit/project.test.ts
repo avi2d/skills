@@ -22,18 +22,10 @@ describe("decoding a package.json", () => {
     expect(decoded({})).toEqual({ path: PATH, declares: [], on: [], off: [] });
   });
 
-  test("the switches are read as written, and an absent skills block switches nothing", () => {
-    expect(decoded({ skills: { rules: { on: ["unslop"], off: ["fix-what-you-see"] } } })).toEqual({
-      path: PATH,
-      declares: [],
-      on: ["unslop"],
-      off: ["fix-what-you-see"],
-    });
-    expect(decoded({ skills: {} })).toEqual({ path: PATH, declares: [], on: [], off: [] });
-    expect(decoded({ dependencies: { effect: "4.0.0-rc.115" }, skills: { rules: { on: ["effect-error-channel"], off: [] } } })).toMatchObject({
-      declares: ["effect"],
-      on: ["effect-error-channel"],
-    });
+  test("rejects the old package.json key instead of applying its Rule switches", () => {
+    expect(refusal({ skills: { rules: { off: ["fix-what-you-see"] } } })).toBe(
+      "sets skills. Remove the skills key and move rules to .skills.json",
+    );
   });
 
   test("keys the Dispatcher does not read are left to their own tools", () => {
@@ -49,15 +41,5 @@ describe("decoding a package.json", () => {
     expect(refusal([])).toBe("does not hold an object");
     expect(refusal({ dependencies: [] })).toBe("holds dependencies that is not an object");
     expect(refusal({ devDependencies: "effect" })).toBe("holds devDependencies that is not an object");
-    expect(refusal({ skills: [] })).toBe("holds skills that is not an object");
-    expect(refusal({ skills: { rules: [] } })).toBe("holds skills.rules that is not an object");
-    expect(refusal({ skills: { rules: { on: "unslop" } } })).toBe("holds skills.rules.on that is not a list of Rule names");
-    expect(refusal({ skills: { rules: { off: [3] } } })).toBe("holds skills.rules.off that is not a list of Rule names");
-  });
-
-  test("a Rule switched both on and off is unreadable rather than settled by an order nobody wrote", () => {
-    expect(refusal({ skills: { rules: { on: ["unslop", "prove-it-works"], off: ["prove-it-works"] } } })).toBe(
-      "switches prove-it-works both on and off",
-    );
   });
 });

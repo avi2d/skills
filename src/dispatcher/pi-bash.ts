@@ -1,7 +1,7 @@
 import type { ToolCallEvent, ToolCallEventResult, ToolResultEvent } from "@earendil-works/pi-coding-agent";
 import { isToolCallEventType } from "@earendil-works/pi-coding-agent";
 import { steer, steeredLine } from "./job-queue";
-import { LOCAL_TESTS_LINE, refuseLocalTests } from "./local-tests";
+import { refuseLocalTests } from "./local-tests";
 import type { Event } from "./dispatch";
 
 export type BashClock = Map<string, { command: string; at: number }>;
@@ -14,11 +14,8 @@ export const bashCall = (
 ): ToolCallEventResult | undefined => {
   if (!isToolCallEventType("bash", event)) return undefined;
   const { command } = event.input;
-  const refusal = refuseLocalTests(command, cwd);
-  if (refusal !== undefined) {
-    note(LOCAL_TESTS_LINE);
-    return { block: true, reason: refusal };
-  }
+  const refusal = refuseLocalTests(command, cwd, note);
+  if (refusal !== undefined) return { block: true, reason: refusal };
   const steered = steer(command, cwd);
   if (steered === undefined) {
     clock.set(event.toolCallId, { command, at: Date.now() });

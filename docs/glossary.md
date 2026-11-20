@@ -141,7 +141,7 @@ Rules absent from every Profile remain in the Dispatcher catalogue for repositor
 `default_models` names the models that run the default Profile on purpose, and no model can appear both there and in a Profile.
 `tests/unit/selection-models.test.ts` fails on a model that the generated no-mistakes config names when neither a Profile nor `default_models` lists it.
 
-A repository can override that default for itself, switching a catalogued Rule on or off in the `skills.rules` of its `package.json`.
+A repository can override that default for itself, switching a catalogued Rule on or off under `rules` in its [`.skills.json`](repository-settings.md).
 A switch changes whether a Rule is active there, not when it fires: its trigger still decides that.
 A switched-off Rule reaches no session there, and its refusal does not stand.
 That switch is the only one that stands a refusal down, so a Rule the Selection leaves off still refuses.

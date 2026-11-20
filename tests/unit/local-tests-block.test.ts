@@ -16,10 +16,10 @@ afterEach(() => {
 });
 afterAll(() => rmSync(root, { recursive: true, force: true }));
 
-function repoWith(name: string, localTests: Record<string, unknown>): string {
+function repoWith(name: string, agentTests: Record<string, unknown>): string {
   const dir = join(root, name);
   mkdirSync(dir, { recursive: true });
-  writeFileSync(join(dir, ".skills.json"), JSON.stringify({ localTests }));
+  writeFileSync(join(dir, ".skills.json"), JSON.stringify({ agentTests }));
   return dir;
 }
 
@@ -38,7 +38,7 @@ test("recognises configured commands only in their repository instead of treatin
   const other = join(root, "other");
   mkdirSync(configured, { recursive: true });
   mkdirSync(other, { recursive: true });
-  writeFileSync(join(configured, ".skills.json"), JSON.stringify({ localTests: { commands: ["custom-runner"] } }));
+  writeFileSync(join(configured, ".skills.json"), JSON.stringify({ agentTests: { testCommands: ["custom-runner"] } }));
   writeFileSync(join(configured, "package.json"), JSON.stringify({ scripts: { verify: "custom-runner --all" } }));
   expect(runsTests("custom-runner", configured)).toBe(true);
   expect(runsTests("bunx custom-runner", configured)).toBe(true);
@@ -105,7 +105,6 @@ test("honours a directory flag instead of reading scripts from the wrong directo
   writeFileSync(join(flagged, "package.json"), JSON.stringify({ scripts: { verify: "tsc --noEmit" } }));
   mkdirSync(join(sub, "sub"), { recursive: true });
   writeFileSync(join(sub, "sub", "package.json"), JSON.stringify({ scripts: { verify: "tsc --noEmit" } }));
-  writeFileSync(join(sub, ".skills.json"), JSON.stringify({ localTests: { blocked: true } }));
   expect(runsTests("npm --prefix sub run verify", flagged)).toBe(true);
   expect(runsTests("bun --cwd sub run verify", flagged)).toBe(true);
   expect(runsTests("pnpm -C sub verify", flagged)).toBe(true);
@@ -172,7 +171,7 @@ test("leaves check scripts available instead of refusing their test-like names",
   delete process.env.CI;
   const checks = join(root, "checks");
   mkdirSync(checks, { recursive: true });
-  writeFileSync(join(checks, ".skills.json"), JSON.stringify({ localTests: { blocked: true, checks: ["custom-lint"] } }));
+  writeFileSync(join(checks, ".skills.json"), JSON.stringify({ agentTests: { notTestCommands: ["custom-lint"] } }));
   writeFileSync(join(checks, "package.json"), JSON.stringify({ scripts: {
     "test:types": "tsc --noEmit",
     "test:lint": "eslint .",
@@ -223,7 +222,7 @@ const evalScripts = { sweep: "vitest run --config evals/vitest.config.ts --confi
 
 test("allows an eval script in a repository that names its evals config instead of blocking the documented local sweep", () => {
   delete process.env.CI;
-  const sweep = repoWith("sweep", { blocked: true, evalConfigs: ["evals/vitest.config.ts"] });
+  const sweep = repoWith("sweep", { evalConfigs: ["evals/vitest.config.ts"] });
   writeFileSync(join(sweep, "package.json"), JSON.stringify({ scripts: evalScripts }));
   expect(runsTests("bun run sweep", sweep)).toBe(false);
   expect(refuseLocalTests("bun run sweep", sweep)).toBeUndefined();
@@ -231,30 +230,30 @@ test("allows an eval script in a repository that names its evals config instead 
 
 test("blocks an eval script in a repository that does not name its evals config instead of exempting every vitest run", () => {
   delete process.env.CI;
-  const plain = repoWith("plain-sweep", { blocked: true });
+  const plain = repoWith("plain-sweep", {});
   writeFileSync(join(plain, "package.json"), JSON.stringify({ scripts: evalScripts }));
   expect(refuseLocalTests("bun run sweep", plain)).toContain("CI is the test run");
 });
 
 test("allows a vitest run on an evals config only in the repository that names it instead of on any config", () => {
-  const named = repoWith("named-evals", { blocked: true, evalConfigs: ["evals/vitest.config.ts"] });
+  const named = repoWith("named-evals", { evalConfigs: ["evals/vitest.config.ts"] });
   expect(runsTests("vitest run --config evals/vitest.config.ts", named)).toBe(false);
   expect(runsTests("vitest run -c ./evals/vitest.config.ts", named)).toBe(false);
   expect(runsTests("vitest run --config=evals/vitest.config.ts", named)).toBe(false);
   expect(runsTests("vitest run --config other.config.ts", named)).toBe(true);
-  expect(runsTests("vitest run --config evals/vitest.config.ts", repoWith("unnamed-evals", { blocked: true }))).toBe(true);
+  expect(runsTests("vitest run --config evals/vitest.config.ts", repoWith("unnamed-evals", {}))).toBe(true);
 });
 
 test("does not block bin/fm-test-run.sh in a repository that does not name it instead of keeping the built-in name", () => {
   delete process.env.CI;
-  const unnamed = repoWith("unnamed-script", { blocked: true });
+  const unnamed = repoWith("unnamed-script", {});
   expect(refuseLocalTests("bin/fm-test-run.sh", unnamed)).toBeUndefined();
   expect(refuseLocalTests("sh bin/worker.test.sh", unnamed)).toBeUndefined();
 });
 
-test("blocks a script path the repository names in localTests.scripts instead of only the built-in shapes", () => {
+test("blocks a script path the repository names in agentTests.testScripts instead of only the built-in shapes", () => {
   delete process.env.CI;
-  const scripted = repoWith("named-script", { blocked: true, scripts: ["bin/fm-test-run.sh", "bin/*.test.sh"] });
+  const scripted = repoWith("named-script", { testScripts: ["bin/fm-test-run.sh", "bin/*.test.sh"] });
   expect(refuseLocalTests("bin/fm-test-run.sh", scripted)).toContain("CI is the test run");
   expect(refuseLocalTests("bin/fm-test-run.sh --watch", scripted)).toContain("CI is the test run");
   expect(refuseLocalTests("sh bin/worker.test.sh", scripted)).toContain("CI is the test run");
@@ -277,41 +276,57 @@ test("checks the target repository instead of allowing a script that changes dir
   const blocked = join(root, "blocked");
   mkdirSync(allowed, { recursive: true });
   mkdirSync(blocked, { recursive: true });
-  writeFileSync(join(allowed, ".skills.json"), JSON.stringify({ localTests: { blocked: false } }));
-  writeFileSync(join(blocked, ".skills.json"), JSON.stringify({ localTests: { blocked: true } }));
+  writeFileSync(join(allowed, ".skills.json"), JSON.stringify({ agentTests: { allowLocal: true } }));
   writeFileSync(join(allowed, "package.json"), JSON.stringify({ scripts: { cross: "cd ../blocked && bun test" } }));
-  expect(refuseLocalTests("bun run cross", allowed)).toContain("localTests is blocked");
+  expect(refuseLocalTests("bun run cross", allowed)).toContain("agentTests.allowLocal");
 });
 
-test("allows tests instead of blocking when the setting is absent", () => {
+test("refuses local test commands instead of treating a missing setting as permission", () => {
   delete process.env.CI;
-  rmSync(join(root, ".skills.json"), { force: true });
-  expect(refuseLocalTests("bun test", root)).toBeUndefined();
+  expect(refuseLocalTests("bun test", root)).toContain("agentTests.allowLocal");
+  expect(refuseLocalTests("bun test", repoWith("default", {}))).toContain("agentTests.allowLocal");
 });
 
-test("respects localTests allowed instead of refusing the repository's tests", () => {
+test("respects agentTests.allowLocal instead of always refusing tests", () => {
   delete process.env.CI;
-  writeFileSync(join(root, ".skills.json"), JSON.stringify({ localTests: { blocked: false } }));
-  expect(refuseLocalTests("bun test", root)).toBeUndefined();
+  expect(refuseLocalTests("bun test", repoWith("explicit-allow", { allowLocal: true }))).toBeUndefined();
+});
+
+test("inverts a legacy blocked: false instead of treating it as a refusal", () => {
+  delete process.env.CI;
+  const dir = join(root, "legacy-allow");
+  mkdirSync(dir, { recursive: true });
+  writeFileSync(join(dir, ".skills.json"), JSON.stringify({ localTests: { blocked: false } }));
+  expect(refuseLocalTests("bun test", dir)).toBeUndefined();
+});
+
+test("names a non-boolean allowLocal rather than coercing it or treating it as absent", () => {
+  delete process.env.CI;
+  const dir = repoWith("wrong-allow", { allowLocal: "no" });
+  expect(refuseLocalTests("bun test", dir)).toBe(`${join(dir, ".skills.json")}: agentTests.allowLocal must be a boolean.`);
+});
+
+test("names a misspelled key rather than running a command against invalid settings", () => {
+  delete process.env.CI;
+  const dir = repoWith("typo", { testComands: ["example-runner"] });
+  expect(refuseLocalTests("bun test", dir)).toContain("unknown key: agentTests.testComands");
+  expect(refuseLocalTests("git status", dir)).toBeUndefined();
+});
+
+test("still refuses a configured runner when another key is bad instead of failing open", () => {
+  delete process.env.CI;
+  const dir = repoWith("bad-allow-custom", { allowLocal: "no", testCommands: ["example-runner"] });
+  expect(refuseLocalTests("example-runner", dir)).toBe(`${join(dir, ".skills.json")}: agentTests.allowLocal must be a boolean.`);
 });
 
 test("pi refuses a nested bash call instead of sending it to the queue", () => {
   delete process.env.CI;
-  writeFileSync(join(root, ".skills.json"), JSON.stringify({ localTests: { blocked: true } }));
   const event = { type: "tool_call", toolName: "bash", toolCallId: "parent/1", parentToolCallId: "parent", input: { command: "bun test" } } as const;
   const clock = new Map();
   const lines: string[] = [];
-  expect(bashCall(clock, event, root, (line) => { lines.push(line); })).toEqual({ block: true, reason: expect.stringContaining("localTests is blocked") });
+  expect(bashCall(clock, event, root, (line) => { lines.push(line); })).toEqual({ block: true, reason: expect.stringContaining("agentTests.allowLocal") });
   expect(clock.size).toBe(0);
   expect(lines).toContain(LOCAL_TESTS_LINE);
-});
-
-test("Bash hook denies a test command before execution", () => {
-  delete process.env.CI;
-  writeFileSync(join(root, ".skills.json"), JSON.stringify({ localTests: { blocked: true } }));
-  const reply = refusedTests("PreToolUse", { tool_name: "Bash", tool_input: { command: "bun test" }, cwd: root });
-  expect(reply).toContain('"permissionDecision":"deny"');
-  expect(reply).toContain("localTests is blocked");
 });
 
 test("the hook ignores a foreign tool instead of refusing outside its shape", () => {

@@ -151,7 +151,8 @@ describe("what the repository's package.json declares", () => {
   });
 
   test("a Rule the project switches off refuses no write", async () => {
-    const cwd = declaring(JSON.stringify({ skills: { rules: { off: ["comment-discipline"] } } }));
+    const cwd = declaring("{}");
+    writeFileSync(join(cwd, ".skills.json"), JSON.stringify({ rules: { off: ["comment-discipline"] } }));
     const dispatcher = await load(declared, { cwd });
     await dispatcher.prompt("start");
     expect(await dispatcher.call("write", { path: "src/a.ts", content: `${DIRECTIVE}\nrun();\n` })).toBeUndefined();

@@ -31,6 +31,35 @@ describe("reading the package.json of the repository a session stands in", () =>
     expect(readProject(join(root, "src", "deep"))).toEqual({ path: join(root, PROJECT_FILE), declares: ["effect"], on: [], off: [] });
   });
 
+  test("loads Rule switches from .skills.json even when there is no package.json", () => {
+    const root = initialised();
+    const path = join(root, ".skills.json");
+    writeFileSync(path, JSON.stringify({ rules: { on: ["unslop"], off: ["fix-what-you-see"] } }));
+    expect(readProject(root)).toEqual({ path, declares: [], on: ["unslop"], off: ["fix-what-you-see"] });
+  });
+
+  test("rejects a Rule switched both on and off rather than picking a side", () => {
+    const root = initialised();
+    const path = join(root, ".skills.json");
+    writeFileSync(join(root, PROJECT_FILE), JSON.stringify({ dependencies: { effect: "1.0.0" } }));
+    writeFileSync(path, JSON.stringify({ rules: { on: ["unslop"], off: ["unslop"] } }));
+    expect(readProject(root)).toEqual({ path, declares: ["effect"], on: [], off: [], settingsUnreadable: 'switches "unslop" both on and off' });
+  });
+
+  test("still applies .skills.json switches when package.json is refused instead of dropping them", () => {
+    const root = initialised();
+    const path = join(root, ".skills.json");
+    writeFileSync(join(root, PROJECT_FILE), JSON.stringify({ skills: { rules: { off: ["unslop"] } } }));
+    writeFileSync(path, JSON.stringify({ rules: { off: ["comment-discipline"] } }));
+    expect(readProject(root)).toEqual({
+      path,
+      declares: [],
+      on: [],
+      off: ["comment-discipline"],
+      manifestUnreadable: `${join(root, PROJECT_FILE)} sets skills. Remove the skills key and move rules to .skills.json`,
+    });
+  });
+
   test("a repository without the file declares nothing, and is no problem to report", () => {
     expect(readProject(initialised())).toBeUndefined();
   });
