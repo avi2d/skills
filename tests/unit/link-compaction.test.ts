@@ -1,7 +1,7 @@
 import { expect, test } from "bun:test";
 import { piSettings, piSettingsFile } from "../lib/harness-settings";
 
-test("pi compacts each claude-bridge model and each per-token worker model at about 150k of its registered window, and no other model early", async () => {
+test("pi compacts each claude-bridge model and each per-token worker model at 150k of its registered window, and no other model early", async () => {
   const { SettingsManager, shouldCompact } = await import("@earendil-works/pi-coding-agent");
   const { getBuiltinModel } = await import("@earendil-works/pi-ai/providers/all");
   const settings = SettingsManager.inMemory(piSettingsFile);
@@ -36,7 +36,7 @@ test("pi compacts each claude-bridge model and each per-token worker model at ab
     const workerCompactsAt = (tokens: number) =>
       shouldCompact(tokens, worker.contextWindow, settings.getCompactionSettings({ provider, id }));
     expect(workerCompactsAt(150_000), `${provider}/${id} compacts before 150k`).toBe(false);
-    expect(workerCompactsAt(151_000), `${provider}/${id} runs past about 150k`).toBe(true);
+    expect(workerCompactsAt(150_001), `${provider}/${id} runs past 150k`).toBe(true);
     expect(settings.getCompactionKeepRecentTokens({ provider, id })).toBe(defaults.getCompactionKeepRecentTokens());
   }
   const openrouterMuse = getBuiltinModel("openrouter", "meta/muse-spark-1.3-contributor");
@@ -75,27 +75,4 @@ test("every compaction override is keyed by a provider and id that pi resolves i
     })
     .map(([key]) => key);
   expect(unmatched, "pi never matches these keys, so each model keeps the 16384-token default reserve").toEqual([]);
-});
-
-test("pi compacts the latest sol, astra, terra and luna on either OpenAI provider at 150k of its registered window, not at pi's default reserve near the window's end", async () => {
-  const { SettingsManager, shouldCompact } = await import("@earendil-works/pi-coding-agent");
-  const { getBuiltinModel } = await import("@earendil-works/pi-ai/providers/all");
-  const settings = SettingsManager.inMemory(piSettingsFile);
-  const defaults = SettingsManager.inMemory({});
-  for (const provider of ["openai", "openai-codex"] as const) {
-    for (const { id, contextWindow } of (["gpt-6.1-sol", "gpt-6-astra", "gpt-6.1-terra", "gpt-6-luna"] as const).map((latest) => getBuiltinModel(provider, latest))) {
-      const compactsAt = (tokens: number) => shouldCompact(tokens, contextWindow, settings.getCompactionSettings({ provider, id }));
-      expect(compactsAt(150_000), `${provider}/${id} compacts before 150k`).toBe(false);
-      expect(compactsAt(150_001), `${provider}/${id} runs past 150k`).toBe(true);
-      expect(settings.getCompactionReserveTokens({ provider, id }), `${provider}/${id} reserves its window minus 150k`).toBe(contextWindow - 150_000);
-      expect(settings.getCompactionKeepRecentTokens({ provider, id })).toBe(defaults.getCompactionKeepRecentTokens());
-    }
-  }
-});
-
-test("an OpenAI model other than the latest sol, astra, terra and luna carries no compaction override instead of one per catalog entry", () => {
-  const openai = Object.keys(piSettings.compaction?.modelOverrides ?? {}).filter((key) => /^openai(-codex)?\//.test(key));
-  expect(openai.toSorted()).toEqual(
-    ["openai", "openai-codex"].flatMap((provider) => ["gpt-6.1-sol", "gpt-6-astra", "gpt-6.1-terra", "gpt-6-luna"].map((id) => `${provider}/${id}`)).toSorted(),
-  );
 });
