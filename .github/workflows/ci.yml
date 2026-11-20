@@ -15,7 +15,7 @@ jobs:
     steps:
       # The head, not GitHub's merge ref, so the tree the gates read is the commit the range ends at.
       # The whole history, since the range starts where the head branched from the base branch.
-      - uses: avi2d/workflows/setup@v1
+      - uses: avi2d/workflows/setup@v3
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
@@ -30,12 +30,12 @@ jobs:
         run: bunx checks-commit-title
       - name: report the title as commitlint
         if: always()
-        uses: avi2d/workflows/commitlint-status@v1
+        uses: avi2d/workflows/commitlint-status@v3
         with:
           outcome: ${{ steps.title.outcome }}
       - id: filter
         name: tell a docs-only change
-        uses: avi2d/workflows/actions/docs-only@v2
+        uses: avi2d/workflows/actions/docs-only@v3
         with:
           base: ${{ github.event.pull_request.base.sha }}
       - run: bun run generate
@@ -67,6 +67,6 @@ jobs:
       # GitHub keeps a dispatched run's check off the pull request, so the job reports its result there as a commit status.
       - name: report the result on the head commit
         if: always() && github.event_name == 'workflow_dispatch'
-        uses: avi2d/workflows/head-status@v1
+        uses: avi2d/workflows/head-status@v3
         with:
           job-status: ${{ job.status }}
