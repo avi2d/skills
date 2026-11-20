@@ -105,6 +105,15 @@ const isProject = (value: unknown): value is Project => {
       isStrings(value.off) &&
       typeof value.settingsUnreadable === "string"
     );
+  if (value.manifestUnreadable !== undefined)
+    return (
+      hasOnly(value, ["path", "declares", "on", "off", "manifestUnreadable"]) &&
+      Array.isArray(value.declares) &&
+      value.declares.every((entry) => entry === "effect") &&
+      isStrings(value.on) &&
+      isStrings(value.off) &&
+      typeof value.manifestUnreadable === "string"
+    );
   return (
     hasOnly(value, ["path", "declares", "on", "off"]) &&
     Array.isArray(value.declares) &&

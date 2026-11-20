@@ -22,6 +22,7 @@ Amended by 0073: a Profile lists every Rule its models receive, and a Rule no
 Profile names is inactive.
 Amended by 0074: a project declares Effect and switches a Rule in its
 `package.json`, under `skills.rules`, and `quality.json` is gone.
+Amended by 0116: a project switches a Rule under `rules` in its `.skills.json`, and local tests stay refused unless `agentTests.allowLocal` is true.
 
 ## Context
 

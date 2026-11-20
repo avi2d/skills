@@ -310,6 +310,13 @@ test("names a misspelled key rather than running a command against invalid setti
   delete process.env.CI;
   const dir = repoWith("typo", { testComands: ["example-runner"] });
   expect(refuseLocalTests("bun test", dir)).toContain("unknown key: agentTests.testComands");
+  expect(refuseLocalTests("git status", dir)).toBeUndefined();
+});
+
+test("still refuses a configured runner when another key is bad instead of failing open", () => {
+  delete process.env.CI;
+  const dir = repoWith("bad-allow-custom", { allowLocal: "no", testCommands: ["example-runner"] });
+  expect(refuseLocalTests("example-runner", dir)).toBe(`${join(dir, ".skills.json")}: agentTests.allowLocal must be a boolean.`);
 });
 
 test("pi refuses a nested bash call instead of sending it to the queue", () => {

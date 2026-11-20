@@ -10,6 +10,7 @@ Date: 2026-11-10
 Accepted.
 Records the switch of `finish-the-task` off in the Muse Spark Profile.
 Changes `selection.toml`: the Muse Spark `add` list no longer names the Rule.
+Amended by 0116: a project switches the Rule on under `rules` in its `.skills.json`.
 
 ## Context
 

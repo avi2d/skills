@@ -10,6 +10,7 @@ Amends 0071: only a project's `skills.rules.off` stands a refusal down.
 Amends 0070: `checks-vendor` links each library the `prepare` script names, `.github/workflows/ci.yml` is hand-written rather than generated from `gates.ci`, `tests/vendored-paths.test.ts` declares its skip through `skipReason` at the test rather than in `testSkips`, and the Bodies' fallback is `bun install` or `bun run prepare`.
 Amends 0073: a repository switches a Rule under `skills.rules` in its `package.json`.
 Amends 0069: there is no fragment for `checks-quality --check` to require, and the kit reads `tsconfig.json` itself.
+Amended by 0116: a project switches a catalogued Rule under `rules` in its `.skills.json`, and local tests stay refused unless `agentTests.allowLocal` is true.
 
 ## Context
 

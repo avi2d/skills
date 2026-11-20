@@ -11,6 +11,7 @@ export type Declaration = (typeof DECLARATIONS)[number];
 export type Project =
   | { path: string; declares: Declaration[]; on: string[]; off: string[] }
   | { path: string; declares: Declaration[]; on: string[]; off: string[]; settingsUnreadable: string }
+  | { path: string; declares: Declaration[]; on: string[]; off: string[]; manifestUnreadable: string }
   | { path: string; unreadable: string };
 
 const because = (e: unknown): string => (e instanceof Error ? e.message : String(e));
@@ -69,10 +70,13 @@ export function readProject(cwd: string): Project | undefined {
   const root = gitRoot(cwd);
   if (root === undefined) return undefined;
   const manifest = readManifest(root);
-  if (manifest && "unreadable" in manifest) return manifest;
   const read = readSkillsSettings(root);
   if (read === undefined) return manifest;
-  if ("unreadable" in read)
+  if ("unreadable" in read) {
+    if (manifest && "unreadable" in manifest) return manifest;
     return { path: read.path, declares: manifest?.declares ?? [], on: [], off: [], settingsUnreadable: read.unreadable };
+  }
+  if (manifest && "unreadable" in manifest)
+    return { path: read.path, declares: [], ...read.settings.rules, manifestUnreadable: `${manifest.path} ${manifest.unreadable}` };
   return { path: read.path, declares: manifest?.declares ?? [], ...read.settings.rules };
 }

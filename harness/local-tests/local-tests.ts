@@ -100,8 +100,16 @@ function agentTestsAt(root: string, scan: Scan) {
 
 type ListKey = Exclude<keyof NonNullable<ReturnType<typeof agentTestsAt>>, "allowLocal">;
 
+function lenientAt(root: string, scan: Scan, key: "testCommands" | "testScripts"): string[] {
+  const read = cachedSkills(root, scan);
+  return read !== undefined && "unreadable" in read ? read.lenient?.[key] ?? [] : [];
+}
+
 function listAt(root: string, scan: Scan, key: ListKey): string[] {
-  return agentTestsAt(root, scan)?.[key] ?? [];
+  const live = agentTestsAt(root, scan)?.[key];
+  if (live !== undefined) return live;
+  if (key === "testCommands" || key === "testScripts") return lenientAt(root, scan, key);
+  return [];
 }
 
 function pathsAt(root: string, scan: Scan, key: "testScripts" | "evalConfigs"): RegExp[] {

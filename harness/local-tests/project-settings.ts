@@ -9,7 +9,7 @@ type ReadSettings =
       settings: { agentTests: Exclude<ReturnType<typeof agentTests>, string>; rules: Exclude<ReturnType<typeof rules>, string> };
       migration?: string;
     }
-  | { path: string; unreadable: string };
+  | { path: string; unreadable: string; lenient?: { testCommands: string[]; testScripts: string[] } };
 
 const LEGACY_KEYS = {
   allowLocal: "blocked",
@@ -74,16 +74,34 @@ function rules(value: unknown) {
   return { on, off };
 }
 
+function lenientStrings(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  return value.filter((entry): entry is string => typeof entry === "string");
+}
+
+function lenientLists(value: unknown): { testCommands: string[]; testScripts: string[] } | undefined {
+  if (!isRecord(value)) return undefined;
+  const sub = isRecord(value.agentTests) ? value.agentTests : isRecord(value.localTests) ? value.localTests : undefined;
+  if (sub === undefined) return undefined;
+  const commands = sub.testCommands ?? sub.commands;
+  const scripts = sub.testScripts ?? sub.scripts;
+  if (commands === undefined && scripts === undefined) return undefined;
+  return { testCommands: lenientStrings(commands), testScripts: lenientStrings(scripts) };
+}
+
 function decode(path: string, value: unknown): ReadSettings {
+  const lenient = lenientLists(value);
+  const failed = (reason: string): ReadSettings =>
+    ({ path, unreadable: reason, ...(lenient === undefined ? {} : { lenient }) });
   const read = object(value, ["$schema", "agentTests", "localTests", "rules"]);
-  if (typeof read === "string") return { path, unreadable: read };
-  if (read.$schema !== undefined && typeof read.$schema !== "string") return { path, unreadable: "$schema must be a string" };
+  if (typeof read === "string") return failed(read);
+  if (read.$schema !== undefined && typeof read.$schema !== "string") return failed("$schema must be a string");
   const legacy = read.localTests !== undefined;
-  if (legacy && read.agentTests !== undefined) return { path, unreadable: "sets both localTests and agentTests. Use agentTests only" };
+  if (legacy && read.agentTests !== undefined) return failed("sets both localTests and agentTests. Use agentTests only");
   const tests = agentTests(legacy ? read.localTests : read.agentTests, legacy);
-  if (typeof tests === "string") return { path, unreadable: tests };
+  if (typeof tests === "string") return failed(tests);
   const switches = rules(read.rules);
-  if (typeof switches === "string") return { path, unreadable: switches };
+  if (typeof switches === "string") return failed(switches);
   const settings = { agentTests: tests, rules: switches };
   if (!legacy) return { path, settings };
   const renames = Object.entries(LEGACY_KEYS).map(([key, old]) => `${old} to agentTests.${key}`);

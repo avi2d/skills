@@ -41,7 +41,9 @@ The Dispatcher ignores invalid globs.
 
 The Dispatcher rejects unknown keys, incorrect value types, and a Rule listed both on and off.
 A shell refusal of a recognised test command names the file and the error, and every other shell command runs.
+A settings file the Dispatcher cannot read still refuses the configured test commands and script paths.
 The Dispatcher logs a settings file it cannot read at a prompt, keeps the declarations it read from `package.json`, and applies no switches from it.
+When `package.json` cannot be read, the Dispatcher still applies the Rule switches from `.skills.json` and reports the `package.json` problem separately.
 If `package.json` contains a `skills` key, the Dispatcher's log names `.skills.json` as the place for the Rule lists.
 The log also names the replacement keys when the Dispatcher reads a legacy test setting on a shell call.
 
