@@ -31,6 +31,20 @@ describe("reading the package.json of the repository a session stands in", () =>
     expect(readProject(join(root, "src", "deep"))).toEqual({ path: join(root, PROJECT_FILE), declares: ["effect"], on: [], off: [] });
   });
 
+  test("loads Rule switches from .skills.json even when there is no package.json", () => {
+    const root = initialised();
+    const path = join(root, ".skills.json");
+    writeFileSync(path, JSON.stringify({ rules: { on: ["unslop"], off: ["fix-what-you-see"] } }));
+    expect(readProject(root)).toEqual({ path, declares: [], on: ["unslop"], off: ["fix-what-you-see"] });
+  });
+
+  test("rejects a Rule switched both on and off rather than picking a side", () => {
+    const root = initialised();
+    const path = join(root, ".skills.json");
+    writeFileSync(path, JSON.stringify({ rules: { on: ["unslop"], off: ["unslop"] } }));
+    expect(readProject(root)).toEqual({ path, unreadable: 'switches "unslop" both on and off.' });
+  });
+
   test("a repository without the file declares nothing, and is no problem to report", () => {
     expect(readProject(initialised())).toBeUndefined();
   });

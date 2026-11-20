@@ -125,7 +125,7 @@ describe("the checked-in Rules", () => {
     ).not.toContain("effect-error-channel");
   });
 
-  test("`effect-error-channel` reaches a repository whose package.json depends on Effect and switches it on, as the checks kit's own does once it also switches the cut Rule on", () => {
+  test("switching on effect-error-channel does not make it fire without an Effect dependency", () => {
     const files = ["scripts/lint.ts", "package.json"] as const;
     const declaresEffect = decodeProject("/checks/package.json", JSON.stringify({ dependencies: { effect: "4.0.0-rc.115" } }));
     expect(injected(run(index, [start, promptAt(declaresEffect, ...files)]).actions), "declaring Effect alone does not undo the cut").not.toContain(
@@ -135,7 +135,7 @@ describe("the checked-in Rules", () => {
     const checks = "declares" in declaresEffect ? { ...declaresEffect, on: [...declaresEffect.on, "effect-error-channel"] } : declaresEffect;
     expect(injected(run(index, [start, promptAt(checks, ...files)]).actions)).toContain("effect-error-channel");
 
-    const gatesOnly = decodeProject("/career/package.json", JSON.stringify({ scripts: { test: "bun test" }, skills: { rules: { on: ["effect-error-channel"], off: [] } } }));
+    const gatesOnly = projectOf({ path: "/career/.skills.json", on: ["effect-error-channel"] });
     expect(injected(run(index, [start, promptAt(gatesOnly, ...files)]).actions)).not.toContain("effect-error-channel");
   });
 

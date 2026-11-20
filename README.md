@@ -24,17 +24,15 @@ To switch a Body on or off for every repository:
    A Skill or a Reference is listed only in the default Profile, which every other Profile shares.
 1. Run `bun run generate`.
 
-A Rule's refusal still runs when `selection.toml` leaves the Rule off, and only `skills.rules.off` in a repository's `package.json` stands it down.
-
-To switch a Rule on or off in one repository, name it under `skills.rules` in that repository's `package.json`:
+A Rule's refusal still runs when `selection.toml` leaves the Rule off.
+To turn off a Rule and its refusals in one repository, list it under `rules.off` in that repository's `.skills.json`:
 
 ```json
-"skills": { "rules": { "off": ["fix-what-you-see"] } }
+{ "rules": { "off": ["fix-what-you-see"] } }
 ```
 
-`off` keeps a Rule and its refusal out of every session there.
-`on` takes the Rules that `selection.toml` leaves out of the session's model Profile and makes them active there, and each one's trigger still decides when it fires.
-The Dispatcher reads the file at every prompt, so the switch needs no `bun run generate`.
+The Dispatcher reads the switch at every prompt, so you do not need to run `bun run generate`.
+[Repository settings](docs/repository-settings.md) lists the other switches.
 
 ## Get an edited Rule into the next session
 
@@ -83,7 +81,8 @@ To see what fired:
 | `generated/` | the Hub, the Dispatcher bundles and the dispatch index, written by `bun run generate` and never committed |
 | `repos/` | links to library source for agents to read, and never committed |
 | `docs/` | the pages linked below, and the decision records in `docs/adr/` |
-| `package.json` | scripts, dependencies, the release version, and the repository's Rule switches |
+| `.skills.json` | the repository's Rule switches and agent test settings |
+| `package.json` | scripts, dependencies, and the release version |
 | `CHANGELOG.md` | what each release changed, with links to its pull requests, written by `bun run build` |
 
 ## Related topics
@@ -96,6 +95,7 @@ To see what fired:
 - [Trigger predicates](docs/triggers.md)
 - [The link map](docs/links.md)
 - [The skills config](docs/config.md)
+- [Repository settings](docs/repository-settings.md)
 - [Eval variables](docs/eval-variables.md)
 - [Eval cases](docs/eval-cases.md)
 - [The harness Contracts](docs/contracts.md)

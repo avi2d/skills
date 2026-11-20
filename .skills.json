@@ -1,8 +1,9 @@
 {
-  "localTests": {
-    "blocked": true,
-    "commands": ["checks-test", "checks-browser", "checks-flake", "checks-mutation"],
-    "scripts": ["bin/fm-test-run.sh", "bin/*.test.sh"],
+  "$schema": "./schema/skills.schema.json",
+  "agentTests": {
+    "allowLocal": false,
+    "testCommands": ["checks-test", "checks-browser", "checks-flake", "checks-mutation"],
+    "testScripts": ["bin/fm-test-run.sh", "bin/*.test.sh"],
     "evalConfigs": ["evals/vitest.config.ts"]
   }
 }

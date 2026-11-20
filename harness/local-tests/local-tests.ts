@@ -3,9 +3,11 @@ import { existsSync, readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { compileGlob, expandHome, flagDir, hasConfig, program, SCRIPT_RUNNERS, segments, skipFlags, stripped, texts } from "./shell-commands";
 
+import { readSkillsSettings, SETTINGS_FILE } from "./project-settings";
+
 export const LOCAL_TESTS_LINE = "local-tests: refused a test command";
 
-const REFUSAL = ".skills.json localTests is blocked. CI is the test run.";
+const REFUSAL = `Local agent tests are blocked. To allow them, set agentTests.allowLocal to true in ${SETTINGS_FILE}. CI is the test run.`;
 const RUNNERS = new Set(["pytest", "vitest", "jest", "playwright", "mocha", "ava", "tap", "stryker"]);
 const PACKAGES = new Set(["npm", "pnpm", "yarn", "bun"]);
 
@@ -66,7 +68,7 @@ function pythonModuleTest(words: readonly string[]): boolean {
   }
   return false;
 }
-type Scan = { seen: Set<string>; roots: Map<string, string>; skills: Map<string, unknown> };
+type Scan = { seen: Set<string>; roots: Map<string, string>; skills: Map<string, ReturnType<typeof readSkillsSettings>> };
 
 function freshScan(seen: ReadonlySet<string> = new Set()): Scan {
   return { seen: new Set(seen), roots: new Map(), skills: new Map() };
@@ -84,36 +86,25 @@ function cachedRoot(cwd: string, scan: Scan): string {
   return root;
 }
 
-function cachedSkills(root: string, scan: Scan): unknown {
+function cachedSkills(root: string, scan: Scan): ReturnType<typeof readSkillsSettings> {
   if (scan.skills.has(root)) return scan.skills.get(root);
-  let value: unknown;
-  try {
-    const parsed: unknown = JSON.parse(readFileSync(join(root, ".skills.json"), "utf8"));
-    value = typeof parsed === "object" && parsed !== null && "localTests" in parsed ? parsed.localTests : undefined;
-  } catch {
-    value = undefined;
-  }
-  scan.skills.set(root, value);
-  return value;
+  const read = readSkillsSettings(root);
+  scan.skills.set(root, read);
+  return read;
 }
 
-function blockedValue(value: unknown): boolean {
-  return typeof value === "object" && value !== null && "blocked" in value && value.blocked === true;
+function agentTestsAt(root: string, scan: Scan) {
+  const read = cachedSkills(root, scan);
+  return read && "settings" in read ? read.settings.agentTests : undefined;
 }
 
-function blockedAt(root: string, scan: Scan): boolean {
-  return blockedValue(cachedSkills(root, scan));
-}
-
-type ListKey = "commands" | "checks" | "scripts" | "evalConfigs";
+type ListKey = Exclude<keyof NonNullable<ReturnType<typeof agentTestsAt>>, "allowLocal">;
 
 function listAt(root: string, scan: Scan, key: ListKey): string[] {
-  const value = cachedSkills(root, scan);
-  const list: unknown = typeof value === "object" && value !== null && key in value ? Reflect.get(value, key) : [];
-  return Array.isArray(list) ? list.filter((name): name is string => typeof name === "string") : [];
+  return agentTestsAt(root, scan)?.[key] ?? [];
 }
 
-function pathsAt(root: string, scan: Scan, key: "scripts" | "evalConfigs"): RegExp[] {
+function pathsAt(root: string, scan: Scan, key: "testScripts" | "evalConfigs"): RegExp[] {
   return listAt(root, scan, key).flatMap((glob) => {
     try {
       return [compileGlob(`**/${glob}`)];
@@ -124,7 +115,7 @@ function pathsAt(root: string, scan: Scan, key: "scripts" | "evalConfigs"): RegE
 }
 
 function extraAt(root: string, scan: Scan): string[] {
-  return listAt(root, scan, "commands");
+  return listAt(root, scan, "testCommands");
 }
 
 function uvDelegated(words: readonly string[], tool: string, cwd: string, scan: Scan): boolean | undefined {
@@ -171,7 +162,7 @@ const CHECK_TOOLS = new Set([
 function checksBody(body: string, cwd: string, scan: Scan): boolean {
   const listed = segments(body);
   if (listed.length === 0) return false;
-  const checks = listAt(cachedRoot(cwd, scan), scan, "checks");
+  const checks = listAt(cachedRoot(cwd, scan), scan, "notTestCommands");
   return listed.every((segment) => {
     const words = commandWords(texts(segment)).map((word, at) => (at === 0 ? program(word) : word));
     const head = words[0];
@@ -278,7 +269,7 @@ function wordDirs(words: readonly string[], bare: readonly string[], base: strin
   if (scriptCall(words).name === "eval") return [];
   if (directRunner(words, here, scan)) return [here];
   if (managerRunner(words, here, scan)) return [here];
-  if (isTestScript(bare, pathsAt(cachedRoot(here, scan), scan, "scripts"))) return [here];
+  if (isTestScript(bare, pathsAt(cachedRoot(here, scan), scan, "testScripts"))) return [here];
   return scriptDirectories(words, base, scan);
 }
 function testDirectories(command: string, cwd: string, scan: Scan = freshScan()): string[] {
@@ -324,24 +315,30 @@ function rootOf(cwd: string): string {
 
 type HookPayload = { cwd?: string; tool_name?: string; tool_input?: Record<string, unknown> };
 
-export function refusedTests(hook: string, payload: HookPayload): string | undefined {
+export function refusedTests(hook: string, payload: HookPayload, note?: (line: string) => void): string | undefined {
   if (hook !== "PreToolUse" || payload.tool_name !== "Bash") return undefined;
   const command = payload.tool_input?.command;
   if (typeof command !== "string") return undefined;
-  const refusal = refuseLocalTests(command, payload.cwd ?? process.cwd());
+  const refusal = refuseLocalTests(command, payload.cwd ?? process.cwd(), note);
   return refusal === undefined ? undefined : JSON.stringify({ hookSpecificOutput: { hookEventName: hook, permissionDecision: "deny", permissionDecisionReason: refusal } });
 }
 
-export function refuseLocalTests(command: string, cwd: string): string | undefined {
-  if (process.env.CI === "true") return undefined;
+export function refuseLocalTests(command: string, cwd: string, note?: (line: string) => void): string | undefined {
   const scan = freshScan();
-  const roots: string[] = [];
-  for (const dir of new Set(testDirectories(command, cwd, scan))) {
-    const root = cachedRoot(dir, scan);
-    if (!roots.includes(root)) roots.push(root);
+  cachedSkills(cachedRoot(cwd, scan), scan);
+  const roots = new Set(testDirectories(command, cwd, scan).map((dir) => cachedRoot(dir, scan)));
+  const tested = [...roots].map((root) => cachedSkills(root, scan));
+  const blocked = tested.some((read) => read === undefined || "unreadable" in read || !read.settings.agentTests.allowLocal);
+  for (const read of scan.skills.values()) {
+    if (read === undefined) continue;
+    if ("unreadable" in read) {
+      const reason = `${read.path}: ${read.unreadable}`;
+      note?.(`local-tests: ${reason}`);
+      return reason;
+    }
+    if (read.migration !== undefined) note?.(read.migration);
   }
-  for (const root of roots) {
-    if (blockedAt(root, scan)) return REFUSAL;
-  }
-  return undefined;
+  if (!blocked || process.env.CI === "true") return undefined;
+  note?.(LOCAL_TESTS_LINE);
+  return REFUSAL;
 }

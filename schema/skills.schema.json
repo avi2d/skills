@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/avi2d/skills/main/schema/skills.schema.json",
+  "title": "skills repository settings",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "JSON Schema path or URL for editor help."
+    },
+    "agentTests": {
+      "type": "object",
+      "description": "Which shell commands the Dispatcher treats as tests and whether agents may run them locally.",
+      "default": {},
+      "additionalProperties": false,
+      "properties": {
+        "allowLocal": {
+          "type": "boolean",
+          "description": "Whether agents may run recognised test commands locally. CI may run them in either case.",
+          "default": false
+        },
+        "testCommands": {
+          "type": "array",
+          "description": "Additional executable names that start tests.",
+          "items": { "type": "string" },
+          "default": []
+        },
+        "testScripts": {
+          "type": "array",
+          "description": "Globs for script paths that start tests.",
+          "items": { "type": "string" },
+          "default": []
+        },
+        "notTestCommands": {
+          "type": "array",
+          "description": "Executable names for checks that do not run tests, even in a test-named package script.",
+          "items": { "type": "string" },
+          "default": []
+        },
+        "evalConfigs": {
+          "type": "array",
+          "description": "Globs for Vitest config paths that run evaluations instead of tests.",
+          "items": { "type": "string" },
+          "default": []
+        }
+      }
+    },
+    "rules": {
+      "type": "object",
+      "description": "Rule switches for this repository.",
+      "default": {},
+      "additionalProperties": false,
+      "properties": {
+        "on": {
+          "type": "array",
+          "description": "Rules to activate without changing their triggers.",
+          "items": { "type": "string" },
+          "default": []
+        },
+        "off": {
+          "type": "array",
+          "description": "Rules to deactivate, including their write refusals.",
+          "items": { "type": "string" },
+          "default": []
+        }
+      }
+    }
+  }
+}

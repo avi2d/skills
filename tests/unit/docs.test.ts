@@ -196,16 +196,13 @@ describe("the reference pages", () => {
 
 const AgentRules = Schema.fromJsonString(
   Schema.Struct({
-    skills: Schema.Struct({
-      rules: Schema.Struct({ on: Schema.optionalKey(Schema.Array(Schema.String)), off: Schema.Array(Schema.String) }),
-    }),
+    rules: Schema.Struct({ on: Schema.optionalKey(Schema.Array(Schema.String)), off: Schema.Array(Schema.String) }),
   }),
 );
 
-test("the README's skills.rules example switches on only Rules that are off by default, and off Rules that are on", async () => {
-  const example = /```json\n(.*"skills".*)\n```/.exec(await read("README.md"))?.[1] ?? expect.unreachable("the README shows no skills.rules example");
-  const { skills } = Schema.decodeSync(AgentRules)(`{${example}}`);
-  const { rules } = skills;
+test("the README's .skills.json example does not switch Rules to the state they are already in", async () => {
+  const example = /```json\n(.*"rules".*)\n```/.exec(await read("README.md"))?.[1] ?? expect.unreachable("the README shows no .skills.json example");
+  const { rules } = Schema.decodeSync(AgentRules)(example);
   const { profiles } = await valueOf(parseSelection(await read(SELECTION_PATH)));
   const named = new Set(profiles.flatMap((profile) => profile.rules));
   const on = rules.on ?? [];

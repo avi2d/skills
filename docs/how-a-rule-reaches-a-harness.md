@@ -67,7 +67,7 @@ Every decision about what fires lives in the core and is tested in `tests/unit/d
 
 `src/dispatcher/pi-dispatcher.ts` and `src/dispatcher/claude-dispatcher.ts` translate their harness's events into that function's inputs and its actions back into that harness's primitives, and hold no judgment of their own.
 A condition about whether a Rule should fire belongs in the core even when it is easier to write in the adapter, and a difference between harnesses the core can absorb belongs there rather than in each adapter.
-The index also carries the Rules `selection.toml` leaves off, marked `inactive`, so a repository's `package.json` can switch them on.
+The index also carries the Rules `selection.toml` leaves off, marked `inactive`, so a repository's `.skills.json` can switch them on.
 A new place in the core that fires a Rule asks `switchedOn` first, as `tests/unit/dispatch.test.ts` holds.
 A refusal is the exception on purpose.
 A `forbid` spends no context, so it stands unless a project switches the Rule off, as [Frontmatter fields](frontmatter.md#forbid) describes.
@@ -134,27 +134,8 @@ A Rule that is not there whole reads as `broken`, and a transcript the Dispatche
 ## Local test commands are refused
 
 Each Dispatcher checks shell commands before the job queue sees them.
-For a recognised test command, the Dispatcher reads `.skills.json` at the repository root.
-The block stays off unless that file sets `localTests` to `{"blocked":true}`.
-The Dispatcher refuses a blocked command and says that CI is the test run.
-A repository without the key runs its tests as usual.
-With `CI=true`, the Dispatcher lets the command run.
-Build, lint, and typecheck commands remain available unless their package scripts start a recognised test command.
-
-An eval run is not a test run, so the check allows `bun run eval`.
-A vitest run on an evals config that the repository lists in `localTests.evalConfigs` is allowed too.
-The check follows package scripts in `package.json` and recognises common test runners and their wrappers.
-To block local tests, put `{"localTests":{"blocked":true}}` in `.skills.json` at its root.
-To add runner executable names for a repository, put `{"localTests":{"blocked":true,"commands":["custom-runner"]}}` in `.skills.json` at its root.
-The extra names apply to direct commands, wrappers, and package scripts in that repository.
-To recognise a repository-specific check in a test-named script, add its executable name to `localTests.checks`, such as `{"localTests":{"blocked":true,"checks":["custom-lint"]}}`.
-To name a test-run script by path, put `{"localTests":{"blocked":true,"scripts":["bin/fm-test-run.sh","bin/*.test.sh"]}}` in `.skills.json` at its root.
-A `*` matches within one folder or file name, and never crosses a `/`.
-An entry matches the end of the path as the command types it, so leading parent directories still match, and `./evals/vitest.config.ts` matches.
-To name an evals config, put `{"localTests":{"blocked":true,"evalConfigs":["evals/vitest.config.ts"]}}` in `.skills.json` at its root.
-An entry which is not a valid glob is ignored.
-It does not inspect arbitrary scripts, computed shell commands, or runner invocations hidden in other tools.
-The checks kit also guards its own runners when an agent carries its marker.
+The Dispatcher refuses recognised test commands unless the repository allows them or the session runs in CI.
+[Repository settings](repository-settings.md#test-commands) lists the options and the commands they affect.
 
 ## Heavy commands go to the job queue
 
@@ -237,7 +218,7 @@ A path built at run time, a recursive grep over a directory and a script that op
 
 Everything a Dispatcher does is appended to `~/.local/state/skills/dispatch.log`, including a Rule whose predicate could not be asked.
 A Rule still due when the session ends is written down too, because a queue with nothing after it reads exactly like a Rule that arrived.
-A switch under `skills.rules` in a repository's `package.json` that changes something is logged once a session, and a switch naming a Rule the index does not carry is logged as the Dispatcher's problem.
+A switch under `rules` in a repository's `.skills.json` that changes something is logged once a session, and a switch naming a Rule the index does not carry is logged as the Dispatcher's problem.
 A read of a Body's `SKILL.md` is logged as a `pull` naming the Body once the read has succeeded, so a read that was denied or failed is no pull.
 pi reports it at `tool_result`, and Claude Code at `PostToolUse`.
 Codex reads a `SKILL.md` through its shell, and the Dispatcher does not parse shell commands, so a Codex read is no pull and Codex pulls are not counted.

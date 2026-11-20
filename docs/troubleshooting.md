@@ -10,7 +10,7 @@ Read this page when `bun run link` refuses, a Rule does not reach a session, a t
 ### A Rule did not fire
 
 The Rule is off, its trigger did not match, or the session holds an index generated before the Rule changed.
-Look for the Rule in `selection.toml` and in the `skills.rules` of the repository's `package.json`, then look for its name in the dispatch log.
+Look for the Rule in `selection.toml` and under `rules` in the repository's `.skills.json`, then look for its name in the dispatch log.
 A line naming a predicate the Dispatcher could not ask, such as a `tool-call` naming an argument the tool was not called with, says why.
 When the index is stale, run `bun run generate` and start a new session.
 
