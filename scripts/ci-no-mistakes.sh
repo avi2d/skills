@@ -1,12 +1,12 @@
 #!/bin/sh
 # The no-mistakes e2e tests drive the real `no-mistakes doctor`, which the default runner does not have.
 set -eu
-VERSION="1.104.0+avi2d.32"
+VERSION="1.111.0+avi2d.36"
 case "$(uname -s)-$(uname -m)" in
-Linux-x86_64) PLATFORM="linux-amd64" SUM="cde63e0a02972f0046fd3244ee78d9db80425566c318ef8cd9c715abac1f091a" ;;
-Linux-aarch64 | Linux-arm64) PLATFORM="linux-arm64" SUM="741bb09a23fc18fa977405fa79be4044941aafe00c2f8ec5f7ed623f293a4740" ;;
-Darwin-x86_64) PLATFORM="darwin-amd64" SUM="7b7ab21a5125b0646bb3497f193a4fd9bfbc2bc150b9763b673217883926d284" ;;
-Darwin-arm64) PLATFORM="darwin-arm64" SUM="0fa80893f9b99df8caecc629eb5a65cbdb7f22dd00b937ba7cf79f5ca795596d" ;;
+Linux-x86_64) PLATFORM="linux-amd64" SUM="c88017142e796b66a4079105a63156c7fd16bbf3a5b74a9ad17d8c0cdaaccbd7" ;;
+Linux-aarch64 | Linux-arm64) PLATFORM="linux-arm64" SUM="f188fc72ca4bf10df408ab58c1bdd6acef7b91aeba539589352e9259de58fccb" ;;
+Darwin-x86_64) PLATFORM="darwin-amd64" SUM="e2eb520f423ddebf6e1f6d1906ad479ff19a417b9bc59dc25e3ce5e9a0939336" ;;
+Darwin-arm64) PLATFORM="darwin-arm64" SUM="604a932bde4ad320c782b03fa9ee684f9d71228ba4623eddfa557c503a61dcfc" ;;
 *) echo "ci-no-mistakes: no pinned binary for $(uname -s)-$(uname -m)" >&2; exit 1 ;;
 esac
 FILE="no-mistakes-v$VERSION-$PLATFORM.tar.gz"
