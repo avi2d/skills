@@ -77,7 +77,7 @@ const NoMistakesConfig = Schema.Struct({
       description: "Holds the PR title the pipeline writes to the shared commitlint header limit, counting the squash suffix",
     }),
   }),
-  review: Schema.Struct({ path_instructions: Schema.Array(PathInstruction) }),
+  review: Schema.Struct({ max_fix_rounds: Count, path_instructions: Schema.Array(PathInstruction) }),
   test: Schema.Struct({
     evidence: Schema.Struct({
       cloudflare_pages: Schema.Struct({
@@ -117,7 +117,7 @@ export const noMistakesConfigOf = (home: string, { claudeConfigDirs = [] }: User
   eval: { capture_provenance: true, auto_capture: true, max_cases: 200, diversified_size: 32 },
   rebase: { strategy: "merge" },
   pr: { title_max_length: 100 },
-  review: { path_instructions: [{ path: "**/*", instructions: COMMENT_REVIEW }] },
+  review: { max_fix_rounds: 1, path_instructions: [{ path: "**/*", instructions: COMMENT_REVIEW }] },
   test: { evidence: { cloudflare_pages: { project: "avi2d-nm-evidence" } } },
 });
 
