@@ -11,7 +11,7 @@ jobs:
       contents: write
       pull-requests: write
       actions: write
-    uses: avi2d/workflows/.github/workflows/release-pr.yml@v2
+    uses: avi2d/workflows/.github/workflows/release-pr.yml@v3
     with:
       plan-command: ./node_modules/.bin/checks-release-pr ci.yml
       tag-command: ./node_modules/.bin/checks-release-tag release.yml
