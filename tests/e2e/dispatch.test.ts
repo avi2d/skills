@@ -99,7 +99,7 @@ test("an exact ollama profile trims tools, while a future ollama model takes def
   const local = index.profiles.find((profile) => profile.models.includes(qwen));
   expect(local?.name).toBe("ollama-qwen");
   const { actions } = run(index, [startedOn(qwen), promptOn(qwen, ...thisRepo)]);
-  expect(injected(actions)).toEqual(["credential-files", "guard-the-context-window-slow-output", "prove-it-works", "say-what-is-left"]);
+  expect(injected(actions)).toEqual(["assume-low-context", "credential-files", "guard-the-context-window-slow-output", "mark-who-decided", "prove-it-works", "say-what-is-left"]);
   expect(kept(actions)).toEqual(["read", "write", "edit", "bash"]);
   const future = run(index, [startedOn("ollama/future"), promptOn("ollama/future", ...thisRepo)]).actions;
   expect(injected(future)).not.toContain("guard-the-context-window-slow-output");
