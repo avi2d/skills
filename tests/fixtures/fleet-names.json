@@ -100,6 +100,7 @@
   "tests/e2e/gated-repo.ts": 2,
   "tests/e2e/herdr-model-label.test.ts": 15,
   "tests/e2e/herdr-nested-pi.test.ts": 21,
+  "tests/e2e/lib/compaction-points.ts": 1,
   "tests/e2e/lib/fake-herdr.ts": 13,
   "tests/e2e/link.test.ts": 24,
   "tests/e2e/no-mistakes-config.test.ts": 11,
