@@ -53,11 +53,13 @@ model pays for it out of the plan's five-hour window, so both compact near
 | `opencode-go/deepseek-v4-pro` | 150,000 | 1,000,000 - 150,000 = 850,000 |
 | `opencode-go/glm-5.3` | 150,000 | 1,000,000 - 150,000 = 850,000 |
 | `openrouter/deepseek/deepseek-v4-pro-0813` | 150,000 | 1,048,576 - 150,000 = 898,576 |
-| `openrouter/z-ai/glm-5.3` | 150,000 | 1,048,575 - 150,000 = 898,575 |
+| `openrouter/z-ai/glm-5.3` | 150,000 | 1,048,576 - 150,000 = 898,576 |
 | `openai/gpt-6-astra` | 150,000 | 272,000 - 150,000 = 122,000 |
 | `openai/gpt-6-luna` | 150,000 | 272,000 - 150,000 = 122,000 |
 | `openai/gpt-6.1-sol` | 150,000 | 272,000 - 150,000 = 122,000 |
 | `openai/gpt-6.1-terra` | 150,000 | 272,000 - 150,000 = 122,000 |
+| `openai/gpt-6.2-astra` | 150,000 | 272,000 - 150,000 = 122,000 |
+| `openai/gpt-6.2-sol` | 150,000 | 272,000 - 150,000 = 122,000 |
 | `openai-codex/gpt-6-astra` | 150,000 | 272,000 - 150,000 = 122,000 |
 | `openai-codex/gpt-6-luna` | 150,000 | 272,000 - 150,000 = 122,000 |
 | `openai-codex/gpt-6.1-sol` | 150,000 | 500,000 - 150,000 = 350,000 |
@@ -67,6 +69,10 @@ Both opus ids are keyed because the bridge registers both at 1M and the lookup
 is exact; firstmate's crew dispatches `claude-opus-5-5`, `claude-sonnet-5-5`
 and `claude-haiku-5-5`.
 An id with no key would fall to the 16384 default and compact near 984k.
+
+A window comes from pi's built-in catalog, and for a model that catalog
+predates, such as `openai/gpt-6.2-astra` and `openai/gpt-6.2-sol` under pi
+1.5.1, from the provider catalog pi fetches from `https://pi.dev` at run time.
 
 There is still no global `compaction.reserveTokens`, so a model with no
 override keeps pi's default, as under 0042.
@@ -105,6 +111,12 @@ shrink.
   and so is its overshoot to the next settle.
 - A model that wants its own point is one entry, keyed by the provider and id
   pi resolves it under, with the reserve worked out as above.
+- `tests/e2e/compaction-points.test.ts` fails an override whose point is not
+  150,000 against the window pi's catalog lists for its model. It also fails a
+  model the generated review config runs on pi with no override, and, when
+  `SKILLS_DISPATCH_RULES_FILE` names the dispatch rules file, a model those
+  rules run on pi with no override. The dispatch rules live outside this
+  repository, so CI checks them only through the overrides they name.
 - A compacted claude-bridge session keeps less of its last few turns verbatim,
   and leans on the summary for the rest.
 - `harness/pi/extensions/compaction-points.ts` and
