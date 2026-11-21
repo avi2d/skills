@@ -11,6 +11,7 @@ What each Rule's eval cases measure, and each Reference's measured on its own, l
 | --- | --- | --- |
 | `agent-docs` | none | the Rule only delivers the reference, which is measured on its own |
 | `agents-md-router` | `release-pointer`, `what-goes-where` | the agent points release work at its procedure without copying it, and records a refusal and its principle in VISION.md rather than in README.md or AGENTS.md |
+| `assume-low-context` | none | the Rule has no case yet, as Unmeasured Rules says |
 | `comment-discipline` | `public-helper`, `decision-record`, `upstream-workaround`, `module-rationale` | the lines it added carry no comment the kit's matchers refuse |
 | `credential-files` | none | the Rule has no case yet, as Unmeasured Rules says |
 | `effect-error-channel` | `scheduled-job`, `invoice-route` | the TypeScript it added erases no error unseen, through `Effect.ignore`, `Effect.catchCause`, a handler that never reads the error, or `Effect.orDie` on a failure the task says happens |
@@ -22,6 +23,7 @@ What each Rule's eval cases measure, and each Reference's measured on its own, l
 | `git-hygiene-stash` | none | the Rule has no case yet, as Unmeasured Rules says |
 | `guard-the-context-window` | `build-log`, `lockfile` | it found the answer with less tool output entering its context than the case's byte budget |
 | `guard-the-context-window-slow-output` | `slow-report` | it answered from the saved file with less tool output entering its context than the case's byte budget |
+| `mark-who-decided` | none | the Rule has no case yet, as Unmeasured Rules says |
 | `readme-front-door` | none | the Rule has no case yet, as Unmeasured Rules says |
 | `prove-it-works` | `verify-the-fix`, `reproduce-first`, `git-ignored`, `cron-next` | a test command ran after its last write, or a command run on the reported input printed its wrong value before its first fix, or, for an outcome case, its hidden verifier passes |
 | `right-size-the-work` | `csv-migration`, `fixture-rename` | it did a one-off migration and left no new script behind, as a file or as a `package.json` script |
@@ -105,6 +107,10 @@ The judge passes an opening shape it does not recognise and leaves it to a reade
 The Rule only sends a session that wrote a SKILL.md to the `writing-for-agents` reference, and no judge measures that delivery.
 The guidance itself is measured where it lands, under the `writing-for-agents` reference.
 
+### `assume-low-context`
+
+No case asks the person to choose, so no judge yet reads whether each question names its topic, each answer and the agent recommendation.
+
 ### `credential-files`
 
 No case seeds a secret file that the Dispatcher does not refuse, such as a `.env`, so no judge yet reads whether the agent printed only its key names.
@@ -116,6 +122,11 @@ No case measures whether the agent did every step its task named before stopping
 ### `git-hygiene-stash`
 
 No case sets work aside mid-task, so no judge yet reads whether the agent commits instead of stashing.
+
+### `mark-who-decided`
+
+No case lists run decisions, so no judge yet reads whether each one is marked as decided by the person or by the agent.
+Each agent choice also names its basis in a few words.
 
 ### `readme-front-door`
 
