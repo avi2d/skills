@@ -16,6 +16,7 @@
     "lint": "oxlint && checks-lint",
     "typecheck": "tsc --noEmit && effect-tsgo diagnostics --project tsconfig.json --format text --strict",
     "link": "bun run src/generate/link.ts",
+    "check-pi-settings": "bun run src/generate/check-pi-settings.ts",
     "docs": "bun run src/docs/docs.ts",
     "prepare": "checks-vendor --library effect --package effect --repository https://github.com/Effect-TS/effect.git --tag 'effect@{version}' --path packages/effect/package.json",
     "dispatch-report": "bun run src/report/dispatch-report.ts",

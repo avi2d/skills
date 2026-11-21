@@ -213,7 +213,7 @@ const decodeSettings = Schema.decodeUnknownEffect(Schema.fromJsonString(Schema.R
 const settingsIn = (path: string, text: string): Effect.Effect<Settings, FileFailure> =>
   decodeSettings(text).pipe(Effect.mapError((cause) => new FileFailure({ path, message: `${path} holds no JSON object of settings: ${cause.message}` })));
 
-const settingsAt = Effect.fnUntraced(function* (path: string): Effect.fn.Return<Option.Option<Settings>, FileFailure, FileSystem.FileSystem> {
+export const settingsAt = Effect.fnUntraced(function* (path: string): Effect.fn.Return<Option.Option<Settings>, FileFailure, FileSystem.FileSystem> {
   const text = yield* unlessAbsent(attempt(path, (fs) => fs.readFileString(path)));
   return Option.isSome(text) ? Option.some(yield* settingsIn(path, text.value)) : Option.none();
 });
