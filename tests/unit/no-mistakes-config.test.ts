@@ -20,6 +20,25 @@ test.each([
   expect(config).toEqual({ ...noMistakesConfigOf(process.env.HOME ?? ""), reviewer_chain: [opus, { agent: "pi", model: "openai/gpt-6.1-sol", effort: "high" }] });
 });
 
+test("the generated YAML enables the later-round fixer trial and leaves non-errors and tests to later handling with a three-round cap", async () => {
+  const config = Bun.YAML.parse(await valueOf(noMistakesYaml(noMistakesConfigOf(HOME))));
+  expect(config).toMatchObject({
+    review_agents: {
+      fixer_after_round: {
+        after_round: 1,
+        agent: "pi",
+        model: "claude-bridge/claude-opus-5-5",
+        effort: "high",
+        alternate: { agent: "pi", model: "openai/gpt-6.1-sol", effort: "high" },
+      },
+    },
+    review: { max_fix_rounds: 3, defer_non_errors: true },
+    test: { ci_only: true },
+    eval: { capture_provenance: true },
+  });
+  expect(config).not.toHaveProperty("agent_args_override");
+});
+
 test("the no-mistakes config reads back as YAML into exactly its source", async () => {
   expect(Bun.YAML.parse(await valueOf(noMistakesYaml(noMistakesConfigOf(HOME))))).toEqual(noMistakesConfigOf(HOME));
 });
@@ -80,8 +99,8 @@ test("generation refuses a login folder written with a tilde, which no-mistakes 
 });
 
 test("generation refuses a reviewer role beside the chain, which no-mistakes refuses to combine", async () => {
-  const source = { ...noMistakesConfigOf(HOME), review_agents: { reviewer: { agent: "pi", model: "openai/gpt-6.1-sol", effort: "high" } } };
-  expect(await saidBy(noMistakesYaml(source))).toMatch(/review_agents/);
+  const source = { ...noMistakesConfigOf(HOME), review_agents: { ...noMistakesConfigOf(HOME).review_agents, reviewer: { agent: "pi", model: "openai/gpt-6.1-sol", effort: "high" } } };
+  expect(await saidBy(noMistakesYaml(source))).toMatch(/\["review_agents"\]\["reviewer"\]/);
 });
 
 test("a list the YAML writer emits reads back as the same list of mappings", () => {
@@ -98,9 +117,9 @@ test.each([
   ["the retired beam_drafts section", { beam_drafts: { enabled: false, model: "opencode-go/beam-free", fallback_model: "opencode-go/muse-spark-1.3-contributor", steps: ["commit", "document"], empty_retries: 1, apply_check: true, repos: ["skills", "checks", "tui-dash", "ru-compliance"] } }, /Expected no excess property\n {2}at \["beam_drafts"\]/],
   ["a duration with no unit", { agent_timeout: "30" }, /agent_timeout/],
   ["a rebase strategy no-mistakes refuses", { rebase: { strategy: "squash" } }, /strategy/],
-  ["a Pages project with an uppercase letter and an underscore", { test: { evidence: { cloudflare_pages: { project: "Avi2d_Evidence" } } } }, /project/],
-  ["a Pages project ending in a hyphen", { test: { evidence: { cloudflare_pages: { project: "avi2d-" } } } }, /project/],
-  ["a Pages project longer than a 63-character DNS label", { test: { evidence: { cloudflare_pages: { project: "a".repeat(64) } } } }, /project/],
+  ["a Pages project with an uppercase letter and an underscore", { test: { ci_only: true, evidence: { cloudflare_pages: { project: "Avi2d_Evidence" } } } }, /project/],
+  ["a Pages project ending in a hyphen", { test: { ci_only: true, evidence: { cloudflare_pages: { project: "avi2d-" } } } }, /project/],
+  ["a Pages project longer than a 63-character DNS label", { test: { ci_only: true, evidence: { cloudflare_pages: { project: "a".repeat(64) } } } }, /project/],
 ])("generation refuses %s in the no-mistakes config", async (_, change, named) => {
   expect(await saidBy(noMistakesYaml({ ...noMistakesConfigOf(HOME), ...change }))).toMatch(named);
 });
