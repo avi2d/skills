@@ -110,6 +110,8 @@ const resolved = (path: string): Effect.Effect<string, FileFailure, FileSystem.F
 const git = (repo: string, args: readonly string[]) =>
   Effect.option(outputOf(ChildProcess.make("git", args, { cwd: repo }))).pipe(Effect.map(Option.filter((ran) => ran.code === 0)));
 
+const shellQuoted = (program: string): string => `'${program.replaceAll("'", "'\\''")}'`;
+
 export const checkoutWarnings = Effect.fnUntraced(function* (repo: string) {
   const branch = yield* git(repo, ["branch", "--show-current"]);
   const behind = yield* git(repo, ["rev-list", "--count", "HEAD..refs/remotes/origin/main"]);
@@ -122,7 +124,8 @@ export const checkoutWarnings = Effect.fnUntraced(function* (repo: string) {
     const head = yield* git(repo, ["rev-parse", "HEAD"]);
     const configuredSsh = yield* git(repo, ["config", "--get", "core.sshCommand"]);
     const environmentSsh = yield* Config.String("GIT_SSH_COMMAND").pipe(Config.withDefault(""), Effect.orElseSucceed(() => ""));
-    const ssh = environmentSsh || Option.getOrElse(Option.map(configuredSsh, (ran) => ran.stdout.trimEnd()), () => "") || "ssh";
+    const legacySsh = yield* Config.String("GIT_SSH").pipe(Config.withDefault(""), Effect.orElseSucceed(() => ""));
+    const ssh = environmentSsh || Option.getOrElse(Option.map(configuredSsh, (ran) => ran.stdout.trimEnd()), () => "") || (legacySsh.trim() ? shellQuoted(legacySsh.trim()) : "") || "ssh";
     const remote = yield* Effect.option(
       outputOf(
         ChildProcess.make("git", ["ls-remote", "origin", "refs/heads/main"], {
