@@ -8,6 +8,7 @@ type Failed = { outcome: "failed"; check: Check; status: string; tail: string };
 
 export type Outcome =
   | { outcome: "passed"; checks: string[] }
+  | { outcome: "left-to-ci"; checks: string[]; skipped: string[] }
   | Failed
   | { outcome: "inconclusive"; why: string }
   | { outcome: "overran"; why: string };
@@ -102,6 +103,11 @@ export function onVerdict(event: Verdict, before: GateState | undefined): Judged
     case "passed":
       return {
         actions: [{ type: "passed", tree, checks: verdict.checks, seconds: event.seconds }],
+        gate: { ...gate, held: 0, judged: { tree: after } },
+      };
+    case "left-to-ci":
+      return {
+        actions: [{ type: "release", tree, why: `${verdict.skipped.join(", ")} left to CI because local tests are blocked` }],
         gate: { ...gate, held: 0, judged: { tree: after } },
       };
     case "inconclusive":

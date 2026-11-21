@@ -1,11 +1,11 @@
 import { describe, expect, test } from "bun:test";
-import { existsSync, mkdtempSync, readFileSync, realpathSync, rmSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { Schema } from "effect";
 import { dispatch, type Index } from "../../src/dispatcher/dispatch";
 import { START } from "../../src/dispatcher/run-state";
-import type { Check } from "../../src/dispatcher/verdict";
+import { onVerdict, type Check } from "../../src/dispatcher/verdict";
 import { CONFIG, TAIL_CHARS, VERIFY_BUDGET_SECONDS, tailOf, verify } from "../../src/dispatcher/gate";
 import { readConfig } from "../../src/dispatcher/gate-config";
 
@@ -104,6 +104,30 @@ describe("what a failing check hands back", () => {
 describe("running the checks", () => {
   const scratch = (): string => realpathSync(mkdtempSync(join(tmpdir(), "skills-verify-")));
   const check = (name: Check["name"], command: string): Check => ({ name, command });
+
+  test("the gate does not run a blocked test locally while lint still runs", async () => {
+    const dir = scratch();
+    const ci = process.env.CI;
+    try {
+      delete process.env.CI;
+      writeFileSync(join(dir, ".skills.json"), JSON.stringify({ localTests: { blocked: true } }));
+      const { verdict } = await verify(dir, [
+        check("test", "bun test; touch test-ran"),
+        check("lint", "touch lint-ran"),
+      ]);
+      expect(existsSync(join(dir, "test-ran"))).toBe(false);
+      expect(existsSync(join(dir, "lint-ran"))).toBe(true);
+      expect(verdict).toEqual({ outcome: "left-to-ci", checks: ["lint"], skipped: ["test"] });
+      const judged = onVerdict({ type: "verdict", tree: "before", after: "after", seconds: 0, verdict }, undefined);
+      expect(judged.actions).toEqual([
+        { type: "release", tree: "before", why: "test left to CI because local tests are blocked" },
+      ]);
+    } finally {
+      if (ci === undefined) delete process.env.CI;
+      else process.env.CI = ci;
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
 
   test("every check passing is a pass naming them", async () => {
     const dir = scratch();
