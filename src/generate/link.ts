@@ -1,5 +1,5 @@
 import { platform, tmpdir } from "node:os";
-import { Config, Context, Effect, Equal, FileSystem, Option, Schema } from "effect";
+import { Config, Context, Duration, Effect, Equal, FileSystem, Option, Schema } from "effect";
 import { ChildProcess, type ChildProcessSpawner } from "effect/process";
 import { DEFAULT_GENERATED_ROOT, readGeneratedRoot } from "./bundle";
 import { FileFailure, fileFailure } from "../platform/failures";
@@ -120,12 +120,25 @@ export const checkoutWarnings = Effect.fnUntraced(function* (repo: string) {
   else if (behind.value.stdout.trim() !== "0") warnings.push(`checkout is missing ${behind.value.stdout.trim()} commit(s) from origin/main; pull origin/main to check for updates`);
   else {
     const head = yield* git(repo, ["rev-parse", "HEAD"]);
-    const remote = yield* git(repo, ["ls-remote", "origin", "main"]);
+    const remote = yield* Effect.option(
+      outputOf(
+        ChildProcess.make("git", ["ls-remote", "origin", "refs/heads/main"], {
+          cwd: repo,
+          env: { ...process.env as Record<string, string>, GIT_TERMINAL_PROMPT: "0", GIT_SSH_COMMAND: "ssh -o BatchMode=yes" },
+        }),
+      ),
+    ).pipe(
+      Effect.timeoutOption(Duration.seconds(10)),
+      Effect.map(Option.flatten),
+      Effect.map(Option.filter((ran) => ran.code === 0)),
+    );
     if (Option.isNone(head) || Option.isNone(remote))
       warnings.push("cannot check origin/main for updates; fetch origin before linking to check for updates");
     else {
       const remoteSha = remote.value.stdout.trim().split(/\s+/)[0] ?? "";
-      if (!remoteSha || remoteSha !== head.value.stdout.trim()) warnings.push("checkout differs from origin/main; pull origin/main to check for updates");
+      if (!remoteSha) warnings.push("cannot check origin/main for updates; fetch origin before linking to check for updates");
+      else if (Option.isNone(yield* git(repo, ["merge-base", "--is-ancestor", remoteSha, "HEAD"])))
+        warnings.push("checkout differs from origin/main; pull origin/main to check for updates");
     }
   }
   return warnings;
