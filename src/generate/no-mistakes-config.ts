@@ -63,6 +63,15 @@ const NoMistakesConfig = Schema.Struct({
     pi: Schema.Struct({ model: Schema.Literal(SPARK), effort: Effort }),
   }),
   reviewer_chain: ReviewerChain,
+  review_agents: Schema.Struct({
+    fixer_after_round: Schema.Struct({
+      after_round: Count,
+      agent: Schema.Literal("pi"),
+      model: Schema.Literal(OPUS),
+      effort: Effort,
+      alternate: Schema.Struct({ agent: Schema.Literal("pi"), model: Schema.Literal(SOL), effort: Effort }),
+    }),
+  }),
   auto_fix: Schema.Struct({ rebase: Count, lint: Count, test: Count, review: Count, document: Count, ci: Count }),
   ci: Schema.Struct({ rerun_transient: Count, revalidate_repairs: Schema.Boolean }),
   intent: Schema.Struct({
@@ -77,8 +86,9 @@ const NoMistakesConfig = Schema.Struct({
       description: "Holds the PR title the pipeline writes to the shared commitlint header limit, counting the squash suffix",
     }),
   }),
-  review: Schema.Struct({ max_fix_rounds: Count, path_instructions: Schema.Array(PathInstruction) }),
+  review: Schema.Struct({ defer_non_errors: Schema.Boolean, path_instructions: Schema.Array(PathInstruction) }),
   test: Schema.Struct({
+    ci_only: Schema.Boolean,
     evidence: Schema.Struct({
       cloudflare_pages: Schema.Struct({
         project: PagesProject.annotate({ description: "Every repo publishes screenshots here unless its trusted .no-mistakes.yaml sets the project to an empty string" }),
@@ -111,14 +121,23 @@ export const noMistakesConfigOf = (home: string, { claudeConfigDirs = [] }: User
     { agent: "pi", model: OPUS, effort: "high", ...(claudeConfigDirs[0] === undefined ? {} : { env: { CLAUDE_CONFIG_DIR: `${home}/${claudeConfigDirs[0]}` } }) },
     { agent: "pi", model: SOL, effort: "high" },
   ],
+  review_agents: {
+    fixer_after_round: {
+      after_round: 1,
+      agent: "pi",
+      model: OPUS,
+      effort: "high",
+      alternate: { agent: "pi", model: SOL, effort: "high" },
+    },
+  },
   auto_fix: { rebase: 3, lint: 3, test: 3, review: 0, document: 3, ci: 3 },
   ci: { rerun_transient: 0, revalidate_repairs: false },
   intent: { enabled: true, threshold: 0.2, slack_days: 3 },
   eval: { capture_provenance: true, auto_capture: true, max_cases: 200, diversified_size: 32 },
   rebase: { strategy: "merge" },
   pr: { title_max_length: 100 },
-  review: { max_fix_rounds: 1, path_instructions: [{ path: "**/*", instructions: COMMENT_REVIEW }] },
-  test: { evidence: { cloudflare_pages: { project: "avi2d-nm-evidence" } } },
+  review: { defer_non_errors: true, path_instructions: [{ path: "**/*", instructions: COMMENT_REVIEW }] },
+  test: { ci_only: true, evidence: { cloudflare_pages: { project: "avi2d-nm-evidence" } } },
 });
 
 type Mapping = { readonly [key: string]: Yaml };
