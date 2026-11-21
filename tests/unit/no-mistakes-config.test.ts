@@ -20,7 +20,7 @@ test.each([
   expect(config).toEqual({ ...noMistakesConfigOf(process.env.HOME ?? ""), reviewer_chain: [opus, { agent: "pi", model: "openai/gpt-6.1-sol", effort: "high" }] });
 });
 
-test("the generated YAML enables the later-round fixer trial and leaves non-errors and tests to later handling with a three-round cap", async () => {
+test("the generated YAML enables the later-round fixer trial and leaves non-errors and tests to later handling with a one-round cap", async () => {
   const config = Bun.YAML.parse(await valueOf(noMistakesYaml(noMistakesConfigOf(HOME))));
   expect(config).toMatchObject({
     review_agents: {
@@ -32,7 +32,7 @@ test("the generated YAML enables the later-round fixer trial and leaves non-erro
         alternate: { agent: "pi", model: "openai/gpt-6.1-sol", effort: "high" },
       },
     },
-    review: { max_fix_rounds: 3, defer_non_errors: true },
+    review: { max_fix_rounds: 1, defer_non_errors: true },
     test: { ci_only: true },
     eval: { capture_provenance: true },
   });
