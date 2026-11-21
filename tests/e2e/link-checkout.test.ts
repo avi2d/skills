@@ -41,6 +41,8 @@ test("origin check does not replace the user's configured or environment SSH com
   const repo = await mkdtemp(join(tmpdir(), "skills-link-ssh-"));
   const savedSsh = process.env.GIT_SSH_COMMAND;
   const savedLegacySsh = process.env.GIT_SSH;
+  const savedConfigGlobal = process.env.GIT_CONFIG_GLOBAL;
+  const savedConfigNoSystem = process.env.GIT_CONFIG_NOSYSTEM;
   const savedArgs = process.env.SKILLS_SSH_ARGS;
   const savedRepo = process.env.SKILLS_SSH_REPO;
   try {
@@ -57,6 +59,8 @@ test("origin check does not replace the user's configured or environment SSH com
     }
     process.env.SKILLS_SSH_ARGS = args;
     process.env.SKILLS_SSH_REPO = repo;
+    process.env.GIT_CONFIG_GLOBAL = "/dev/null";
+    process.env.GIT_CONFIG_NOSYSTEM = "1";
     delete process.env.GIT_SSH_COMMAND;
     delete process.env.GIT_SSH;
     await Bun.$`git config core.sshCommand ${configured}`.cwd(repo).quiet();
@@ -78,6 +82,10 @@ test("origin check does not replace the user's configured or environment SSH com
     else process.env.GIT_SSH_COMMAND = savedSsh;
     if (savedLegacySsh === undefined) delete process.env.GIT_SSH;
     else process.env.GIT_SSH = savedLegacySsh;
+    if (savedConfigGlobal === undefined) delete process.env.GIT_CONFIG_GLOBAL;
+    else process.env.GIT_CONFIG_GLOBAL = savedConfigGlobal;
+    if (savedConfigNoSystem === undefined) delete process.env.GIT_CONFIG_NOSYSTEM;
+    else process.env.GIT_CONFIG_NOSYSTEM = savedConfigNoSystem;
     if (savedArgs === undefined) delete process.env.SKILLS_SSH_ARGS;
     else process.env.SKILLS_SSH_ARGS = savedArgs;
     if (savedRepo === undefined) delete process.env.SKILLS_SSH_REPO;
