@@ -42,7 +42,7 @@ test("link stays quiet when ahead and warns when origin/main has commits HEAD la
   const repo = await mkdtemp(join(tmpdir(), "skills-link-remote-"));
   const other = await mkdtemp(join(tmpdir(), "skills-link-other-"));
   try {
-    await Bun.$`git init -q --bare`.cwd(origin).quiet();
+    await Bun.$`git init -q --bare -b main`.cwd(origin).quiet();
     await Bun.$`git init -q -b main`.cwd(repo).quiet();
     await Bun.write(join(repo, "settings.json"), "{}");
     await Bun.$`git add settings.json`.cwd(repo).quiet();
