@@ -117,8 +117,17 @@ export const checkoutWarnings = Effect.fnUntraced(function* (repo: string) {
   if (Option.isNone(branch)) warnings.push("cannot identify the checkout branch");
   else if (branch.value.stdout.trim() !== "main") warnings.push(`checkout is on ${branch.value.stdout.trim() || "a detached HEAD"}, not main`);
   if (Option.isNone(behind)) warnings.push("cannot compare HEAD with origin/main; fetch origin to check for updates");
-  else if (behind.value.stdout.trim() !== "0") warnings.push(`checkout is missing ${behind.value.stdout.trim()} commit(s) from origin/main; fetch origin to check for updates`);
-  else warnings.push("origin/main reflects the last fetch; fetch origin before linking to check for updates");
+  else if (behind.value.stdout.trim() !== "0") warnings.push(`checkout is missing ${behind.value.stdout.trim()} commit(s) from origin/main; pull origin/main to check for updates`);
+  else {
+    const head = yield* git(repo, ["rev-parse", "HEAD"]);
+    const remote = yield* git(repo, ["ls-remote", "origin", "main"]);
+    if (Option.isNone(head) || Option.isNone(remote))
+      warnings.push("cannot check origin/main for updates; fetch origin before linking to check for updates");
+    else {
+      const remoteSha = remote.value.stdout.trim().split(/\s+/)[0] ?? "";
+      if (!remoteSha || remoteSha !== head.value.stdout.trim()) warnings.push("checkout differs from origin/main; pull origin/main to check for updates");
+    }
+  }
   return warnings;
 });
 
