@@ -6,6 +6,8 @@ const Duration = Schema.TemplateLiteral([Schema.Finite, Schema.Literals(["ms", "
 
 const Count = Schema.Int.check(Schema.isGreaterThanOrEqualTo(0));
 
+const AfterRound = Schema.Int.check(Schema.isGreaterThanOrEqualTo(1));
+
 const Effort = Schema.Literals(["minimal", "low", "medium", "high", "xhigh", "max"]);
 
 const SOL = "openai/gpt-6.1-sol";
@@ -65,7 +67,7 @@ const NoMistakesConfig = Schema.Struct({
   reviewer_chain: ReviewerChain,
   review_agents: Schema.Struct({
     fixer_after_round: Schema.Struct({
-      after_round: Count,
+      after_round: AfterRound,
       agent: Schema.Literal("pi"),
       model: Schema.Literal(OPUS),
       effort: Effort,
@@ -86,7 +88,7 @@ const NoMistakesConfig = Schema.Struct({
       description: "Holds the PR title the pipeline writes to the shared commitlint header limit, counting the squash suffix",
     }),
   }),
-  review: Schema.Struct({ defer_non_errors: Schema.Boolean, path_instructions: Schema.Array(PathInstruction) }),
+  review: Schema.Struct({ max_fix_rounds: Count, defer_non_errors: Schema.Boolean, path_instructions: Schema.Array(PathInstruction) }),
   test: Schema.Struct({
     ci_only: Schema.Boolean,
     evidence: Schema.Struct({
@@ -136,7 +138,7 @@ export const noMistakesConfigOf = (home: string, { claudeConfigDirs = [] }: User
   eval: { capture_provenance: true, auto_capture: true, max_cases: 200, diversified_size: 32 },
   rebase: { strategy: "merge" },
   pr: { title_max_length: 100 },
-  review: { defer_non_errors: true, path_instructions: [{ path: "**/*", instructions: COMMENT_REVIEW }] },
+  review: { max_fix_rounds: 3, defer_non_errors: true, path_instructions: [{ path: "**/*", instructions: COMMENT_REVIEW }] },
   test: { ci_only: true, evidence: { cloudflare_pages: { project: "avi2d-nm-evidence" } } },
 });
 

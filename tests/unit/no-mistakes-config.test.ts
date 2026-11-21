@@ -20,7 +20,7 @@ test.each([
   expect(config).toEqual({ ...noMistakesConfigOf(process.env.HOME ?? ""), reviewer_chain: [opus, { agent: "pi", model: "openai/gpt-6.1-sol", effort: "high" }] });
 });
 
-test("the generated YAML enables the later-round fixer trial and leaves non-errors and tests to later handling without a fix-round cap", async () => {
+test("the generated YAML enables the later-round fixer trial and leaves non-errors and tests to later handling with a three-round cap", async () => {
   const config = Bun.YAML.parse(await valueOf(noMistakesYaml(noMistakesConfigOf(HOME))));
   expect(config).toMatchObject({
     review_agents: {
@@ -32,11 +32,10 @@ test("the generated YAML enables the later-round fixer trial and leaves non-erro
         alternate: { agent: "pi", model: "openai/gpt-6.1-sol", effort: "high" },
       },
     },
-    review: { defer_non_errors: true },
+    review: { max_fix_rounds: 3, defer_non_errors: true },
     test: { ci_only: true },
     eval: { capture_provenance: true },
   });
-  expect(config).not.toHaveProperty("review.max_fix_rounds");
   expect(config).not.toHaveProperty("agent_args_override");
 });
 
@@ -100,8 +99,8 @@ test("generation refuses a login folder written with a tilde, which no-mistakes 
 });
 
 test("generation refuses a reviewer role beside the chain, which no-mistakes refuses to combine", async () => {
-  const source = { ...noMistakesConfigOf(HOME), review_agents: { reviewer: { agent: "pi", model: "openai/gpt-6.1-sol", effort: "high" } } };
-  expect(await saidBy(noMistakesYaml(source))).toMatch(/review_agents/);
+  const source = { ...noMistakesConfigOf(HOME), review_agents: { ...noMistakesConfigOf(HOME).review_agents, reviewer: { agent: "pi", model: "openai/gpt-6.1-sol", effort: "high" } } };
+  expect(await saidBy(noMistakesYaml(source))).toMatch(/\["review_agents"\]\["reviewer"\]/);
 });
 
 test("a list the YAML writer emits reads back as the same list of mappings", () => {
