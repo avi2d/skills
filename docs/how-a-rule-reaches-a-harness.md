@@ -237,6 +237,8 @@ A linked worktree does not.
 A checkout with `skills.verdictGate` set to `off` in its local git config has no gate either.
 Run `git config --local skills.verdictGate off` there to opt out.
 When a session there settles on a tree that differs from the tree the human handed it, the Dispatcher runs `commands.test` and `commands.lint`, read from `origin/HEAD` the way no-mistakes reads them.
+When local tests stay blocked as Repository settings describes, the gate skips its test check and leaves it to CI.
+Lint still runs.
 A failure holds the turn open with the command and the last of its output.
 Claude Code and Codex block the stop, and pi continues the run from `agent_before_settle`.
 The gate holds twice a prompt at most, then lets the session go and tells the human.
