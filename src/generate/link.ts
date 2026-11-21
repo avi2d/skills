@@ -120,11 +120,14 @@ export const checkoutWarnings = Effect.fnUntraced(function* (repo: string) {
   else if (behind.value.stdout.trim() !== "0") warnings.push(`checkout is missing ${behind.value.stdout.trim()} commit(s) from origin/main; pull origin/main to check for updates`);
   else {
     const head = yield* git(repo, ["rev-parse", "HEAD"]);
+    const configuredSsh = yield* git(repo, ["config", "--get", "core.sshCommand"]);
+    const environmentSsh = yield* Config.String("GIT_SSH_COMMAND").pipe(Config.withDefault(""), Effect.orElseSucceed(() => ""));
+    const ssh = environmentSsh || Option.getOrElse(Option.map(configuredSsh, (ran) => ran.stdout.trimEnd()), () => "") || "ssh";
     const remote = yield* Effect.option(
       outputOf(
         ChildProcess.make("git", ["ls-remote", "origin", "refs/heads/main"], {
           cwd: repo,
-          env: { GIT_TERMINAL_PROMPT: "0", GIT_SSH_COMMAND: "ssh -o BatchMode=yes" },
+          env: { GIT_TERMINAL_PROMPT: "0", GIT_SSH_COMMAND: `${ssh} -o BatchMode=yes` },
           extendEnv: true,
         }),
       ),

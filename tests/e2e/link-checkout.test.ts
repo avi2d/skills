@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { mkdtemp, rm } from "node:fs/promises";
+import { chmod, mkdtemp, readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { checkoutWarnings } from "../../src/generate/link";
@@ -33,6 +33,43 @@ test("link warns for a non-main checkout and for main missing commits from origi
     await Bun.$`git switch -q --detach`.cwd(repo).quiet();
     expect(await valueOf(checkoutWarnings(repo))).toContain("checkout is on a detached HEAD, not main");
   } finally {
+    await rm(repo, { recursive: true, force: true });
+  }
+});
+
+test("origin check does not replace the user's configured or environment SSH command", async () => {
+  const repo = await mkdtemp(join(tmpdir(), "skills-link-ssh-"));
+  const savedSsh = process.env.GIT_SSH_COMMAND;
+  const savedArgs = process.env.SKILLS_SSH_ARGS;
+  const savedRepo = process.env.SKILLS_SSH_REPO;
+  try {
+    await Bun.$`git init -q -b main`.cwd(repo).quiet();
+    await Bun.$`git -c user.name=test -c user.email=test@example.invalid commit -q --allow-empty -m base`.cwd(repo).quiet();
+    await Bun.$`git update-ref refs/remotes/origin/main HEAD`.cwd(repo).quiet();
+    await Bun.$`git remote add origin ssh://example.invalid/repo`.cwd(repo).quiet();
+    const configured = join(repo, "configured-ssh");
+    const environment = join(repo, "environment-ssh");
+    const args = join(repo, "ssh-args");
+    for (const command of [configured, environment]) {
+      await Bun.write(command, '#!/bin/sh\nprintf "%s\\n" "$0 $*" > "$SKILLS_SSH_ARGS"\ncase "$1" in -G) exit 0;; esac\nexec git-upload-pack "$SKILLS_SSH_REPO"\n');
+      await chmod(command, 0o755);
+    }
+    process.env.SKILLS_SSH_ARGS = args;
+    process.env.SKILLS_SSH_REPO = repo;
+    delete process.env.GIT_SSH_COMMAND;
+    await Bun.$`git config core.sshCommand ${configured}`.cwd(repo).quiet();
+    expect(await valueOf(checkoutWarnings(repo))).toEqual([]);
+    expect(await readFile(args, "utf8")).toContain(`${configured} -o BatchMode=yes`);
+    process.env.GIT_SSH_COMMAND = environment;
+    expect(await valueOf(checkoutWarnings(repo))).toEqual([]);
+    expect(await readFile(args, "utf8")).toContain(`${environment} -o BatchMode=yes`);
+  } finally {
+    if (savedSsh === undefined) delete process.env.GIT_SSH_COMMAND;
+    else process.env.GIT_SSH_COMMAND = savedSsh;
+    if (savedArgs === undefined) delete process.env.SKILLS_SSH_ARGS;
+    else process.env.SKILLS_SSH_ARGS = savedArgs;
+    if (savedRepo === undefined) delete process.env.SKILLS_SSH_REPO;
+    else process.env.SKILLS_SSH_REPO = savedRepo;
     await rm(repo, { recursive: true, force: true });
   }
 });
