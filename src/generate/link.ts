@@ -124,7 +124,8 @@ export const checkoutWarnings = Effect.fnUntraced(function* (repo: string) {
       outputOf(
         ChildProcess.make("git", ["ls-remote", "origin", "refs/heads/main"], {
           cwd: repo,
-          env: { ...process.env as Record<string, string>, GIT_TERMINAL_PROMPT: "0", GIT_SSH_COMMAND: "ssh -o BatchMode=yes" },
+          env: { GIT_TERMINAL_PROMPT: "0", GIT_SSH_COMMAND: "ssh -o BatchMode=yes" },
+          extendEnv: true,
         }),
       ),
     ).pipe(
