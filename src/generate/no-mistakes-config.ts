@@ -138,7 +138,7 @@ export const noMistakesConfigOf = (home: string, { claudeConfigDirs = [] }: User
   eval: { capture_provenance: true, auto_capture: true, max_cases: 200, diversified_size: 32 },
   rebase: { strategy: "merge" },
   pr: { title_max_length: 100 },
-  review: { max_fix_rounds: 3, defer_non_errors: true, path_instructions: [{ path: "**/*", instructions: COMMENT_REVIEW }] },
+  review: { max_fix_rounds: 2, defer_non_errors: true, path_instructions: [{ path: "**/*", instructions: COMMENT_REVIEW }] },
   test: { ci_only: true, evidence: { cloudflare_pages: { project: "avi2d-nm-evidence" } } },
 });
 
