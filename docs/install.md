@@ -14,8 +14,9 @@ Install skills once on each machine whose harnesses should take their instructio
 To install skills:
 
 1. Clone `https://github.com/avi2d/skills` to a checkout, because every link the install makes points into the checkout.
-   `bun run link` links your own home only from a main checkout, wherever you clone it.
+   `bun run link` links your own home from any branch, wherever you clone it.
    From a linked git worktree, or a copy git does not check out, it stops before it writes, so a worktree cannot repoint your harnesses into itself.
+   From a checkout that is not on main or not current with the main on the remote, it warns that linking may install outdated settings and then links.
 1. From the root of the checkout, run `bun install`.
    It installs the dependencies and links the declared library sources under `repos/`.
 1. Run `bun run link`.
@@ -24,6 +25,7 @@ To install skills:
    [The skills config](config.md), when there is one, names the Claude config directories it also writes into.
 
 `bun run link` prints the version and path of the pi it checked, such as `pi 1.5.1 at /usr/local/bin/pi loaded every extension in a temporary $HOME first`.
+When the checkout is not on main or not current with the main on the remote, it first prints each warning to standard error.
 It then ends with one line per path, such as `linked   ~/.claude/settings.json`, and exits 0.
 On a machine without pi, the line about pi reads `pi is not on $PATH, so no pi extension was load-checked`.
 These paths in $HOME then belong to the checkout:

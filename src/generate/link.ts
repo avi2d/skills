@@ -1,5 +1,5 @@
 import { platform, tmpdir } from "node:os";
-import { Config, Context, Effect, Equal, FileSystem, Option, Schema } from "effect";
+import { Config, Context, Duration, Effect, Equal, FileSystem, Option, Schema } from "effect";
 import { ChildProcess, type ChildProcessSpawner } from "effect/process";
 import { DEFAULT_GENERATED_ROOT, readGeneratedRoot } from "./bundle";
 import { FileFailure, fileFailure } from "../platform/failures";
@@ -109,6 +109,41 @@ const resolved = (path: string): Effect.Effect<string, FileFailure, FileSystem.F
 
 const git = (repo: string, args: readonly string[]) =>
   Effect.option(outputOf(ChildProcess.make("git", args, { cwd: repo }))).pipe(Effect.map(Option.filter((ran) => ran.code === 0)));
+
+export const checkoutWarnings = Effect.fnUntraced(function* (repo: string) {
+  const branch = yield* git(repo, ["branch", "--show-current"]);
+  const behind = yield* git(repo, ["rev-list", "--count", "HEAD..refs/remotes/origin/main"]);
+  const warnings: string[] = [];
+  if (Option.isNone(branch)) warnings.push("cannot identify the checkout branch");
+  else if (branch.value.stdout.trim() !== "main") warnings.push(`checkout is on ${branch.value.stdout.trim() || "a detached HEAD"}, not main`);
+  if (Option.isNone(behind)) warnings.push("cannot compare HEAD with origin/main; fetch origin to check for updates");
+  else if (behind.value.stdout.trim() !== "0") warnings.push(`checkout is missing ${behind.value.stdout.trim()} commit(s) from origin/main; pull origin/main to check for updates`);
+  else {
+    const head = yield* git(repo, ["rev-parse", "HEAD"]);
+    const remote = yield* Effect.option(
+      outputOf(
+        ChildProcess.make("git", ["ls-remote", "origin", "refs/heads/main"], {
+          cwd: repo,
+          env: { GIT_TERMINAL_PROMPT: "0", GIT_SSH_COMMAND: "ssh -o BatchMode=yes" },
+          extendEnv: true,
+        }),
+      ),
+    ).pipe(
+      Effect.timeoutOption(Duration.seconds(10)),
+      Effect.map(Option.flatten),
+      Effect.map(Option.filter((ran) => ran.code === 0)),
+    );
+    if (Option.isNone(head) || Option.isNone(remote))
+      warnings.push("cannot check origin/main for updates; fetch origin before linking to check for updates");
+    else {
+      const remoteSha = remote.value.stdout.trim().split(/\s+/)[0] ?? "";
+      if (!remoteSha) warnings.push("cannot check origin/main for updates; fetch origin before linking to check for updates");
+      else if (Option.isNone(yield* git(repo, ["merge-base", "--is-ancestor", remoteSha, "HEAD"])))
+        warnings.push("checkout differs from origin/main; pull origin/main to check for updates");
+    }
+  }
+  return warnings;
+});
 
 // `git worktree list --porcelain` prints the main worktree's record first, and marks it `bare` when it has no work tree.
 const mainCheckoutOf = (repo: string) =>
@@ -302,6 +337,7 @@ if (import.meta.main) {
       const home = yield* Config.NonEmptyString("HOME").pipe(
         Effect.mapError(() => new FileFailure({ path: "$HOME", message: "no $HOME to link into" })),
       );
+      for (const warning of yield* checkoutWarnings(REPO)) console.error(`warning: ${warning}; linking may install outdated settings`);
       const installed = yield* install(REPO, home, "pi");
       const root = yield* readGeneratedRoot;
       console.log(`wrote ${installed.wrote} files under ${root}/`);
