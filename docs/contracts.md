@@ -65,11 +65,12 @@ No entry carries a floor, so the review step moves to the next entry only after 
 The Opus entry sets `CLAUDE_CONFIG_DIR` to the first directory in `claudeConfigDirs` from [the skills config](config.md), relative to `$HOME`.
 If the list is empty or absent, the entry leaves `CLAUDE_CONFIG_DIR` unset.
 `review` holds one path instruction over every changed file that reviews added comments against comment discipline as warnings that never fix or block.
-The review step runs three fix rounds, because `review.max_fix_rounds` is 3.
-`review.defer_non_errors` is true, so later rounds fix only errors and deferred findings wait for a later step.
+It flags a comment that restates its line or carries a measured number that will go stale, and it keeps a comment that gives a reason the code cannot show.
+The review step runs at most three fix rounds, because `review.max_fix_rounds` is 3.
+`review.defer_non_errors` is true, so later rounds fix only errors.
+Deferred warnings and info findings are listed as PR follow-ups in `recorded.follow_ups`.
 `review_agents.fixer_after_round` names Opus 5.5 as the fixer from round 2 with GPT-6.1 Sol as the alternate.
 `test.ci_only` is true, so worker machines skip repository tests and GitHub CI runs them.
-It flags a comment that restates its line or carries a measured number that will go stale, and it keeps a comment that gives a reason the code cannot show.
 `test.evidence.cloudflare_pages.project` names the Cloudflare Pages project that keeps PR screenshots.
 Every repository publishes to that project unless its trusted `.no-mistakes.yaml` sets the project to an empty string.
 `bun run link` refuses a real `~/.no-mistakes/config.yaml` and leaves it as it was, so a config kept by hand is moved aside before the link replaces it.
