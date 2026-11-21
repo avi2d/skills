@@ -17,7 +17,7 @@ The judge decides only whether a block is ready to show, and the approval is the
 
 ## 1. Open the preview link
 
-1. Deploy the site to a Cloudflare Pages preview. Never preview from a local or LAN server.
+1. Build the preview at a commit with no tracked changes. From the site's repository, run `bash <skill-directory>/deploy-preview.sh <build-directory> <pages-project>` to deploy it to Cloudflare Pages. Use the per-commit deployment URL that Wrangler prints. Never preview from a local or LAN server.
 1. Write the brief: the page's job from the `visitor-job` reference, written as the one question a first-time visitor answers from the first screen, and the page's blocks in page order.
 1. Name the commit under review and its per-commit deployment URL in every review, so each review says what it saw and where.
 
