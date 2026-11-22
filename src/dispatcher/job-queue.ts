@@ -1,7 +1,6 @@
 import { spawnSync } from "node:child_process";
-import { resolve } from "node:path";
-import { quoted as quotedParts, segments, type Word } from "./shell-words";
-import { compileGlob, expandHome, flagDir, hasConfig, program, RESERVED_WORDS, SCRIPT_RUNNERS, startsWith, stripped, texts } from "./shell-commands";
+import { segments, type Word } from "./shell-words";
+import { compileGlob, hasConfig, program, RESERVED_WORDS, SCRIPT_RUNNERS, startsWith, stripped, texts } from "./shell-commands";
 import { readSkillsSettings } from "./project-settings";
 
 export type Group = "tests" | "gpu" | "evals";
@@ -154,150 +153,32 @@ const scripted = (bare: readonly string[], scriptPaths: readonly RegExp[]): { gr
 };
 
 function queuedSegments(command: string, cwd: string): Queued[] {
-  const roots = new Map<string, string>();
-  const reads = new Map<string, ReturnType<typeof readSkillsSettings>>();
-  const compiled = new Map<string, { scriptPaths: readonly RegExp[]; configs: readonly RegExp[] }>();
-  const rootOf = (dir: string): string => {
-    const hit = roots.get(dir);
-    if (hit !== undefined) return hit;
-    const git = spawnSync("git", ["-C", dir, "rev-parse", "--show-toplevel"], { encoding: "utf8", timeout: 3_000 });
-    const root = git.status === 0 ? git.stdout.trim() : dir;
-    roots.set(dir, root);
-    return root;
-  };
+  const git = spawnSync("git", ["-C", cwd, "rev-parse", "--show-toplevel"], { encoding: "utf8", timeout: 3_000 });
+  const read = readSkillsSettings(git.status === 0 ? git.stdout.trim() : cwd);
+  const settings = read !== undefined && "settings" in read ? read.settings.agentTests : undefined;
   const paths = (globs: readonly string[]): RegExp[] => globs.flatMap((glob) => {
     try { return [compileGlob("**/" + glob)]; } catch { return []; }
   });
-  const listsAt = (dir: string): { scriptPaths: readonly RegExp[]; configs: readonly RegExp[] } => {
-    const root = rootOf(dir);
-    const hit = compiled.get(root);
-    if (hit !== undefined) return hit;
-    if (!reads.has(root)) reads.set(root, readSkillsSettings(root));
-    const read = reads.get(root);
-    const settings = read !== undefined && "settings" in read ? read.settings.agentTests : undefined;
-    const lists = { scriptPaths: paths(settings?.testScripts ?? []), configs: paths(settings?.evalConfigs ?? []) };
-    compiled.set(root, lists);
-    return lists;
-  };
-  let dir = cwd;
-  let asyncBase = cwd;
-  let seqBase = cwd;
-  let pipeActive = false;
-  let previous: string | undefined;
-  const saved: { dir: string; previous: string | undefined; asyncBase: string; seqBase: string; pipeActive: boolean }[] = [];
-  const settle = (): void => {
-    if (pipeActive) {
-      dir = seqBase;
-      pipeActive = false;
-    }
-  };
-  let end = 0;
-  const marks = quotedParts(command);
-  const found: Queued[] = [];
-  for (const words of segments(command)) {
-    const head = words[0];
-    if (head !== undefined) {
-      let prev = "";
-      let at = end;
-      while (at < head.from) {
-        const seen = command.charAt(at);
-        const char = marks[at] === true ? "" : seen;
-        const next = marks[at + 1] === true ? "" : command.charAt(at + 1);
-        if (char === "(") {
-          saved.push({ dir, previous, asyncBase, seqBase, pipeActive });
-          settle();
-          asyncBase = dir;
-          seqBase = dir;
-        } else if (char === ")") {
-          settle();
-          const outer = saved.pop();
-          if (outer !== undefined) {
-            dir = outer.dir;
-            previous = outer.previous;
-            asyncBase = outer.asyncBase;
-            seqBase = outer.seqBase;
-            pipeActive = outer.pipeActive;
-          }
-        } else if (char === ";" || char === "\n") {
-          settle();
-          seqBase = dir;
-        } else if (char === "&") {
-          if (next === "&") {
-            settle();
-            at += 1;
-          } else if (prev !== ">" && next !== ">") {
-            settle();
-            dir = asyncBase;
-            asyncBase = dir;
-            seqBase = dir;
-          }
-        } else if (char === "|") {
-          if (next === "|") {
-            settle();
-            at += 1;
-          } else {
-            dir = seqBase;
-            pipeActive = true;
-          }
-        }
-        prev = seen;
-        at += 1;
-      }
-      const tail = words[words.length - 1];
-      if (tail !== undefined) end = tail.to;
-    }
-    const raw = texts(words);
-    const bare = stripped(raw);
+  const parts = segments(command);
+  const moves = parts.some((words) => {
+    const bare = stripped(texts(words));
+    if (bare.length === 0) return false;
+    const head = program(bare[0] ?? "");
+    return head === "cd" || head === "pushd" || head === "popd";
+  });
+  const scriptPaths = moves ? [] : paths(settings?.testScripts ?? []);
+  const configs = moves ? [] : paths(settings?.evalConfigs ?? []);
+  return parts.flatMap((words) => {
+    const bare = stripped(texts(words));
     const named = bare.map((word, at) => (at === 0 ? program(word) : word));
-    if (named[0] === "cd") {
-      let at = 1;
-      for (;;) {
-        const arg = bare[at] ?? "";
-        if (arg === "--") {
-          at += 1;
-          break;
-        }
-        if (arg.startsWith("-") && arg !== "-") {
-          at += 1;
-          continue;
-        }
-        break;
-      }
-      const operand = bare[at];
-      if (operand === "-") {
-        if (previous !== undefined) {
-          const back = previous;
-          previous = dir;
-          dir = back;
-        }
-      } else if (operand !== undefined) {
-        previous = dir;
-        dir = resolve(dir, expandHome(operand));
-      } else {
-        const home = process.env.HOME;
-        if (home !== undefined && home !== "") {
-          previous = dir;
-          dir = home;
-        }
-      }
-      continue;
-    }
-    const prefix = raw.slice(0, raw.length - bare.length);
-    const here = flagDir(bare, flagDir(prefix, dir, "", true), named[0] ?? "");
-    const { scriptPaths, configs } = listsAt(here);
     if (startsWith(named, ["vitest", "run"]) && exits(named.slice(2)) && hasConfig(named.slice(2), configs)) {
-      found.push({ group: "evals" as const, words, prefix: words.length - bare.length });
-      continue;
+      return [{ group: "evals" as const, words, prefix: words.length - bare.length }];
     }
     const entry = TABLE.find(({ runs, when }) => startsWith(named, runs) && when(named.slice(runs.length)));
-    if (entry !== undefined) {
-      found.push({ group: entry.group, words, prefix: words.length - bare.length });
-      continue;
-    }
+    if (entry !== undefined) return [{ group: entry.group, words, prefix: words.length - bare.length }];
     const fallback = scripted(bare, scriptPaths);
-    if (fallback !== undefined) found.push({ ...fallback, words, prefix: words.length - bare.length });
-  }
-  return found;
+    return fallback === undefined ? [] : [{ ...fallback, words, prefix: words.length - bare.length }];
+  });
 }
 
 const groupsOf = (found: readonly Queued[]): Group[] => [...new Set(found.map(({ group }) => group))];

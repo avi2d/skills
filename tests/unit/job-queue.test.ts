@@ -39,6 +39,13 @@ describe("repository settings", () => {
     expect(queueFor("sh bin/worker.test.sh", other)).toEqual([]);
     expect(queueFor("vitest run -c bench/runner.config.ts", other)).toEqual(["tests"]);
   });
+  test("rejects applying another repository settings after cd", () => {
+    const configured = join(work, "configured");
+    mkdirSync(configured, { recursive: true });
+    writeFileSync(join(configured, ".skills.json"), JSON.stringify({ agentTests: { testScripts: [], evalConfigs: ["bench/runner.config.ts"] } }));
+    expect(queueFor("cd " + configured + " && vitest run -c bench/runner.config.ts", work)).toEqual(["tests"]);
+    expect(queueFor("cd " + work + " && vitest run -c bench/runner.config.ts", configured)).toEqual(["tests"]);
+  });
 });
 
 describe("the tests group", () => {
