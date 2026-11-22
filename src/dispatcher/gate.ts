@@ -5,6 +5,7 @@ import { join } from "node:path";
 import type { Readable } from "node:stream";
 import { type Unreadable, checksOf, readConfig } from "./gate-config";
 import type { Check, Gate, Outcome } from "./verdict";
+import { refuseLocalTests } from "./local-tests";
 
 export const CONFIG = ".no-mistakes.yaml";
 
@@ -240,12 +241,25 @@ export async function verify(
   const deadline = started + budget * 1000;
   const env = checkEnv(changedFiles(root, base).join("\n"));
   const seconds = (): number => Math.round((Date.now() - started) / 1000);
+  const skipped: Extract<Outcome, { outcome: "left-to-ci" }>["skipped"] = [];
+  const passed: string[] = [];
   for (const check of checks) {
+    if (check.name === "test") {
+      const why = refuseLocalTests(check.command, root);
+      if (why !== undefined) {
+        skipped.push({ name: check.name, why });
+        continue;
+      }
+    }
     const ran = await run(root, check.command, deadline - Date.now(), budget, env);
     if (ran.ended === "inconclusive" || ran.ended === "overran") return { seconds: seconds(), verdict: { outcome: ran.ended, why: ran.why } };
     if (ran.ended === "failed") {
       return { seconds: seconds(), verdict: { outcome: "failed", check, status: ran.status, tail: ran.tail } };
     }
+    passed.push(check.name);
   }
-  return { seconds: seconds(), verdict: { outcome: "passed", checks: checks.map((check) => check.name) } };
+  return {
+    seconds: seconds(),
+    verdict: skipped.length > 0 ? { outcome: "left-to-ci", skipped } : { outcome: "passed", checks: passed },
+  };
 }
