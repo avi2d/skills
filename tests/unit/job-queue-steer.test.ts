@@ -1,0 +1,312 @@
+import { afterAll, afterEach, beforeEach, describe, expect, test } from "bun:test";
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { dirname, join } from "node:path";
+import { settingsFrom } from "../../evals/settings";
+import { EVAL_CONCURRENCY_CAP, LOG_LINES, SEPARATE_CALLS, SEPARATE_EVAL_CALLS, queueFor, queued, steer, steeredLine } from "../../src/dispatcher/job-queue";
+import { simpleCommands } from "../../src/dispatcher/shell-commands";
+
+const work = mkdtempSync(join(tmpdir(), "skills-job-queue-"));
+afterAll(() => rmSync(work, { recursive: true, force: true }));
+for (const file of ["tests/unit/a.test.ts", "tests/unit/glob.test.ts", "tests/test_a.py", "src/a.test.ts", "src/foo.ts", "bench/runner.config.ts", "setup.ts", "bunfig.ci.toml", ".env.test", "vitest.ci.ts", "pytest.ci.ini", "packages/a/a.test.ts", "sub/Cargo.toml", "sub/tests/b.test.ts", "tests/[id]/test_page.py"]) {
+  mkdirSync(dirname(join(work, file)), { recursive: true });
+  writeFileSync(join(work, file), "");
+}
+
+writeFileSync(join(work, ".skills.json"), JSON.stringify({ agentTests: { testScripts: ["bin/run-checks.sh", "bin/*.test.sh"], evalConfigs: ["bench/runner.config.ts"] } }));
+
+const q = (command: string): string | undefined => queueFor(command, work).join(" and ") || undefined;
+
+const savedGroup = process.env.PUEUE_GROUP;
+const savedWorker = process.env.PUEUE_WORKER_ID;
+
+beforeEach(() => {
+  delete process.env.PUEUE_GROUP;
+  delete process.env.PUEUE_WORKER_ID;
+});
+
+afterEach(() => {
+  if (savedGroup === undefined) delete process.env.PUEUE_GROUP;
+  else process.env.PUEUE_GROUP = savedGroup;
+  if (savedWorker === undefined) delete process.env.PUEUE_WORKER_ID;
+  else process.env.PUEUE_WORKER_ID = savedWorker;
+});
+
+describe("targeted runs queue instead of running directly", () => {
+  test.each(["bun test tests/unit/glob.test.ts", "bun test --timeout 20000 tests/unit/glob.test.ts", "bun test --randomize tests/unit/glob.test.ts", "vitest run --coverage src/a.test.ts", "vitest run --no-isolate src/a.test.ts", "bun run test tests/unit/a.test.ts", "vitest run src/a.test.ts", "cargo test --test cli", "pytest tests/test_a.py", "pytest -n 4 tests/test_a.py", "pytest tests/test_a.py::test_x", "vitest run src/a.test.ts:12", "bun test 'tests/**/*.test.ts'", "bun run test -- --randomize tests/unit/a.test.ts", "pytest 'tests/[id]/test_page.py'"])(
+    "%s names what it runs, so it queues instead of running directly",
+    (command) => {
+      expect(q(command)).toBe("tests");
+    },
+  );
+
+  test.each(["bun test -t 'a literal'", "bun test --test-name-pattern=one-small-test", "bun test --test-name-pattern one-small-test", "bun run test -- -t parses", "npm test -- --grep parses", "vitest run -t parses", "vitest run --test-name-pattern parses", "vitest run --tagsFilter slow", "pytest -k parses", "pytest -kparses"])(
+    "%s filters by test name, so it queues instead of running directly",
+    (command) => {
+      expect(q(command)).toBe("tests");
+    },
+  );
+
+  test.each(["bun test --changed", "bun test --changed=main", "vitest run --changed"])("%s runs only the files a change affects, so it queues instead of running directly", (command) => {
+    expect(q(command)).toBe("tests");
+  });
+
+  test.each(["bun test tests/unit/a.test.ts", "bun test --changed"])(
+    "%s queues with priority 1 instead of waiting behind whole suites",
+    (command) => {
+      expect(steer(command, work, () => ["default", "tests"])).toEqual({ type: "queue", group: "tests", command: queued(command, "tests", 1) });
+    },
+  );
+});
+
+describe("what runs as it is", () => {
+
+  test.each(["bun test --watch", "bun run test --watch", "vitest", "npm test -- -w", "vitest run -u --watch", "vitest run -c --watch", "vitest run -w=true", "vitest run --watch=true"])("%s never exits, so a queued job would hold its slot forever", (command) => {
+    expect(q(command)).toBeUndefined();
+  });
+
+  test.each(["pueue add -- 'bun test'", "id=$(pueue add --print-task-id --group tests -- 'bun test') && pueue wait \"$id\""])(
+    "%s hands the command to pueue as one quoted word, so nothing in it runs to be queued",
+    (command) => {
+      expect(q(command)).toBeUndefined();
+    },
+  );
+
+  test.each(["ls", "git status", "lint", "bun install", "echo bun test", "grep -r 'bun test' docs"])(
+    "%s is not a test suite or a GPU run",
+    (command) => {
+      expect(q(command)).toBeUndefined();
+    },
+  );
+});
+
+describe("reading the shell around a command", () => {
+  test.each([
+    ["cd sub && bun run test", "tests"],
+    ["bun run test:fast && bun run test 2>&1 | tail -40", "tests"],
+    ["bun run test:fast; bun test", "tests"],
+    ["CI=1 bun test", "tests"],
+    ["env CI=1 bun test", "tests"],
+    ["time bun run test", "tests"],
+    ["timeout 600 bun run test", "tests"],
+    ["timeout --signal=KILL 10m bun test", "tests"],
+    ["bun test > out.txt 2>&1", "tests"],
+    ["bun test &>/dev/null", "tests"],
+    ["bun test # the whole suite", "tests"],
+    ["(cd sub && bun test)", "tests"],
+    ["bun test tests/b.test.ts", "tests"],
+    ["cd sub && bun test tests/b.test.ts", "tests"],
+    ["cd -- sub && bun test tests/b.test.ts", "tests"],
+    ["(cd sub && bun test tests/b.test.ts); bun test tests/unit/a.test.ts", "tests"],
+    ["bun test --cwd sub tests/b.test.ts", "tests"],
+    ["env -C sub bun test tests/b.test.ts", "tests"],
+    ["bun test \\\n  --coverage", "tests"],
+    ["nice -n 10 bun test", "tests"],
+    ["nice -10 bun test", "tests"],
+    ["timeout --signal KILL 600 bun test", "tests"],
+    ["timeout -k 5 600 bun run test", "tests"],
+    ["env -u NODE_OPTIONS bun test", "tests"],
+    ["env -i CI=1 bun test", "tests"],
+    ["npx -y stryker run", "tests"],
+    ["npx --package @stryker-mutator/core stryker run", "tests"],
+    ["bunx --bun vitest run", "tests"],
+    ["pnpm exec --filter core vitest run", "tests"],
+    ["pueue status && bun test", "tests"],
+  ] as const)("%s queues in %s", (command, group) => {
+    expect(q(command)).toBe(group);
+  });
+
+  test("a double paren without an arithmetic close never hides the inner test run", () => {
+    expect(q("((bun test) && echo ok)")).toBe("tests");
+  });
+
+  test("a redirection target is not read as a path filter", () => {
+    expect(simpleCommands("bun test >out.txt 2> err.txt")).toEqual([["bun", "test"]]);
+  });
+
+  test("a quoted argument is one word, quotes and all removed", () => {
+    expect(simpleCommands(`ollama run qwen3 "say 'hi' twice"`)).toEqual([["ollama", "run", "qwen3", "say 'hi' twice"]]);
+  });
+
+  test("a heredoc's body is text the command reads, not commands the shell runs", () => {
+    expect(q("cat <<'EOF' > notes.md\nbun test\nEOF\nls")).toBeUndefined();
+    expect(simpleCommands("cat <<-EOF\n\tbun test\n\tEOF\nbun run test")).toEqual([["cat"], ["bun", "run", "test"]]);
+  });
+});
+
+describe("the queued command", () => {
+  test("it adds the command under nice with priority, in one pair of single quotes, then waits and shows the log", () => {
+    const wrapped = queued("bun run test", "tests", 1);
+    expect(wrapped).toContain("pueue add --priority 1 --print-task-id --group tests -- 'nice -n 19 bash -c");
+    expect(wrapped).toContain("bun run test");
+    expect(wrapped).toContain('pueue wait --quiet --status success "$id"');
+    expect(wrapped).toContain(`pueue log --lines ${LOG_LINES} "$id"`);
+  });
+
+  test("a compound command stays whole under the one nice invocation", () => {
+    const wrapped = queued("bun test && cargo test", "tests", 1);
+    expect(wrapped).toContain("nice -n 19 bash -c");
+    expect(wrapped).toContain("bun test && cargo test");
+  });
+
+  test("a single quote inside the command survives the quoting", () => {
+    expect(queued("bun test -t 'it'", "tests", 1)).toContain("'\\''");
+  });
+
+  test("the queued command is itself a pueue call, so a hook that sees it again leaves it alone", () => {
+    expect(q(queued("bun test", "tests"))).toBeUndefined();
+  });
+
+  test("the log line names the group and the action, and never the command, which can carry a credential", () => {
+    expect(steeredLine({ type: "queue", group: "gpu", command: "API_TOKEN=secret llama-bench" })).toBe("job-queue gpu: queued the command through pueue");
+    expect(steeredLine({ type: "refuse", groups: ["tests", "gpu"], text: SEPARATE_CALLS })).toBe("job-queue tests and gpu: refused a call that mixes groups");
+  });
+
+  test("the log line names the evals group the same way, and never the command", () => {
+    expect(steeredLine({ type: "queue", group: "evals", command: "EVAL_CONCURRENCY=3 bun run eval" })).toBe("job-queue evals: queued the command through pueue");
+    expect(steeredLine({ type: "refuse", groups: ["evals", "gpu"], text: SEPARATE_EVAL_CALLS })).toBe("job-queue evals and gpu: refused a call that mixes groups");
+  });
+
+  test("every tests run queues with priority 1 instead of waiting behind whatever else waits", () => {
+    expect(queued("bun test tests/unit/a.test.ts", "tests", 1)).toContain("pueue add --priority 1 --print-task-id --group tests");
+  });
+
+  test("the log line names the missing queue and the reason, and never the command", () => {
+    expect(steeredLine({ type: "pass", group: "tests", reason: "the pueue group listing failed", text: "runs directly" })).toBe("job-queue tests: not queued (the pueue group listing failed)");
+    expect(steeredLine({ type: "pass", group: "gpu", reason: "pueue has no gpu group", text: "runs directly" })).toBe("job-queue gpu: not queued (pueue has no gpu group)");
+  });
+});
+
+describe("steer", () => {
+  test("a heavy command queues with priority under nice when pueue has that group", () => {
+    expect(steer("bun test", work, () => ["default", "tests"])).toEqual({ type: "queue", group: "tests", command: queued("bun test", "tests", 1) });
+  });
+
+
+  test("a bare eval run queues with EVAL_CONCURRENCY=3 added, since the harness default runs 4 abreast", () => {
+    expect(steer("bun run eval", work, () => ["default", "tests", "gpu", "evals"])).toEqual({
+      type: "queue",
+      group: "evals",
+      command: queued("EVAL_CONCURRENCY=3 bun run eval", "evals"),
+    });
+  });
+
+  test.each([
+    ["EVAL_CONCURRENCY=4 bun run eval", "EVAL_CONCURRENCY=3 bun run eval"],
+    ["EVAL_CONCURRENCY=12 bun run eval", "EVAL_CONCURRENCY=3 bun run eval"],
+    ["OPENCODE_API_KEY=secret EVAL_CONCURRENCY=8 bun run eval", "OPENCODE_API_KEY=secret EVAL_CONCURRENCY=3 bun run eval"],
+  ])("%s asks for more runs than one slot lends, so it queues lowered to 3", (command, capped) => {
+    expect(steer(command, work, () => ["default", "tests", "gpu", "evals"])).toEqual({ type: "queue", group: "evals", command: queued(capped, "evals") });
+  });
+
+  test.each([
+    ["cd sub && bun run eval", "cd sub && EVAL_CONCURRENCY=3 bun run eval"],
+    ["bun install && bun run eval", "bun install && EVAL_CONCURRENCY=3 bun run eval"],
+    ["(bun run eval)", "(EVAL_CONCURRENCY=3 bun run eval)"],
+    ["nice -n 10 bun run eval", "EVAL_CONCURRENCY=3 nice -n 10 bun run eval"],
+    ["export EVAL_CONCURRENCY=8; bun run eval", "export EVAL_CONCURRENCY=8; EVAL_CONCURRENCY=3 bun run eval"],
+    ['EVAL_CONCURRENCY="8" bun run eval', "EVAL_CONCURRENCY=3 bun run eval"],
+    ["EVAL_CONCURRENCY='8' bun run eval", "EVAL_CONCURRENCY=3 bun run eval"],
+    ["EVAL_CONCURRENCY=$N bun run eval", "EVAL_CONCURRENCY=3 bun run eval"],
+    ["env EVAL_CONCURRENCY=8 bun run eval", "env EVAL_CONCURRENCY=3 bun run eval"],
+    ["bun run eval; EVAL_CONCURRENCY=6 npm run eval", "EVAL_CONCURRENCY=3 bun run eval; EVAL_CONCURRENCY=3 npm run eval"],
+    ["EVAL_CONCURRENCY=8 pnpm eval", "EVAL_CONCURRENCY=3 pnpm eval"],
+    ["cd sub && yarn eval", "cd sub && EVAL_CONCURRENCY=3 yarn eval"],
+  ])("%s caps the eval itself, wherever it sits in the call and however its count is spelled", (command, capped) => {
+    expect(steer(command, work, () => ["default", "tests", "gpu", "evals"])).toEqual({ type: "queue", group: "evals", command: queued(capped, "evals") });
+  });
+
+  test.each(["EVAL_CONCURRENCY=3 bun run eval", "EVAL_CONCURRENCY=2 bun run eval", 'EVAL_CONCURRENCY="2" bun run eval'])("%s already fits one slot, so it queues as it is", (command) => {
+    expect(steer(command, work, () => ["default", "tests", "gpu", "evals"])).toEqual({ type: "queue", group: "evals", command: queued(command, "evals") });
+  });
+
+  test.each(["for i in 1 2; do bun run eval; done", "if bun run eval; then echo done; fi"])(
+    "%s caps the eval past its leading keyword instead of queuing the uncapped call",
+    (command) => {
+      const steered = steer(command, work, () => ["default", "tests", "gpu", "evals"]);
+      expect(steered?.type).toBe("queue");
+      if (steered?.type !== "queue") return;
+      expect(steered.group).toBe("evals");
+      expect(steered.command).toContain("EVAL_CONCURRENCY=3");
+    },
+  );
+
+  test("the harness default stays above the cap, so a bare run still needs the assignment", () => {
+    expect(settingsFrom({}).concurrency).toBeGreaterThan(EVAL_CONCURRENCY_CAP);
+  });
+
+
+  test.each(["bun run eval && bun run test", "bun run eval && llama-bench -m model.gguf"])(
+    "%s needs the evals group and another, so it is refused with a word to run them as separate calls",
+    (command) => {
+      expect(steer(command, work, () => ["default", "tests", "gpu", "evals"])).toEqual({
+        type: "refuse",
+        groups: expect.arrayContaining(["evals"]),
+        text: SEPARATE_EVAL_CALLS,
+      });
+    },
+  );
+
+  test.each(["bun test && llama-bench -m model.gguf", "llama-bench -m model.gguf && bun test"])(
+    "%s needs two groups, which one queued job cannot hold, so it is refused with a word to run them as separate calls",
+    (command) => {
+      expect(steer(command, work, () => ["default", "tests", "gpu"])).toEqual({ type: "refuse", groups: expect.arrayContaining(["tests", "gpu"]), text: SEPARATE_CALLS });
+    },
+  );
+
+  test.each([
+    ["llama-bench -m m.gguf", ["default", "tests"], "gpu", "pueue has no gpu group"],
+    ["bun run eval", ["default", "tests", "gpu"], "evals", "pueue has no evals group"],
+    ["bun test && llama-bench -m model.gguf", ["default", "tests"], "gpu", "pueue has no gpu group"],
+    ["llama-bench -m model.gguf && bun test", ["default", "gpu"], "tests", "pueue has no tests group"],
+  ] as const)(
+    "%s left running directly names the missing queue instead of failing silently",
+    (command, listed, group, reason) => {
+      expect(steer(command, work, () => listed)).toEqual({
+        type: "pass",
+        group,
+        reason,
+        text: `The ${group} queue is unavailable because ${reason}, so the command runs directly.`,
+      });
+    },
+  );
+
+  test("two heavy commands in one group queue together as one job", () => {
+    expect(steer("bun run test:fast && bun test && cargo test", work, () => ["tests"])).toEqual({ type: "queue", group: "tests", command: queued("bun run test:fast && bun test && cargo test", "tests", 1) });
+  });
+
+  test("a heavy command left running directly names the failed listing instead of failing silently", () => {
+    expect(steer("bun test", work, () => undefined)).toEqual({
+      type: "pass",
+      group: "tests",
+      reason: "the pueue group listing failed",
+      text: "The tests queue is unavailable because the pueue group listing failed, so the command runs directly.",
+    });
+  });
+
+  test("a heavy command inside a pueue worker runs directly instead of queueing twice", () => {
+    process.env.PUEUE_GROUP = "tests";
+    try {
+      expect(steer("bun test", work, () => ["default", "tests"])).toBeUndefined();
+    } finally {
+      delete process.env.PUEUE_GROUP;
+    }
+    process.env.PUEUE_WORKER_ID = "7";
+    try {
+      expect(steer("bun test", work, () => ["default", "tests"])).toBeUndefined();
+    } finally {
+      delete process.env.PUEUE_WORKER_ID;
+    }
+  });
+
+  test("a plain command never asks pueue", () => {
+    const asked: string[] = [];
+    expect(
+      steer("git status", work, () => {
+        asked.push("groups");
+        return ["tests"];
+      }),
+    ).toBeUndefined();
+    expect(asked).toEqual([]);
+  });
+});

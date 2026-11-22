@@ -65,8 +65,6 @@ function unwrapped(words: readonly string[]): string[] {
 
 export const texts = (words: readonly Word[]): string[] => words.map(({ text }) => text);
 
-const EVAL_CONFIG = /(^|\/)evals\/vitest\.config\.ts$/;
-
 export function hasConfig(args: readonly string[], configs: readonly RegExp[]): boolean {
   for (let at = 0; at < args.length; at += 1) {
     const arg = args[at] ?? "";
@@ -78,15 +76,7 @@ export function hasConfig(args: readonly string[], configs: readonly RegExp[]): 
   return false;
 }
 
-export function hasEvalConfig(args: readonly string[]): boolean {
-  return hasConfig(args, [EVAL_CONFIG]);
-}
-
 export const SCRIPT_RUNNERS = new Set(["bun", "node", "sh", "bash", "zsh", "dash"]);
-
-export const BIN_TEST_RUN = /(^|\/)bin\/fm-test-run\.sh$/;
-
-export const BIN_TEST_SCRIPT = /(^|\/)bin\/[^/]*\.test\.sh$/;
 
 export const simpleCommands = (command: string): string[][] => segments(command).map((words) => unwrapped(texts(words)));
 

@@ -1,6 +1,7 @@
 import { spawnSync } from "node:child_process";
 import { segments, type Word } from "./shell-words";
-import { BIN_TEST_RUN, BIN_TEST_SCRIPT, hasEvalConfig, program, RESERVED_WORDS, SCRIPT_RUNNERS, startsWith, stripped, texts } from "./shell-commands";
+import { compileGlob, hasConfig, program, RESERVED_WORDS, SCRIPT_RUNNERS, startsWith, stripped, texts } from "./shell-commands";
+import { readSkillsSettings } from "./project-settings";
 
 export type Group = "tests" | "gpu" | "evals";
 
@@ -30,7 +31,6 @@ const scripts = (...runner: string[]): Entry[] => [
 
 const evalScripts = (...runner: string[]): Entry[] => [{ group: "evals", runs: [...runner, "eval"], when: exits }];
 
-const evalConfig = (args: readonly string[]): boolean => exits(args) && hasEvalConfig(args);
 
 type Gate = (args: readonly string[]) => boolean;
 
@@ -116,7 +116,6 @@ const TABLE: readonly Entry[] = [
   ...evalScripts("yarn", "run"),
   ...evalScripts("pnpm"),
   ...evalScripts("yarn"),
-  { group: "evals", runs: ["vitest", "run"], when: evalConfig },
   { group: "tests", runs: ["vitest", "run"], when: exits },
   { group: "tests", runs: ["stryker", "run"], when: always },
   { group: "tests", runs: ["cargo", "test"], when: exits },
@@ -142,33 +141,47 @@ const base = (word: string): string => word.slice(word.lastIndexOf("/") + 1);
 
 const TOOL_PATHS = new Set(["lint", "typecheck", "build"]);
 
-const scripted = (bare: readonly string[]): { group: Group } | undefined => {
+const scripted = (bare: readonly string[], scriptPaths: readonly RegExp[]): { group: Group } | undefined => {
   const [rawHead = "", ...rawRest] = bare;
   const through = SCRIPT_RUNNERS.has(program(rawHead)) ? rawRest : bare;
   const [first = "", ...args] = through;
   if (args.some(watching)) return undefined;
   if (first.includes("/") && TOOL_PATHS.has(base(first))) return { group: "tests" };
   if (base(first) === "fm-sim-boot.sh") return { group: "tests" };
-  if (BIN_TEST_RUN.test(first)) return { group: "tests" };
-  if (BIN_TEST_SCRIPT.test(first)) return { group: "tests" };
+  if (scriptPaths.some((script) => script.test(first))) return { group: "tests" };
   return undefined;
 };
 
-function queuedSegments(command: string): Queued[] {
-  const raw = segments(command);
-  return raw.flatMap((words) => {
+function queuedSegments(command: string, cwd: string): Queued[] {
+  const git = spawnSync("git", ["-C", cwd, "rev-parse", "--show-toplevel"], { encoding: "utf8", timeout: 3_000 });
+  const read = readSkillsSettings(git.status === 0 ? git.stdout.trim() : cwd);
+  const settings = read !== undefined && "settings" in read ? read.settings.agentTests : undefined;
+  const paths = (globs: readonly string[]): RegExp[] => globs.flatMap((glob) => {
+    try { return [compileGlob("**/" + glob)]; } catch { return []; }
+  });
+  const parts = segments(command);
+  const moved = (word: string): boolean =>
+    word === "cd" || word === "pushd" || word === "popd" || ["-C", "--chdir", "--dir"].some((flag) =>
+      word === flag || (flag.startsWith("--") ? word.startsWith(flag + "=") : word.length > flag.length && word.startsWith(flag)));
+  const moves = parts.flatMap((segment) => texts(segment)).some(moved);
+  const scriptPaths = moves ? [] : paths(settings?.testScripts ?? []);
+  const configs = moves ? [] : paths(settings?.evalConfigs ?? []);
+  return parts.flatMap((words) => {
     const bare = stripped(texts(words));
     const named = bare.map((word, at) => (at === 0 ? program(word) : word));
+    if (startsWith(named, ["vitest", "run"]) && exits(named.slice(2)) && hasConfig(named.slice(2), configs)) {
+      return [{ group: "evals" as const, words, prefix: words.length - bare.length }];
+    }
     const entry = TABLE.find(({ runs, when }) => startsWith(named, runs) && when(named.slice(runs.length)));
     if (entry !== undefined) return [{ group: entry.group, words, prefix: words.length - bare.length }];
-    const fallback = scripted(bare);
+    const fallback = scripted(bare, scriptPaths);
     return fallback === undefined ? [] : [{ ...fallback, words, prefix: words.length - bare.length }];
   });
 }
 
 const groupsOf = (found: readonly Queued[]): Group[] => [...new Set(found.map(({ group }) => group))];
 
-export const queueFor = (command: string, _cwd: string): Group[] => groupsOf(queuedSegments(command));
+export const queueFor = (command: string, cwd: string): Group[] => groupsOf(queuedSegments(command, cwd));
 
 const quoted = (text: string): string => `'${text.replaceAll("'", `'\\''`)}'`;
 
@@ -234,9 +247,9 @@ const unavailable = (group: Group, reason: string): Steered => ({
   text: `The ${group} queue is unavailable because ${reason}, so the command runs directly.`,
 });
 
-export function steer(command: string, _cwd: string, available: () => readonly string[] | undefined = pueueGroups): Steered | undefined {
+export function steer(command: string, cwd: string, available: () => readonly string[] | undefined = pueueGroups): Steered | undefined {
   if (process.env.PUEUE_GROUP !== undefined || process.env.PUEUE_WORKER_ID !== undefined) return undefined;
-  const found = queuedSegments(command);
+  const found = queuedSegments(command, cwd);
   const groups = groupsOf(found);
   const [group] = groups;
   if (group === undefined) return undefined;
