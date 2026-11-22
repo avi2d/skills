@@ -53,10 +53,10 @@ test("origin check does not replace the user's configured or environment SSH com
   const savedArgs = process.env.SKILLS_SSH_ARGS;
   const savedRepo = process.env.SKILLS_SSH_REPO;
   try {
-    await Bun.$`git init -q -b main`.cwd(repo).quiet();
-    await Bun.$`git -c user.name=test -c user.email=test@example.invalid commit -q --allow-empty -m base`.cwd(repo).quiet();
-    await Bun.$`git update-ref refs/remotes/origin/main HEAD`.cwd(repo).quiet();
-    await Bun.$`git remote add origin ssh://example.invalid/repo`.cwd(repo).quiet();
+    await $`git init -q -b main`.cwd(repo).quiet();
+    await $`git -c user.name=test -c user.email=test@example.invalid commit -q --allow-empty -m base`.cwd(repo).quiet();
+    await $`git update-ref refs/remotes/origin/main HEAD`.cwd(repo).quiet();
+    await $`git remote add origin ssh://example.invalid/repo`.cwd(repo).quiet();
     const configured = join(repo, "configured-ssh");
     const environment = join(repo, "environment-ssh");
     const args = join(repo, "ssh-args");
@@ -70,12 +70,12 @@ test("origin check does not replace the user's configured or environment SSH com
     process.env.GIT_CONFIG_NOSYSTEM = "1";
     delete process.env.GIT_SSH_COMMAND;
     delete process.env.GIT_SSH;
-    await Bun.$`git config core.sshCommand ${configured}`.cwd(repo).quiet();
+    await $`git config core.sshCommand ${configured}`.cwd(repo).quiet();
     expect(await valueOf(warningsWith(repo, {}))).toEqual([]);
     expect(await readFile(args, "utf8")).toContain(`${configured} -o BatchMode=yes`);
     expect(await valueOf(warningsWith(repo, { GIT_SSH_COMMAND: environment }))).toEqual([]);
     expect(await readFile(args, "utf8")).toContain(`${environment} -o BatchMode=yes`);
-    await Bun.$`git config --unset core.sshCommand`.cwd(repo).quiet();
+    await $`git config --unset core.sshCommand`.cwd(repo).quiet();
     const legacy = join(repo, "legacy ssh");
     await Bun.write(legacy, '#!/bin/sh\nprintf "%s\\n" "$0 $*" > "$SKILLS_SSH_ARGS"\ncase "$1" in -G) exit 0;; esac\nexec git-upload-pack "$SKILLS_SSH_REPO"\n');
     await chmod(legacy, 0o755);
