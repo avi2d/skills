@@ -142,12 +142,14 @@ An allowed test run, an eval run, or a GPU benchmark or model inference an agent
 Every Dispatcher asks `src/dispatcher/job-queue.ts` about each shell command before it runs.
 That module is no Rule, so it costs the model no context.
 Its table sends every allowed test run, such as `bun test` or `bun run test`, and every allowed mutation run to the `tests` group.
-It also sends the other heavy shapes to the `tests` group: `checks-test`, `bin/fm-test-run.sh`, any `bin/*.test.sh` script, `go test`, the `test:fast` script, a `lint`, `typecheck` or `build` executable in any directory, `xcrun simctl boot`, `xcrun simctl io` and `fm-sim-boot.sh`.
+It also sends configured test scripts and direct test commands to the `tests` group.
+Other heavy shapes include `checks-test`, `go test`, the `test:fast` script, a `lint`, `typecheck` or `build` executable in any directory, `xcrun simctl boot`, `xcrun simctl io` and `fm-sim-boot.sh`.
 Every heavy shape in the `tests` group queues with `pueue add --priority 1`, and the `gpu` group keeps its default scheduling.
 Only an enabled watch mode, `--watch`, `-w` or `--watchAll` with no value or `=true`, runs as it is, because a queued job would hold its slot forever, so `--watch=false` and `--no-watch` still queue.
 A mutation run is heavy whatever it names.
 A prefix such as `env`, `nice`, `timeout`, `npx` or `pnpm exec` is skipped with its own options and operands before the table is read.
-It sends an eval run, `bun run eval`, `pnpm eval`, `yarn eval` or `vitest run` with `--config evals/vitest.config.ts`, to the `evals` group whatever it filters, since every run starts sandboxed agents, and only watch mode runs as it is.
+It sends `bun run eval`, `pnpm eval`, `yarn eval` and `vitest run` with a configured eval config to the `evals` group whatever they filter.
+Only watch mode runs as it is.
 An eval run queues with its concurrency capped at 3 rather than refused: in the eval's own simple command, an `EVAL_CONCURRENCY` assignment above 3 or not a number is rewritten to 3, and a command that assigns none gains `EVAL_CONCURRENCY=3`, since the harness default is 4.
 The cap holds for each eval command, so evals joined with `&` or `|` in one call share one slot at 3 each.
 It sends model inference to the `gpu` group only in a shape that exits on its own: `rembg i` and `rembg p` without a watch option, and `whisper`, `whisper-cli` or `whisper-cpp`.

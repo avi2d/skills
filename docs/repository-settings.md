@@ -14,10 +14,10 @@ It holds JSON because the Dispatcher reads it on shell calls without running rep
 | `$schema` | string | none | Gives your editor a path or URL to the JSON Schema. |
 | `agentTests` | object | `{}` | Groups settings for test commands. |
 | `agentTests.allowLocal` | boolean | `false` | Lets agents run recognised test commands locally when `true`. |
-| `agentTests.testCommands` | array of strings | `[]` | Adds runner executable names to recognise in commands, wrappers, and package scripts. |
-| `agentTests.testScripts` | array of strings | `[]` | Lists globs for script paths that start tests. |
+| `agentTests.testCommands` | array of strings | `[]` | Adds runner executable names to recognise in commands, wrappers, and package scripts. Direct invocations also enter the test queue. |
+| `agentTests.testScripts` | array of strings | `[]` | Lists globs for script paths that start tests and enter the test queue. |
 | `agentTests.notTestCommands` | array of strings | `[]` | Names checks that do not run tests, so a test-named package script that runs only those checks can run. |
-| `agentTests.evalConfigs` | array of strings | `[]` | Lists globs for Vitest config paths that run evaluations. |
+| `agentTests.evalConfigs` | array of strings | `[]` | Lists globs for Vitest config paths that run evaluations and enter the eval queue. |
 | `rules` | object | `{}` | Groups switches for catalogued Rules. |
 | `rules.on` | array of strings | `[]` | Activates Rules the session's Profile leaves out, without changing their triggers. |
 | `rules.off` | array of strings | `[]` | Deactivates Rules and their write refusals. |

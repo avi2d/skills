@@ -8,10 +8,12 @@ import { simpleCommands } from "../../src/dispatcher/shell-commands";
 
 const work = mkdtempSync(join(tmpdir(), "skills-job-queue-"));
 afterAll(() => rmSync(work, { recursive: true, force: true }));
-for (const file of ["tests/unit/a.test.ts", "tests/unit/glob.test.ts", "tests/test_a.py", "src/a.test.ts", "src/foo.ts", "evals/vitest.config.ts", "setup.ts", "bunfig.ci.toml", ".env.test", "vitest.ci.ts", "pytest.ci.ini", "packages/a/a.test.ts", "sub/Cargo.toml", "sub/tests/b.test.ts", "tests/[id]/test_page.py"]) {
+for (const file of ["tests/unit/a.test.ts", "tests/unit/glob.test.ts", "tests/test_a.py", "src/a.test.ts", "src/foo.ts", "bench/runner.config.ts", "setup.ts", "bunfig.ci.toml", ".env.test", "vitest.ci.ts", "pytest.ci.ini", "packages/a/a.test.ts", "sub/Cargo.toml", "sub/tests/b.test.ts", "tests/[id]/test_page.py"]) {
   mkdirSync(dirname(join(work, file)), { recursive: true });
   writeFileSync(join(work, file), "");
 }
+
+writeFileSync(join(work, ".skills.json"), JSON.stringify({ agentTests: { testScripts: ["bin/run-checks.sh", "bin/*.test.sh"], evalConfigs: ["bench/runner.config.ts"] } }));
 
 const q = (command: string): string | undefined => queueFor(command, work).join(" and ") || undefined;
 
@@ -28,6 +30,15 @@ afterEach(() => {
   else process.env.PUEUE_GROUP = savedGroup;
   if (savedWorker === undefined) delete process.env.PUEUE_WORKER_ID;
   else process.env.PUEUE_WORKER_ID = savedWorker;
+});
+
+describe("repository settings", () => {
+  test("unconfigured paths do not inherit another repository settings", () => {
+    const other = join(work, "other");
+    mkdirSync(other, { recursive: true });
+    expect(queueFor("sh bin/worker.test.sh", other)).toEqual([]);
+    expect(queueFor("vitest run -c bench/runner.config.ts", other)).toEqual(["tests"]);
+  });
 });
 
 describe("the tests group", () => {
@@ -140,15 +151,15 @@ describe("the evals group", () => {
   );
 
   test("the repository's eval script runs every eval, its config being an option's path and runner no path at all", () => {
-    expect(q("vitest run --config evals/vitest.config.ts --configLoader runner")).toBe("evals");
+    expect(q("vitest run --config bench/runner.config.ts --configLoader runner")).toBe("evals");
   });
 
   test.each([
-    "vitest run --config evals/vitest.config.ts",
-    "vitest run -c evals/vitest.config.ts",
-    "vitest run --config=evals/vitest.config.ts",
-    "vitest run --config ./evals/vitest.config.ts",
-    "bunx vitest run --config evals/vitest.config.ts",
+    "vitest run --config bench/runner.config.ts",
+    "vitest run -c bench/runner.config.ts",
+    "vitest run --config=bench/runner.config.ts",
+    "vitest run --config ./bench/runner.config.ts",
+    "bunx vitest run --config bench/runner.config.ts",
   ])("%s runs the suite through the eval config, whatever wrapper or spelling names it", (command) => {
     expect(q(command)).toBe("evals");
   });
@@ -157,14 +168,14 @@ describe("the evals group", () => {
     expect(q("vitest run --config vitest.ci.ts")).toBe("tests");
   });
 
-  test.each(["bun run eval evals/ablation.eval.ts", "bun run eval -t ablation", "bun run eval --changed", "npm run eval -- -t ablation", "vitest run --config evals/vitest.config.ts -t ablation"])(
+  test.each(["bun run eval evals/ablation.eval.ts", "bun run eval -t ablation", "bun run eval --changed", "npm run eval -- -t ablation", "vitest run --config bench/runner.config.ts -t ablation"])(
     "%s still starts sandboxed agents however it filters, so it queues the same whichever way it is spelled",
     (command) => {
       expect(q(command)).toBe("evals");
     },
   );
 
-  test.each(["vitest run --config evals/vitest.config.ts --watch", "vitest run -c evals/vitest.config.ts --watchAll", "bun run eval --watch", "npm run eval -- -w"])(
+  test.each(["vitest run --config bench/runner.config.ts --watch", "vitest run -c bench/runner.config.ts --watchAll", "bun run eval --watch", "npm run eval -- -w"])(
     "%s never exits, so a queued job would hold its slot forever",
     (command) => {
       expect(q(command)).toBeUndefined();
@@ -176,8 +187,8 @@ describe("the heavy shapes the queue plan adds", () => {
   test.each([
     "checks-test",
     "checks-test --changed",
-    "bin/fm-test-run.sh",
-    "./bin/fm-test-run.sh",
+    "bin/run-checks.sh",
+    "./bin/run-checks.sh",
     "bin/worker.test.sh",
     "sh bin/worker.test.sh",
     "go test ./...",
@@ -202,7 +213,7 @@ describe("the heavy shapes the queue plan adds", () => {
 
   test.each([
     "./scripts/smoke.test.sh",
-    "scripts/fm-test-run.sh",
+    "scripts/run-checks.sh",
     "sub/dir/worker.test.sh",
     "sh scripts/worker.test.sh",
     "lint",
