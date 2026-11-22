@@ -1,6 +1,6 @@
 import { spawnSync } from "node:child_process";
 import { resolve } from "node:path";
-import { segments, type Word } from "./shell-words";
+import { quoted as quotedParts, segments, type Word } from "./shell-words";
 import { compileGlob, expandHome, flagDir, hasConfig, program, RESERVED_WORDS, SCRIPT_RUNNERS, startsWith, stripped, texts } from "./shell-commands";
 import { readSkillsSettings } from "./project-settings";
 
@@ -180,15 +180,68 @@ function queuedSegments(command: string, cwd: string): Queued[] {
     return lists;
   };
   let dir = cwd;
-  const saved: string[] = [];
+  let asyncBase = cwd;
+  let seqBase = cwd;
+  let pipeActive = false;
+  let previous: string | undefined;
+  const saved: { dir: string; previous: string | undefined; asyncBase: string; seqBase: string; pipeActive: boolean }[] = [];
+  const settle = (): void => {
+    if (pipeActive) {
+      dir = seqBase;
+      pipeActive = false;
+    }
+  };
   let end = 0;
+  const marks = quotedParts(command);
   const found: Queued[] = [];
   for (const words of segments(command)) {
     const head = words[0];
     if (head !== undefined) {
-      for (const char of command.slice(end, head.from)) {
-        if (char === "(") saved.push(dir);
-        else if (char === ")" && saved.length > 0) dir = saved.pop() ?? dir;
+      let prev = "";
+      let at = end;
+      while (at < head.from) {
+        const seen = command.charAt(at);
+        const char = marks[at] === true ? "" : seen;
+        const next = marks[at + 1] === true ? "" : command.charAt(at + 1);
+        if (char === "(") {
+          saved.push({ dir, previous, asyncBase, seqBase, pipeActive });
+          settle();
+          asyncBase = dir;
+          seqBase = dir;
+        } else if (char === ")") {
+          settle();
+          const outer = saved.pop();
+          if (outer !== undefined) {
+            dir = outer.dir;
+            previous = outer.previous;
+            asyncBase = outer.asyncBase;
+            seqBase = outer.seqBase;
+            pipeActive = outer.pipeActive;
+          }
+        } else if (char === ";" || char === "\n") {
+          settle();
+          seqBase = dir;
+        } else if (char === "&") {
+          if (next === "&") {
+            settle();
+            at += 1;
+          } else if (prev !== ">" && next !== ">") {
+            settle();
+            dir = asyncBase;
+            asyncBase = dir;
+            seqBase = dir;
+          }
+        } else if (char === "|") {
+          if (next === "|") {
+            settle();
+            at += 1;
+          } else {
+            dir = seqBase;
+            pipeActive = true;
+          }
+        }
+        prev = seen;
+        at += 1;
       }
       const tail = words[words.length - 1];
       if (tail !== undefined) end = tail.to;
@@ -200,12 +253,33 @@ function queuedSegments(command: string, cwd: string): Queued[] {
       let at = 1;
       for (;;) {
         const arg = bare[at] ?? "";
-        if (arg === "--") { at += 1; break; }
-        if (arg.startsWith("-") && arg !== "-") { at += 1; continue; }
+        if (arg === "--") {
+          at += 1;
+          break;
+        }
+        if (arg.startsWith("-") && arg !== "-") {
+          at += 1;
+          continue;
+        }
         break;
       }
       const operand = bare[at];
-      if (operand !== undefined && operand !== "-") dir = resolve(dir, expandHome(operand));
+      if (operand === "-") {
+        if (previous !== undefined) {
+          const back = previous;
+          previous = dir;
+          dir = back;
+        }
+      } else if (operand !== undefined) {
+        previous = dir;
+        dir = resolve(dir, expandHome(operand));
+      } else {
+        const home = process.env.HOME;
+        if (home !== undefined && home !== "") {
+          previous = dir;
+          dir = home;
+        }
+      }
       continue;
     }
     const prefix = raw.slice(0, raw.length - bare.length);
