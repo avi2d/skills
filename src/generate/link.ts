@@ -1,6 +1,7 @@
 import { platform, tmpdir } from "node:os";
-import { Config, Context, Duration, Effect, Equal, FileSystem, Option, Schema } from "effect";
+import { Config, Context, Effect, Equal, FileSystem, Option, Schema } from "effect";
 import { ChildProcess, type ChildProcessSpawner } from "effect/process";
+import { git, originWarnings } from "./origin-check";
 import { DEFAULT_GENERATED_ROOT, readGeneratedRoot } from "./bundle";
 import { FileFailure, fileFailure } from "../platform/failures";
 import { attempt, entryAt, outputOf, unlessAbsent } from "../platform/files";
@@ -107,9 +108,6 @@ const temporary = (home: string): boolean => {
 const resolved = (path: string): Effect.Effect<string, FileFailure, FileSystem.FileSystem> =>
   unlessAbsent(attempt(path, (fs) => fs.realPath(path))).pipe(Effect.map(Option.getOrElse(() => path.replace(/\/+$/, ""))));
 
-const git = (repo: string, args: readonly string[]) =>
-  Effect.option(outputOf(ChildProcess.make("git", args, { cwd: repo }))).pipe(Effect.map(Option.filter((ran) => ran.code === 0)));
-
 export const checkoutWarnings = Effect.fnUntraced(function* (repo: string) {
   const branch = yield* git(repo, ["branch", "--show-current"]);
   const behind = yield* git(repo, ["rev-list", "--count", "HEAD..refs/remotes/origin/main"]);
@@ -119,28 +117,8 @@ export const checkoutWarnings = Effect.fnUntraced(function* (repo: string) {
   if (Option.isNone(behind)) warnings.push("cannot compare HEAD with origin/main; fetch origin to check for updates");
   else if (behind.value.stdout.trim() !== "0") warnings.push(`checkout is missing ${behind.value.stdout.trim()} commit(s) from origin/main; pull origin/main to check for updates`);
   else {
-    const head = yield* git(repo, ["rev-parse", "HEAD"]);
-    const remote = yield* Effect.option(
-      outputOf(
-        ChildProcess.make("git", ["ls-remote", "origin", "refs/heads/main"], {
-          cwd: repo,
-          env: { GIT_TERMINAL_PROMPT: "0", GIT_SSH_COMMAND: "ssh -o BatchMode=yes" },
-          extendEnv: true,
-        }),
-      ),
-    ).pipe(
-      Effect.timeoutOption(Duration.seconds(10)),
-      Effect.map(Option.flatten),
-      Effect.map(Option.filter((ran) => ran.code === 0)),
-    );
-    if (Option.isNone(head) || Option.isNone(remote))
-      warnings.push("cannot check origin/main for updates; fetch origin before linking to check for updates");
-    else {
-      const remoteSha = remote.value.stdout.trim().split(/\s+/)[0] ?? "";
-      if (!remoteSha) warnings.push("cannot check origin/main for updates; fetch origin before linking to check for updates");
-      else if (Option.isNone(yield* git(repo, ["merge-base", "--is-ancestor", remoteSha, "HEAD"])))
-        warnings.push("checkout differs from origin/main; pull origin/main to check for updates");
-    }
+    const origin = yield* originWarnings(repo);
+    warnings.push(...origin);
   }
   return warnings;
 });
