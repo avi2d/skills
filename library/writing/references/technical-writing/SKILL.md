@@ -79,6 +79,12 @@ Anchor on a real why question, and give the context: design decisions, constrain
 
 Content of another mode moves to a page of that mode, and the two pages link where they meet.
 
+## Review the whole page against its readers
+
+Before a page lands, name its readers and the task each one comes with, such as installing the tool or fixing a refused file.
+Check that every task has its answer on the page, and that a reader finds the answer from the headings alone.
+Cut any sentence or section that serves no task, and stop once the answers are complete.
+
 ## Put opinion only where the page type allows it
 
 Opinion belongs on an explanation page, in a decision record, and in the recommendation of a report or a PR description.
