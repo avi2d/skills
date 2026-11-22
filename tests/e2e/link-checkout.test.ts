@@ -2,8 +2,12 @@ import { expect, test } from "bun:test";
 import { chmod, mkdtemp, readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { ConfigProvider, Effect } from "effect";
 import { checkoutWarnings } from "../../src/generate/link";
 import { valueOf } from "../lib/effect";
+
+const warningsWith = (repo: string, env: Record<string, string>) =>
+  checkoutWarnings(repo).pipe(Effect.provideService(ConfigProvider.ConfigProvider, ConfigProvider.fromEnv({ env })));
 
 test("link warns for a non-main checkout and for main missing commits from origin/main, rather than treating stale settings as current", async () => {
   const repo = await mkdtemp(join(tmpdir(), "skills-link-checkout-"));
@@ -64,18 +68,15 @@ test("origin check does not replace the user's configured or environment SSH com
     delete process.env.GIT_SSH_COMMAND;
     delete process.env.GIT_SSH;
     await Bun.$`git config core.sshCommand ${configured}`.cwd(repo).quiet();
-    expect(await valueOf(checkoutWarnings(repo))).toEqual([]);
+    expect(await valueOf(warningsWith(repo, {}))).toEqual([]);
     expect(await readFile(args, "utf8")).toContain(`${configured} -o BatchMode=yes`);
-    process.env.GIT_SSH_COMMAND = environment;
-    expect(await valueOf(checkoutWarnings(repo))).toEqual([]);
+    expect(await valueOf(warningsWith(repo, { GIT_SSH_COMMAND: environment }))).toEqual([]);
     expect(await readFile(args, "utf8")).toContain(`${environment} -o BatchMode=yes`);
-    delete process.env.GIT_SSH_COMMAND;
     await Bun.$`git config --unset core.sshCommand`.cwd(repo).quiet();
     const legacy = join(repo, "legacy ssh");
     await Bun.write(legacy, '#!/bin/sh\nprintf "%s\\n" "$0 $*" > "$SKILLS_SSH_ARGS"\ncase "$1" in -G) exit 0;; esac\nexec git-upload-pack "$SKILLS_SSH_REPO"\n');
     await chmod(legacy, 0o755);
-    process.env.GIT_SSH = legacy;
-    expect(await valueOf(checkoutWarnings(repo))).toEqual([]);
+    expect(await valueOf(warningsWith(repo, { GIT_SSH: legacy }))).toEqual([]);
     expect(await readFile(args, "utf8")).toContain(`${legacy} -o BatchMode=yes`);
   } finally {
     if (savedSsh === undefined) delete process.env.GIT_SSH_COMMAND;
