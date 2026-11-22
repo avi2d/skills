@@ -109,6 +109,7 @@ To add a test:
 1. Put it under `tests/e2e/` only when it spawns a binary or a harness subprocess.
 1. Reach the emitted tree through `GENERATED_ROOT` in `tests/lib/generated-root.ts`, and never spell `generated/` in the test.
 1. Remove every temporary directory the test creates, and point the `TMPDIR` of a process it spawns into one of them, because CI fails a run that leaves anything in its temp directory.
+1. Run git in a temporary repository with `scratchGitEnv` from `tests/e2e/lib/git.ts` and set `maintenance.auto` to `false` in the config of a repository a test pushes into, because the maintenance a commit, fetch or push starts in the background writes into the repository after the test removes it.
 
 A test under `tests/e2e/` runs out of process, so mutation testing cannot see through it, and it stays out of the mutation scope.
 Stryker's runners share the one working tree they mutate in place, so nothing a test process writes may be shared.
