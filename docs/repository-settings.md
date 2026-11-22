@@ -31,6 +31,7 @@ The Dispatcher does not see commands people run outside an agent session.
 The Dispatcher recognises common runners and follows scripts in `package.json`.
 Build, lint, and typecheck commands can run unless they start a recognised test command.
 The Dispatcher allows `bun run eval` and Vitest runs that use a listed eval config.
+A command that mentions cd, pushd, popd, -C, --chdir or --dir anywhere gets no repository test settings, so a Vitest eval run that passes its own --dir to the runner queues as ordinary tests without its concurrency cap.
 It does not inspect arbitrary scripts or computed shell commands.
 
 In a glob, `*` matches characters within one path component, not across a `/`.

@@ -45,6 +45,12 @@ describe("repository settings", () => {
     expect(queueFor("env -C " + plain + " vitest run -c bench/runner.config.ts", work)).toEqual(["tests"]);
     expect(queueFor("env -C " + plain + " sh bin/worker.test.sh", work)).toEqual([]);
   });
+  test("rejects applying another repository settings through a prefixed env -C", () => {
+    const elsewhere = join(work, "elsewhere");
+    mkdirSync(elsewhere, { recursive: true });
+    expect(queueFor("CI=1 env -C " + elsewhere + " vitest run -c bench/runner.config.ts", work)).toEqual(["tests"]);
+    expect(queueFor("nice -n 10 env -C " + elsewhere + " sh bin/worker.test.sh", work)).toEqual([]);
+  });
   test("rejects applying another repository settings after cd", () => {
     const configured = join(work, "configured");
     mkdirSync(configured, { recursive: true });

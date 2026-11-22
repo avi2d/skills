@@ -160,17 +160,10 @@ function queuedSegments(command: string, cwd: string): Queued[] {
     try { return [compileGlob("**/" + glob)]; } catch { return []; }
   });
   const parts = segments(command);
-  const dirFlags = (flags: readonly string[], arg: string): boolean =>
-    flags.some((flag) => arg === flag || (flag.startsWith("--") ? arg.startsWith(flag + "=") : arg.length > flag.length && arg.startsWith(flag)));
-  const moves = parts.some((words) => {
-    const raw = texts(words);
-    const head = program(raw[0] ?? "");
-    if (head === "cd" || head === "pushd" || head === "popd") return true;
-    const scope = head === "env" ? { flags: ["-C", "--chdir"], args: raw.slice(1) }
-      : head === "pnpm" && raw[1] === "exec" ? { flags: ["-C", "--dir"], args: raw.slice(2) }
-      : undefined;
-    return scope !== undefined && scope.args.some((arg) => dirFlags(scope.flags, arg));
-  });
+  const moved = (word: string): boolean =>
+    word === "cd" || word === "pushd" || word === "popd" || ["-C", "--chdir", "--dir"].some((flag) =>
+      word === flag || (flag.startsWith("--") ? word.startsWith(flag + "=") : word.length > flag.length && word.startsWith(flag)));
+  const moves = parts.flatMap((segment) => texts(segment)).some(moved);
   const scriptPaths = moves ? [] : paths(settings?.testScripts ?? []);
   const configs = moves ? [] : paths(settings?.evalConfigs ?? []);
   return parts.flatMap((words) => {
