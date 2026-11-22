@@ -114,8 +114,8 @@ const shellQuoted = (program: string): string => `'${program.replaceAll("'", "'\
 
 const sshCommandIn = Effect.fnUntraced(function* (repo: string) {
   const configuredSsh = yield* git(repo, ["config", "--get", "core.sshCommand"]);
-  const environmentSsh = yield* Config.String("GIT_SSH_COMMAND").pipe(Config.withDefault(""), Effect.orElseSucceed(() => ""));
-  const legacySsh = yield* Config.String("GIT_SSH").pipe(Config.withDefault(""), Effect.orElseSucceed(() => ""));
+  const environmentSsh = process.env.GIT_SSH_COMMAND ?? "";
+  const legacySsh = process.env.GIT_SSH ?? "";
   const configured = Option.getOrElse(Option.map(configuredSsh, (ran) => ran.stdout.trimEnd()), () => "");
   const legacy = legacySsh.trim() ? shellQuoted(legacySsh.trim()) : "";
   return environmentSsh || configured || legacy || "ssh";
