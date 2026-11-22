@@ -241,12 +241,15 @@ export async function verify(
   const deadline = started + budget * 1000;
   const env = checkEnv(changedFiles(root, base).join("\n"));
   const seconds = (): number => Math.round((Date.now() - started) / 1000);
-  const skipped: string[] = [];
+  const skipped: Extract<Outcome, { outcome: "left-to-ci" }>["skipped"] = [];
   const passed: string[] = [];
   for (const check of checks) {
-    if (check.name === "test" && refuseLocalTests(check.command, root) !== undefined) {
-      skipped.push(check.name);
-      continue;
+    if (check.name === "test") {
+      const why = refuseLocalTests(check.command, root);
+      if (why !== undefined) {
+        skipped.push({ name: check.name, why });
+        continue;
+      }
     }
     const ran = await run(root, check.command, deadline - Date.now(), budget, env);
     if (ran.ended === "inconclusive" || ran.ended === "overran") return { seconds: seconds(), verdict: { outcome: ran.ended, why: ran.why } };
@@ -257,6 +260,6 @@ export async function verify(
   }
   return {
     seconds: seconds(),
-    verdict: skipped.length > 0 ? { outcome: "left-to-ci", checks: passed, skipped } : { outcome: "passed", checks: passed },
+    verdict: skipped.length > 0 ? { outcome: "left-to-ci", skipped } : { outcome: "passed", checks: passed },
   };
 }

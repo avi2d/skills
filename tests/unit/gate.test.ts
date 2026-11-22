@@ -5,7 +5,7 @@ import { join } from "node:path";
 import { Schema } from "effect";
 import { dispatch, type Index } from "../../src/dispatcher/dispatch";
 import { START } from "../../src/dispatcher/run-state";
-import { onVerdict, type Check } from "../../src/dispatcher/verdict";
+import { onVerdict, releasedText, type Check } from "../../src/dispatcher/verdict";
 import { CONFIG, TAIL_CHARS, VERIFY_BUDGET_SECONDS, tailOf, verify } from "../../src/dispatcher/gate";
 import { readConfig } from "../../src/dispatcher/gate-config";
 
@@ -104,30 +104,79 @@ describe("what a failing check hands back", () => {
 describe("running the checks", () => {
   const scratch = (): string => realpathSync(mkdtempSync(join(tmpdir(), "skills-verify-")));
   const check = (name: Check["name"], command: string): Check => ({ name, command });
+  const localChecks = [check("test", "bun run test"), check("lint", "touch lint-ran")];
+  const withTestScript = (): string => {
+    const dir = scratch();
+    writeFileSync(join(dir, "package.json"), JSON.stringify({ scripts: { test: "touch test-ran" } }));
+    return dir;
+  };
 
   test("the gate does not run a blocked test locally while lint still runs", async () => {
-    const dir = scratch();
+    const dir = withTestScript();
     const ci = process.env.CI;
     try {
       delete process.env.CI;
       writeFileSync(join(dir, ".skills.json"), JSON.stringify({ localTests: { blocked: true } }));
-      const { verdict } = await verify(dir, [
-        check("test", "bun test; touch test-ran"),
-        check("lint", "touch lint-ran"),
-      ]);
+      const { verdict } = await verify(dir, localChecks);
       expect(existsSync(join(dir, "test-ran"))).toBe(false);
       expect(existsSync(join(dir, "lint-ran"))).toBe(true);
-      expect(verdict).toEqual({ outcome: "left-to-ci", checks: ["lint"], skipped: ["test"] });
+      const why = "Local agent tests are blocked. To allow them, set agentTests.allowLocal to true in .skills.json. CI is the test run.";
+      expect(verdict).toEqual({ outcome: "left-to-ci", skipped: [{ name: "test", why }] });
       const judged = onVerdict({ type: "verdict", tree: "before", after: "after", seconds: 0, verdict }, undefined);
       expect(judged.actions).toEqual([
-        { type: "release", tree: "before", why: "test left to CI because local tests are blocked" },
+        { type: "release", tree: "before", why: `test left to CI. ${why}` },
       ]);
+      expect(releasedText(`test left to CI. ${why}`)).toBe(`Verdict gate: test left to CI. ${why}`);
     } finally {
       if (ci === undefined) delete process.env.CI;
       else process.env.CI = ci;
       rmSync(dir, { recursive: true, force: true });
     }
   });
+
+  test("the gate does not skip recognised tests when local execution is allowed", async () => {
+    const dir = withTestScript();
+    const ci = process.env.CI;
+    try {
+      delete process.env.CI;
+      writeFileSync(join(dir, ".skills.json"), JSON.stringify({ agentTests: { allowLocal: true } }));
+      const { verdict } = await verify(dir, localChecks);
+      expect(existsSync(join(dir, "test-ran"))).toBe(true);
+      expect(existsSync(join(dir, "lint-ran"))).toBe(true);
+      expect(verdict).toEqual({ outcome: "passed", checks: ["test", "lint"] });
+    } finally {
+      if (ci === undefined) delete process.env.CI;
+      else process.env.CI = ci;
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  for (const [settings, reason] of [
+    ['{"agentTests":{"allowLocal":true,"oops":1}}', "has an unknown key: agentTests.oops"],
+    ["{", "is not valid JSON"],
+  ] as const) {
+    test(`the gate reports ${reason} instead of a generic local-test block`, async () => {
+      const dir = withTestScript();
+      const ci = process.env.CI;
+      try {
+        delete process.env.CI;
+        const path = join(dir, ".skills.json");
+        writeFileSync(path, settings);
+        const { verdict } = await verify(dir, localChecks);
+        const why = `${path}: ${reason}.`;
+        expect(existsSync(join(dir, "test-ran"))).toBe(false);
+        expect(existsSync(join(dir, "lint-ran"))).toBe(true);
+        expect(verdict).toEqual({ outcome: "left-to-ci", skipped: [{ name: "test", why }] });
+        const judged = onVerdict({ type: "verdict", tree: "before", after: "after", seconds: 0, verdict }, undefined);
+        expect(judged.actions).toEqual([{ type: "release", tree: "before", why: `test left to CI. ${why}` }]);
+        expect(releasedText(`test left to CI. ${why}`)).toBe(`Verdict gate: test left to CI. ${why}`);
+      } finally {
+        if (ci === undefined) delete process.env.CI;
+        else process.env.CI = ci;
+        rmSync(dir, { recursive: true, force: true });
+      }
+    });
+  }
 
   test("every check passing is a pass naming them", async () => {
     const dir = scratch();

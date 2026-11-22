@@ -8,7 +8,7 @@ type Failed = { outcome: "failed"; check: Check; status: string; tail: string };
 
 export type Outcome =
   | { outcome: "passed"; checks: string[] }
-  | { outcome: "left-to-ci"; checks: string[]; skipped: string[] }
+  | { outcome: "left-to-ci"; skipped: { name: "test"; why: string }[] }
   | Failed
   | { outcome: "inconclusive"; why: string }
   | { outcome: "overran"; why: string };
@@ -35,7 +35,7 @@ export type Judged = { actions: GateAction[]; gate: GateState | undefined };
 
 export const HOLDS = 2;
 
-export const releasedText = (why: string): string => `Verdict gate: ${why}.`;
+export const releasedText = (why: string): string => `Verdict gate: ${why}${why.endsWith(".") ? "" : "."}`;
 
 // Codex answers a held stop by sending the hold back as a prompt, and that one is not the human speaking.
 export function promptedGate(gate: GateState | undefined, event: { text?: string; baseline?: Tree }): GateState | undefined {
@@ -107,7 +107,7 @@ export function onVerdict(event: Verdict, before: GateState | undefined): Judged
       };
     case "left-to-ci":
       return {
-        actions: [{ type: "release", tree, why: `${verdict.skipped.join(", ")} left to CI because local tests are blocked` }],
+        actions: [{ type: "release", tree, why: verdict.skipped.map(({ name, why }) => `${name} left to CI. ${why}`).join("\n") }],
         gate: { ...gate, held: 0, judged: { tree: after } },
       };
     case "inconclusive":
