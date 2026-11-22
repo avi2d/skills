@@ -1,6 +1,7 @@
 import { spawnSync } from "node:child_process";
+import { resolve } from "node:path";
 import { segments, type Word } from "./shell-words";
-import { compileGlob, hasConfig, program, RESERVED_WORDS, SCRIPT_RUNNERS, startsWith, stripped, texts } from "./shell-commands";
+import { compileGlob, expandHome, flagDir, hasConfig, program, RESERVED_WORDS, SCRIPT_RUNNERS, startsWith, stripped, texts } from "./shell-commands";
 import { readSkillsSettings } from "./project-settings";
 
 export type Group = "tests" | "gpu" | "evals";
@@ -141,39 +142,69 @@ const base = (word: string): string => word.slice(word.lastIndexOf("/") + 1);
 
 const TOOL_PATHS = new Set(["lint", "typecheck", "build"]);
 
-const scripted = (bare: readonly string[], scriptPaths: readonly RegExp[], commands: readonly string[]): { group: Group } | undefined => {
+const scripted = (bare: readonly string[], scriptPaths: readonly RegExp[]): { group: Group } | undefined => {
   const [rawHead = "", ...rawRest] = bare;
   const through = SCRIPT_RUNNERS.has(program(rawHead)) ? rawRest : bare;
   const [first = "", ...args] = through;
   if (args.some(watching)) return undefined;
   if (first.includes("/") && TOOL_PATHS.has(base(first))) return { group: "tests" };
   if (base(first) === "fm-sim-boot.sh") return { group: "tests" };
-  if (scriptPaths.some((script) => script.test(first)) || commands.includes(program(first))) return { group: "tests" };
+  if (scriptPaths.some((script) => script.test(first))) return { group: "tests" };
   return undefined;
 };
 
 function queuedSegments(command: string, cwd: string): Queued[] {
-  const git = spawnSync("git", ["-C", cwd, "rev-parse", "--show-toplevel"], { encoding: "utf8", timeout: 3_000 });
-  const read = readSkillsSettings(git.status === 0 ? git.stdout.trim() : cwd);
-  const settings = read && "settings" in read ? read.settings.agentTests : undefined;
+  const roots = new Map<string, string>();
+  const reads = new Map<string, ReturnType<typeof readSkillsSettings>>();
+  const compiled = new Map<string, { scriptPaths: readonly RegExp[]; configs: readonly RegExp[] }>();
+  const rootOf = (dir: string): string => {
+    const hit = roots.get(dir);
+    if (hit !== undefined) return hit;
+    const git = spawnSync("git", ["-C", dir, "rev-parse", "--show-toplevel"], { encoding: "utf8", timeout: 3_000 });
+    const root = git.status === 0 ? git.stdout.trim() : dir;
+    roots.set(dir, root);
+    return root;
+  };
   const paths = (globs: readonly string[]): RegExp[] => globs.flatMap((glob) => {
-    try { return [compileGlob(`**/${glob}`)]; } catch { return []; }
+    try { return [compileGlob("**/" + glob)]; } catch { return []; }
   });
-  const scriptPaths = paths(settings?.testScripts ?? []);
-  const configs = paths(settings?.evalConfigs ?? []);
-  const commands = settings?.testCommands ?? [];
-  const raw = segments(command);
-  return raw.flatMap((words) => {
-    const bare = stripped(texts(words));
+  const listsAt = (dir: string): { scriptPaths: readonly RegExp[]; configs: readonly RegExp[] } => {
+    const root = rootOf(dir);
+    const hit = compiled.get(root);
+    if (hit !== undefined) return hit;
+    if (!reads.has(root)) reads.set(root, readSkillsSettings(root));
+    const read = reads.get(root);
+    const settings = read !== undefined && "settings" in read ? read.settings.agentTests : undefined;
+    const lists = { scriptPaths: paths(settings?.testScripts ?? []), configs: paths(settings?.evalConfigs ?? []) };
+    compiled.set(root, lists);
+    return lists;
+  };
+  let dir = cwd;
+  const found: Queued[] = [];
+  for (const words of segments(command)) {
+    const raw = texts(words);
+    const bare = stripped(raw);
     const named = bare.map((word, at) => (at === 0 ? program(word) : word));
+    if (named[0] === "cd" && bare[1] !== undefined) {
+      dir = resolve(dir, expandHome(bare[1]));
+      continue;
+    }
+    const prefix = raw.slice(0, raw.length - bare.length);
+    const here = flagDir(bare, flagDir(prefix, dir, "", true), named[0] ?? "");
+    const { scriptPaths, configs } = listsAt(here);
     if (startsWith(named, ["vitest", "run"]) && exits(named.slice(2)) && hasConfig(named.slice(2), configs)) {
-      return [{ group: "evals" as const, words, prefix: words.length - bare.length }];
+      found.push({ group: "evals" as const, words, prefix: words.length - bare.length });
+      continue;
     }
     const entry = TABLE.find(({ runs, when }) => startsWith(named, runs) && when(named.slice(runs.length)));
-    if (entry !== undefined) return [{ group: entry.group, words, prefix: words.length - bare.length }];
-    const fallback = scripted(bare, scriptPaths, commands);
-    return fallback === undefined ? [] : [{ ...fallback, words, prefix: words.length - bare.length }];
-  });
+    if (entry !== undefined) {
+      found.push({ group: entry.group, words, prefix: words.length - bare.length });
+      continue;
+    }
+    const fallback = scripted(bare, scriptPaths);
+    if (fallback !== undefined) found.push({ ...fallback, words, prefix: words.length - bare.length });
+  }
+  return found;
 }
 
 const groupsOf = (found: readonly Queued[]): Group[] => [...new Set(found.map(({ group }) => group))];

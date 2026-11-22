@@ -142,7 +142,7 @@ An allowed test run, an eval run, or a GPU benchmark or model inference an agent
 Every Dispatcher asks `src/dispatcher/job-queue.ts` about each shell command before it runs.
 That module is no Rule, so it costs the model no context.
 Its table sends every allowed test run, such as `bun test` or `bun run test`, and every allowed mutation run to the `tests` group.
-It also sends configured test scripts and direct test commands to the `tests` group.
+It also sends configured test scripts to the `tests` group.
 Other heavy shapes include `checks-test`, `go test`, the `test:fast` script, a `lint`, `typecheck` or `build` executable in any directory, `xcrun simctl boot`, `xcrun simctl io` and `fm-sim-boot.sh`.
 Every heavy shape in the `tests` group queues with `pueue add --priority 1`, and the `gpu` group keeps its default scheduling.
 Only an enabled watch mode, `--watch`, `-w` or `--watchAll` with no value or `=true`, runs as it is, because a queued job would hold its slot forever, so `--watch=false` and `--no-watch` still queue.
