@@ -206,7 +206,7 @@ const retired = Effect.fnUntraced(function* (
   return "retired";
 });
 
-type Settings = Readonly<Record<string, unknown>>;
+export type Settings = Readonly<Record<string, unknown>>;
 
 const decodeSettings = Schema.decodeUnknownEffect(Schema.fromJsonString(Schema.Record(Schema.String, Schema.Unknown)));
 
@@ -221,6 +221,11 @@ export const settingsAt = Effect.fnUntraced(function* (path: string): Effect.fn.
 const keysOf = (settings: Settings, keep: (key: string) => boolean): Settings =>
   Object.fromEntries(Object.entries(settings).filter(([key]) => keep(key)));
 
+export const wantedSettings = (source: Settings, live: Settings, isOwn: (key: string) => boolean): Settings => ({
+  ...keysOf(source, (key) => !isOwn(key)),
+  ...keysOf(live, isOwn),
+});
+
 const written = Effect.fnUntraced(function* (
   repo: string,
   home: string,
@@ -232,8 +237,9 @@ const written = Effect.fnUntraced(function* (
   const found = Option.getOrUndefined(yield* unlessAbsent(entryAt(dest)));
   const live = Option.getOrElse(yield* settingsAt(dest), (): Settings => ({}));
   const source = `${repo}${from}`;
-  const tracked = keysOf(yield* settingsIn(source, yield* attempt(source, (fs) => fs.readFileString(source))), (key) => !isOwn(key));
-  const wanted = { ...tracked, ...keysOf(live, isOwn) };
+  const fromFile = yield* settingsIn(source, yield* attempt(source, (fs) => fs.readFileString(source)));
+  const tracked = keysOf(fromFile, (key) => !isOwn(key));
+  const wanted = wantedSettings(fromFile, live, isOwn);
   if (found?.kind === "file" && Equal.equals(live, wanted)) return { home: rel, state: "kept" };
   const replaced = Object.entries(keysOf(live, (key) => !isOwn(key)))
     .filter(([key, was]) => !Equal.equals(was, tracked[key]))

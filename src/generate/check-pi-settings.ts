@@ -1,7 +1,7 @@
 import { Config, Effect, Equal, Option } from "effect";
 import { FileFailure } from "../platform/failures";
 import { main } from "../platform/platform";
-import { MERGED, REPO, settingsAt } from "./link";
+import { MERGED, REPO, settingsAt, wantedSettings, type Settings } from "./link";
 
 const rel = ".pi/agent/settings.json";
 const merge = MERGED[rel];
@@ -14,14 +14,14 @@ main(Effect.gen(function* () {
   const source = yield* settingsAt(`${REPO}${merge.from}`);
   if (Option.isNone(source)) return yield* new FileFailure({ path: merge.from, message: "checkout settings are missing" });
   const installed = yield* settingsAt(`${home}/${rel}`);
-  const live: Readonly<Record<string, unknown>> = Option.getOrElse(installed, () => ({}));
-  const keys = new Set([...Object.keys(source.value), ...Object.keys(live)]);
+  const live: Settings = Option.getOrElse(installed, () => ({}));
+  const wanted = wantedSettings(source.value, live, (key) => merge.ownKeys.includes(key));
+  const keys = new Set([...Object.keys(wanted), ...Object.keys(live)]);
   const drift: string[] = [];
   for (const key of [...keys].sort()) {
-    if (merge.ownKeys.includes(key)) continue;
     if (!Object.hasOwn(live, key)) drift.push(`missing ${key}`);
-    else if (!Object.hasOwn(source.value, key)) drift.push(`extra ${key}`);
-    else if (!Equal.equals(live[key], source.value[key])) drift.push(`different ${key}`);
+    else if (!Object.hasOwn(wanted, key)) drift.push(`extra ${key}`);
+    else if (!Equal.equals(live[key], wanted[key])) drift.push(`different ${key}`);
   }
   if (Option.isNone(installed)) drift.unshift("settings file missing");
   if (drift.length) {
