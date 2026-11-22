@@ -180,13 +180,32 @@ function queuedSegments(command: string, cwd: string): Queued[] {
     return lists;
   };
   let dir = cwd;
+  const saved: string[] = [];
+  let end = 0;
   const found: Queued[] = [];
   for (const words of segments(command)) {
+    const head = words[0];
+    if (head !== undefined) {
+      for (const char of command.slice(end, head.from)) {
+        if (char === "(") saved.push(dir);
+        else if (char === ")" && saved.length > 0) dir = saved.pop() ?? dir;
+      }
+      const tail = words[words.length - 1];
+      if (tail !== undefined) end = tail.to;
+    }
     const raw = texts(words);
     const bare = stripped(raw);
     const named = bare.map((word, at) => (at === 0 ? program(word) : word));
-    if (named[0] === "cd" && bare[1] !== undefined) {
-      dir = resolve(dir, expandHome(bare[1]));
+    if (named[0] === "cd") {
+      let at = 1;
+      for (;;) {
+        const arg = bare[at] ?? "";
+        if (arg === "--") { at += 1; break; }
+        if (arg.startsWith("-") && arg !== "-") { at += 1; continue; }
+        break;
+      }
+      const operand = bare[at];
+      if (operand !== undefined && operand !== "-") dir = resolve(dir, expandHome(operand));
       continue;
     }
     const prefix = raw.slice(0, raw.length - bare.length);
