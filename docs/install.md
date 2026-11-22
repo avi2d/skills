@@ -55,6 +55,13 @@ These paths in $HOME then belong to the checkout:
 [The link map](links.md) says what each one points at.
 Codex also has to trust its hooks once, as [Codex does not run the hooks](troubleshooting.md#codex-does-not-run-the-hooks) describes.
 
+## Check pi settings
+
+Run `bun run check-pi-settings` from the checkout to compare its pi settings with `~/.pi/agent/settings.json`.
+The command prints one status line and exits nonzero when the file is missing or a checkout-managed key is missing, extra, or different.
+It ignores keys pi owns, and it does not change either file.
+To install the checkout's settings, run `bun run link`.
+
 ## Uninstall
 
 To uninstall skills, run this script from the root of the checkout:
