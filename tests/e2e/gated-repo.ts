@@ -3,17 +3,12 @@ import { mkdtempSync, realpathSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { PROJECT_FILE } from "../../src/dispatcher/project";
-
-const gitEnv = {
-  ...Object.fromEntries(Object.entries(process.env).filter(([name]) => !name.startsWith("GIT_"))),
-  GIT_CONFIG_GLOBAL: "/dev/null",
-  GIT_CONFIG_NOSYSTEM: "1",
-};
+import { scratchGitEnv } from "./lib/git";
 
 export const git = (cwd: string, ...args: string[]): string =>
   execFileSync("git", ["-c", "user.name=gate", "-c", "user.email=gate@example.com", ...args], {
     cwd,
-    env: gitEnv,
+    env: scratchGitEnv,
     encoding: "utf8",
     stdio: ["ignore", "pipe", "pipe"],
   });

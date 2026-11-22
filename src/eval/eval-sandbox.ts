@@ -74,7 +74,13 @@ const git = (repo: string, env: Record<string, string>, args: readonly string[])
     ),
   );
 
-const IDENTITY = { "user.name": "skills-eval", "user.email": "skills-eval@example.invalid", "commit.gpgsign": "false" };
+// maintenance.auto is off because the detached maintenance a commit starts writes into the repository after the scope removes it.
+const REPOSITORY_CONFIG = {
+  "user.name": "skills-eval",
+  "user.email": "skills-eval@example.invalid",
+  "commit.gpgsign": "false",
+  "maintenance.auto": "false",
+};
 
 export type Seeded = { sandbox: Sandbox; env: Record<string, string>; verifierEnv: Record<string, string>; base: string };
 
@@ -123,7 +129,7 @@ export const seeded = Effect.fnUntraced(function* (
   }
   const env = isolatedEnv(sandbox, caller, credentials, liveHome, liveRoots);
   yield* git(sandbox.repo, env, ["init", "-q", "-b", "main"]);
-  for (const [key, value] of Object.entries(IDENTITY)) yield* git(sandbox.repo, env, ["config", key, value]);
+  for (const [key, value] of Object.entries(REPOSITORY_CONFIG)) yield* git(sandbox.repo, env, ["config", key, value]);
   yield* git(sandbox.repo, env, ["add", "-A"]);
   yield* git(sandbox.repo, env, ["commit", "-q", "-m", "seed"]);
   const base = (yield* git(sandbox.repo, env, ["rev-parse", "HEAD"])).trim();

@@ -3,6 +3,7 @@ import { appendFileSync, copyFileSync, mkdirSync, mkdtempSync, readdirSync, read
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { Schema } from "effect";
+import { scratchGitEnv } from "./lib/git";
 
 const repo = new URL("../../", import.meta.url).pathname;
 
@@ -137,9 +138,7 @@ test("the leftover check fails on an entry in the temp directory and passes on a
 });
 
 const gitEnv = {
-  ...Object.fromEntries(Object.entries(process.env).filter(([name]) => !name.startsWith("GIT_"))),
-  GIT_CONFIG_GLOBAL: "/dev/null",
-  GIT_CONFIG_NOSYSTEM: "1",
+  ...scratchGitEnv,
   PATH: `${repo}node_modules/.bin:${dirname(process.execPath)}:${process.env.PATH ?? ""}`,
 };
 

@@ -14,7 +14,7 @@ import { valueOf } from "../lib/effect";
 import { GENERATED_ROOT, HUB, LINKS } from "../lib/generated-root";
 import { HERDR_OWNED, ccSettings, codexHooks, piSettings, piSettingsFile } from "../lib/harness-settings";
 import { fakePi } from "./lib/fake-pi";
-import { trackedFiles } from "./lib/git";
+import { scratchGitEnv, trackedFiles } from "./lib/git";
 
 // Each test spawns git or the linker, which a loaded machine slows past bun's 5s default.
 setDefaultTimeout(30_000);
@@ -39,7 +39,7 @@ describe("a checkout whose pi settings pi wrote into through the old link", () =
     const repo = `${root}/repo/`;
     const home = `${root}/home`;
     await cp(`${REPO}harness`, `${repo}harness`, { recursive: true });
-    await Bun.$`git init -q && git add -A && git -c user.name=test -c user.email=test@example.invalid commit -q -m base`.cwd(repo).quiet();
+    await Bun.$`git init -q && git add -A && git -c user.name=test -c user.email=test@example.invalid commit -q -m base`.cwd(repo).env(scratchGitEnv).quiet();
     await writeFile(`${repo}${FROM}`, JSON.stringify({ ...piSettingsFile, ...changes }, null, 2));
     await mkdir(`${home}/.pi/agent`, { recursive: true });
     await symlink(`${repo}${FROM}`, `${home}/${SETTINGS}`);
