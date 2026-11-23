@@ -8,7 +8,7 @@ type Failed = { outcome: "failed"; check: Check; status: string; tail: string };
 
 export type Outcome =
   | { outcome: "passed"; checks: string[] }
-  | { outcome: "left-to-ci"; skipped: { name: "test"; why: string }[] }
+  | { outcome: "left-to-ci"; why: string }
   | Failed
   | { outcome: "inconclusive"; why: string }
   | { outcome: "overran"; why: string };
@@ -107,7 +107,7 @@ export function onVerdict(event: Verdict, before: GateState | undefined): Judged
       };
     case "left-to-ci":
       return {
-        actions: [{ type: "release", tree, why: verdict.skipped.map(({ name, why }) => `${name} left to CI. ${why}`).join("\n") }],
+        actions: [{ type: "release", tree, why: verdict.why }],
         gate: { ...gate, held: 0, judged: { tree: after } },
       };
     case "inconclusive":
