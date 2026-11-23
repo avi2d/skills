@@ -241,13 +241,13 @@ export async function verify(
   const deadline = started + budget * 1000;
   const env = checkEnv(changedFiles(root, base).join("\n"));
   const seconds = (): number => Math.round((Date.now() - started) / 1000);
-  const skipped: Extract<Outcome, { outcome: "left-to-ci" }>["skipped"] = [];
+  const skipped: string[] = [];
   const passed: string[] = [];
   for (const check of checks) {
     if (check.name === "test") {
       const why = refuseLocalTests(check.command, root);
       if (why !== undefined) {
-        skipped.push({ name: check.name, why });
+        skipped.push(`${check.name} left to CI. ${why}`);
         continue;
       }
     }
@@ -260,6 +260,6 @@ export async function verify(
   }
   return {
     seconds: seconds(),
-    verdict: skipped.length > 0 ? { outcome: "left-to-ci", skipped } : { outcome: "passed", checks: passed },
+    verdict: skipped.length > 0 ? { outcome: "left-to-ci", why: skipped.join("\n") } : { outcome: "passed", checks: passed },
   };
 }

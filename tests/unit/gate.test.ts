@@ -111,7 +111,7 @@ describe("running the checks", () => {
     return dir;
   };
 
-  test("the gate does not run a blocked test locally while lint still runs", async () => {
+  test("the gate returns a flat left-to-CI reason, not a skipped array, while lint still runs", async () => {
     const dir = withTestScript();
     const ci = process.env.CI;
     try {
@@ -121,7 +121,7 @@ describe("running the checks", () => {
       expect(existsSync(join(dir, "test-ran"))).toBe(false);
       expect(existsSync(join(dir, "lint-ran"))).toBe(true);
       const why = "Local agent tests are blocked. To allow them, set agentTests.allowLocal to true in .skills.json. CI is the test run.";
-      expect(verdict).toEqual({ outcome: "left-to-ci", skipped: [{ name: "test", why }] });
+      expect(verdict).toEqual({ outcome: "left-to-ci", why: `test left to CI. ${why}` });
       const judged = onVerdict({ type: "verdict", tree: "before", after: "after", seconds: 0, verdict }, undefined);
       expect(judged.actions).toEqual([
         { type: "release", tree: "before", why: `test left to CI. ${why}` },
@@ -166,7 +166,7 @@ describe("running the checks", () => {
         const why = `${path}: ${reason}.`;
         expect(existsSync(join(dir, "test-ran"))).toBe(false);
         expect(existsSync(join(dir, "lint-ran"))).toBe(true);
-        expect(verdict).toEqual({ outcome: "left-to-ci", skipped: [{ name: "test", why }] });
+        expect(verdict).toEqual({ outcome: "left-to-ci", why: `test left to CI. ${why}` });
         const judged = onVerdict({ type: "verdict", tree: "before", after: "after", seconds: 0, verdict }, undefined);
         expect(judged.actions).toEqual([{ type: "release", tree: "before", why: `test left to CI. ${why}` }]);
         expect(releasedText(`test left to CI. ${why}`)).toBe(`Verdict gate: test left to CI. ${why}`);
