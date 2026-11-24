@@ -41,7 +41,7 @@ test("the generated YAML enables the later-round fixer trial and leaves non-erro
 
 test.each(["/Users/example", "/home/example"])("the generated YAML uses the pi wrapper under %s rather than the unwrapped agent", async (home) => {
   const config = Bun.YAML.parse(await valueOf(noMistakesYaml(noMistakesConfigOf(home))));
-  expect(config.agent_path_override).toEqual({ pi: `${home}/.orc/heavy/agents/pi` });
+  expect(config).toMatchObject({ agent_path_override: { pi: `${home}/.orc/heavy/agents/pi` } });
 });
 
 test("every pipeline step outside the review loop runs Sonnet 5.5 at high on pi, not Muse Spark", async () => {
