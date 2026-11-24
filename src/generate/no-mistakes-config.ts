@@ -14,7 +14,7 @@ const SOL = "openai/gpt-6.1-sol";
 
 const OPUS = "claude-bridge/claude-opus-5-5";
 
-const SPARK = "opencode-go/muse-spark-1.3-contributor";
+const SONNET = "claude-bridge/claude-sonnet-5-5";
 
 const ConfigDir = Schema.String.check(Schema.isStartingWith("/"));
 
@@ -62,7 +62,7 @@ const NoMistakesConfig = Schema.Struct({
   log_level: Schema.Literals(["debug", "info", "warn", "error"]),
   agent_config: Schema.Struct({
     claude: Schema.Struct({ model: Schema.Literal("opus"), effort: Effort }),
-    pi: Schema.Struct({ model: Schema.Literal(SPARK), effort: Effort }),
+    pi: Schema.Struct({ model: Schema.Literal(SONNET), effort: Effort }),
   }),
   reviewer_chain: ReviewerChain,
   review_agents: Schema.Struct({
@@ -117,7 +117,7 @@ export const noMistakesConfigOf = (home: string, { claudeConfigDirs = [] }: User
   log_level: "info",
   agent_config: {
     claude: { model: "opus", effort: "high" },
-    pi: { model: SPARK, effort: "high" },
+    pi: { model: SONNET, effort: "high" },
   },
   reviewer_chain: [
     { agent: "pi", model: OPUS, effort: "high", ...(claudeConfigDirs[0] === undefined ? {} : { env: { CLAUDE_CONFIG_DIR: `${home}/${claudeConfigDirs[0]}` } }) },

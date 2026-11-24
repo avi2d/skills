@@ -181,6 +181,48 @@ Tool definitions are absent from this repository and have no character size in t
 | reference: `visitor-job` | 4085 |  |
 | reference: `writing-for-agents` | 9651 |  |
 
+## claude-sonnet-5-5
+
+Models: `claude-bridge/claude-sonnet-5-5`.
+Tools: set by the harness.
+Tool definitions are absent from this repository and have no character size in this table.
+
+| Part | Characters | Share of Rules by characters |
+| --- | ---: | ---: |
+| rule: `comment-discipline` | 2671 | 22.6% |
+| rule: `fix-what-you-see` | 328 | 2.8% |
+| rule: `prove-it-works` | 2715 | 23.0% |
+| rule: `typescript-best-practices` | 1768 | 15.0% |
+| rule: `agents-md-router` | 754 | 6.4% |
+| rule: `readme-front-door` | 678 | 5.7% |
+| rule: `credential-files` | 369 | 3.1% |
+| rule: `git-hygiene-stash` | 516 | 4.4% |
+| rule: `say-what-is-left` | 833 | 7.0% |
+| rule: `mark-who-decided` | 648 | 5.5% |
+| rule: `assume-low-context` | 546 | 4.6% |
+| skill: `build-and-review-motion` | 5794 |  |
+| skill: `develop-a-website` | 8628 |  |
+| skill: `generate-assets` | 5556 |  |
+| skill: `grilling` | 3528 |  |
+| skill: `refine-design` | 5708 |  |
+| skill: `stress-test-content` | 6585 |  |
+| skill: `teach` | 9519 |  |
+| reference: `effect-patterns` | 8780 |  |
+| reference: `interface-copy` | 4435 |  |
+| reference: `mobile-web` | 5740 |  |
+| reference: `motion` | 8818 |  |
+| reference: `motion-vocabulary` | 9011 |  |
+| reference: `plain-sentences` | 3314 |  |
+| reference: `plain-words` | 3646 |  |
+| reference: `punctuation` | 2443 |  |
+| reference: `russian-prose` | 1858 |  |
+| reference: `technical-writing` | 7572 |  |
+| reference: `typography` | 4533 |  |
+| reference: `ui-principles` | 8674 |  |
+| reference: `unslop` | 2761 |  |
+| reference: `visitor-job` | 4085 |  |
+| reference: `writing-for-agents` | 9651 |  |
+
 ## claude-fable-5-2
 
 Models: `claude-bridge/claude-fable-5-2`.

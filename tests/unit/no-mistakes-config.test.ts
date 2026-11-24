@@ -39,6 +39,18 @@ test("the generated YAML enables the later-round fixer trial and leaves non-erro
   expect(config).not.toHaveProperty("agent_args_override");
 });
 
+test("every pipeline step outside the review loop runs Sonnet 5.5 at high on pi, not Muse Spark", async () => {
+  expect(Bun.YAML.parse(await valueOf(noMistakesYaml(noMistakesConfigOf(HOME))))).toMatchObject({
+    agent: "pi",
+    agent_config: { pi: { model: "claude-bridge/claude-sonnet-5-5", effort: "high" } },
+  });
+});
+
+test("generation refuses Muse Spark as the pi default", async () => {
+  const source = { ...noMistakesConfigOf(HOME), agent_config: { ...noMistakesConfigOf(HOME).agent_config, pi: { model: "opencode-go/muse-spark-1.3-contributor", effort: "high" } } };
+  expect(await saidBy(noMistakesYaml(source))).toMatch(/at \["agent_config"\]\["pi"\]\["model"\]$/);
+});
+
 test("the no-mistakes config reads back as YAML into exactly its source", async () => {
   expect(Bun.YAML.parse(await valueOf(noMistakesYaml(noMistakesConfigOf(HOME))))).toEqual(noMistakesConfigOf(HOME));
 });

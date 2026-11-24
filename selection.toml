@@ -23,6 +23,11 @@ models = ["claude-bridge/claude-opus-5-5", "claude-code/claude-opus-5-5"]
 [profiles.claude-opus-5-5.rules]
 add = ["git-hygiene-co-author"]
 
+[profiles.claude-sonnet-5-5]
+models = ["claude-bridge/claude-sonnet-5-5"]
+
+[profiles.claude-sonnet-5-5.rules]
+
 [profiles.claude-fable-5-2]
 models = ["claude-bridge/claude-fable-5-2"]
 
