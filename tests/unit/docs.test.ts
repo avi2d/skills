@@ -1,7 +1,9 @@
 import { describe, expect, test } from "bun:test";
+import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { join } from "node:path";
 import { Schema } from "effect";
 import { SCHEMA } from "../../src/bodies/bodies";
-import { linkPage, pages, parseRecord, recordIndex, withLinks, withTemplates, type DecisionRecord } from "../../src/docs/docs";
+import { linkPage, pages, parseRecord, recordIndex, stalePages, withLinks, withTemplates, type DecisionRecord } from "../../src/docs/docs";
 import { REPO } from "../../src/generate/link";
 import { DECLARATIONS } from "../../src/dispatcher/project";
 import { PREDICATES } from "../../src/dispatcher/scope-condition";
@@ -17,6 +19,39 @@ test.each(written.map((page) => [page.path, page.text] as const))(
     expect(committed, `${path} disagrees with what it is generated from: run \`bun run docs\` and commit the result`).toBe(text);
   },
 );
+
+describe("the read-only docs check", () => {
+  test("reports every stale or missing page without rewriting or creating it", async () => {
+    const repo = `${await mkdtemp(join(REPO, ".docs-check-"))}/`;
+    try {
+      await writeFile(`${repo}current.md`, "current\n");
+      await writeFile(`${repo}stale.md`, "old\n");
+      await writeFile(`${repo}also-stale.md`, "also old\n");
+      expect(await valueOf(stalePages(repo, [
+        { path: "current.md", text: "current\n" },
+        { path: "stale.md", text: "new\n" },
+        { path: "missing.md", text: "missing\n" },
+        { path: "also-stale.md", text: "also new\n" },
+      ]))).toEqual(["stale.md", "missing.md", "also-stale.md"]);
+      expect(await readFile(`${repo}current.md`, "utf8")).toBe("current\n");
+      expect(await readFile(`${repo}stale.md`, "utf8")).toBe("old\n");
+      expect(await readFile(`${repo}also-stale.md`, "utf8")).toBe("also old\n");
+      expect(await Bun.file(`${repo}missing.md`).exists()).toBe(false);
+    } finally {
+      await rm(repo, { recursive: true, force: true });
+    }
+  });
+
+  test("does not reject pages whose contents match", async () => {
+    const repo = `${await mkdtemp(join(REPO, ".docs-check-"))}/`;
+    try {
+      await writeFile(`${repo}current.md`, "current\n");
+      expect(await valueOf(stalePages(repo, [{ path: "current.md", text: "current\n" }]))).toEqual([]);
+    } finally {
+      await rm(repo, { recursive: true, force: true });
+    }
+  });
+});
 
 const recorded = (number: number, title: string, status: string) =>
   [`# ${number}. ${title}`, "", "Date: 2026-09-24", "", "## Status", "", status, "", "## Context", "", "Why."].join("\n");

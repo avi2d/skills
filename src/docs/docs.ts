@@ -1,9 +1,9 @@
-import { Effect, Schema, type FileSystem } from "effect";
+import { Effect, Option, Schema, type FileSystem } from "effect";
 import { DEFAULT_GENERATED_ROOT } from "../generate/bundle";
 import { PROFILE_PAGE, profileSizes, renderProfiles } from "../context/context-profiles";
 import { SWEEP_PAGE, SWEEPS, sweepPage, sweepRecords } from "../eval/eval-sweeps";
 import { MalformedBody, MalformedRecord, fileFailure, type FileFailure, type MalformedSelection, type UncomposableBodies } from "../platform/failures";
-import { attempt } from "../platform/files";
+import { attempt, unlessAbsent } from "../platform/files";
 import { active } from "../generate/generate";
 import { CLAUDE_CONFIG_GRAFT, MERGED, REPO, RETIRED, claudeSettingsIn, linksUnder, type Graft, type LinkMap, type Merge } from "../generate/link";
 import { main } from "../platform/platform";
@@ -323,10 +323,32 @@ export const pages = Effect.fnUntraced(function* (
   ];
 });
 
+export const stalePages = Effect.fnUntraced(function* (
+  repo: string,
+  rendered: readonly Page[],
+): Effect.fn.Return<string[], FileFailure, FileSystem.FileSystem> {
+  const stale: string[] = [];
+  for (const page of rendered) {
+    const path = `${repo}${page.path}`;
+    const current = yield* attempt(path, (fs) => fs.readFileString(path)).pipe(unlessAbsent);
+    if (Option.isNone(current) || current.value !== page.text) stale.push(page.path);
+  }
+  return stale;
+});
+
 if (import.meta.main) {
   main(
     Effect.gen(function* () {
-      for (const page of yield* pages(REPO)) {
+      const rendered = yield* pages(REPO);
+      if (process.argv.includes("--check")) {
+        const stale = yield* stalePages(REPO, rendered);
+        if (stale.length > 0) {
+          for (const path of stale) console.error(`${path} is stale: run \`bun run docs\` and commit the result`);
+          process.exitCode = 1;
+        }
+        return;
+      }
+      for (const page of rendered) {
         const path = `${REPO}${page.path}`;
         yield* attempt(path, (fs) => fs.writeFileString(path, page.text));
         console.log(`wrote ${page.path}`);
