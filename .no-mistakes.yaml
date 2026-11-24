@@ -8,7 +8,7 @@ commands:
   # or lint can run.
   prepare: bun install --frozen-lockfile && bun run generate
 
-  lint: bun run lint && bun run typecheck
+  lint: bun run build && git diff --exit-code && bun run lint && bun run typecheck
 
   test: bunx checks-test --changed
 
