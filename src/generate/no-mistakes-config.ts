@@ -49,6 +49,7 @@ const PathInstruction = Schema.Struct({
 const NoMistakesConfig = Schema.Struct({
   agent: Schema.Literal("pi").annotate({ description: "The agent every pipeline step runs on unless reviewer_chain names another" }),
   forgejo_axi_path: Schema.NonEmptyString,
+  agent_path_override: Schema.Struct({ pi: ConfigDir }),
   ci_timeout: Duration.annotate({ description: "How long the CI monitor babysits an open PR whose base has not moved" }),
   step_quiet_warning: Duration,
   agent_timeout: Duration,
@@ -104,6 +105,7 @@ type NoMistakesConfig = typeof NoMistakesConfig.Type;
 export const noMistakesConfigOf = (home: string, { claudeConfigDirs = [] }: UserConfig = {}): NoMistakesConfig => ({
   agent: "pi",
   forgejo_axi_path: "forgejo-axi",
+  agent_path_override: { pi: `${home}/.orc/heavy/agents/pi` },
   ci_timeout: "168h",
   step_quiet_warning: "10m",
   agent_timeout: "30m",
