@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { skipReason } from "@avi2dg/checks/scripts/test-skips.ts";
@@ -9,6 +9,9 @@ import { valueOf } from "../lib/effect";
 const noMistakes = Bun.which("no-mistakes");
 
 const loadGenerated = async (home: string): Promise<string> => {
+  const agents = join(home, ".orc/heavy/agents");
+  mkdirSync(agents, { recursive: true });
+  writeFileSync(join(agents, "pi"), "#!/bin/sh\nexit 0\n", { mode: 0o755 });
   writeFileSync(join(home, "config.yaml"), await valueOf(noMistakesYaml(noMistakesConfigOf(home))));
   const proc = Bun.spawn([noMistakes ?? expect.unreachable("a config loads only where no-mistakes is installed"), "doctor"], {
     stdout: "pipe",

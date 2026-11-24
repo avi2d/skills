@@ -16,14 +16,14 @@ const OPUS = "claude-bridge/claude-opus-5-5";
 
 const SONNET = "claude-bridge/claude-sonnet-5-5";
 
-const ConfigDir = Schema.String.check(Schema.isStartingWith("/"));
+const AbsolutePath = Schema.String.check(Schema.isStartingWith("/"));
 
 const ReviewerChain = Schema.Tuple([
   Schema.Struct({
     agent: Schema.Literal("pi"),
     model: Schema.Literal(OPUS),
     effort: Effort,
-    env: Schema.optionalKey(Schema.Struct({ CLAUDE_CONFIG_DIR: ConfigDir })),
+    env: Schema.optionalKey(Schema.Struct({ CLAUDE_CONFIG_DIR: AbsolutePath })),
   }),
   Schema.Struct({ agent: Schema.Literal("pi"), model: Schema.Literal(SOL), effort: Effort }).annotate({
     description: "GPT-6.1 Sol",
@@ -49,7 +49,7 @@ const PathInstruction = Schema.Struct({
 const NoMistakesConfig = Schema.Struct({
   agent: Schema.Literal("pi").annotate({ description: "The agent every pipeline step runs on unless reviewer_chain names another" }),
   forgejo_axi_path: Schema.NonEmptyString,
-  agent_path_override: Schema.Struct({ pi: ConfigDir }),
+  agent_path_override: Schema.Struct({ pi: AbsolutePath }),
   ci_timeout: Duration.annotate({ description: "How long the CI monitor babysits an open PR whose base has not moved" }),
   step_quiet_warning: Duration,
   agent_timeout: Duration,
