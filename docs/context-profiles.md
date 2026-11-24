@@ -183,23 +183,22 @@ Tool definitions are absent from this repository and have no character size in t
 
 ## claude-sonnet-5-5
 
-Models: `claude-bridge/claude-sonnet-5-5`, `claude-code/claude-sonnet-5-5`.
+Models: `claude-bridge/claude-sonnet-5-5`.
 Tools: set by the harness.
 Tool definitions are absent from this repository and have no character size in this table.
 
 | Part | Characters | Share of Rules by characters |
 | --- | ---: | ---: |
-| rule: `comment-discipline` | 2671 | 22.4% |
-| rule: `fix-what-you-see` | 328 | 2.7% |
-| rule: `git-hygiene-co-author` | 112 | 0.9% |
-| rule: `prove-it-works` | 2715 | 22.7% |
-| rule: `typescript-best-practices` | 1768 | 14.8% |
-| rule: `agents-md-router` | 754 | 6.3% |
+| rule: `comment-discipline` | 2671 | 22.6% |
+| rule: `fix-what-you-see` | 328 | 2.8% |
+| rule: `prove-it-works` | 2715 | 23.0% |
+| rule: `typescript-best-practices` | 1768 | 15.0% |
+| rule: `agents-md-router` | 754 | 6.4% |
 | rule: `readme-front-door` | 678 | 5.7% |
 | rule: `credential-files` | 369 | 3.1% |
-| rule: `git-hygiene-stash` | 516 | 4.3% |
+| rule: `git-hygiene-stash` | 516 | 4.4% |
 | rule: `say-what-is-left` | 833 | 7.0% |
-| rule: `mark-who-decided` | 648 | 5.4% |
+| rule: `mark-who-decided` | 648 | 5.5% |
 | rule: `assume-low-context` | 546 | 4.6% |
 | skill: `build-and-review-motion` | 5794 |  |
 | skill: `develop-a-website` | 8628 |  |
