@@ -59,6 +59,8 @@ Codex trusts a hook by its hash, so installing or changing the file also needs o
 
 `bun run generate` writes the no-mistakes global config to `generated/no-mistakes/config.yaml` from `src/generate/no-mistakes-config.ts`, for the `$HOME` it runs under, and `bun run link` links `~/.no-mistakes/config.yaml` to it.
 The schema knows only the fields no-mistakes reads, because no-mistakes refuses a config file with a field it does not know.
+`agent` and `agent_config.pi` run every step that `reviewer_chain` and `review_agents` do not name on Sonnet 5.5 at high on pi, which pi names `claude-bridge/claude-sonnet-5-5`.
+`agent_config` takes no environment, so those steps run on the Claude account named by the no-mistakes daemon's own `CLAUDE_CONFIG_DIR`, or on `~/.claude` when the daemon has none.
 In `reviewer_chain`, the review step tries Opus 5.5 first, then GPT-6.1 Sol.
 pi names Sol `openai/gpt-6.1-sol`.
 No entry carries a floor, so the review step moves to the next entry only after a usage limit.
