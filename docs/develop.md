@@ -50,6 +50,7 @@ The change is every path between where `HEAD` branched from `origin/main` and `H
 A changed test file runs on its own, and a shared file never widens the run to the whole suite.
 The run fails before any test runs when `origin/main` is missing, because then the reached files are unknown.
 `.no-mistakes.yaml` names `bunx checks-test --changed` as the push gate test step.
+Its push gate lint step also runs `bun run docs --check`, which exits 1 and names each generated page whose committed text differs from what `bun run docs` would write, and writes nothing.
 
 `bun test` preloads `@avi2dg/checks/local-test-preload` before `tests/lib/emitted.ts`.
 `tests/lib/emitted.ts` generates into a `generated-<pid>/` of the test process's own.
