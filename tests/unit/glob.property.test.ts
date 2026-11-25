@@ -1,4 +1,5 @@
 import { expect, test } from "bun:test";
+import { skipReason } from "@avi2dg/checks/scripts/test-skips.ts";
 import * as fc from "fast-check";
 import { matchesGlob } from "../../harness/common/glob";
 
@@ -35,7 +36,11 @@ const agreement = (matcher: (pattern: string, candidate: string) => boolean) =>
   fc.property(examples, ({ pattern, candidate }) => matcher(pattern, candidate) === new Bun.Glob(pattern).match(candidate));
 
 test.skipIf(!process.env.CI)(
-  "rejects false-only matchers and Bun.Glob disagreement without !(...) or non-segment **",
+  skipReason(
+    "the property test runs only in CI",
+    "rejects false-only matchers and Bun.Glob disagreement without !(...) or non-segment **",
+    "local",
+  ),
   () => {
     const wrongMatcher = fc.check(agreement(() => false), options);
     expect(wrongMatcher.failed).toBe(true);
