@@ -10,8 +10,6 @@ commands:
 
   lint: bun run lint && bun run typecheck && bun run docs --check
 
-  test: bunx checks-test --changed
-
 review:
   path_instructions:
     - path: "library/*/rules/**"

@@ -31,7 +31,7 @@ It stays close to native tools and lets each repository configure its own comman
 
 ## Scope
 
-skills is the instruction library, not shared CI plumbing: reusable workflows and composite actions belong to the avi2d/workflows repository that this repository's own CI calls.
+skills is the instruction library, not shared CI plumbing: its own CI is the workflow set that `@avi2dg/checks` writes.
 It carries no Workflows and holds no path into another repository: its edge is `$HOME`, where it links its Hub, Dispatchers and Contracts.
 `generated/` and `repos/` are written by commands and never committed.
 

@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { appendFileSync, copyFileSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { chmodSync, copyFileSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { Schema } from "effect";
@@ -29,16 +29,17 @@ const Step = Schema.StructWithRest(
   Schema.Struct({
     id: Schema.optionalKey(Schema.String),
     run: Schema.optionalKey(Schema.String),
-    uses: Schema.optionalKey(Schema.String),
-    with: Schema.optionalKey(Schema.Record(Schema.String, Schema.Union([Schema.String, Schema.Number, Schema.Boolean]))),
-    if: Schema.optionalKey(Schema.Union([Schema.Boolean, Schema.String])),
-    env: Schema.optionalKey(Names),
-    "continue-on-error": Schema.optionalKey(Schema.Union([Schema.Boolean, Schema.String])),
   }),
   [Anything],
 );
-type WorkflowStep = typeof Step.Type;
-const Job = Schema.StructWithRest(Schema.Struct({ steps: Schema.Array(Step) }), [Anything]);
+const Job = Schema.StructWithRest(
+  Schema.Struct({
+    steps: Schema.Array(Step),
+    if: Schema.optionalKey(Schema.String),
+    needs: Schema.optionalKey(Schema.Union([Schema.String, Schema.Array(Schema.String)])),
+  }),
+  [Anything],
+);
 const decodeWorkflow = Schema.decodeUnknownSync(
   Schema.StructWithRest(Schema.Struct({ on: Anything, jobs: Schema.Record(Schema.String, Job) }), [Anything]),
 );
@@ -84,42 +85,44 @@ test("both checks run where a violation fails the run", () => {
   expect(scripts.lint?.split(" && ")).toEqual(["oxlint", "checks-lint"]);
   const typecheck = (scripts.typecheck ?? "").split("&&").map((command) => command.trim().split(" ").slice(0, 2).join(" "));
   expect(typecheck, "the typecheck does not run both the compiler and the Effect diagnostics").toEqual(["tsc --noEmit", "effect-tsgo diagnostics"]);
-
-  expect(Object.values(workflow.jobs), "the ci workflow declares one job").toHaveLength(1);
 });
 
-test("the suite runs in a temp directory of its own, and anything it leaves there fails the job", () => {
-  const [job = expect.unreachable("the ci workflow declares no job")] = Object.values(workflow.jobs);
-  const suite = job.steps.findIndex((step) => step.run === "bun run test");
-  const suiteTmp = job.steps[suite]?.env?.TMPDIR ?? expect.unreachable("the suite runs in the job's shared temp directory");
+const testJobs = Object.entries(workflow.jobs).filter(([, job]) => job.steps.some((step) => step.id === "test"));
+
+test("each test job runs its tier through scripts/ci-test.sh, so a bare checks-ci test step cannot skip the tests that need the pinned e2e tools", () => {
+  expect(testJobs.map(([name]) => name).toSorted()).toEqual(["e2e", "unit"]);
+  for (const [name, job] of testJobs) {
+    expect(job.steps.find((step) => step.id === "test")?.run, `the ${name} job runs its tier some other way`).toBe(`scripts/ci-test.sh ${name}`);
+  }
+});
+
+test("scripts/ci-test.sh runs the tier in an empty temp directory under the runner's and fails the job when the suite leaves anything there", () => {
   const runnerTemp = mkdtempSync(join(tmpdir(), "skills-runner-temp-"));
-  const resolveTmp = (value: string) => value.replaceAll("${{ runner.temp }}", runnerTemp);
-  const sharesSuiteTmp = (step: (typeof job.steps)[number]) => step.env?.TMPDIR === suiteTmp;
-  const runStep = (step: (typeof job.steps)[number]) =>
-    Bun.spawnSync(["bash", "--noprofile", "--norc", "-eo", "pipefail", "-c", step.run ?? ""], {
+  const bin = mkdtempSync(join(tmpdir(), "skills-fake-bunx-"));
+  const record = join(bin, "record");
+  const fakeBunx = [
+    "#!/bin/sh",
+    `printf '%s|%s|%s|%s\\n' "$TEST_TIER" "$*" "$TMPDIR" "$(ls -A "$TMPDIR")" > ${record}`,
+    'if [ -n "$LEAVE" ]; then mkdir "$TMPDIR/skills-read-index-left"; fi',
+  ];
+  writeFileSync(join(bin, "bunx"), `${fakeBunx.join("\n")}\n`);
+  chmodSync(join(bin, "bunx"), 0o755);
+  const run = (leave: boolean) =>
+    Bun.spawnSync([`${repo}scripts/ci-test.sh`, "unit"], {
       cwd: repo,
-      env: { ...process.env, RUNNER_TEMP: runnerTemp, TMPDIR: resolveTmp(suiteTmp) },
+      env: { ...process.env, PATH: `${bin}:${process.env.PATH ?? ""}`, RUNNER_TEMP: runnerTemp, LEAVE: leave ? "1" : "" },
     });
   try {
-    const suiteDir = resolveTmp(suiteTmp);
-    expect(suiteDir, "the suite's temp directory is not a directory under the runner's temp").toStartWith(`${runnerTemp}/`);
-    for (const step of job.steps.slice(0, suite).filter(sharesSuiteTmp)) {
-      expect(runStep(step).exitCode, `${step.run} fails before the suite runs`).toBe(0);
-    }
-    expect(readdirSync(suiteDir), "the suite's temp directory does not start out empty").toEqual([]);
-
-    const checks = job.steps.slice(suite + 1).filter(sharesSuiteTmp);
-    for (const step of checks) {
-      expect(runStep(step).exitCode, `${step.run} fails a suite that left nothing behind`).toBe(0);
-    }
-    mkdirSync(join(suiteDir, "skills-read-index-left"));
-    const failing = checks.filter((step) => runStep(step).exitCode !== 0);
-    expect(failing.length, "nothing after the suite fails on what it left in its temp directory").toBeGreaterThan(0);
-    for (const step of failing) {
-      expect(step["continue-on-error"], `${step.run} lets the job pass when it fails`).toBeUndefined();
-    }
+    const clean = run(false);
+    expect(clean.exitCode, clean.stderr.toString()).toBe(0);
+    expect(readFileSync(record, "utf8")).toBe(`unit|checks-ci test|${runnerTemp}/suite-tmp|\n`);
+    rmSync(join(runnerTemp, "suite-tmp"), { recursive: true });
+    const dirty = run(true);
+    expect(dirty.stderr.toString()).toContain("skills-read-index-left");
+    expect(dirty.exitCode).toBe(1);
   } finally {
     rmSync(runnerTemp, { recursive: true, force: true });
+    rmSync(bin, { recursive: true, force: true });
   }
 });
 
@@ -154,9 +157,9 @@ const checksCiWiring = (dir: string): { exitCode: number; output: string } => {
   return { exitCode: ran.exitCode, output: `${ran.stdout.toString()}${ran.stderr.toString()}` };
 };
 
-test("every required command runs on a pull request to main", () => {
+test("the workflows are the set checks-workflows writes, so every required command runs on a pull request to main", () => {
   const ran = checksCiWiring(repo);
-  expect(ran.output).toContain("pull requests to main");
+  expect(ran.output).toContain("holds the set checks-workflows writes");
   expect(ran.exitCode).toBe(0);
 }, { timeout: spawnStartupMs });
 
@@ -182,110 +185,13 @@ test("a declared gate whose step leaves the workflows fails the wiring check, na
   }
 }, { timeout: spawnStartupMs });
 
-type Context = Readonly<Record<string, string>>;
-
-const substitute = (value: string, context: Context): string =>
-  value.replaceAll(/\$\{\{\s*([\w.-]+)\s*\}\}/g, (_, path: string) => context[path] ?? "");
-
-const runs = (condition: string, context: Context): boolean =>
-  condition
-    .replace(/^\s*\$\{\{([\s\S]*)\}\}\s*$/, "$1")
-    .split("&&")
-    .every((term) => {
-      const trimmed = term.trim();
-      if (["always()", "success()", "true"].includes(trimmed)) return true;
-      if (trimmed === "false") return false;
-      const [, path = "", operator, literal = ""] =
-        /^([\w.-]+)\s*(==|!=)\s*'([^']*)'$/.exec(trimmed) ?? expect.unreachable(`the test cannot evaluate ${trimmed}`);
-      return ((context[path] ?? "").toLowerCase() === literal.toLowerCase()) === (operator === "==");
-    });
-
-const gitIn = (dir: string, args: ReadonlyArray<string>): string => {
-  const ran = Bun.spawnSync(["git", "-c", "user.name=ci", "-c", "user.email=ci@example.com", ...args], { cwd: dir, env: gitEnv });
-  expect(ran.exitCode, `git ${args.join(" ")}: ${ran.stderr.toString()}`).toBe(0);
-  return ran.stdout.toString().trim();
-};
-
-const contextAfterChange = (steps: ReadonlyArray<WorkflowStep>, changed: string, event: "pull_request" | "workflow_dispatch"): Context => {
-  const referenced = new Set(steps.flatMap((step) => [...String(step.if ?? "").matchAll(/steps\.([\w-]+)\.outputs\./g)].map((match) => match[1])));
-  const dir = scratchRepo();
-  try {
-    gitIn(dir, ["commit", "-q", "--allow-empty", "-m", "base"]);
-    const base = gitIn(dir, ["rev-parse", "HEAD"]);
-    mkdirSync(join(dir, dirname(changed)), { recursive: true });
-    writeFileSync(join(dir, changed), "change\n");
-    gitIn(dir, ["add", "-A"]);
-    gitIn(dir, ["commit", "-q", "-m", "change"]);
-    const context: Record<string, string> = {
-      "github.event_name": event,
-      ...(event === "pull_request" ? { "github.event.pull_request.base.sha": base } : {}),
-    };
-    const output = join(dir, ".git", "github-output");
-    for (const step of steps.filter((candidate) => candidate.id !== undefined && referenced.has(candidate.id))) {
-      writeFileSync(output, "");
-      const env = Object.fromEntries(Object.entries(step.env ?? {}).map(([name, value]) => [name, substitute(value, context)]));
-      if ((step.uses ?? "").startsWith("avi2d/workflows/actions/docs-only@")) {
-        const filterBase = substitute(String(step.with?.["base"] ?? ""), context);
-        if (filterBase === "") {
-          writeFileSync(output, "docs-only=false\n");
-        } else {
-          const ran = Bun.spawnSync([`${repo}node_modules/.bin/checks-docs-only`, filterBase, "HEAD"], {
-            cwd: dir,
-            env: { ...gitEnv, ...env, GITHUB_OUTPUT: output },
-          });
-          expect(ran.exitCode, `step ${step.id} fails: ${ran.stderr.toString()}`).toBe(0);
-          appendFileSync(output, ran.stdout.toString());
-        }
-      } else {
-        const ran = Bun.spawnSync(["bash", "--noprofile", "--norc", "-eo", "pipefail", "-c", step.run ?? ""], {
-          cwd: dir,
-          env: { ...gitEnv, ...env, GITHUB_OUTPUT: output },
-        });
-        expect(ran.exitCode, `step ${step.id} fails: ${ran.stderr.toString()}`).toBe(0);
-      }
-      for (const line of readFileSync(output, "utf8").split("\n").filter(Boolean)) {
-        const [name = "", ...value] = line.split("=");
-        context[`steps.${step.id}.outputs.${name}`] = value.join("=");
-      }
-    }
-    return context;
-  } finally {
-    rmSync(dir, { recursive: true, force: true });
-  }
-};
-
-test("a code change and a dispatched run run the suite with its temp setup and leftover check, and a docs-only change skips them and still lints and builds", () => {
-  const [job = expect.unreachable("the ci workflow declares no job")] = Object.values(workflow.jobs);
-  const suiteTmp = job.steps.find((step) => step.run === "bun run test")?.env?.TMPDIR ?? expect.unreachable("the suite runs in the job's shared temp directory");
-  const suiteSteps = job.steps.filter((step) => step.env?.TMPDIR === suiteTmp);
-  const kept = ["bunx checks-commit-title", "bun run build", "git diff --exit-code", "bun run lint"];
-  const keptSteps = job.steps.filter((step) => kept.includes(step.run ?? ""));
-  expect(new Set(keptSteps.map((step) => step.run))).toEqual(new Set(kept));
-  const scheduled = (selected: ReadonlyArray<WorkflowStep>, context: Context) =>
-    Object.fromEntries(selected.map((step) => [step.run, runs(String(step.if ?? "success()"), context)]));
-  const every = (selected: ReadonlyArray<WorkflowStep>, ran: boolean) => Object.fromEntries(selected.map((step) => [step.run, ran]));
-
-  const code = contextAfterChange(job.steps, "src/feature.ts", "pull_request");
-  const docs = contextAfterChange(job.steps, "docs/guide.md", "pull_request");
-  const dispatched = contextAfterChange(job.steps, "docs/guide.md", "workflow_dispatch");
-  expect(scheduled(suiteSteps, code), "a code change skips part of the suite").toEqual(every(suiteSteps, true));
-  expect(scheduled(suiteSteps, dispatched), "the release pull request's dispatched run skips part of the suite").toEqual(every(suiteSteps, true));
-  expect(scheduled(suiteSteps, docs), "a docs-only change still runs part of the suite").toEqual(every(suiteSteps, false));
-  expect(scheduled(keptSteps, docs), "a docs-only change skips a check that holds its docs and title").toEqual(every(keptSteps, true));
-}, { timeout: 3 * spawnStartupMs });
-
-test("a push to main starts no ci run, so a merged change does not rerun the full suite", () => {
-  expect(Object.keys(workflow.on)).not.toContain("push");
-  expect(Object.keys(workflow.on)).toContain("workflow_dispatch");
+test("the fleet-names scan runs in the docs job, which a docs-only change does not skip, so a docs edit that names the fleet fails its pull request", () => {
+  expect(scripts["docs:build"]?.split(" && ")).toContain("bun test tests/e2e/fleet-names.test.ts");
+  const docs = workflow.jobs["docs"] ?? expect.unreachable("ci.yml has no docs job");
+  expect(docs.steps.map((step) => step.run)).toContain("bun run docs:build");
+  expect(docs.if ?? "", "the docs job skips a docs-only change").not.toContain("docs-only");
+  expect([workflow.jobs["checks"]?.needs ?? []].flat(), "the gate does not wait for the docs job").toContain("docs");
 });
-
-test("the fleet-names scan runs alone only where the suite is skipped, so a code change does not run it twice", () => {
-  const [job = expect.unreachable("the ci workflow declares no job")] = Object.values(workflow.jobs);
-  const scan = job.steps.find((step) => step.run === "bun test tests/e2e/fleet-names.test.ts") ?? expect.unreachable("no step scans for fleet names alone");
-  const condition = String(scan.if ?? "success()");
-  expect(runs(condition, contextAfterChange(job.steps, "src/feature.ts", "pull_request")), "a code change runs the scan twice").toBe(false);
-  expect(runs(condition, contextAfterChange(job.steps, "docs/guide.md", "pull_request")), "a docs-only change skips the scan").toBe(true);
-}, { timeout: 3 * spawnStartupMs });
 
 test("no dependency is a path only one checkout has, so a clone and a worktree install the same tree", () => {
   const local = declared.filter(([, spec]) => spec.startsWith("file:") || spec.startsWith("link:"));
