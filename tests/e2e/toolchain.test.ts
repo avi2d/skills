@@ -189,7 +189,9 @@ test("the fleet-names scan runs in the docs job, which a docs-only change does n
   expect(scripts["docs:build"]?.split(" && ")).toContain("bun test tests/e2e/fleet-names.test.ts");
   const docs = workflow.jobs["docs"] ?? expect.unreachable("ci.yml has no docs job");
   expect(docs.steps.map((step) => step.run)).toContain("bun run docs:build");
-  expect(docs.if ?? "", "the docs job skips a docs-only change").not.toContain("docs-only");
+  expect(docs.if, "the docs job skips a docs-only change or differs from the kit release gate").toBe(
+    "(needs.changes.outputs.release != 'true' || needs.changes.outputs.check-release == 'true')",
+  );
   expect([workflow.jobs["checks"]?.needs ?? []].flat(), "the gate does not wait for the docs job").toContain("docs");
 });
 

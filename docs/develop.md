@@ -28,7 +28,8 @@ To run the checks before a push:
 Its `static` job runs `bun run lint`, `bun run build`, `git diff --exit-code` and `bun run typecheck`.
 Its `docs` job runs `bun run docs:build`, which runs `bun run docs --check` and then `tests/e2e/fleet-names.test.ts`.
 Its `unit` and `e2e` jobs install `claude`, then run `scripts/ci-test.sh` with their tier.
-For the e2e tier, `scripts/ci-test.sh` first installs the pinned `sqlite3` and push gate binaries the e2e tests drive, because the runner image has neither.
+For the e2e tier, `scripts/ci-test.sh` installs a pinned `sqlite3` version instead of using the runner image's version.
+It also installs the pinned push gate binary, which the runner image does not include.
 It runs the tier with `TMPDIR` set to an empty directory under the runner's per-job temp.
 Then `scripts/check-tmp-clean.sh` fails the job naming anything the suite left there.
 On a pull request a tier runs only the tests the change reaches.
@@ -186,12 +187,12 @@ Nothing imports the linked tree, `tsconfig.json` does not include it, and `bun t
 To release what main holds since the last tag:
 
 1. Run `bunx checks-release-report`, which lists the unreleased features and fixes, and exits 0 when there are none.
-1. On a branch, bump `version` in `package.json`.
-1. Run `bun run build`, which writes that version's section into `CHANGELOG.md`, and commit both files.
-1. Merge the pull request.
-1. Tag the merge commit on main `v<version>` and push the tag.
+1. Start `.github/workflows/release.yml` on main with `gh workflow run release.yml --ref main`.
+1. Review the release pull request that `checks-release-pr ci.yml` opens, and wait for its required checks to pass.
+1. Squash-merge the release pull request without changing its `chore: release ` title.
 
-`.github/workflows/release.yml` refuses a tag that is not on main and a tag that disagrees with `package.json`, then creates the GitHub release with that version's `CHANGELOG.md` section as its notes.
+On the release commit's push to main, `.github/workflows/main.yml` runs the full suite.
+After the suite passes, `checks-release-tag` tags the commit and creates the GitHub release with that version's `CHANGELOG.md` section as its notes.
 
 ## Add harness material
 

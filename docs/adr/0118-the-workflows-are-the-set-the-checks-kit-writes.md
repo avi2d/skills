@@ -11,7 +11,7 @@ Accepted. Amends 0096 and 0107: the title lint runs in `pr-title.yml`, `ci.yml` 
 
 ## Context
 
-The captain asked every repository to stop calling workflows and actions from the shared workflows repository, so that repository can be archived once nothing calls it.
+The owner asked every repository to stop calling workflows and actions from the shared workflows repository, so that repository can be archived once nothing calls it.
 `@avi2dg/checks` writes a workflow set with `bunx checks-workflows --write`, and its `static` job fails a pull request whose workflow files differ from that set.
 The set fixes the jobs of `ci.yml` and their triggers, and keeps one command in the step with id `test` of each test job.
 This repository's e2e tests need a pinned `sqlite3` and the pinned push gate binary, and its suite must leave nothing in its temp directory.
