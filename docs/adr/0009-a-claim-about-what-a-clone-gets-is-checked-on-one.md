@@ -1,3 +1,6 @@
+---
+governs: [.github/workflows/ci.yml]
+---
 # 9. A claim about what a clone gets is checked on one
 
 Date: 2026-08-29

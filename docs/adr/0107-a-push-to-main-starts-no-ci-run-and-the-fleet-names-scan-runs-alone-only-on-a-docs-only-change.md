@@ -1,3 +1,6 @@
+---
+governs: []
+---
 # 107. A push to main starts no ci run, and the fleet-names scan runs alone only on a docs-only change
 
 Date: 2026-11-08

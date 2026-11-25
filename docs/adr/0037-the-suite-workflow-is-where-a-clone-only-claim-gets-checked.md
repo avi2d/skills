@@ -1,3 +1,6 @@
+---
+governs: [.github/workflows/ci.yml]
+---
 # 37. The suite workflow is where a clone-only claim gets checked
 
 Date: 2026-09-15

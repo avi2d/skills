@@ -1,3 +1,6 @@
+---
+governs: [package.json]
+---
 # 59. The lint runs the kit's gates through one entry point
 
 Date: 2026-09-24

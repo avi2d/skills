@@ -1,3 +1,6 @@
+---
+governs: [.github/workflows/ci.yml]
+---
 # 70. Vendoring a library moves to the kit's checks-vendor
 
 Date: 2026-09-26

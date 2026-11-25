@@ -16,7 +16,7 @@
 | [0006](0006-a-fan-out-asks-nothing-of-its-provider.md) | A fan-out asks nothing of its provider | Superseded |  |
 | [0007](0007-the-herdr-port-lands-on-the-fork-and-the-refactors-are-offered-upstream.md) | The herdr port lands on the fork, and the refactors are offered upstream | Accepted |  |
 | [0008](0008-the-set-directory-takes-the-name-the-root-symlink-held.md) | The set directory takes the name the root symlink held | Accepted |  |
-| [0009](0009-a-claim-about-what-a-clone-gets-is-checked-on-one.md) | A claim about what a clone gets is checked on one | Accepted |  |
+| [0009](0009-a-claim-about-what-a-clone-gets-is-checked-on-one.md) | A claim about what a clone gets is checked on one | Accepted | `.github/workflows/ci.yml` |
 | [0010](0010-a-branch-session-is-attributed-to-the-run-that-spawned-it.md) | A branch session is attributed to the run that spawned it | Retired |  |
 | [0011](0011-a-context-the-harness-does-not-name-does-not-drive-a-run.md) | A Context the harness does not name does not drive a run | Superseded |  |
 | [0012](0012-a-rules-trigger-is-a-list-and-any-match-fires-it.md) | A Rule's trigger is a list, and any match fires it | Accepted |  |
@@ -44,7 +44,7 @@
 | [0034](0034-pi-cache-warming-is-off-until-a-model-declares-a-prompt-cache.md) | pi cache warming is off until a model declares a prompt cache | Accepted |  |
 | [0035](0035-the-suite-builds-what-a-clone-does-not-carry-and-fetches-the-checks-at-a-pin.md) | The suite builds what a clone does not carry, and the checks arrive at a pin | Accepted |  |
 | [0036](0036-a-session-is-named-by-its-first-prompt-once.md) | A session is named by its first prompt, once | Accepted |  |
-| [0037](0037-the-suite-workflow-is-where-a-clone-only-claim-gets-checked.md) | The suite workflow is where a clone-only claim gets checked | Accepted |  |
+| [0037](0037-the-suite-workflow-is-where-a-clone-only-claim-gets-checked.md) | The suite workflow is where a clone-only claim gets checked | Accepted | `.github/workflows/ci.yml` |
 | [0038](0038-what-a-session-opens-with-is-a-number-a-check-holds.md) | What a session opens with is a number a check holds | Accepted |  |
 | [0039](0039-the-hub-holds-what-a-harness-reaches-by-name-and-there-is-one-of-it.md) | The Hub holds what a harness reaches by name, and there is one of it | Accepted |  |
 | [0040](0040-one-command-writes-one-directory.md) | One command writes one directory | Accepted |  |
@@ -66,7 +66,7 @@
 | [0056](0056-the-assertion-rules-are-a-ban-in-src-and-harness.md) | The assertion rules are a ban in src/ and harness/ | Accepted |  |
 | [0057](0057-a-rule-is-measured-by-ablation-on-vitest-evals-with-a-program-as-judge.md) | A Rule is measured by ablation, on vitest-evals, with a program as judge | Accepted |  |
 | [0058](0058-the-assertion-rules-are-a-ban-in-every-file.md) | The assertion rules are a ban in every file | Accepted |  |
-| [0059](0059-the-lint-runs-the-kits-gates-through-one-entry-point.md) | The lint runs the kit's gates through one entry point | Accepted |  |
+| [0059](0059-the-lint-runs-the-kits-gates-through-one-entry-point.md) | The lint runs the kit's gates through one entry point | Accepted | `package.json` |
 | [0060](0060-a-rule-fires-on-what-a-repository-declares-and-a-project-switches-a-catalogued-rule.md) | A Rule fires on what a repository declares, and a project switches a catalogued Rule | Accepted | `src/dispatcher/project.ts`, `src/dispatcher/dispatch.ts`, `selection.toml` |
 | [0061](0061-guidance-for-people-docs-is-a-reference-a-rule-on-their-paths-names.md) | Guidance for people docs is a Reference that a Rule on their paths names | Accepted |  |
 | [0062](0062-a-separator-in-a-doc-is-refused-at-every-write-by-the-kits-prose-matchers.md) | A separator in a doc is refused at every write, by the kit's prose matchers | Accepted |  |
@@ -77,7 +77,7 @@
 | [0067](0067-the-suppressions-baseline-is-removed.md) | The suppressions baseline is removed | Accepted |  |
 | [0068](0068-a-reproduction-is-a-command-whose-output-shows-the-defect.md) | A reproduction is a command whose output shows the defect | Accepted |  |
 | [0069](0069-the-kits-consumer-suite-proves-each-effect-scope-rule-fails.md) | The kit's consumer suite proves each Effect scope rule fails | Accepted |  |
-| [0070](0070-vendoring-a-library-moves-to-the-kits-checks-vendor.md) | Vendoring a library moves to the kit's checks-vendor | Accepted |  |
+| [0070](0070-vendoring-a-library-moves-to-the-kits-checks-vendor.md) | Vendoring a library moves to the kit's checks-vendor | Accepted | `.github/workflows/ci.yml` |
 | [0071](0071-four-rules-the-evals-found-no-gain-in-are-switched-off-and-a-rule-left-off-keeps-its-refusal.md) | Four Rules the evals found no gain in are switched off, and a Rule left off keeps its refusal | Accepted | `selection.toml` |
 | [0072](0072-a-profile-scopes-named-rules-by-model-without-changing-tools.md) | A Profile scopes named Rules by model without changing tools | Accepted |  |
 | [0073](0073-a-profile-is-a-complete-model-selection.md) | A Profile is a complete model selection | Accepted | `selection.toml`, `src/bodies/selection.ts` |
