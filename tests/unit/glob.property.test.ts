@@ -2,7 +2,7 @@ import { expect, test } from "bun:test";
 import * as fc from "fast-check";
 import { matchesGlob } from "../../harness/common/glob";
 
-const character = fc.constantFrom("a", "b", "c", "x", "y", "z", "0", "1", "-", "_");
+const character = fc.constantFrom("a", "b", "c", "x", "y", "z", "0", "1", "-", "_", ".");
 const literal = fc.array(character, { minLength: 1, maxLength: 4 }).map((chars) => chars.join(""));
 const segment = fc.oneof(
   literal.map((word) => ({ pattern: word, match: word })),
@@ -35,11 +35,10 @@ const agreement = (matcher: (pattern: string, candidate: string) => boolean) =>
   fc.property(examples, ({ pattern, candidate }) => matcher(pattern, candidate) === new Bun.Glob(pattern).match(candidate));
 
 test.skipIf(!process.env.CI)(
-  "rejects a matcher that never matches, then rejects disagreement with Bun.Glob excluding !(...) syntax",
+  "rejects false-only matchers and Bun.Glob disagreement without !(...) or non-segment **",
   () => {
     const wrongMatcher = fc.check(agreement(() => false), options);
     expect(wrongMatcher.failed).toBe(true);
-    console.log("Deliberate violation:", wrongMatcher);
     fc.assert(agreement(matchesGlob), options);
   },
 );
