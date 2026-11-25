@@ -1,3 +1,6 @@
+---
+governs: [package.json]
+---
 # 59. The lint runs the kit's gates through one entry point
 
 Date: 2026-09-24
@@ -11,6 +14,7 @@ Narrowed by 0069, after which the effect-scope test asserts only the
 diagnostics the kit alone raises to `error`.
 Partly superseded by 0096, after which the title lint is a step of the ci
 `checks` job.
+Amended by 0118: the title lint runs in `pr-title.yml`.
 
 ## Context
 

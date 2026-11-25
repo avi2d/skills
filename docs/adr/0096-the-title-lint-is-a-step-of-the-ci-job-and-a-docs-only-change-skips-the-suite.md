@@ -1,3 +1,6 @@
+---
+governs: [.github/workflows/ci.yml]
+---
 # 96. The title lint is a step of the ci job, and a docs-only change skips the suite
 
 Date: 2026-10-11
@@ -6,6 +9,7 @@ Date: 2026-10-11
 
 Accepted. Supersedes 0059's decision that commitlint keeps its own workflow.
 Amended by 0107: the fleet-names scan runs alone on a docs-only change.
+Amended by 0118: the title lint runs in `pr-title.yml`, and the fleet-names scan runs in the `docs` job on every pull request.
 
 ## Context
 

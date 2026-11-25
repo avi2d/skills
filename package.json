@@ -18,6 +18,7 @@
     "link": "bun run src/generate/link.ts",
     "check-pi-settings": "bun run src/generate/check-pi-settings.ts",
     "docs": "bun run src/docs/docs.ts",
+    "docs:build": "bun run docs --check && bun test tests/e2e/fleet-names.test.ts",
     "prepare": "checks-vendor --library effect --package effect --repository https://github.com/Effect-TS/effect.git --tag 'effect@{version}' --path packages/effect/package.json",
     "dispatch-report": "bun run src/report/dispatch-report.ts",
     "context-index": "bun run src/context/context-index.ts",
@@ -43,7 +44,7 @@
     "vitest-evals": "0.17.0"
   },
   "dependencies": {
-    "@avi2dg/checks": "^0.108.0",
+    "@avi2dg/checks": "^0.116.0",
     "@effect/platform-bun": "4.0.0",
     "effect": "4.0.0"
   },

@@ -1,3 +1,6 @@
+---
+governs: [.github/workflows/ci.yml]
+---
 # 9. A claim about what a clone gets is checked on one
 
 Date: 2026-08-29
@@ -9,6 +12,7 @@ rejected. Amended by 0070: the suite runs in the `ci.yml` `checks-quality`
 generates, on every pull request and every push to main rather than on every
 push.
 Amended by 0107: `ci.yml` no longer runs on a push to main.
+Amended by 0118: `ci.yml` runs on a push to main again.
 
 ## Context
 

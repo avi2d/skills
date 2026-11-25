@@ -23,18 +23,23 @@ To run the checks before a push:
 
 `bun run build` writes `CHANGELOG.md` from the conventional commits since the last release, and the Effect scope in `tsconfig.json`.
 
-`.github/workflows/ci.yml` runs the same steps on every pull request and on the release pull request's dispatched run, on a clone, with the full `bun run test` in place of `bunx checks-test --changed`.
-It installs `claude` and a pinned `sqlite3` before `bun run test`.
-It runs `bun run test` with `TMPDIR` set to an empty directory under the runner's per-job temp, then `scripts/check-tmp-clean.sh`, which fails the job naming anything the suite left there.
-Every job runs on `ubuntu-latest`.
-Every job checks out, installs the Bun that `.bun-version` names and runs `bun install --frozen-lockfile` through the shared `avi2d/workflows/setup@v1` action, and `.github/dependabot.yml` moves the `setup@v1` action pin and every other action pin weekly.
-Each workflow in `.github/workflows/` is owned by this repository, and `checks-ci-wiring` fails naming a required command the pull request workflows no longer run.
-It also fails a setup step whose Bun is not the kit's fleet version, so `.bun-version` moves only with a kit release that moves the fleet.
-`ci.yml` also lints a pull request's title as a conventional commit, because a squash merge makes the title the commit subject.
-It reports that result as the `commitlint` status through the shared `commitlint-status` action, and a dispatched run reports its result on the head commit through the shared `head-status` action.
-A pull request that touches only top-level Markdown and Markdown under `docs/` skips `bun run typecheck`, `bun run test` and their setup, and still lints its title, builds, lints, runs `tests/e2e/fleet-names.test.ts` and reports.
-Any other change runs `tests/e2e/fleet-names.test.ts` only inside `bun run test`.
-A push to main starts no `ci.yml` run, and the release pull request's dispatched run is the first run to check the merged tree.
+`.github/workflows/` holds the workflow set that `bunx checks-workflows --write` writes from `@avi2dg/checks`, and the `static` job of `ci.yml` fails when a file differs from that set.
+`ci.yml` runs on every pull request, on a push to main and on the release pull request's dispatched run, on a clone.
+Its `static` job runs `bun run lint`, `bun run build`, `git diff --exit-code` and `bun run typecheck`.
+Its `docs` job runs `bun run docs:build`, which runs `bun run docs --check` and then `tests/e2e/fleet-names.test.ts`.
+Its `unit` and `e2e` jobs install `claude`, then run `scripts/ci-test.sh` with their tier.
+For the e2e tier, `scripts/ci-test.sh` installs a pinned `sqlite3` version instead of using the runner image's version.
+It also installs the pinned push gate binary, which the runner image does not include.
+It runs the tier with `TMPDIR` set to an empty directory under the runner's per-job temp.
+Then `scripts/check-tmp-clean.sh` fails the job naming anything the suite left there.
+On a pull request a tier runs only the tests the change reaches.
+On a push to main or the release pull request it runs the whole tier.
+A pull request that touches only top-level Markdown and Markdown under `docs/` skips the `unit` and `e2e` jobs, and still runs `static` and `docs`.
+`pr-title.yml` lints a pull request's title as a conventional commit on every push and title edit, and reports the result as the `commitlint` status.
+A squash merge makes the title the commit subject.
+Every job checks out and installs the Bun that `.bun-version` names and the locked dependencies through `.github/actions/setup`.
+Each action is pinned to a commit in the files the kit writes, so a kit upgrade followed by `bunx checks-workflows --write` moves the pins.
+`checks-ci-wiring` fails a setup step whose Bun is not the kit's fleet version, so `.bun-version` moves only with a kit release that moves the fleet.
 
 `bun run test` is the kit's `checks-test`, which runs `bun test --randomize` with workers sized from free memory up to the machine core count and prints the seed that reproduces a failure.
 In an agent session, the Dispatcher refuses a test command the repository blocks.
@@ -49,7 +54,7 @@ A test that reads `$HOME` passes against a home nothing was installed into, or s
 The change is every path between where `HEAD` branched from `origin/main` and `HEAD`, plus the working tree edits and untracked files.
 A changed test file runs on its own, and a shared file never widens the run to the whole suite.
 The run fails before any test runs when `origin/main` is missing, because then the reached files are unknown.
-`.no-mistakes.yaml` names `bunx checks-test --changed` as the push gate test step.
+`.no-mistakes.yaml` names no test command, so the push gate test step runs no test of the repository's own, and CI runs the tests.
 Its push gate lint step also runs `bun run docs --check`, which exits 1 and names each generated page whose committed text differs from what `bun run docs` would write, and writes nothing.
 
 `bun test` preloads `@avi2dg/checks/local-test-preload` before `tests/lib/emitted.ts`.
@@ -68,7 +73,7 @@ The suite fails on any entry in `oxlint-suppressions.json`, so the file is absen
 Four gates run only when someone starts `checks-lint --whole-tree` by hand, namely `checks-lint-coverage`, `checks-repetition`, `checks-suppressions-ratchet` and `checks-quarantine-clock`.
 No schedule or workflow runs them.
 `checks-advisories` holds `advisory-acks.json` to its rules on every run and defers its scan to the scheduled run, so the pull request run fetches no advisory database.
-`.github/workflows/advisories.yml` calls the shared `avi2d/workflows` advisory scan every Monday, which runs it with `--all --issue` over the whole of `bun.lock`.
+`.github/workflows/advisories.yml` runs `bunx checks-advisories --all --issue` every Monday over the whole of `bun.lock`.
 That finds an advisory published after its package landed and an advisory a `bun.lock` change adds.
 A run on `main` files the verdict as a GitHub issue labelled `advisories`.
 
@@ -182,12 +187,12 @@ Nothing imports the linked tree, `tsconfig.json` does not include it, and `bun t
 To release what main holds since the last tag:
 
 1. Run `bunx checks-release-report`, which lists the unreleased features and fixes, and exits 0 when there are none.
-1. On a branch, bump `version` in `package.json`.
-1. Run `bun run build`, which writes that version's section into `CHANGELOG.md`, and commit both files.
-1. Merge the pull request.
-1. Tag the merge commit on main `v<version>` and push the tag.
+1. Start `.github/workflows/release.yml` on main with `gh workflow run release.yml --ref main`.
+1. Review the release pull request that `checks-release-pr ci.yml` opens, and wait for its required checks to pass.
+1. Squash-merge the release pull request without changing its `chore: release ` title.
 
-`.github/workflows/release.yml` refuses a tag that is not on main and a tag that disagrees with `package.json`, then creates the GitHub release with that version's `CHANGELOG.md` section as its notes.
+On the release commit's push to main, `.github/workflows/main.yml` runs the full suite.
+After the suite passes, `checks-release-tag` tags the commit and creates the GitHub release with that version's `CHANGELOG.md` section as its notes.
 
 ## Add harness material
 

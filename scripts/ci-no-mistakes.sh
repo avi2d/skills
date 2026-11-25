@@ -14,4 +14,3 @@ curl -fsSLo "$RUNNER_TEMP/$FILE" "https://github.com/avi2d/no-mistakes/releases/
 echo "$SUM  $RUNNER_TEMP/$FILE" | sha256sum -c -
 mkdir -p "$RUNNER_TEMP/no-mistakes"
 tar -xzf "$RUNNER_TEMP/$FILE" -C "$RUNNER_TEMP/no-mistakes"
-echo "$RUNNER_TEMP/no-mistakes" >> "$GITHUB_PATH"
