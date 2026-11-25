@@ -9,7 +9,8 @@ Date: 2026-11-25
 
 Accepted.
 Supersedes 0107: `ci.yml` runs on a push to main, and the fleet-names scan runs in the `docs` job on every pull request.
-Amends 0096: the title lint runs in `pr-title.yml`.
+Amends 0096 and 0059: the title lint runs in `pr-title.yml`.
+Amends 0070 and through it 0009 and 0037: `ci.yml` runs on a push to main again.
 
 ## Context
 

@@ -9,6 +9,7 @@ nothing cited it under that number. Amended by 0070: `suite.yml` is replaced by
 the `ci.yml` `checks-quality` generates, which runs on every pull request and
 every push to main rather than on every push.
 Amended by 0107: `ci.yml` no longer runs on a push to main.
+Amended by 0118: `ci.yml` runs on a push to main again.
 
 ## Context
 

@@ -12,6 +12,7 @@ Amended by 0074: the `prepare` script's arguments name the library,
 the Bodies' fallback is `bun install` or `bun run prepare`.
 Superseded in part by 0105: `stryker.conf.mjs` sets no `ignorePatterns`.
 Amended by 0107: `ci.yml` no longer runs on a push to main.
+Amended by 0118: `ci.yml` runs on a push to main again.
 
 ## Context
 
