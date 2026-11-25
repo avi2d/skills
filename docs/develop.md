@@ -112,6 +112,11 @@ To add a test:
 1. Remove every temporary directory the test creates, and point the `TMPDIR` of a process it spawns into one of them, because CI fails a run that leaves anything in its temp directory.
 1. Run git in a temporary repository with `scratchGitEnv` from `tests/e2e/lib/git.ts` and set `maintenance.auto` to `false` in the config of a repository a test pushes into, because the maintenance a commit, fetch or push starts in the background writes into the repository after the test removes it.
 
+A property test uses `fast-check` and takes its expected result from a second implementation.
+`tests/unit/glob.property.test.ts` checks `matchesGlob` in `harness/common/glob.ts` against `Bun.Glob` on generated patterns and paths, with the seed fixed at 45 so a pull request replays the same cases, and it runs only where `CI` is set.
+When it fails, `fc.assert` prints the seed and the counterexample.
+The generator leaves out `!(...)` and a `**` that is not a whole path segment, because `matchesGlob` reads those differently from `Bun.Glob` on purpose.
+
 A test under `tests/e2e/` runs out of process, so mutation testing cannot see through it, and it stays out of the mutation scope.
 Stryker's runners share the one working tree they mutate in place, so nothing a test process writes may be shared.
 `tests/lib/emitted.ts` sets `SKILLS_GENERATED_ROOT` to the process's own `generated-<pid>`.
