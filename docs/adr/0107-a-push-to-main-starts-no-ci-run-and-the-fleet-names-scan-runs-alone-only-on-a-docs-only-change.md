@@ -1,16 +1,12 @@
----
-governs: [.github/workflows/ci.yml, tests/e2e/toolchain.test.ts]
----
 # 107. A push to main starts no ci run, and the fleet-names scan runs alone only on a docs-only change
 
 Date: 2026-11-08
 
 ## Status
 
-Accepted.
+Superseded by 0118, under which `ci.yml` runs on a push to main and the fleet-names scan runs in the `docs` job on every pull request. What follows is left as it was written.
 Amends 0096: the fleet-names scan step runs only on a docs-only change.
 Amends 0070 and through it 0009 and 0037: `ci.yml` no longer runs on a push to main.
-Amended by 0118: `ci.yml` runs on a push to main, and the fleet-names scan runs in the `docs` job on every pull request.
 
 ## Context
 
