@@ -39,9 +39,11 @@ test("the generated YAML enables the later-round fixer trial and leaves non-erro
   expect(config).not.toHaveProperty("agent_args_override");
 });
 
-test.each(["/Users/example", "/home/example"])("the generated YAML uses the pi wrapper under %s rather than the unwrapped agent", async (home) => {
-  const config = Bun.YAML.parse(await valueOf(noMistakesYaml(noMistakesConfigOf(home))));
-  expect(config).toMatchObject({ agent_path_override: { pi: `${home}/.orc/heavy/agents/pi` } });
+test.each(["/Users/example", "/home/example"])("the generated YAML uses each configured agent's matching Orc wrapper under %s rather than the agent on PATH or another agent's wrapper", async (home) => {
+  const config = noMistakesConfigOf(home);
+  const emitted = Bun.YAML.parse(await valueOf(noMistakesYaml(config)));
+  const wrappers = Object.fromEntries(Object.keys(config.agent_config).map((agent) => [agent, `${home}/.orc/heavy/agents/${agent}`]));
+  expect(emitted).toMatchObject({ agent_path_override: wrappers });
 });
 
 test("every pipeline step outside the review loop runs Sonnet 5.5 at high on pi, not Muse Spark", async () => {

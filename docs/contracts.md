@@ -59,8 +59,11 @@ Codex trusts a hook by its hash, so installing or changing the file also needs o
 
 `bun run generate` writes the no-mistakes global config to `generated/no-mistakes/config.yaml` from `src/generate/no-mistakes-config.ts`, for the `$HOME` it runs under, and `bun run link` links `~/.no-mistakes/config.yaml` to it.
 The schema knows only the fields no-mistakes reads, because no-mistakes refuses a config file with a field it does not know.
-`agent_path_override.pi` points pi at Orc's wrapper `~/.orc/heavy/agents/pi`, with `~` expanded to the generating machine's `$HOME`.
-If Orc has not written that executable wrapper, no-mistakes fails gate validation instead of falling back to pi on `PATH`.
+`agent_path_override.claude` and `agent_path_override.pi` point each agent at its matching Orc wrapper, `~/.orc/heavy/agents/claude` and `~/.orc/heavy/agents/pi`.
+The generator expands `~` to the generating machine's `$HOME`.
+Gate validation checks only the wrapper for `agent`, which is pi.
+A missing pi wrapper fails gate validation instead of falling back to pi on `PATH`.
+A missing claude wrapper fails only when a step dispatches claude.
 `agent` and `agent_config.pi` run every step that `reviewer_chain` and `review_agents` do not name on Sonnet 5.5 at high on pi, which pi names `claude-bridge/claude-sonnet-5-5`.
 `agent_config` takes no environment, so those steps run on the Claude account named by the no-mistakes daemon's own `CLAUDE_CONFIG_DIR`, or on `~/.claude` when the daemon has none.
 In `reviewer_chain`, the review step tries Opus 5.5 first, then GPT-6.1 Sol.
