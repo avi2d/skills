@@ -39,7 +39,7 @@ test("the generated YAML enables the later-round fixer trial and leaves non-erro
   expect(config).not.toHaveProperty("agent_args_override");
 });
 
-test.each(["/Users/example", "/home/example"])("the generated YAML uses each configured agent’s matching Orc wrapper under %s", async (home) => {
+test.each(["/Users/example", "/home/example"])("the generated YAML uses each configured agent's matching Orc wrapper under %s rather than the agent on PATH or another agent's wrapper", async (home) => {
   const config = noMistakesConfigOf(home);
   const emitted = Bun.YAML.parse(await valueOf(noMistakesYaml(config)));
   const wrappers = Object.fromEntries(Object.keys(config.agent_config).map((agent) => [agent, `${home}/.orc/heavy/agents/${agent}`]));
