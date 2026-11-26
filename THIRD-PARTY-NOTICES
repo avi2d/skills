@@ -68,10 +68,9 @@ SOFTWARE.
 ================================================================================
 https://github.com/Effect-TS/effect
 
-The Effect library. `repos/effect.toml` pins it to the tag
-`effect@4.0.0-rc.115`, and `bun run vendor` fetches it into `repos/effect`,
-which is git-ignored: an agent reads it, and this repository neither builds nor
-ships it. Because none of it is committed, the copy below is the only one in
+The Effect library. `package.json` pins it to `4.1.4`, and `bun run prepare`
+links that tag at `repos/effect`, which is git-ignored: an agent reads it, and
+this repository neither builds nor ships it. Because none of it is committed, the copy below is the only one in
 this tree rather than a repeat of a `LICENSE` beside it.
 
 The `effect-patterns` Reference adapts examples out of that library and says so
