@@ -59,7 +59,7 @@ const extended = root.extends === undefined ? [] : [root.extends].flat();
 const bases = await Promise.all(
   extended.map(async (name) => decodeTsconfig(await json(name.startsWith("./") ? name : `node_modules/${name}`)).compilerOptions ?? {}),
 );
-const tsconfig = [...bases, root.compilerOptions].reduce<Record<string, unknown>>((merged, options) => ({ ...merged, ...options }), {});
+const tsconfig: Record<string, unknown> = Object.assign({}, ...bases, root.compilerOptions);
 const manifest = decodeManifest(await json("package.json"));
 const { scripts } = manifest;
 const declared = Object.entries({ ...manifest.dependencies, ...manifest.devDependencies });
@@ -96,13 +96,13 @@ test("each test job runs its tier through scripts/ci-test.sh, so a bare checks-c
   }
 });
 
-test("scripts/ci-test.sh runs the tier in an empty temp directory under the runner's and fails the job when the suite leaves anything there", () => {
+test("scripts/ci-test.sh runs the tier in an empty temp directory under the runner's, keeps the kit binary's extracted files out of it, and fails the job when the suite leaves anything there", () => {
   const runnerTemp = mkdtempSync(join(tmpdir(), "skills-runner-temp-"));
   const bin = mkdtempSync(join(tmpdir(), "skills-fake-bunx-"));
   const record = join(bin, "record");
   const fakeBunx = [
     "#!/bin/sh",
-    `printf '%s|%s|%s|%s\\n' "$TEST_TIER" "$*" "$TMPDIR" "$(ls -A "$TMPDIR")" > ${record}`,
+    `printf '%s|%s|%s|%s|%s\\n' "$TEST_TIER" "$*" "$TMPDIR" "$BUN_TMPDIR" "$(ls -A "$TMPDIR")" > ${record}`,
     'if [ -n "$LEAVE" ]; then mkdir "$TMPDIR/skills-read-index-left"; fi',
   ];
   writeFileSync(join(bin, "bunx"), `${fakeBunx.join("\n")}\n`);
@@ -115,7 +115,7 @@ test("scripts/ci-test.sh runs the tier in an empty temp directory under the runn
   try {
     const clean = run(false);
     expect(clean.exitCode, clean.stderr.toString()).toBe(0);
-    expect(readFileSync(record, "utf8")).toBe(`unit|checks-ci test|${runnerTemp}/suite-tmp|\n`);
+    expect(readFileSync(record, "utf8")).toBe(`unit|checks-ci test|${runnerTemp}/suite-tmp|${runnerTemp}/bun-tmp|\n`);
     rmSync(join(runnerTemp, "suite-tmp"), { recursive: true });
     const dirty = run(true);
     expect(dirty.stderr.toString()).toContain("skills-read-index-left");

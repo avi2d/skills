@@ -97,8 +97,7 @@ test("an older slow command stays guarded beside a newer one until a confirmed w
   expect(after([...second, call(`${SLOW} 2>&1 | tail -1`)]).refused).toEqual([RERUN_REFUSAL]);
   expect(after([...second, call("bun run other 2>&1 | tail -1")]).refused).toEqual([RERUN_REFUSAL]);
   expect(after([...second, written("src/a.ts"), call(`${SLOW} 2>&1 | tail -1`)]).refused).toEqual([]);
-  let events: Event[] = [];
-  for (let at = 0; at < 6; at += 1) events = [...events, call(`slow-${at}`), result(`slow-${at}`, 400)];
+  const events: Event[] = Array.from({ length: 6 }, (_, at) => [call(`slow-${at}`), result(`slow-${at}`, 400)]).flat();
   expect(after([...events, call("slow-0 | tail -1")]).refused).toEqual([]);
   expect(after([...events, call("slow-5 | tail -1")]).refused).toEqual([RERUN_REFUSAL]);
 });

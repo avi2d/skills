@@ -9,7 +9,8 @@ if [ "$tier" = e2e ]; then
   export PATH
 fi
 TMPDIR="$RUNNER_TEMP/suite-tmp"
-export TMPDIR
-mkdir -p "$TMPDIR"
+BUN_TMPDIR="$RUNNER_TEMP/bun-tmp"
+export TMPDIR BUN_TMPDIR
+mkdir -p "$TMPDIR" "$BUN_TMPDIR"
 TEST_TIER="$tier" bunx checks-ci test
 scripts/check-tmp-clean.sh

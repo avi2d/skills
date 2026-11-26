@@ -31,6 +31,7 @@ Its `unit` and `e2e` jobs install `claude`, then run `scripts/ci-test.sh` with t
 For the e2e tier, `scripts/ci-test.sh` installs a pinned `sqlite3` version instead of using the runner image's version.
 It also installs the pinned push gate binary, which the runner image does not include.
 It runs the tier with `TMPDIR` set to an empty directory under the runner's per-job temp.
+It sets `BUN_TMPDIR` to a second directory there, because the kit's compiled binary extracts a native addon into the temp directory it starts with, and that file is not the suite's.
 Then `scripts/check-tmp-clean.sh` fails the job naming anything the suite left there.
 On a pull request a tier runs only the tests the change reaches.
 On a push to main or the release pull request it runs the whole tier.
