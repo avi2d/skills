@@ -59,7 +59,7 @@ const extended = root.extends === undefined ? [] : [root.extends].flat();
 const bases = await Promise.all(
   extended.map(async (name) => decodeTsconfig(await json(name.startsWith("./") ? name : `node_modules/${name}`)).compilerOptions ?? {}),
 );
-const tsconfig = [...bases, root.compilerOptions].reduce<Record<string, unknown>>((merged, options) => ({ ...merged, ...options }), {});
+const tsconfig: Record<string, unknown> = Object.assign({}, ...bases, root.compilerOptions);
 const manifest = decodeManifest(await json("package.json"));
 const { scripts } = manifest;
 const declared = Object.entries({ ...manifest.dependencies, ...manifest.devDependencies });
