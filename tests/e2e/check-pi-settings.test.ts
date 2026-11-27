@@ -5,7 +5,7 @@ import { join } from "node:path";
 import { Schema } from "effect";
 import { REPO } from "../../src/generate/link";
 
-test("missing, extra and different settings are not reported as clean", async () => {
+test("reports settings drift without reporting pi-owned changelog versions", async () => {
   const home = await mkdtemp(join(tmpdir(), "skills-pi-drift-"));
   const path = join(home, ".pi/agent/settings.json");
   try {
@@ -17,6 +17,7 @@ test("missing, extra and different settings are not reported as clean", async ()
     settings.defaultProvider = "different-provider";
     settings.unexpected = true;
     settings.deviceId = "own-device";
+    settings.extensionChangelogVersions = { example: "1.0.0" };
     const drifted = JSON.stringify(settings);
     await writeFile(path, drifted);
     const run = () => Bun.spawn(["bun", "run", "check-pi-settings"], {
@@ -32,10 +33,12 @@ test("missing, extra and different settings are not reported as clean", async ()
     expect(output).toContain("different defaultProvider");
     expect(output).toContain("extra unexpected");
     expect(output).not.toContain("deviceId");
+    expect(output).not.toContain("extensionChangelogVersions");
     expect(await readFile(path, "utf8")).toBe(drifted);
 
     const cleanSettings = { ...decode(original) };
     cleanSettings.deviceId = "own-device";
+    cleanSettings.extensionChangelogVersions = { example: "1.0.0" };
     await writeFile(path, JSON.stringify(cleanSettings));
     const clean = run();
     expect(await new Response(clean.stdout).text()).toContain("clean");

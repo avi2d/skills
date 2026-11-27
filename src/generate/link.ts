@@ -59,7 +59,7 @@ export type Merge = { readonly from: string; readonly ownKeys: readonly string[]
 
 // Pi writes through a link, and layers no second settings file over this one, so it gets a file of its own.
 export const MERGED: Readonly<Record<string, Merge>> = {
-  ".pi/agent/settings.json": { from: "harness/pi/settings.json", ownKeys: ["deviceId", "lastChangelogVersion", "trackingId"] },
+  ".pi/agent/settings.json": { from: "harness/pi/settings.json", ownKeys: ["deviceId", "extensionChangelogVersions", "lastChangelogVersion", "trackingId"] },
 };
 
 export type Graft = { readonly from: string; readonly keys: readonly string[] };
