@@ -7,7 +7,7 @@ Date: 2026-11-11
 
 ## Status
 
-Accepted. Supersedes [0031](0031-a-leaked-tool-call-is-repaired-in-the-harness-rather-than-waited-on-upstream.md) and [0032](0032-the-web-tools-are-off-until-a-session-asks-for-them.md).
+Accepted. Supersedes 0031 and 0032.
 
 ## Context
 
