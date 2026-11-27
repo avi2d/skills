@@ -7,15 +7,14 @@ Date: 2026-09-26
 
 ## Status
 
-Accepted. Supersedes 0027 and 0049 on how `repos/effect` is fetched, and the
+Accepted. Supersedes 0049 on how `repos/effect` is fetched, and the
 part of 0060's trigger note that still names `repos/effect.toml`. Amends 0009
 and 0037 on when the suite runs.
 Amended by 0074: the `prepare` script's arguments name the library,
 `ci.yml` is hand-written, the vendored-paths skip is declared at the test, and
 the Bodies' fallback is `bun install` or `bun run prepare`.
 Superseded in part by 0105: `stryker.conf.mjs` sets no `ignorePatterns`.
-Amended by 0107: `ci.yml` no longer runs on a push to main.
-Amended by 0118: `ci.yml` runs on a push to main again.
+Amended by 0118: `ci.yml` is the set the checks kit writes, and it runs on every pull request and every push to main.
 
 ## Context
 

@@ -7,8 +7,7 @@ Date: 2026-09-24
 
 ## Status
 
-Accepted. Supersedes the part of 0050 that let the baseline count the two
-assertion rules and nothing else. Amended by 0059, which corrects its claim that
+Accepted. Amended by 0059, which corrects its claim that
 `extends` replaces the language service's `plugins` block. Superseded by 0067
 on the baseline. Narrowed by 0069, after which the effect-scope test no longer
 sees each rule fail. Superseded by 0092 on its scope, which holds every source
@@ -51,7 +50,7 @@ a newer `effect`.
 
 **The baseline counts these rules as well as the assertion rules.** A site the
 lint rules find goes into `oxlint-suppressions.json` through `oxlint
---suppress-all`, as 0050 has it for the assertion rules, and its count can only
+--suppress-all`, as for the assertion rules, and its count can only
 fall. It counts no site today: `src/bodies.ts`'s `fences`, the last, fails a
 malformed fence as a `MalformedBody` instead of throwing.
 `tests/e2e/assertion-baseline.test.ts` takes the scope's rules from the

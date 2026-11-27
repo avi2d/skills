@@ -9,8 +9,7 @@ Date: 2026-09-24
 
 Accepted. Records R1 from the quality-config decision of 2026-09-24 as it
 reaches the Dispatcher. Amends the Selection in `CONTEXT.md`, which was the
-whole account of what fires and is now the catalogue and its default. Amends 0027,
-whose pin is no longer the Rule's only trigger. Amends
+whole account of what fires and is now the catalogue and its default. Amends
 0038: the dispatch index is no longer filtered by the Selection, because it
 also carries the Rules the Selection leaves off, marked `inactive`. Amends
 0052: the dispatch report measures against the index without the inactive Rules,
@@ -29,8 +28,8 @@ Amended by 0116: a project switches a Rule under `rules` in its `.skills.json`, 
 
 ## Context
 
-`effect-error-channel` fired on one path, `repos/effect.toml`, the pin 0027
-commits. A repository that pins Effect is working with it, but not every
+`effect-error-channel` fired on one path, `repos/effect.toml`, the committed
+pin. A repository that pins Effect is working with it, but not every
 repository working with Effect pins it. checks and career require Effect and
 hold it through oxlint and tsc, and pin no library, so the Rule reached
 neither. The pin answered a question nobody had asked it.

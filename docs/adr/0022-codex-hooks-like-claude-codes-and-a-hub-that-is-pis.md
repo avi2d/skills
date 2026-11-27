@@ -96,7 +96,7 @@ the core still says `invoke`, and this file still answers with the same two
 keys.
 
 `driven` and `parallel` stay off the row, so Workflows declaring them are
-absent from Codex rather than run as something weaker (docs/adr/0016).
+absent from Codex rather than run as something weaker.
 
 ### Rules are sent whole, against a default that would preview them
 

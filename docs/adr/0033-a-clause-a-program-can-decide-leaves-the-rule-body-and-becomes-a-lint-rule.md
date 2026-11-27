@@ -7,12 +7,8 @@ Date: 2026-09-20
 
 ## Status
 
-Accepted. Supersedes the part of 0027 that made
-`rules/effect-error-channel/scripts/effect-escapes.ts` the program behind the
-three escapes. Superseded by 0050 on the two assertion rules: in `src/` and
-`harness/` they are `error`, held at the baseline in
-`oxlint-suppressions.json`, and the clauses stay prose. 0056 pins that
-baseline at no site of either, and 0058 holds both in every file.
+Accepted. Amended by 0058 on the two assertion rules: they are `error` in
+every TypeScript file, and the clauses stay prose.
 
 ## Context
 

@@ -8,9 +8,8 @@ Date: 2026-11-25
 ## Status
 
 Accepted.
-Supersedes 0107: `ci.yml` runs on a push to main, and the fleet-names scan runs in the `docs` job on every pull request.
 Amends 0096 and 0059: the title lint runs in `pr-title.yml`.
-Amends 0070 and through it 0009 and 0037: `ci.yml` runs on a push to main again.
+Amends 0070 and through it 0009 and 0037: `ci.yml` is the set the checks kit writes, and it runs on every pull request and every push to main.
 
 ## Context
 
@@ -29,7 +28,7 @@ The `docs:build` script runs `bun run docs --check` and `tests/e2e/fleet-names.t
 
 ## Consequences
 
-A push to main starts a `ci.yml` run again, since the set triggers on it.
+A push to main starts a `ci.yml` run, since the set triggers on it.
 A pull request runs only the tests its change reaches, and a push to main and the release pull request run the whole tier.
-A code change runs the fleet-names scan twice, once in `docs` and once in the e2e tier, where 0107 ran it once.
+A code change runs the fleet-names scan twice, once in `docs` and once in the e2e tier.
 A kit upgrade followed by `bunx checks-workflows --write` moves the action pins, and a workflow edited by hand fails the `static` job.

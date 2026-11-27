@@ -11,6 +11,8 @@
 | [0001](0001-a-sub-agent-holds-the-rules-its-own-context-earns.md) | A sub-agent holds the Rules its own context earns | Accepted | `src/dispatcher/scope-condition.ts` |
 | [0002](0002-a-rule-reaches-the-model-in-the-conversation.md) | A Rule reaches the model in the conversation | Accepted | `src/dispatcher/pi-dispatcher.ts` |
 | [0004](0004-the-repo-installs-itself-and-the-contract-stays-hand-written.md) | The repo installs itself, and the Contract stays hand-written | Accepted | `src/generate/link.ts` |
+| [0007](0007-the-herdr-port-lands-on-the-fork-and-the-refactors-are-offered-upstream.md) | The herdr port lands on the fork, and the refactors are offered upstream | Accepted | `harness/pi/settings.json` |
+| [0008](0008-the-set-directory-takes-the-name-the-root-symlink-held.md) | The set directory takes the name the root symlink held | Accepted | `src/generate/link.ts` |
 | [0009](0009-a-claim-about-what-a-clone-gets-is-checked-on-one.md) | A claim about what a clone gets is checked on one | Accepted | `.github/workflows/ci.yml` |
 | [0012](0012-a-rules-trigger-is-a-list-and-any-match-fires-it.md) | A Rule's trigger is a list, and any match fires it | Accepted | `src/dispatcher/dispatch-types.ts`, `src/dispatcher/dispatch.ts` |
 | [0013](0013-the-bundle-guard-lives-in-bundle-and-reads-runtime-imports.md) | The bundle guard lives in bundle() and reads runtime imports | Accepted | `src/generate/bundle.ts` |

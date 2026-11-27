@@ -11,8 +11,7 @@ Accepted. Closes the window 0008 left open, and narrows the third option 0008
 rejected. Amended by 0070: the suite runs in the `ci.yml` `checks-quality`
 generates, on every pull request and every push to main rather than on every
 push.
-Amended by 0107: `ci.yml` no longer runs on a push to main.
-Amended by 0118: `ci.yml` runs on a push to main again.
+Amended by 0118: `ci.yml` is the set the checks kit writes, and it runs on every pull request and every push to main.
 
 ## Context
 

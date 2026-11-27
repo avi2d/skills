@@ -62,7 +62,7 @@ finish, the `Stop` hook asks the core what is outstanding, and a run still
 asking refuses the stop and hands over the step as the block reason. A run
 that has finished says nothing and the turn ends. `driven` and `parallel`
 stay off the row, so those Workflows are absent from this Hub rather than
-run as something weaker (docs/adr/0016).
+run as something weaker.
 
 **The choice of primitive is the adapter's and the core's business
 stops at the word.** The core says `inject`, `deliver`, `invoke`, `ask`;

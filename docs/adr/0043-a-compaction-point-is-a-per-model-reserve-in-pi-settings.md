@@ -7,13 +7,13 @@ Date: 2026-09-23
 
 ## Status
 
-Accepted. Supersedes 0042: the extension that held its points is deleted, and
-the points are the ones below.
+Accepted. The extension that held the compaction points is deleted, and the
+points are the ones below.
 
 ## Context
 
-0042 put the captain's compaction points, fable near 300k and opus near 400k,
-in `harness/pi/extensions/compaction-points.ts`, and rejected waiting for pi to
+The captain's compaction points, fable near 300k and opus near 400k, were held
+in `harness/pi/extensions/compaction-points.ts` rather than waiting for pi to
 grow a per-model reserve. pi has since grown one. `CompactionSettings` carries
 `modelOverrides`, a record keyed by exactly `<provider>/<id>` whose entries
 hold `reserveTokens` and `keepRecentTokens`. The resolver takes the override,
@@ -24,7 +24,7 @@ session. It called `ctx.compact()` from outside on three events and needed a
 flag to stop one compaction starting over another. pi runs its own threshold
 check in two places. The first is between turns inside a run, before the next
 assistant request, where it compacts and then carries on with the run. The
-second is after the run ends. 0042 waited for the agent to go idle because
+second is after the run ends. The extension waited for the agent to go idle because
 `ctx.compact()` aborts the live run. pi's own threshold compaction aborts
 nothing, so that reason for waiting does not apply to it.
 
@@ -75,7 +75,7 @@ predates, such as `openai/gpt-6.2-astra` and `openai/gpt-6.2-sol` under pi
 1.5.1, from the provider catalog pi fetches from `https://pi.dev` at run time.
 
 There is still no global `compaction.reserveTokens`, so a model with no
-override keeps pi's default, as under 0042.
+override keeps pi's default.
 
 **Each claude-bridge model keeps a 10,000-token tail.** `keepRecentTokens` is
 the share of the newest conversation pi keeps verbatim through a compaction,
@@ -107,7 +107,7 @@ shrink.
   pi's catalog registers for a worker model changes, that reserve has to be
   recomputed from it, or the point moves with the window.
 - A session can compact mid-run, at the first turn boundary past its point,
-  and the run then continues. 0042's rule of compacting only when idle is gone,
+  and the run then continues. The extension's rule of compacting only when idle is gone,
   and so is its overshoot to the next settle.
 - A model that wants its own point is one entry, keyed by the provider and id
   pi resolves it under, with the reserve worked out as above.

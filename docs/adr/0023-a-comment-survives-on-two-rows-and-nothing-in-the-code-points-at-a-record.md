@@ -99,12 +99,7 @@ exceptions on that list and are not any more.
   by roughly 68 record pointers and the doc blocks and preambles above. The
   sweep is the work that follows this; until it lands, `src/` reads as the
   previous standard.
-- **Three ADRs describe themselves as holding rationale "swept out of its
-  comments by the comment-discipline pass"** (0014, 0015, 0016). That road runs
-  the right way still: the record holds the argument. Only the return trip is
-  gone.
-- **`docs/adr/0014`'s consequence about the emitted fan-out script stands.**
-  Its comments are string literals in `parallelScript`, documentation of an
-  artifact that lands under `~/.pi-subagentura` with no suite or record beside
-  it, and they are not this repository's comment load.
+- **0015 describes itself as holding rationale "swept out of its comments by
+  the comment-discipline pass".** That road runs the right way still: the
+  record holds the argument. Only the return trip is gone.
 - **A reader who wants the argument searches the log.** Nothing else finds it.

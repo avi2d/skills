@@ -7,7 +7,7 @@ Date: 2026-11-11
 
 ## Status
 
-Accepted. Supersedes 0031 and 0032.
+Accepted.
 
 ## Context
 
