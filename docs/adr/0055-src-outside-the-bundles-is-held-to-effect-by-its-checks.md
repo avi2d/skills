@@ -1,3 +1,6 @@
+---
+governs: [oxlint.config.ts, tests/e2e/effect-scope.test.ts]
+---
 # 55. src/ outside the bundles is held to Effect by its checks
 
 Date: 2026-09-24

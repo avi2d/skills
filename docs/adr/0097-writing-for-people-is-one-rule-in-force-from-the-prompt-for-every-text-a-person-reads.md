@@ -1,3 +1,6 @@
+---
+governs: [library/writing/rules/writing-for-people/SKILL.md]
+---
 # 97. Writing for people is one Rule in force from the prompt, for every text a person reads
 
 Date: 2026-10-11

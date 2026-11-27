@@ -1,3 +1,6 @@
+---
+governs: [oxlint.config.ts]
+---
 # 33. A clause a program can decide leaves the Rule body and becomes a lint rule
 
 Date: 2026-09-20

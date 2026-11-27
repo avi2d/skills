@@ -1,3 +1,6 @@
+---
+governs: [tests/e2e/effect-scope.test.ts, oxlint.config.ts]
+---
 # 69. The kit's consumer suite proves each Effect scope rule fails
 
 Date: 2026-09-25

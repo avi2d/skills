@@ -1,3 +1,6 @@
+---
+governs: [tests/lib/generated-root.ts, src/generate/bundle.ts]
+---
 # 47. Each test process generates into a root of its own
 
 Date: 2026-09-24

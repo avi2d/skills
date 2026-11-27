@@ -1,3 +1,6 @@
+---
+governs: [src/generate/link.ts, harness/pi/settings.json]
+---
 # 79. Pi's settings are a file of the machine's own, written from the checkout
 
 Date: 2026-10-02

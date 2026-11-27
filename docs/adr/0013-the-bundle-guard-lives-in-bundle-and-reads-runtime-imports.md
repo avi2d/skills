@@ -1,3 +1,6 @@
+---
+governs: [src/generate/bundle.ts]
+---
 # 13. The bundle guard lives in bundle() and reads runtime imports
 
 Date: 2026-09-14

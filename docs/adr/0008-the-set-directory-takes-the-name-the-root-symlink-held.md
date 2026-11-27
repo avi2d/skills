@@ -1,3 +1,6 @@
+---
+governs: [src/generate/link.ts]
+---
 # 8. The set directory takes the name the root symlink held
 
 Date: 2026-08-28

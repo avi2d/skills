@@ -1,3 +1,6 @@
+---
+governs: [library/engineering/rules/comment-discipline/SKILL.md]
+---
 # 23. A comment survives on two rows, and nothing in the code points at a record
 
 Date: 2026-09-15

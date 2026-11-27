@@ -1,3 +1,6 @@
+---
+governs: [src/generate/hub.ts]
+---
 # 46. A tool that ships its own skill supplies it
 
 Date: 2026-09-23

@@ -1,3 +1,6 @@
+---
+governs: [src/report/dispatch-report.ts, src/dispatcher/dispatch-log.ts]
+---
 # 52. The dispatch log is read by a command, a session at a time
 
 Date: 2026-09-24

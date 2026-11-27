@@ -1,3 +1,6 @@
+---
+governs: []
+---
 # 6. A fan-out asks nothing of its provider
 
 Date: 2026-08-28

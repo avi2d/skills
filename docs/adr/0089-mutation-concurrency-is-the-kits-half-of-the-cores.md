@@ -1,3 +1,6 @@
+---
+governs: [stryker.conf.mjs]
+---
 # 89. Mutation concurrency is the kit's half of the cores
 
 Date: 2026-10-08

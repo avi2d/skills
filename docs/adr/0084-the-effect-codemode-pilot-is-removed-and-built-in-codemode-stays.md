@@ -1,3 +1,6 @@
+---
+governs: [harness/pi/settings.json]
+---
 # 84. The effect codemode pilot is removed, and built-in codemode stays
 
 Date: 2026-10-05

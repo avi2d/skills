@@ -1,3 +1,6 @@
+---
+governs: [src/dispatcher/redact.ts, src/dispatcher/pi-redact.ts]
+---
 # 104. Tool output is scrubbed at the harness with the checks kit's gitleaks rules
 
 Date: 2026-11-07

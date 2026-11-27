@@ -1,3 +1,6 @@
+---
+governs: [library/writing/references/unslop/SKILL.md, library/writing/references/writing-for-agents/SKILL.md, selection.toml]
+---
 # 65. Guidance for agent docs is a Reference that a Rule on their paths names, and voice is a Reference too
 
 Date: 2026-09-25

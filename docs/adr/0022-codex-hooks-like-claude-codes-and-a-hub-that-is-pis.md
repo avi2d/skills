@@ -1,3 +1,6 @@
+---
+governs: [src/dispatcher/codex-dispatcher.ts, harness/codex/hooks.json]
+---
 # 22. Codex's hooks are Claude Code's, and its Hub is pi's
 
 Date: 2026-09-14

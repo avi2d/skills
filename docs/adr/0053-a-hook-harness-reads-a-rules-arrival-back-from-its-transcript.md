@@ -1,3 +1,6 @@
+---
+governs: [src/dispatcher/hook-harness.ts, src/dispatcher/transcript.ts]
+---
 # 53. A hook harness reads a Rule's arrival back from its transcript
 
 Date: 2026-09-24

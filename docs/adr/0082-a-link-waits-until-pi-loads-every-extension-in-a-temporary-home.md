@@ -1,3 +1,6 @@
+---
+governs: [src/generate/link.ts]
+---
 # 82. A link waits until pi loads every extension in a temporary home
 
 Date: 2026-10-04

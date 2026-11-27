@@ -1,3 +1,6 @@
+---
+governs: []
+---
 # 10. A branch session is attributed to the run that spawned it
 
 Date: 2026-09-14

@@ -1,3 +1,6 @@
+---
+governs: [src/generate/bundle.ts]
+---
 # 28. A bundled module declares the packages its harness supplies
 
 Date: 2026-09-15

@@ -1,3 +1,6 @@
+---
+governs: [src/dispatcher/scope-condition.ts]
+---
 # 1. A sub-agent holds the Rules its own context earns
 
 Date: 2026-08-27

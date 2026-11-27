@@ -1,3 +1,6 @@
+---
+governs: [src/generate/generate.ts, src/generate/hub.ts]
+---
 # 40. One command writes one directory
 
 Date: 2026-09-22

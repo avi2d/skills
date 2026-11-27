@@ -1,3 +1,6 @@
+---
+governs: [src/generate/link.ts]
+---
 # 64. The empty global instruction file and its four links are retired
 
 Date: 2026-09-25

@@ -1,3 +1,6 @@
+---
+governs: [oxlint.config.ts, tests/e2e/assertion-baseline.test.ts]
+---
 # 67. The suppressions baseline is removed
 
 Date: 2026-09-26

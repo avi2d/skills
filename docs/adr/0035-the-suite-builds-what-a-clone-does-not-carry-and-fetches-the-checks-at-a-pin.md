@@ -1,3 +1,6 @@
+---
+governs: [bunfig.toml, tests/lib/emitted.ts]
+---
 # 35. The suite builds what a clone does not carry, and the checks arrive at a pin
 
 Date: 2026-09-22

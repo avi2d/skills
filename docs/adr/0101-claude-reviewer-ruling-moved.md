@@ -1,3 +1,6 @@
+---
+governs: []
+---
 # 101. Claude reviewer ruling moved
 
 Date: 2026-10-20

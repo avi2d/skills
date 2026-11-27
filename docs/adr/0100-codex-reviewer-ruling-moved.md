@@ -1,3 +1,6 @@
+---
+governs: []
+---
 # 100. Codex reviewer ruling moved
 
 Date: 2026-10-19

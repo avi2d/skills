@@ -1,3 +1,6 @@
+---
+governs: [src/generate/bundle.ts, tests/lib/generated-root.ts]
+---
 # 75. The generated root is read through Config where the program touches the tree
 
 Date: 2026-09-27
