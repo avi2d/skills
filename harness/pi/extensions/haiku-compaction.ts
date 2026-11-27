@@ -12,8 +12,10 @@ import type {
   SummaryModel,
   SummaryRegistry,
 } from "./haiku-compaction/file-ops";
+import { historyPromptOf, SUMMARIZATION_SYSTEM_PROMPT, turnPrefixPromptOf } from "./haiku-compaction/prompts";
 import { historyConversationOf } from "./haiku-compaction/tool-output";
 
+export { historyPromptOf, SUMMARIZATION_SYSTEM_PROMPT, turnPrefixPromptOf } from "./haiku-compaction/prompts";
 export { historyConversationOf } from "./haiku-compaction/tool-output";
 
 export type {
@@ -102,135 +104,6 @@ export function haikuCompactionEnabled(settings: unknown): boolean {
   const section: unknown = Reflect.get(settings, "haikuCompaction");
   if (typeof section !== "object" || section === null) return true;
   return Reflect.get(section, "enabled") !== false;
-}
-
-export const SUMMARIZATION_SYSTEM_PROMPT = `You are a context summarization assistant. Your task is to read a conversation between a user and an AI assistant, then produce a structured summary following the exact format specified.
-
-Do NOT continue the conversation. Do NOT respond to any questions in the conversation. ONLY output the structured summary.`;
-
-const KEEP_URLS = "Keep every URL that appears in the conversation, with what it points to. Never drop a URL.";
-
-const SUMMARIZATION_PROMPT = `The messages above are a conversation to summarize. Create a structured context checkpoint summary that another LLM will use to continue the work.
-
-Use this EXACT format:
-
-## Goal
-[What is the user trying to accomplish? Can be multiple items if the session covers different tasks.]
-
-## Constraints & Preferences
-- [Any constraints, preferences, or requirements mentioned by user]
-- [Or "(none)" if none were mentioned]
-
-## Progress
-### Done
-- [x] [Completed tasks/changes]
-
-### In Progress
-- [ ] [Current work]
-
-### Blocked
-- [Issues preventing progress, if any]
-
-## Key Decisions
-- **[Decision]**: [Brief rationale]
-
-## Next Steps
-1. [Ordered list of what should happen next]
-
-## Critical Context
-- [Any data, examples, or references needed to continue]
-- [Or "(none)" if not applicable]
-
-Keep each section concise. Preserve exact file paths, function names, and error messages. When a fact already lives in a file the conversation names, name the file path instead of restating its content.`;
-
-const SUMMARIZATION_PROMPT_MUSE = `${SUMMARIZATION_PROMPT} ${KEEP_URLS}`;
-
-const UPDATE_SUMMARIZATION_INSTRUCTIONS = `Update the existing structured summary with new information. RULES:
-- PRESERVE all existing information from the previous summary
-- ADD new progress, decisions, and context from the new messages
-- UPDATE the Progress section: move items from "In Progress" to "Done" when completed
-- UPDATE "Next Steps" based on what was accomplished
-- PRESERVE exact file paths, function names, and error messages
-- If something is no longer relevant, you may remove it
-
-Use this EXACT format:
-
-## Goal
-[Preserve existing goals, add new ones if the task expanded]
-
-## Constraints & Preferences
-- [Preserve existing, add new ones discovered]
-
-## Progress
-### Done
-- [x] [Include previously done items AND newly completed items]
-
-### In Progress
-- [ ] [Current work - update based on progress]
-
-### Blocked
-- [Current blockers - remove if resolved]
-
-## Key Decisions
-- **[Decision]**: [Brief rationale] (preserve all previous, add new)
-
-## Next Steps
-1. [Update based on current state]
-
-## Critical Context
-- [Preserve important context, add new if needed]
-
-Keep each section concise. Preserve exact file paths, function names, and error messages. When a fact already lives in a file the conversation names, name the file path instead of restating its content.`;
-
-const UPDATE_SUMMARIZATION_INSTRUCTIONS_MUSE = `${UPDATE_SUMMARIZATION_INSTRUCTIONS} ${KEEP_URLS}`;
-
-const UPDATE_SUMMARIZATION_PROMPT = `The messages above are NEW conversation messages to incorporate into the existing summary provided in <previous-summary> tags.
-
-${UPDATE_SUMMARIZATION_INSTRUCTIONS}`;
-
-const UPDATE_SUMMARIZATION_PROMPT_MUSE = `The messages above are NEW conversation messages to incorporate into the existing summary provided in <previous-summary> tags.
-
-${UPDATE_SUMMARIZATION_INSTRUCTIONS_MUSE}`;
-
-const TURN_PREFIX_SUMMARIZATION_PROMPT = `The messages above are earlier context from an ongoing conversation. Later messages are stored separately and do not need to be reconstructed.
-
-Create a concise checkpoint of the user's request and the progress shown above. This checkpoint will be placed before the later messages so the conversation can continue with the necessary context.
-
-## Original Request
-[What did the user ask for?]
-
-## Progress So Far
-- [Key decisions and work completed in these messages]
-
-## Context Needed to Continue
-- [Information from these messages needed to understand the later work]
-
-Only summarize information explicitly present above. Do not infer or recreate later messages. When a fact already lives in a file the conversation names, name the file path instead of restating its content.`;
-
-const TURN_PREFIX_SUMMARIZATION_PROMPT_MUSE = `${TURN_PREFIX_SUMMARIZATION_PROMPT} ${KEEP_URLS}`;
-
-export function historyPromptOf(
-  conversation: string,
-  previousSummary: string | undefined,
-  customInstructions: string | undefined,
-  keepUrls = false,
-): string {
-  let base = previousSummary
-    ? keepUrls
-      ? UPDATE_SUMMARIZATION_PROMPT_MUSE
-      : UPDATE_SUMMARIZATION_PROMPT
-    : keepUrls
-      ? SUMMARIZATION_PROMPT_MUSE
-      : SUMMARIZATION_PROMPT;
-  if (customInstructions) base = `${base}\n\nAdditional focus: ${customInstructions}`;
-  let prompt = `<conversation>\n${conversation}\n</conversation>\n\n`;
-  if (previousSummary) prompt += `<previous-summary>\n${previousSummary}\n</previous-summary>\n\n`;
-  return prompt + base;
-}
-
-export function turnPrefixPromptOf(conversation: string, keepUrls = false): string {
-  const instructions = keepUrls ? TURN_PREFIX_SUMMARIZATION_PROMPT_MUSE : TURN_PREFIX_SUMMARIZATION_PROMPT;
-  return `# Conversation\n${conversation}\n\n# Instructions\n${instructions}`;
 }
 
 export const NO_PRIOR_HISTORY = "No prior history.";
