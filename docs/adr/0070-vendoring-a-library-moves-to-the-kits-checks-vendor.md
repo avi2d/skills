@@ -7,7 +7,7 @@ Date: 2026-09-26
 
 ## Status
 
-Accepted. Supersedes 0049 on how `repos/effect` is fetched, and the
+Accepted. Supersedes 0027 and 0049 on how `repos/effect` is fetched, and the
 part of 0060's trigger note that still names `repos/effect.toml`. Amends 0009
 and 0037 on when the suite runs.
 Amended by 0074: the `prepare` script's arguments name the library,

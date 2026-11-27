@@ -10,6 +10,7 @@
   "docs/adr/0024-a-constraint-a-program-can-decide-is-written-as-a-program.md": 1,
   "docs/adr/0025-the-comment-rule-keeps-only-what-needs-judgment-and-one-source-holds-it.md": 2,
   "docs/adr/0026-the-global-instruction-file-empties-into-three-rules.md": 2,
+  "docs/adr/0027-the-library-is-fetched-at-a-pin-and-the-pin-is-what-is-committed.md": 4,
   "docs/adr/0029-a-hub-is-links-into-the-tree-and-is-reconciled-rather-than-rewritten.md": 1,
   "docs/adr/0035-the-suite-builds-what-a-clone-does-not-carry-and-fetches-the-checks-at-a-pin.md": 1,
   "docs/adr/0036-a-session-is-named-by-its-first-prompt-once.md": 2,

@@ -7,7 +7,9 @@ Date: 2026-09-20
 
 ## Status
 
-Accepted. Amended by 0058 on the two assertion rules: they are `error` in
+Accepted. Supersedes the part of 0027 that made
+`rules/effect-error-channel/scripts/effect-escapes.ts` the program behind the
+three escapes. Amended by 0058 on the two assertion rules: they are `error` in
 every TypeScript file, and the clauses stay prose.
 
 ## Context

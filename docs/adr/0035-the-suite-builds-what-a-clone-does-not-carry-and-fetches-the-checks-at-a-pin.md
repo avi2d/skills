@@ -82,7 +82,7 @@ locally with one flag.
   fresh clone and CI, which re-creates the failure being fixed - a checkout that
   cannot install. A pinned git dependency reaches a clone, a worktree and CI
   with nothing configured, and it pins the way `repos/<name>.toml` pins a
-  library. Publishing stays available and is a smaller change from here
+  library (0027). Publishing stays available and is a smaller change from here
   than it was from `file:`.
 - **Keeping the sibling `actions/checkout` and fixing only the worktree.** It
   would leave CI green and every local worktree red, which is the arrangement

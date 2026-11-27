@@ -26,6 +26,7 @@
 | [0024](0024-a-constraint-a-program-can-decide-is-written-as-a-program.md) | A constraint a program can decide is written as a program | Accepted | `library/engineering/rules/force-determinism/SKILL.md` |
 | [0025](0025-the-comment-rule-keeps-only-what-needs-judgment-and-one-source-holds-it.md) | The comment rule keeps only what needs judgment, and one source holds it | Accepted | `src/dispatcher/comments.ts` |
 | [0026](0026-the-global-instruction-file-empties-into-three-rules.md) | The global instruction file empties into three Rules | Accepted | `library/utility/rules/git-hygiene/SKILL.md`, `library/utility/rules/git-hygiene-stash/SKILL.md`, `library/utility/rules/git-hygiene-co-author/SKILL.md` |
+| [0027](0027-the-library-is-fetched-at-a-pin-and-the-pin-is-what-is-committed.md) | The library is fetched at a pin, and the pin is what is committed | Superseded |  |
 | [0028](0028-a-bundled-module-declares-the-packages-its-harness-supplies.md) | A bundled module declares the packages its harness supplies | Accepted | `src/generate/bundle.ts` |
 | [0029](0029-a-hub-is-links-into-the-tree-and-is-reconciled-rather-than-rewritten.md) | A Hub is links into the tree, and is reconciled rather than rewritten | Accepted | `src/generate/hub.ts` |
 | [0030](0030-inheritance-goes-and-a-skill-is-the-words-it-holds.md) | Inheritance goes, and a Skill is the words it holds | Accepted | `src/bodies/bodies.ts` |
