@@ -54,6 +54,12 @@ function isSavedReport(value: unknown): value is SavedReport {
   return Array.isArray(cases) && cases.every(isCaseReport);
 }
 
+export function readReplayFile(fs: FileSystem.FileSystem, file: string): Effect.Effect<string, ReadError> {
+  return fs.readFileString(file).pipe(
+    Effect.mapError((cause) => new ReadError({ message: "cannot read " + file + ": " + String(cause) })),
+  );
+}
+
 export function rescoreReport(
   fs: FileSystem.FileSystem,
   path: Path.Path,
@@ -62,9 +68,7 @@ export function rescoreReport(
   script: string,
 ): Effect.Effect<boolean, ReadError | ArgsError | Config.ConfigError> {
   return Effect.gen(function* () {
-    const text = yield* fs.readFileString(file).pipe(
-      Effect.mapError((cause) => new ReadError({ message: "cannot read " + file + ": " + String(cause) })),
-    );
+    const text = yield* readReplayFile(fs, file);
     const parsed: unknown = yield* Effect.try({
       try: (): unknown => JSON.parse(text),
       catch: () => new ArgsError({ message: "cannot parse " + file }),

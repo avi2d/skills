@@ -30,14 +30,12 @@ import {
   type ReplayArgs,
   type ResultSummary,
 } from "./replay-haiku-compaction/report";
-import { rescoreReport } from "./replay-haiku-compaction/rescore";
+import { readReplayFile, rescoreReport } from "./replay-haiku-compaction/rescore";
 
 const NAME = "replay-haiku-compaction";
 function readSessionEntries(fs: FileSystem.FileSystem, file: string): Effect.Effect<SessionEntry[], ReadError> {
   return Effect.gen(function* () {
-    const text = yield* fs.readFileString(file).pipe(
-      Effect.mapError((cause) => new ReadError({ message: "cannot read " + file + ": " + String(cause) })),
-    );
+    const text = yield* readReplayFile(fs, file);
     const out: SessionEntry[] = [];
     for (const line of text.split("\n")) {
       const trimmed = line.trim();
