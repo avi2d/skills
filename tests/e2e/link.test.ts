@@ -1,4 +1,4 @@
-import { describe, expect, setDefaultTimeout, test } from "bun:test";
+import { beforeAll, describe, expect, setDefaultTimeout, test } from "bun:test";
 import { existsSync } from "node:fs";
 import { cp, lstat, mkdir, mkdtemp, readFile, readdir, readlink, rm, symlink, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
@@ -12,6 +12,7 @@ import { resolvedTargets, wouldDangle } from "../lib/dangling";
 import { clonePaths } from "./lib/clone";
 import { valueOf } from "../lib/effect";
 import { GENERATED_ROOT, HUB, LINKS } from "../lib/generated-root";
+import { installedScanner, lendScanner, SCANNER_INSTALL_MS } from "../lib/gitleaks";
 import { HERDR_OWNED, ccSettings, codexHooks, piSettings, piSettingsFile } from "../lib/harness-settings";
 import { fakePi } from "./lib/fake-pi";
 import { scratchGitEnv, trackedFiles } from "./lib/git";
@@ -174,16 +175,21 @@ test("a vendored library is ignored and in no index, so nothing but checks-vendo
   expect(tracked.filter((p) => p.startsWith("repos/")), "the pin lives in the prepare script, so nothing under repos/ is tracked").toEqual([]);
 });
 
-test("`bun run link` links a temporary $HOME from whichever copy runs it", async () => {
-  const home = await mkdtemp(join(tmpdir(), "skills-run-link-"));
-  try {
-    const run = await Bun.$`bun run link`.cwd(REPO).env({ ...process.env, HOME: home }).nothrow().quiet();
-    expect(run.exitCode, run.stderr.toString()).toBe(0);
-    const missing = Object.keys(LINKS).filter((rel) => !existsSync(join(home, rel)));
-    expect(missing, "the run left a link out of the temporary home").toEqual([]);
-  } finally {
-    await rm(home, { recursive: true, force: true });
-  }
+describe("the link command", () => {
+  beforeAll(installedScanner, { timeout: SCANNER_INSTALL_MS });
+
+  test("`bun run link` links a temporary $HOME from whichever copy runs it", async () => {
+    const home = await mkdtemp(join(tmpdir(), "skills-run-link-"));
+    try {
+      await lendScanner(home);
+      const run = await Bun.$`bun run link`.cwd(REPO).env({ ...process.env, HOME: home }).nothrow().quiet();
+      expect(run.exitCode, run.stderr.toString()).toBe(0);
+      const missing = Object.keys(LINKS).filter((rel) => !existsSync(join(home, rel)));
+      expect(missing, "the run left a link out of the temporary home").toEqual([]);
+    } finally {
+      await rm(home, { recursive: true, force: true });
+    }
+  });
 });
 
 test("the account's own home is read from the passwd record, which a temporary $HOME does not change", async () => {
