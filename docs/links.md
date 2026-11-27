@@ -41,7 +41,7 @@ When the file in this checkout differs from its last commit only in the keys the
 
 | In $HOME | Written from, in this checkout | Kept from the file already there |
 | --- | --- | --- |
-| `~/.pi/agent/settings.json` | `harness/pi/settings.json` | `deviceId`, `lastChangelogVersion`, `trackingId` |
+| `~/.pi/agent/settings.json` | `harness/pi/settings.json` | `deviceId`, `extensionChangelogVersions`, `lastChangelogVersion`, `trackingId` |
 
 ## The keys it adds to a Claude config directory
 
