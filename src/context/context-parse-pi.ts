@@ -1,9 +1,9 @@
 import { Effect, Schema } from "effect";
 import { addPart, charsOf, decode, textOf, type Reading } from "./context-records";
 
-const Header = Schema.Struct({ version: Schema.Number, cwd: Schema.String, timestamp: Schema.String });
+const Header = Schema.Struct({ version: Schema.Finite, cwd: Schema.String, timestamp: Schema.String });
 const Model = Schema.Struct({ provider: Schema.String, modelId: Schema.String });
-const Message = Schema.Struct({ message: Schema.Struct({ role: Schema.String, sections: Schema.optional(Schema.Record(Schema.String, Schema.String)), toolsAdded: Schema.optional(Schema.Array(Schema.Struct({ name: Schema.String, description: Schema.String }))), usage: Schema.optional(Schema.Struct({ input: Schema.Number, cacheRead: Schema.Number, cacheWrite: Schema.Number, output: Schema.Number })), content: Schema.optional(Schema.Unknown) }), timestamp: Schema.optional(Schema.String) });
+const Message = Schema.Struct({ message: Schema.Struct({ role: Schema.String, sections: Schema.optional(Schema.Record(Schema.String, Schema.String)), toolsAdded: Schema.optional(Schema.Array(Schema.Struct({ name: Schema.String, description: Schema.String }))), usage: Schema.optional(Schema.Struct({ input: Schema.Finite, cacheRead: Schema.Finite, cacheWrite: Schema.Finite, output: Schema.Finite })), content: Schema.optional(Schema.Unknown) }), timestamp: Schema.optional(Schema.String) });
 
 export const piRecord = Effect.fnUntraced(function* (type: string, value: unknown, reading: Reading, path: string, line: number) {
   if (type === "session") {

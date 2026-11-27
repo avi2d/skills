@@ -11,9 +11,9 @@ import { loadBodies, prose } from "../bodies/bodies";
 import { pullsOf, readLog, type Pull } from "../report/dispatch-report";
 
 const instant = (at: string): number => Date.parse(at);
-const Sessions = Schema.Array(Schema.Struct({ path: Schema.String, tool: Schema.Literals(["pi", "claude-code", "codex"]), version: Schema.String, model: Schema.String, repo: Schema.String, at: Schema.String, first_message: Schema.Number }));
-const Requests = Schema.Array(Schema.Struct({ path: Schema.String, at: Schema.String, input: Schema.Number, cache_read: Schema.Number, cache_write: Schema.Number, output: Schema.Number }));
-const Parts = Schema.Array(Schema.Struct({ path: Schema.String, name: Schema.String, kind: Schema.String, chars: Schema.Number }));
+const Sessions = Schema.Array(Schema.Struct({ path: Schema.String, tool: Schema.Literals(["pi", "claude-code", "codex"]), version: Schema.String, model: Schema.String, repo: Schema.String, at: Schema.String, first_message: Schema.Finite }));
+const Requests = Schema.Array(Schema.Struct({ path: Schema.String, at: Schema.String, input: Schema.Finite, cache_read: Schema.Finite, cache_write: Schema.Finite, output: Schema.Finite }));
+const Parts = Schema.Array(Schema.Struct({ path: Schema.String, name: Schema.String, kind: Schema.String, chars: Schema.Finite }));
 
 export type IndexedSession = Session & { readonly profile: string };
 type Profiles = readonly { readonly name: string; readonly models: readonly string[] }[];

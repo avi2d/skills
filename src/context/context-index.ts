@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS requests(path TEXT NOT NULL, ordinal INTEGER NOT NULL
 CREATE TABLE IF NOT EXISTS parts(path TEXT NOT NULL, name TEXT NOT NULL, kind TEXT NOT NULL, chars INTEGER NOT NULL, PRIMARY KEY(path, name));`;
 
 const quote = (value: string): string => `'${value.replaceAll("'", "''")}'`;
-const Stored = Schema.Struct({ path: Schema.String, file_size: Schema.Number, modified: Schema.String, reader: Schema.Number });
+const Stored = Schema.Struct({ path: Schema.String, file_size: Schema.Finite, modified: Schema.String, reader: Schema.Finite });
 const RETIRED_COLUMNS = { sessions: ["fingerprint", "profile", "tree"], parts: ["fingerprint"] };
 const Columns = Schema.Array(Schema.Struct({ name: Schema.String }));
 
@@ -37,7 +37,7 @@ export const sqlite = Effect.fnUntraced(function* (db: string, sql: string): Eff
 export const readRows = <A, E>(db: string, sql: string, schema: Schema.Codec<A, E>): Effect.Effect<A, FetchFailed, ChildProcessSpawner.ChildProcessSpawner> =>
   Effect.gen(function* () {
     const text = yield* sqlite(db, sql);
-    return yield* Schema.decodeUnknownEffect(Schema.fromJsonString(schema))(text || "[]").pipe(
+    return yield* Schema.decodeEffect(Schema.fromJsonString(schema))(text || "[]").pipe(
       Effect.mapError((error) => new FetchFailed({ message: `sqlite3 ${db}: ${error.message}` })),
     );
   });

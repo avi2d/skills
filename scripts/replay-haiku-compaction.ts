@@ -45,7 +45,7 @@ function readSessionEntries(fs: FileSystem.FileSystem, file: string): Effect.Eff
       const parsed = yield* Effect.try({
         try: (): unknown => JSON.parse(trimmed),
         catch: () => new ParseSkip({ file }),
-      }).pipe(Effect.catchTag("ParseSkip", () => Effect.succeed(undefined)));
+      }).pipe(Effect.catchTag("ParseSkip", () => Effect.void));
       if (isSessionEntry(parsed)) out.push(parsed);
     }
     return out;
