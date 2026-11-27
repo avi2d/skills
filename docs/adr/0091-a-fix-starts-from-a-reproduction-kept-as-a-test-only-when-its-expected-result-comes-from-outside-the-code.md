@@ -1,3 +1,6 @@
+---
+governs: [library/engineering/rules/prove-it-works/SKILL.md]
+---
 # 91. A fix starts from a reproduction, kept as a test only when its expected result comes from outside the code
 
 Date: 2026-10-09

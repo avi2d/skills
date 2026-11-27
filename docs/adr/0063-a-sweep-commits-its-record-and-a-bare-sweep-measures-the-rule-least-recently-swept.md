@@ -1,3 +1,6 @@
+---
+governs: [evals/sweeps/README.md, src/eval/eval-sweeps.ts]
+---
 # 63. A sweep commits its record, and a bare sweep measures the Rule least recently swept
 
 Date: 2026-09-25

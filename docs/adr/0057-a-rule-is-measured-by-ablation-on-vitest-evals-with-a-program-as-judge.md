@@ -1,3 +1,6 @@
+---
+governs: [evals/vitest.config.ts, src/eval/ablation.ts]
+---
 # 57. A Rule is measured by ablation, on vitest-evals, with a program as judge
 
 Date: 2026-09-24

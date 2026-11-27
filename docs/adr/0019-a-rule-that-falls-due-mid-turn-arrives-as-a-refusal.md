@@ -1,3 +1,6 @@
+---
+governs: [src/dispatcher/claude-dispatcher.ts]
+---
 # 19. A Rule that falls due mid-turn arrives as a refusal
 
 Date: 2026-09-14

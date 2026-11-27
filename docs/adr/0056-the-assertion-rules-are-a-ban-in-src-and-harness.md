@@ -1,3 +1,6 @@
+---
+governs: [oxlint.config.ts, tests/e2e/assertion-baseline.test.ts]
+---
 # 56. The assertion rules are a ban in src/ and harness/
 
 Date: 2026-09-24

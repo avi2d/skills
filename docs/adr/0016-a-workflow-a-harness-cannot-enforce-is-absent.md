@@ -1,3 +1,6 @@
+---
+governs: []
+---
 # 16. A Workflow a harness cannot enforce is absent, not weakened
 
 Date: 2026-09-14

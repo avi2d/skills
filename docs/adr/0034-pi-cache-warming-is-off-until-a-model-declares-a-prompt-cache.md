@@ -1,3 +1,6 @@
+---
+governs: [harness/pi/settings.json]
+---
 # 34. pi cache warming is off until a model declares a prompt cache
 
 Date: 2026-09-20

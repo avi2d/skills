@@ -1,3 +1,6 @@
+---
+governs: []
+---
 # 27. The library is fetched at a pin, and the pin is what is committed
 
 Date: 2026-09-15

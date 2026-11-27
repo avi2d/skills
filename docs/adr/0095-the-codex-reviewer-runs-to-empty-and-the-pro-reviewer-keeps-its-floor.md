@@ -1,3 +1,6 @@
+---
+governs: []
+---
 # 95. The Codex reviewer runs to empty, and the Pro reviewer keeps its floor
 
 Date: 2026-10-10

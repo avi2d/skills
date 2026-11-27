@@ -1,3 +1,6 @@
+---
+governs: [selection.toml]
+---
 # 99. Writing for people is switched on for Muse Spark alone
 
 Date: 2026-10-12

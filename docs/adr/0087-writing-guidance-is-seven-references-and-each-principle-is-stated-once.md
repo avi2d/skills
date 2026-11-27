@@ -1,3 +1,6 @@
+---
+governs: [library/writing/references/technical-writing/SKILL.md, library/writing/references/plain-sentences/SKILL.md, library/writing/references/plain-words/SKILL.md, library/writing/references/punctuation/SKILL.md, library/writing/references/russian-prose/SKILL.md, library/writing/references/unslop/SKILL.md, library/writing/references/writing-for-agents/SKILL.md]
+---
 # 87. Writing guidance is seven References, and each principle is stated once
 
 Date: 2026-10-07

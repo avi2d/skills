@@ -1,3 +1,6 @@
+---
+governs: [src/bodies/bodies.ts, selection.toml]
+---
 # 66. The Workflow Kind goes, and its machinery with it
 
 Date: 2026-09-25

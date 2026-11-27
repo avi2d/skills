@@ -1,3 +1,6 @@
+---
+governs: [harness/pi/settings.json]
+---
 # 45. A rate-limited request is retried inside the request
 
 Date: 2026-09-23

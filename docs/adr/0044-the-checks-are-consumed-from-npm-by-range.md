@@ -1,3 +1,6 @@
+---
+governs: [package.json]
+---
 # 44. The checks are consumed from npm, by range
 
 Date: 2026-09-23

@@ -1,3 +1,6 @@
+---
+governs: []
+---
 # 80. Effect codemode is piloted on pi's own sandbox, behind one settings entry
 
 Date: 2026-10-03

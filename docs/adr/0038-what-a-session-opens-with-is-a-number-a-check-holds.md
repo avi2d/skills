@@ -1,3 +1,6 @@
+---
+governs: [tests/lib/budget.ts, tests/unit/budget.test.ts]
+---
 # 38. What a session opens with is a number a check holds
 
 Date: 2026-09-22

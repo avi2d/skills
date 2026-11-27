@@ -1,3 +1,6 @@
+---
+governs: [src/dispatcher/job-queue.ts]
+---
 # 94. An eval run queues at a concurrency of 3, and model inference that exits on its own queues in gpu
 
 Date: 2026-10-10

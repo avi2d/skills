@@ -1,3 +1,6 @@
+---
+governs: [src/bodies/selection.ts, selection.toml]
+---
 # 88. A Profile declares only what differs from the default
 
 Date: 2026-10-07

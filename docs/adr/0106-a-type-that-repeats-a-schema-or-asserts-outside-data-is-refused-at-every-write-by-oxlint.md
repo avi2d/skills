@@ -1,3 +1,6 @@
+---
+governs: [src/dispatcher/types.ts, library/engineering/rules/typescript-best-practices/SKILL.md]
+---
 # 106. A type that repeats a schema or asserts outside data is refused at every write, by oxlint
 
 Date: 2026-11-07

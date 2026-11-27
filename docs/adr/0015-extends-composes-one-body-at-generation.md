@@ -1,3 +1,6 @@
+---
+governs: []
+---
 # 15. `extends` composes one Body at generation
 
 Date: 2026-09-14

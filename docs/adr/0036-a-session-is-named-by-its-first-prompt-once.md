@@ -1,3 +1,6 @@
+---
+governs: [harness/pi/extensions/session-name.ts]
+---
 # 36. A session is named by its first prompt, once
 
 Date: 2026-09-15

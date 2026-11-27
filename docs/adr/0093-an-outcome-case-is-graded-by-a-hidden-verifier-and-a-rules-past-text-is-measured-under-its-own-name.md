@@ -1,3 +1,6 @@
+---
+governs: [src/eval/eval-sandbox.ts, evals/cases/fixture.ts]
+---
 # 93. An outcome case is graded by a hidden verifier, and a Rule's past text is measured under its own name
 
 Date: 2026-10-10

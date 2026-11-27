@@ -1,3 +1,6 @@
+---
+governs: [selection.toml, src/bodies/selection.ts]
+---
 # 85. Skills and References are declared once, in the default Profile
 
 Date: 2026-10-07

@@ -1,3 +1,6 @@
+---
+governs: [library/utility/rules/git-hygiene/SKILL.md, library/utility/rules/git-hygiene-stash/SKILL.md, library/utility/rules/git-hygiene-co-author/SKILL.md]
+---
 # 26. The global instruction file empties into three Rules
 
 Date: 2026-09-15

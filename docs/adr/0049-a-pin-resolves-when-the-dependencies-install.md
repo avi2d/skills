@@ -1,3 +1,6 @@
+---
+governs: [package.json]
+---
 # 49. A pin resolves when the dependencies install
 
 Date: 2026-09-24

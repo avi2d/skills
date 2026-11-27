@@ -1,3 +1,6 @@
+---
+governs: [src/generate/hub.ts]
+---
 # 29. A Hub is links into the tree, and is reconciled rather than rewritten
 
 Date: 2026-09-15

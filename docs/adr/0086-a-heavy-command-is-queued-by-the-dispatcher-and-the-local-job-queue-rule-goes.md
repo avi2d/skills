@@ -1,3 +1,6 @@
+---
+governs: [src/dispatcher/job-queue.ts]
+---
 # 86. A heavy command is queued by the Dispatcher, and the local-job-queue Rule goes
 
 Date: 2026-10-07

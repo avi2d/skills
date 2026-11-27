@@ -1,3 +1,6 @@
+---
+governs: [selection.toml, src/bodies/selection.ts]
+---
 # 72. A Profile scopes named Rules by model without changing tools
 
 Date: 2026-09-26

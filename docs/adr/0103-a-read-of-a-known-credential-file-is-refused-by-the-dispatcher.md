@@ -1,3 +1,6 @@
+---
+governs: [src/dispatcher/credential-reads.ts]
+---
 # 103. A read of a known credential file is refused by the Dispatcher
 
 Date: 2026-11-07

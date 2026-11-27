@@ -1,3 +1,6 @@
+---
+governs: [src/bodies/bodies.ts]
+---
 # 30. Inheritance goes, and a Skill is the words it holds
 
 Date: 2026-09-15

@@ -1,3 +1,6 @@
+---
+governs: [oxlint.config.ts, knip.config.ts, dependency-cruiser.config.ts]
+---
 # 92. The lint configs are the kit's builders, and Effect holds every source file outside the tests
 
 Date: 2026-10-09

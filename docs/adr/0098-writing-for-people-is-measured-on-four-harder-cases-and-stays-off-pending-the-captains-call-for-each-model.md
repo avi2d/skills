@@ -1,3 +1,6 @@
+---
+governs: [tests/fixtures/writing, library/writing/rules/writing-for-people/SKILL.md]
+---
 # 98. Writing for people is measured on four harder cases, and stays off pending the captain's call for each model
 
 Date: 2026-10-12

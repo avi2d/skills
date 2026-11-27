@@ -1,3 +1,6 @@
+---
+governs: [src/generate/hub.ts, selection.toml]
+---
 # 39. The Hub holds what a harness reaches by name, and there is one of it
 
 Date: 2026-09-22
