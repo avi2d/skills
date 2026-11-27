@@ -3,6 +3,9 @@ import { join, resolve } from "node:path";
 import { installScanner } from "../../src/generate/secret-scanner";
 import { valueOf } from "./effect";
 
+// A cold install downloads under the kit's retries, which back off for a minute between six tries and outlast bun's 5s hook default.
+export const SCANNER_INSTALL_MS = 180_000;
+
 let installing: Promise<string> | undefined;
 
 export const installedScanner = (): Promise<string> => (installing ??= valueOf(installScanner));

@@ -4,10 +4,10 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import type { Index } from "../../src/dispatcher/dispatch";
 import { githubToken, wireguardKey, wireguardKeyFile } from "../lib/credentials";
-import { installedScanner } from "../lib/gitleaks";
+import { installedScanner, SCANNER_INSTALL_MS } from "../lib/gitleaks";
 import { closeSessions, load } from "../lib/pi";
 
-beforeAll(installedScanner);
+beforeAll(installedScanner, { timeout: SCANNER_INSTALL_MS });
 afterAll(closeSessions);
 
 // Each scan spawns gitleaks, which a loaded machine slows past bun's 5s default.
