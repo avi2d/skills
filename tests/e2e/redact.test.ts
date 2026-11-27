@@ -6,7 +6,7 @@ import { CLAUDE_BUNDLE } from "../../src/generate/bundle";
 import { scrub, stringsIn, withStrings } from "../../src/dispatcher/redact";
 import { githubToken, npmToken, wireguardKey, wireguardKeyFile } from "../lib/credentials";
 import { GENERATED_ROOT } from "../lib/generated-root";
-import { installedScanner } from "../lib/gitleaks";
+import { installedScanner, SCANNER_INSTALL_MS } from "../lib/gitleaks";
 
 const repo = new URL("../../", import.meta.url).pathname;
 const BUNDLE = join(repo, GENERATED_ROOT, CLAUDE_BUNDLE.dir);
@@ -17,7 +17,7 @@ const temporary = (): string => {
   roots.push(root);
   return root;
 };
-beforeAll(installedScanner);
+beforeAll(installedScanner, { timeout: SCANNER_INSTALL_MS });
 afterAll(() => {
   for (const root of roots) rmSync(root, { recursive: true, force: true });
 });

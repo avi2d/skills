@@ -1,11 +1,12 @@
-import { afterAll, describe, expect, setDefaultTimeout, test } from "bun:test";
+import { afterAll, beforeAll, describe, expect, setDefaultTimeout, test } from "bun:test";
 import { REDACT } from "../../src/dispatcher/claude-dispatcher";
 import { CLAUDE_BUNDLE } from "../../src/generate/bundle";
 import { githubToken, wireguardKey, wireguardKeyFile } from "../lib/credentials";
-import { lendScanner } from "../lib/gitleaks";
+import { installedScanner, lendScanner, SCANNER_INSTALL_MS } from "../lib/gitleaks";
 import { CAPPED_TREE_MS, HOOK_TEST_MS, rigFor, type Driven } from "./lib/hook-dispatcher";
 
 const RIG = rigFor(CLAUDE_BUNDLE, "claude-code", "skills-cc-redact-");
+beforeAll(installedScanner, { timeout: SCANNER_INSTALL_MS });
 afterAll(RIG.remove, { timeout: CAPPED_TREE_MS });
 setDefaultTimeout(HOOK_TEST_MS);
 
