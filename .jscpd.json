@@ -1,5 +1,5 @@
 {
-  "path": ["src", "harness", "evals"],
+  "path": ["src", "harness", "evals", "scripts"],
   "format": ["typescript"],
   "ignore": ["**/*.d.ts"]
 }
