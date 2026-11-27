@@ -84,7 +84,8 @@
           "catchAllToMapError": "error",
           "missingReturnYieldStar": "error",
           "floatingEffect": "error",
-          "outdatedApi": "error"
+          "outdatedApi": "error",
+          "schemaNumber": "error"
         }
       }
     ]

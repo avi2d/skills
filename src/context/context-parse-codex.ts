@@ -5,7 +5,7 @@ import { addPart, carriedOr, charsOf, decode, type Reading } from "./context-rec
 const Record = Schema.Struct({ timestamp: Schema.String, payload: Schema.Unknown });
 const Meta = Schema.Struct({ cwd: Schema.String, cli_version: Schema.String, model_provider: Schema.String, base_instructions: Schema.optional(Schema.Struct({ text: Schema.String })) });
 const Turn = Schema.Struct({ model: Schema.String });
-const Tokens = Schema.Struct({ input_tokens: Schema.Number, cached_input_tokens: Schema.Number, cache_write_input_tokens: Schema.optional(Schema.Number), output_tokens: Schema.Number });
+const Tokens = Schema.Struct({ input_tokens: Schema.Finite, cached_input_tokens: Schema.Finite, cache_write_input_tokens: Schema.optional(Schema.Finite), output_tokens: Schema.Finite });
 const Typed = Schema.Struct({ type: Schema.String });
 const Event = Schema.Struct({ info: Schema.optional(Schema.Struct({ total_token_usage: Tokens, last_token_usage: Schema.optional(Tokens) })) });
 const Item = Schema.Struct({ role: Schema.optional(Schema.String), content: Schema.optional(Schema.Array(Schema.Struct({ type: Schema.String, text: Schema.optional(Schema.String) }))), internal_chat_message_metadata_passthrough: Schema.optional(Schema.Struct({ content_item_kinds: Schema.optional(Schema.Array(Schema.String)) })) });
