@@ -7,12 +7,12 @@ Date: 2026-10-05
 
 ## Status
 
-Accepted. Retires 0080.
+Accepted.
 Amended by 0090: `codemode.mode` is `only` in the settings pi's agent directory takes from here.
 
 ## Context
 
-0080 piloted `effect_codemode` for two weeks or the first 20 or so aggregation tasks, with first-try correctness, fewer input tokens and no silent wrong answer as its success terms.
+A pilot ran `effect_codemode` for two weeks or the first 20 or so aggregation tasks, with first-try correctness, fewer input tokens and no silent wrong answer as its success terms.
 Across 164 Pi sessions on both machines since it landed, the tool was called once, so the pilot produced no evidence for its terms either way.
 
 ## Decision

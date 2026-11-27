@@ -8,7 +8,6 @@ Date: 2026-09-25
 ## Status
 
 Accepted.
-Supersedes 0005, 0006, 0011, 0014, 0016 and 0017, whose decisions are about the machinery this record deletes.
 Supersedes the part of 0041 that kept the Workflow Kind in the tree with no member.
 Amends 0007, 0019, 0022, 0048 and 0060, each of which records a part of that machinery beside a decision that stands.
 Amends 0013: `subagentura.ts` leaves `PI_BUNDLE` with the module, and `harness.ts` leaves it too, because its only runtime export there was `PROVIDES`.
@@ -70,11 +69,9 @@ The dispatch index check that the pi Dispatcher and `src/hook-harness.ts` each h
 The pi Dispatcher's handlers leave its entry function, which was 197 lines against the budget of 100 for a function.
 `src/dispatch.ts` ends at 389 lines, and the pi, Claude Code and Codex Dispatchers at 303, 325 and 282.
 
-The records this one supersedes keep their text.
-Bringing a Workflow back starts from them and from git history, and it means accepting them again rather than finding the code still in place.
+Bringing a Workflow back starts from git history, and it means accepting the records of its machinery again rather than finding the code still in place.
 0041 declined that cost, and this record accepts it.
 
-0010 is already retired by 0041.
 `docs/probes/0001-review-fan-out-against-planted-findings.md` records a probe that ran, so it is left as it is.
 
 acorn leaves the dev dependencies, because the tests of the fan-out script were its only user.

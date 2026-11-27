@@ -23,7 +23,7 @@ work to pi-subagentura.
 
 ## Context
 
-0006 ends on a path it could not measure: "This machine has neither `tmux` nor
+The fan-out's measurement ends on a path it could not measure: "This machine has neither `tmux` nor
 `zellij`, so pi-subagentura's process isolation falls back to in-process and
 every branch above ran in this session's process." That is not a gap in the
 measurement, it is the machine. Every terminal here is herdr, `TMUX` and

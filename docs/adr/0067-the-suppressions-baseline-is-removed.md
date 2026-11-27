@@ -7,8 +7,7 @@ Date: 2026-09-26
 
 ## Status
 
-Accepted. Supersedes the baseline mechanism in 0050, and the baseline part of
-0055 and 0056.
+Accepted. Supersedes the baseline part of 0055.
 
 ## Context
 

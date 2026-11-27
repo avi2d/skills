@@ -8,10 +8,9 @@ Date: 2026-09-22
 ## Status
 
 Accepted. Removes 39 of the tree's 52 Bodies, including every Skill and both
-Workflows, which leaves two Kinds with no members and the machinery 0005, 0014,
-0016 and 0017 describe exercised by fixtures rather than by a Body. Retires the
-implementation and the suite 0010 names, so that record stands with nothing
-behind it. 0033's conclusion about `typescript-best-practices` becomes
+Workflows, which leaves two Kinds with no members and the Workflow machinery
+exercised by fixtures rather than by a Body. Retires the workflow run report's
+implementation and its suite. 0033's conclusion about `typescript-best-practices` becomes
 reachable, because the Rule is back on.
 Amends 0023 and 0025 by deleting the `no-comments` Skill and the
 `comment-sicko` definition they record.
@@ -22,8 +21,7 @@ is gone and a step can name a Skill as well as `effect-patterns`.
 `skills/.gitkeep` is back and `effect-patterns` is once more the one Body a
 step can name.
 0066 deletes the Workflow Kind the Consequences below kept with no member,
-and with it the machinery 0005, 0014, 0016 and 0017
-describe, and the `records` field, so no step names anything any more.
+and with it the Workflow machinery and the `records` field, so no step names anything any more.
 
 ## Context
 
@@ -109,11 +107,9 @@ Skill-only field, and a Hub entry under `skills/` needs a Skill to point at, so
 those tests declare one too. A step can name only `effect-patterns` now, since a
 step takes a Skill or a Reference and the tree has one Reference and no Skills.
 
-0010 decided how a workflow run is reported and put the reader in
+A workflow run was reported through
 `skills/report-workflow-run/scripts/report.ts`, with the suite pinning both
-sides. This change deletes that Body, its script and `tests/report.test.ts`, so
-0010 is left describing a shape nothing produces and nothing checks. It is
-retired by this record rather than silently emptied.
+sides. This change deletes that Body, its script and `tests/report.test.ts`.
 
 0023 and 0025 open by recording the `no-comments` Skill, and 0023 the
 `comment-sicko` sub-agent definition it ships. Both are deleted here. Neither

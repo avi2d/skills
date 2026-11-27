@@ -14,7 +14,7 @@ skips it. The ordering rule it sets, write before linking, is unchanged and
 applies to the Hubs as well. 0035 decides the other way on one consequence
 below: `bun test` now generates the tree itself before the first test, so a
 fresh clone no longer needs `bun run generate` first. Amends 0004, which made
-the working tree the installed version, and narrows one consequence of 0014.
+the working tree the installed version.
 
 ## Context
 
@@ -81,9 +81,8 @@ the suite, because the clone it runs on is now a clone without a Hub.
 - **`bun test` on a fresh clone needs `bun run generate` first.** `README.md`
   says so and the workflow does it. Skipping it goes red on a test whose
   message names the command.
-- **A change to what a harness sees is no longer a diff.** 0014's consequence
-  that a change to a fan-out is reviewable under `generated/` now means
-  reviewable by generating the branch. What a review reads is the Body and the
+- **A change to what a harness sees is no longer a diff.** A change to a
+  fan-out is reviewable by generating the branch, not under `generated/`. What a review reads is the Body and the
   generator, which is where the decision was in either case.
 - **The byte-for-byte comparison changed what it proves.** It was "this commit
   carries a stale copy", a failure that no longer exists, and it is now "a
