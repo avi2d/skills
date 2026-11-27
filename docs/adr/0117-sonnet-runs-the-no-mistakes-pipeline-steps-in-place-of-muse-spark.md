@@ -21,7 +21,7 @@ The claude-bridge provider takes its Claude account from the `CLAUDE_CONFIG_DIR`
 
 `agent_config.pi` runs `claude-bridge/claude-sonnet-5-5` at high.
 The entry carries no environment, so the steps it covers run on the daemon's Claude account.
-The agent scoped `claude-sonnet-5-5` to only `claude-bridge/claude-sonnet-5-5` with no added Rule, so the Selection covers the pipeline default.
+The person chose to scope `claude-sonnet-5-5` to only `claude-bridge/claude-sonnet-5-5` with no added Rule, so the Selection covers the pipeline default.
 
 ## Consequences
 
