@@ -1,3 +1,6 @@
+---
+governs: [src/dispatcher/claude-dispatcher.ts, harness/claude-code/settings.json]
+---
 # 54. Claude Code carries a prompt's Rules in parts, one per prompt hook
 
 Date: 2026-09-24

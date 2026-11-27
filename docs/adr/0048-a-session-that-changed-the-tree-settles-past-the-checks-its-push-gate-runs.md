@@ -1,3 +1,6 @@
+---
+governs: [src/dispatcher/gate.ts, src/dispatcher/gate-config.ts]
+---
 # 48. A session that changed the tree settles past the checks its push gate runs
 
 Date: 2026-09-24

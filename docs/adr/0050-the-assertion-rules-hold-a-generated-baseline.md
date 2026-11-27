@@ -1,3 +1,6 @@
+---
+governs: [oxlint.config.ts, tests/e2e/assertion-baseline.test.ts]
+---
 # 50. The assertion rules hold a generated baseline
 
 Date: 2026-09-24

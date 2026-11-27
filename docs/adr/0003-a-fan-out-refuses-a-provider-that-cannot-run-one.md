@@ -1,3 +1,6 @@
+---
+governs: []
+---
 # 3. A fan-out refuses a provider that cannot run one
 
 Date: 2026-08-28

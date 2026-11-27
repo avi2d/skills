@@ -1,3 +1,6 @@
+---
+governs: [src/dispatcher/gate.ts]
+---
 # 76. The verdict gate hands each check the files the settle changed
 
 Date: 2026-09-28

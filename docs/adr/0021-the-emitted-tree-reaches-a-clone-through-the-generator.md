@@ -1,3 +1,6 @@
+---
+governs: [src/generate/generate.ts]
+---
 # 21. The emitted tree reaches a clone through the generator
 
 Date: 2026-09-14

@@ -1,3 +1,6 @@
+---
+governs: [library/writing/references/technical-writing/SKILL.md]
+---
 # 61. Guidance for people docs is a Reference that a Rule on their paths names
 
 Date: 2026-09-25

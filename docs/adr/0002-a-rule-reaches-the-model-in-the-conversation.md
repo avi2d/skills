@@ -1,3 +1,6 @@
+---
+governs: [src/dispatcher/pi-dispatcher.ts]
+---
 # 2. A Rule reaches the model in the conversation
 
 Date: 2026-08-27

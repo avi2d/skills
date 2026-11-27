@@ -1,3 +1,6 @@
+---
+governs: [src/eval/eval-judges.ts]
+---
 # 68. A reproduction is a command whose output shows the defect
 
 Date: 2026-09-25

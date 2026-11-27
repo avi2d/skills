@@ -1,3 +1,6 @@
+---
+governs: [src/dispatcher/forbid.ts, library/engineering/rules/comment-discipline/SKILL.md]
+---
 # 51. A banned comment is refused at every write, by the kit's own matchers
 
 Date: 2026-09-24

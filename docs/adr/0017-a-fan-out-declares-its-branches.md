@@ -1,3 +1,6 @@
+---
+governs: []
+---
 # 17. A fan-out declares its branches
 
 Date: 2026-09-14

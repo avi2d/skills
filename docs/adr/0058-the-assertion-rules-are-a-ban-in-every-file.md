@@ -1,3 +1,6 @@
+---
+governs: [oxlint.config.ts, tests/e2e/assertion-baseline.test.ts]
+---
 # 58. The assertion rules are a ban in every file
 
 Date: 2026-09-24

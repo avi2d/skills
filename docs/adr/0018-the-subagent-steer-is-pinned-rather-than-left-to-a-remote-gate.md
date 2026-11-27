@@ -1,3 +1,6 @@
+---
+governs: [harness/claude-code/settings.json]
+---
 # 18. The subagent steer is pinned, rather than left to a remote gate
 
 Date: 2026-09-14

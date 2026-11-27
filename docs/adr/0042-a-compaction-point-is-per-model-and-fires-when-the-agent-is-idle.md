@@ -1,3 +1,6 @@
+---
+governs: []
+---
 # 42. A compaction point is per model, and fires when the agent is idle
 
 Date: 2026-09-22

@@ -1,3 +1,6 @@
+---
+governs: [stryker.conf.mjs]
+---
 # 105. The mutation config is the kit's preset and the unit test files
 
 Date: 2026-11-07

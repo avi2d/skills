@@ -1,3 +1,6 @@
+---
+governs: [src/dispatcher/comments.ts]
+---
 # 25. The comment rule keeps only what needs judgment, and one source holds it
 
 Date: 2026-09-15

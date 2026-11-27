@@ -1,3 +1,6 @@
+---
+governs: [harness/pi/extensions/session-name.ts]
+---
 # 81. A Firstmate session is named by its role rather than its first prompt
 
 Date: 2026-10-04

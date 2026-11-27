@@ -1,3 +1,6 @@
+---
+governs: [src/dispatcher/gate.ts]
+---
 # 77. The verdict gate diffs against the settle baseline commit
 
 Date: 2026-09-28

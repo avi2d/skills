@@ -1,3 +1,6 @@
+---
+governs: [src/generate/link.ts]
+---
 # 4. The repo installs itself, and the Contract stays hand-written
 
 Date: 2026-08-28

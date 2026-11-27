@@ -1,3 +1,6 @@
+---
+governs: [library/utility/rules/agents-md-router/SKILL.md, selection.toml]
+---
 # 78. An agent file is a router, and one Rule says so in every project
 
 Date: 2026-09-28

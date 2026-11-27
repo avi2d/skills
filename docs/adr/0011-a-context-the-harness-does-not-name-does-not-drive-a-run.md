@@ -1,3 +1,6 @@
+---
+governs: []
+---
 # 11. A Context the harness does not name does not drive a run
 
 Date: 2026-09-14

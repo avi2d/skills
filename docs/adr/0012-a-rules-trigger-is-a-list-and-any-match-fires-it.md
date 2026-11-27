@@ -1,3 +1,6 @@
+---
+governs: [src/dispatcher/dispatch-types.ts, src/dispatcher/dispatch.ts]
+---
 # 12. A Rule's trigger is a list, and any match fires it
 
 Date: 2026-09-14

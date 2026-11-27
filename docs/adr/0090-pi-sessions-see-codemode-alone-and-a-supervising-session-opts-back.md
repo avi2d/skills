@@ -1,3 +1,6 @@
+---
+governs: [harness/pi/settings.json]
+---
 # 90. Pi sessions see codemode alone, and a supervising session opts back
 
 Date: 2026-10-08

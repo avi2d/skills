@@ -1,3 +1,6 @@
+---
+governs: [library/engineering/rules/force-determinism/SKILL.md]
+---
 # 24. A constraint a program can decide is written as a program
 
 Date: 2026-09-15

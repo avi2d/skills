@@ -1,3 +1,6 @@
+---
+governs: []
+---
 # 5. A step hands a Fact to the branches that cannot see it
 
 Date: 2026-08-28

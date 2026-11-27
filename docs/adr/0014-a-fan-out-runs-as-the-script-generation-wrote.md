@@ -1,3 +1,6 @@
+---
+governs: []
+---
 # 14. A fan-out runs as the script generation wrote
 
 Date: 2026-09-14

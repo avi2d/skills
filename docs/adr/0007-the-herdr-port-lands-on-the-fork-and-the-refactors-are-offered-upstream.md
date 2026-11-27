@@ -1,3 +1,6 @@
+---
+governs: [harness/pi/settings.json]
+---
 # 7. The herdr port lands on the fork, and the refactors are offered upstream
 
 Date: 2026-08-28

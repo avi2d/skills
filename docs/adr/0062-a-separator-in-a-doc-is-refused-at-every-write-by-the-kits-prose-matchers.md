@@ -1,3 +1,6 @@
+---
+governs: [src/dispatcher/prose.ts, library/writing/rules/writing-for-people/SKILL.md]
+---
 # 62. A separator in a doc is refused at every write, by the kit's prose matchers
 
 Date: 2026-09-25
