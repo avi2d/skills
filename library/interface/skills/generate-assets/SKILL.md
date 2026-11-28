@@ -16,10 +16,24 @@ This skill only turns a brief into checked files.
 Image generation spends the OpenAI weekly allowance of the ChatGPT plan that Codex signs in with.
 The stop threshold is **20** percent of the week remaining.
 
+1. Set `SUBQUO_CODEX_ID` on winwsl to the explicitly configured subquo enrollment ID for the Codex account that will generate the image.
 1. Read the remaining week on winwsl:
 
    ```sh
-   quota-axi --provider codex --json | jq -e '.providers[] | select(.provider == "codex" and .state.stale == false) | .windows[] | select(.kind == "weekly") | .percentRemaining'
+   [ -n "${SUBQUO_CODEX_ID:-}" ] && snapshot=$(subquo read --json) &&
+   printf '%s\n' "$snapshot" | jq -e --arg id "$SUBQUO_CODEX_ID" '
+     def timestamp: try (capture("^(?<base>[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2})(\\.(?<fraction>[0-9]+))?Z$") | (.base + "Z" | fromdateiso8601) + ("0." + (.fraction // "0") | tonumber)) catch null;
+     now as $now |
+     [.accounts[]? | select(.id == $id and .provider == "codex")] as $accounts |
+     select(.version == "subquo.v1" and ($accounts | length) == 1) |
+     $accounts[0].observation as $observation |
+     ($observation.observedAt | timestamp) as $observed |
+     ($observation.validUntil | timestamp) as $until |
+     select($observation.status == "fresh" and $observed != null and $until != null and $observed <= $now and $now < $until) |
+     [$observation.windows[]? | select(.id == "weekly" and .scope == "all")] as $windows |
+     select(($windows | length) == 1 and ($windows[0].percentLeft | type) == "number" and $windows[0].percentLeft >= 0 and $windows[0].percentLeft <= 100) |
+     $windows[0].percentLeft
+   '
    ```
 
 1. Go on when it prints a number at or above the threshold.
