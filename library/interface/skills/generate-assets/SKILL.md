@@ -16,16 +16,21 @@ This skill only turns a brief into checked files.
 Image generation spends the OpenAI weekly allowance of the ChatGPT plan that Codex signs in with.
 The stop threshold is **20** percent of the week remaining.
 
-1. Set `SUBQUO_CODEX_ID` on winwsl to the explicitly configured subquo enrollment ID for the Codex account that will generate the image.
+1. If `SUBQUO_CODEX_ID` is set on winwsl, use that subquo enrollment ID for the Codex account generating the image.
+   Otherwise, use the sole account with provider `codex` in `subquo read --json`.
+   If there are zero or multiple Codex accounts, stop and ask the person to set `SUBQUO_CODEX_ID`.
 1. Read the remaining week on winwsl:
 
    ```sh
-   [ -n "${SUBQUO_CODEX_ID:-}" ] && snapshot=$(subquo read --json) &&
-   printf '%s\n' "$snapshot" | jq -e --arg id "$SUBQUO_CODEX_ID" '
+   snapshot=$(subquo read --json) &&
+   printf '%s\n' "$snapshot" | jq -e --arg id "${SUBQUO_CODEX_ID:-}" '
      def timestamp: try (capture("^(?<base>[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2})(\\.(?<fraction>[0-9]+))?Z$") | (.base + "Z" | fromdateiso8601) + ("0." + (.fraction // "0") | tonumber)) catch null;
      now as $now |
-     [.accounts[]? | select(.id == $id and .provider == "codex")] as $accounts |
-     select(.version == "subquo.v1" and ($accounts | length) == 1) |
+     select(.version == "subquo.v1") |
+     [.accounts[]? | select(.provider == "codex" and ($id == "" or .id == $id))] as $accounts |
+     if ($accounts | length) != 1 then
+       error("Set SUBQUO_CODEX_ID to one Codex enrollment ID; without it, exactly one Codex account must be enrolled")
+     else . end |
      $accounts[0].observation as $observation |
      ($observation.observedAt | timestamp) as $observed |
      ($observation.validUntil | timestamp) as $until |
