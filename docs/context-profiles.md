@@ -28,7 +28,7 @@ Tool definitions are absent from this repository and have no character size in t
 | rule: `assume-low-context` | 546 | 4.6% |
 | skill: `build-and-review-motion` | 5794 |  |
 | skill: `develop-a-website` | 8628 |  |
-| skill: `generate-assets` | 5556 |  |
+| skill: `generate-assets` | 6898 |  |
 | skill: `grilling` | 3528 |  |
 | skill: `refine-design` | 5708 |  |
 | skill: `stress-test-content` | 6585 |  |
@@ -72,7 +72,7 @@ Tool definitions are absent from this repository and have no character size in t
 | rule: `writing-for-people` | 861 | 6.5% |
 | skill: `build-and-review-motion` | 5794 |  |
 | skill: `develop-a-website` | 8628 |  |
-| skill: `generate-assets` | 5556 |  |
+| skill: `generate-assets` | 6898 |  |
 | skill: `grilling` | 3528 |  |
 | skill: `refine-design` | 5708 |  |
 | skill: `stress-test-content` | 6585 |  |
@@ -117,7 +117,7 @@ Tool definitions are absent from this repository and have no character size in t
 | rule: `assume-low-context` | 546 | 4.1% |
 | skill: `build-and-review-motion` | 5794 |  |
 | skill: `develop-a-website` | 8628 |  |
-| skill: `generate-assets` | 5556 |  |
+| skill: `generate-assets` | 6898 |  |
 | skill: `grilling` | 3528 |  |
 | skill: `refine-design` | 5708 |  |
 | skill: `stress-test-content` | 6585 |  |
@@ -160,7 +160,7 @@ Tool definitions are absent from this repository and have no character size in t
 | rule: `assume-low-context` | 546 | 4.6% |
 | skill: `build-and-review-motion` | 5794 |  |
 | skill: `develop-a-website` | 8628 |  |
-| skill: `generate-assets` | 5556 |  |
+| skill: `generate-assets` | 6898 |  |
 | skill: `grilling` | 3528 |  |
 | skill: `refine-design` | 5708 |  |
 | skill: `stress-test-content` | 6585 |  |
@@ -202,7 +202,7 @@ Tool definitions are absent from this repository and have no character size in t
 | rule: `assume-low-context` | 546 | 4.6% |
 | skill: `build-and-review-motion` | 5794 |  |
 | skill: `develop-a-website` | 8628 |  |
-| skill: `generate-assets` | 5556 |  |
+| skill: `generate-assets` | 6898 |  |
 | skill: `grilling` | 3528 |  |
 | skill: `refine-design` | 5708 |  |
 | skill: `stress-test-content` | 6585 |  |
@@ -246,7 +246,7 @@ Tool definitions are absent from this repository and have no character size in t
 | rule: `assume-low-context` | 546 | 4.3% |
 | skill: `build-and-review-motion` | 5794 |  |
 | skill: `develop-a-website` | 8628 |  |
-| skill: `generate-assets` | 5556 |  |
+| skill: `generate-assets` | 6898 |  |
 | skill: `grilling` | 3528 |  |
 | skill: `refine-design` | 5708 |  |
 | skill: `stress-test-content` | 6585 |  |
@@ -289,7 +289,7 @@ Tool definitions are absent from this repository and have no character size in t
 | rule: `assume-low-context` | 546 | 4.4% |
 | skill: `build-and-review-motion` | 5794 |  |
 | skill: `develop-a-website` | 8628 |  |
-| skill: `generate-assets` | 5556 |  |
+| skill: `generate-assets` | 6898 |  |
 | skill: `grilling` | 3528 |  |
 | skill: `refine-design` | 5708 |  |
 | skill: `stress-test-content` | 6585 |  |
@@ -329,7 +329,7 @@ Tool definitions are absent from this repository and have no character size in t
 | rule: `assume-low-context` | 546 | 7.1% |
 | skill: `build-and-review-motion` | 5794 |  |
 | skill: `develop-a-website` | 8628 |  |
-| skill: `generate-assets` | 5556 |  |
+| skill: `generate-assets` | 6898 |  |
 | skill: `grilling` | 3528 |  |
 | skill: `refine-design` | 5708 |  |
 | skill: `stress-test-content` | 6585 |  |
